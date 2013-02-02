@@ -1,15 +1,8 @@
 #include "Server.h"
 
-#include <string>
-#include <sstream>
-#include <iostream>
 #include <fstream>
-#include <cassert>
-#include <vector>
-#include <set>
-#include <memory>
-#include <algorithm>
 
+#include "App.h"
 #include "Game.h"
 
 namespace

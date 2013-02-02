@@ -79,6 +79,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="App.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="InfluenceTrack.h" />
     <ClInclude Include="Map.h" />

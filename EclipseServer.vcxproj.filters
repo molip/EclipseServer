@@ -60,6 +60,9 @@
     <ClInclude Include="InfluenceTrack.h">
       <Filter>Model</Filter>
     </ClInclude>
+    <ClInclude Include="App.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

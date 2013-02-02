@@ -3,24 +3,9 @@
 
 #include <cstdio>
 #include <cstring>
-#include <string>
-#include <sstream>
-#include <iostream>
-#include <cassert>
 
 #include "MongooseServer.h"
 #include "mongoose.h"
-
-// 0	MG_NEW_REQUEST
-// 1	MG_REQUEST_COMPLETE
-// 2	MG_HTTP_ERROR
-// 3	MG_EVENT_LOG
-// 4 	MG_INIT_SSL
-// 5	MG_WEBSOCKET_CONNECT
-// 6	MG_WEBSOCKET_READY
-// 7	MG_WEBSOCKET_MESSAGE
-// 8	MG_WEBSOCKET_CLOSE
-// 9	MG_OPEN_FILE
 
 static void *callback(enum mg_event event, struct mg_connection *conn);
 
@@ -41,29 +26,39 @@ MongooseServer::~MongooseServer()
 	mg_stop(m_pContext);
 }
 
-void MongooseServer::Register(int clientID, mg_connection* pConn)
+void MongooseServer::Register(int port, mg_connection* pConn)
 {
-	assert(m_mapClientToConn.insert(std::make_pair(clientID, pConn)).second);
-	//m_mapConnToClient.insert(std::make_pair(pConn, clientID));
+	LOCK(m_mutex);
+	assert(m_mapPortToConn.insert(std::make_pair(port, pConn)).second);
 }
 
-void MongooseServer::Unregister(int clientID)
+void MongooseServer::Unregister(int port)
 {
-	assert(m_mapClientToConn.erase(clientID) == 1);
+	LOCK(m_mutex);
+	assert(m_mapPortToConn.erase(port) == 1);
 }
 
-bool MongooseServer::SendMessage(int clientID, const std::string& msg)
+mg_connection* MongooseServer::FindConnection(int port) const
 {
-	auto it = m_mapClientToConn.find(clientID);
-	if (it == m_mapClientToConn.end())
-		return false;
+	LOCK(m_mutex);
+	auto it = m_mapPortToConn.find(port);
+	if (it != m_mapPortToConn.end())
+		return it->second;
+	return nullptr;
+}
 
-	std::string frame;
-	frame.push_back((char)0x81);
-	frame.push_back(msg.size());
-	frame += msg;
+bool MongooseServer::SendMessage(int port, const std::string& msg)
+{
+	if (auto pConn = FindConnection(port))
+	{
+		std::string frame;
+		frame.push_back((char)0x81);
+		frame.push_back(msg.size());
+		frame += msg;
 
-	return mg_write(it->second, frame.c_str(), frame.size()) > 0;
+		return mg_write(pConn, frame.c_str(), frame.size()) > 0;
+	}
+	return false;
 }
 
 static void *callback(enum mg_event event, struct mg_connection *conn) 
@@ -78,7 +73,7 @@ static void *callback(enum mg_event event, struct mg_connection *conn)
 	{
 		IServer::QueryMap queries;
 		if (request_info->query_string)
-			queries = pServer->SplitQuery(request_info->query_string);
+			queries = IServer::SplitQuery(request_info->query_string);
 
 		std::string reply;
 		if (pServer->OnHTTPRequest(request_info->uri, queries, reply))
@@ -149,7 +144,7 @@ static void *callback(enum mg_event event, struct mg_connection *conn)
 
 //-----------------------------------------------------------------------------
 
-IServer::QueryMap IServer::SplitQuery(const std::string& query) const
+IServer::QueryMap IServer::SplitQuery(const std::string& query) 
 {
 	QueryMap map;
 

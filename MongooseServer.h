@@ -1,6 +1,6 @@
 #pragma once
 
-#include <map>
+#include "App.h"
 
 class IServer
 {
@@ -9,11 +9,11 @@ public:
 
 	virtual ~IServer() {}
 	virtual bool OnHTTPRequest(const std::string& url, const QueryMap& queries, std::string& reply) { return false; }
-	virtual void OnConnect(int clientID, const std::string& url) {}
-	virtual void OnDisconnect(int clientID) {}
-	virtual void OnMessage(int clientID, const std::string& msg) {}
+	virtual void OnConnect(int port, const std::string& url) {}
+	virtual void OnDisconnect(int port) {}
+	virtual void OnMessage(int port, const std::string& msg) {}
 
-	QueryMap SplitQuery(const std::string& query) const;
+	static QueryMap SplitQuery(const std::string& query);
 };
 
 struct mg_context;
@@ -25,12 +25,14 @@ public:
 	MongooseServer();
 	virtual ~MongooseServer();
 
-	void Register(int clientID, mg_connection* pConn);
-	void Unregister(int clientID);
-	bool SendMessage(int clientID, const std::string& msg);
+	void Register(int port, mg_connection* pConn);
+	void Unregister(int port);
+	bool SendMessage(int port, const std::string& msg);
 
 private:
+	mg_connection* MongooseServer::FindConnection(int port) const;
+
 	mg_context* m_pContext;
-	std::map<int, mg_connection*> m_mapClientToConn;
-	//std::map<mg_connection*, int> m_mapConnToClient;
+	mutable std::mutex m_mutex;
+	std::map<int, mg_connection*> m_mapPortToConn;
 };
