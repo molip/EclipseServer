@@ -1,0 +1,22 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<script type="text/javascript">
+	function create_game()
+	{
+		location.href = "create?player=" + document.getElementById('text_name').value; 
+	}
+	function join_game(game)
+	{
+		location.href = "game?game=" + game + "&player=" + document.getElementById('text_name').value; 
+	}
+	</script>
+</head>
+<body>
+	<h1>Welcome to the lobby</h1>
+	Please enter your name: <input type="text" id="text_name" value="" />
+	<h2>Current games:</h2>
+	%GAMELIST%<br>
+	<a href="#" onclick="create_game(); return false; ">Create new game</a>
+</body>
+</html>

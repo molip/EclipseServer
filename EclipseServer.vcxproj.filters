@@ -1,0 +1,105 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>
+      </Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Model">
+      <UniqueIdentifier>{59d16326-07e6-4af2-a4cf-d48abe6b018f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="mongoose.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MongooseServer.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Server.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Game.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Map.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Team.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Technology.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="TechTrack.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Turn.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="InfluenceTrack.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mongoose.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MongooseServer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Server.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Game.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Map.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Team.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Technology.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="TechTrack.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Turn.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="InfluenceTrack.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
