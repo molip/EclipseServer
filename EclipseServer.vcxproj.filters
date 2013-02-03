@@ -13,9 +13,9 @@
     <Filter Include="Model">
       <UniqueIdentifier>{59d16326-07e6-4af2-a4cf-d48abe6b018f}</UniqueIdentifier>
     </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="ReadMe.txt" />
+    <Filter Include="Web">
+      <UniqueIdentifier>{cb87a66c-574c-4e3e-bb52-3dba65a56363}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mongoose.h">
@@ -104,5 +104,16 @@
     <ClCompile Include="InfluenceTrack.cpp">
       <Filter>Model</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="web\game.html">
+      <Filter>Web</Filter>
+    </None>
+    <None Include="web\lobby.html">
+      <Filter>Web</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Architecture.txt" />
   </ItemGroup>
 </Project>

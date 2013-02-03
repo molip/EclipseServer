@@ -76,9 +76,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="App.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="InfluenceTrack.h" />
@@ -112,6 +109,13 @@
     <ClCompile Include="Technology.cpp" />
     <ClCompile Include="TechTrack.cpp" />
     <ClCompile Include="Turn.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="web\game.html" />
+    <None Include="web\lobby.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Architecture.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
