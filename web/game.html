@@ -27,7 +27,7 @@ function load()
 
 	if ("WebSocket" in window)
 	{
-		ws = new WebSocket("ws://localhost:9998/echo");
+		ws = new WebSocket("ws://localhost:8998/echo");
 
 		ws.onopen = function()
 		{

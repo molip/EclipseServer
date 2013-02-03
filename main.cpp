@@ -1,8 +1,10 @@
-#include "Server.h"
+#include "WSServer.h"
+#include "HTMLServer.h"
 
 int main(void) 
 {
-	Server server;
+	HTMLServer serverHTML;
+	WSServer serverWS;
 	getchar();
 	return 0;
 }

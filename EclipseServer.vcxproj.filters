@@ -24,9 +24,6 @@
     <ClInclude Include="MongooseServer.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="Server.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="stdafx.h">
       <Filter>Source Files</Filter>
     </ClInclude>
@@ -63,6 +60,12 @@
     <ClInclude Include="App.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="HTMLServer.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WSServer.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -72,9 +75,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MongooseServer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Server.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
@@ -103,6 +103,12 @@
     </ClCompile>
     <ClCompile Include="InfluenceTrack.cpp">
       <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="HTMLServer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="WSServer.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -1,4 +1,4 @@
-#include "Server.h"
+#include "HTMLServer.h"
 
 #include <fstream>
 
@@ -53,13 +53,11 @@ namespace
 typedef std::unique_ptr<Game> GamePtr;
 std::vector<GamePtr> games;
 
-Server::Server()
+HTMLServer::HTMLServer() : MongooseServer(80)
 {
-	//m_pageLobby = LoadFile("web\\lobby.html");
-	//m_pageGame = LoadFile("web\\game.html");
 }
 
-std::string Server::GetLobbyHTML() const
+std::string HTMLServer::GetLobbyHTML() const
 {
 	std::string sList;
 	for (const auto& g : games)
@@ -75,7 +73,7 @@ std::string Server::GetLobbyHTML() const
 	return sPage;
 }
 	
-std::string Server::GetGameHTML(const std::string& game, const std::string& player) const
+std::string HTMLServer::GetGameHTML(const std::string& game, const std::string& player) const
 {
 	std::string sPage = LoadFile("web\\game.html");
 	ReplaceToken(sPage, "%GAME%", game);
@@ -83,7 +81,7 @@ std::string Server::GetGameHTML(const std::string& game, const std::string& play
 	return sPage;
 }
 
-bool Server::OnHTTPRequest(const std::string& url, const QueryMap& queries, std::string& reply)
+bool HTMLServer::OnHTTPRequest(const std::string& url, const QueryMap& queries, std::string& reply)
 {
 	if (url == "/create")
 	{
@@ -123,28 +121,4 @@ bool Server::OnHTTPRequest(const std::string& url, const QueryMap& queries, std:
 		return true;
 	}
 	return false; // WS
-}
-
-void Server::OnConnect(int clientID, const std::string& url)
-{
-	std::ostringstream ss;
-	ss << "Client " <<  clientID << " connected";
-	SendMessage(clientID, ss.str());
-	std::cout << ss.str() << std::endl;
-}
-
-void Server::OnMessage(int clientID, const std::string& message)
-{
-	std::ostringstream ss;
-	ss << "Client " <<  clientID << " said:" << message;
-	SendMessage(clientID, ss.str());
-	std::cout << ss.str() << std::endl;
-
-	// TODO: register client ID for this player/game
-}
-
-void Server::OnDisconnect(int clientID) 
-{
-	// TODO: call RemovePlayer
-	std::cout << "Client " <<  clientID << " disconnected" << std::endl;
 }

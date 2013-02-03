@@ -9,11 +9,14 @@
 
 static void *callback(enum mg_event event, struct mg_connection *conn);
 
-MongooseServer::MongooseServer()
+MongooseServer::MongooseServer(int port)
 {
+	char sPort[8];
+	_itoa_s(port, sPort, 10);
+
 	const char *options[] = 
 	{
-		"listening_ports", "9998",
+		"listening_ports", sPort,
 		"document_root", "web",
 		nullptr
 	};

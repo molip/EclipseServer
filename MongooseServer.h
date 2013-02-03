@@ -22,7 +22,7 @@ struct mg_connection;
 class MongooseServer : public IServer
 {
 public:
-	MongooseServer();
+	MongooseServer(int port);
 	virtual ~MongooseServer();
 
 	void Register(int port, mg_connection* pConn);
