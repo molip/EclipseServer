@@ -93,7 +93,8 @@ function OnCmdUpdate(params)
 	if (type == "GAMELIST")
 	{
 		var html = ''
-		var f = '{0} <button type="button" onclick="ws.send(\'JOIN_GAME:{0}\')">Join</button><br/>'
+		//var f = '{0} <button type="button" onclick="ws.send(\'JOIN_GAME:{0}\')">Join</button><br/>'
+		var f = '<a href="Join Game" onclick="ws.send(\'JOIN_GAME:{0}\');return false;">{0}</a><br/>'
 
 		for (var i = 0; i < params.length; ++i)
 			html += f.format(params[i])
