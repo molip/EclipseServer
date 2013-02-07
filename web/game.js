@@ -22,24 +22,22 @@ function SendMessage()
 
 function writeToScreen(message)
 {
-	var pre = document.createElement("p");
-	pre.style.wordWrap = "break-word";
-	pre.innerHTML = message;
-	output.appendChild(pre);
+	document.getElementById("output").innerHTML += message + '<br/>'
 }
+
 function OnMessage(msg)
 {
 	var tokens = msg.data.split(':')
 	var cmd = tokens.shift()
 
-	writeToScreen('Received message: ' + msg.data + '\n')
+	writeToScreen('Received message: ' + msg.data)
 
 	if (cmd == 'SHOW')
 		OnCmdShow(tokens)
 	else if (cmd == 'UPDATE')
 		OnCmdUpdate(tokens)
 	else
-		writeToScreen('Error: unknown command: ' + cmd + '\n')
+		writeToScreen('Error: unknown command: ' + cmd)
 }
   
 function OnClose()
@@ -49,8 +47,6 @@ function OnClose()
 
 function load()
 {
-	output = document.getElementById("output");
-
 	if ("WebSocket" in window)
 	{
 		ws = new WebSocket("ws://localhost:8998/echo");
@@ -76,18 +72,18 @@ function OnCmdShow(params)
 		var div = document.getElementById(panels[i])
 		if (params[0] == panels[i])
 		{
-			writeToScreen('OnCmdShow: showing ' + panels[i] + '\n')
+			writeToScreen('OnCmdShow: showing ' + panels[i])
 		    div.style.display = "block"
 		    found = true
 		}
 		else
 		{
-			writeToScreen('OnCmdShow: hiding ' + panels[i] + '\n')
+			writeToScreen('OnCmdShow: hiding ' + panels[i])
 		    div.style.display = "none" 
 		} 
 	}
     if(!found)
-        writeToScreen('Error: OnCmdShow: unknown element: ' + params[0] + '\n')
+        writeToScreen('Error: OnCmdShow: unknown element: ' + params[0])
 }
 
 function OnCmdUpdate(params)
@@ -98,9 +94,12 @@ function OnCmdUpdate(params)
 	{
 		var html = ''
 		var f = '{0} <button type="button" onclick="ws.send(\'JOIN_GAME:{0}\')">Join</button><br/>'
+
 		for (var i = 0; i < params.length; ++i)
 			html += f.format(params[i])
-
+		
+		html += '<br/><button type="button" onclick="ws.send(\'CREATE_GAME\')">Create Game</button>'
+		
 		var elem = document.getElementById('GameListContent')
 		elem.innerHTML = html
 	}
