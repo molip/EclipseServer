@@ -27,7 +27,7 @@ public:
 
 	void Register(int port, mg_connection* pConn);
 	void Unregister(int port);
-	bool SendMessage(int port, const std::string& msg);
+	bool SendMessage(int port, const std::string& msg) const;
 
 private:
 	mg_connection* MongooseServer::FindConnection(int port) const;

@@ -57,68 +57,20 @@ HTMLServer::HTMLServer() : MongooseServer(80)
 {
 }
 
-std::string HTMLServer::GetLobbyHTML() const
-{
-	std::string sList;
-	for (const auto& g : games)
-	{
-		std::ostringstream ss;
-		//ss << "<a href=\"" << "/?game=" << game << "&player=\" onclick=" << GetGameURL(g.GetName(), ""); // player replaced in create_game() JS
-		ss << "<a href=\"#\" onclick=\"join_game('" << g->GetName() << "')\">";
-		ss << g->GetName() << " (" << g->GetOwner() << ")</a><br>" << std::endl;
-		sList += ss.str();
-	}
-	std::string sPage = LoadFile("web\\lobby.html");
-	ReplaceToken(sPage, "%GAMELIST%", sList);
-	return sPage;
-}
-	
-std::string HTMLServer::GetGameHTML(const std::string& game, const std::string& player) const
-{
-	std::string sPage = LoadFile("web\\game.html");
-	ReplaceToken(sPage, "%GAME%", game);
-	ReplaceToken(sPage, "%PLAYER%", player);
-	return sPage;
-}
-
 bool HTMLServer::OnHTTPRequest(const std::string& url, const QueryMap& queries, std::string& reply)
 {
-	if (url == "/create")
+	if (url == "/game")
 	{
-		auto i = queries.find("player");
-		if (i != queries.end() && !i->second.empty())
+		auto pid = queries.find("player");
+		if (pid != queries.end())
 		{
-			std::ostringstream ss;
-			ss << "Game" <<  games.size() + 1;
-			games.push_back(GamePtr(new Game(ss.str(), i->second)));
-			reply = GetRedirectHTML(GetGameURL(ss.str(), i->second));
+			std::string sPage = LoadFile("web\\game.html");
+			ReplaceToken(sPage, "%PLAYER%", pid->second);
+			reply = sPage;
 			return true;
 		}
-	}
-	else if (url == "/game")
-	{
-		if (queries.size() == 2)
-		{
-			auto gid = queries.find("game"), pid = queries.find("player");
-			if (gid != queries.end() && pid != queries.end())
-			{
-				auto game = std::find_if(games.begin(), games.end(), [&] (const GamePtr& g) { return g->GetName() == gid->second; });
-				if (game == games.end())
-					reply = "Game not found";
-				else if (!(*game)->AddPlayer(pid->second))
-					reply = "Player is already playing in that game";
-				else
-					reply = GetGameHTML(gid->second, pid->second);
-				return true;
-			}
-			reply = GetLobbyHTML(); // failed
-			return true;
-		}
-	}
-	else if (url == "/")
-	{
-		reply = GetLobbyHTML();
+		reply = "No player name found";
 		return true;
 	}
-	return false; // WS
+	return false; 
 }

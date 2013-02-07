@@ -6,6 +6,7 @@
 
 #include "MongooseServer.h"
 #include "mongoose.h"
+#include "Util.h"
 
 static void *callback(enum mg_event event, struct mg_connection *conn);
 
@@ -50,7 +51,7 @@ mg_connection* MongooseServer::FindConnection(int port) const
 	return nullptr;
 }
 
-bool MongooseServer::SendMessage(int port, const std::string& msg)
+bool MongooseServer::SendMessage(int port, const std::string& msg) const
 {
 	if (auto pConn = FindConnection(port))
 	{
@@ -66,7 +67,7 @@ bool MongooseServer::SendMessage(int port, const std::string& msg)
 
 static void *callback(enum mg_event event, struct mg_connection *conn) 
 {
-	printf("Event received: %d, connection:%X\n", event,  conn);
+	//printf("Event received: %d, connection:%X\n", event,  conn);
 	
 	const struct mg_request_info *request_info = mg_get_request_info(conn);
 	
@@ -151,26 +152,14 @@ IServer::QueryMap IServer::SplitQuery(const std::string& query)
 {
 	QueryMap map;
 
-	std::string var, val;
-	bool bVal = false;
-	for (char c : query)
-	{
-		if (c == '=')
-			bVal = true;
-		else if (c == '&')
-		{
-			bVal = false;
-			if (!var.empty())
-				map[var] = val;
-			var.clear();
-			val.clear();
-		}
-		else
-			(bVal ? val : var).push_back(c);
-	}
-	if (!var.empty())
-		map[var] = val;
+	auto v = Util::SplitString(query, '&');
 
+	for (auto& s : v)
+	{
+		auto pair = Util::SplitString(s, '=');
+		if (pair.size() == 2)
+			map[pair[0]] = pair[1];
+	}
 	return map;
 }
 

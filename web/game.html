@@ -1,58 +1,23 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<script type="text/javascript">
 
-var output
-var ws
-
-function SendMessage()
-{
-    var textbox = document.getElementById('textbox'); 
-	ws.send(textbox.value);
-	textbox.value = '';
-}
-
-function writeToScreen(message)
-{
-    var pre = document.createElement("p");
-    pre.style.wordWrap = "break-word";
-    pre.innerHTML = message;
-    output.appendChild(pre);
-}
-  
-function load()
-{
-	output = document.getElementById("output");
-
-	if ("WebSocket" in window)
-	{
-		ws = new WebSocket("ws://localhost:8998/echo");
-
-		ws.onopen = function()
-		{
-			writeToScreen('OPENED\n')
-			ws.send('REGISTER %GAME% %PLAYER%');
-		};
-		ws.onmessage = function (evt) 
-		{ 
-			writeToScreen(evt.data + '\n')
-		};
-		ws.onclose = function()
-		{ 
-			writeToScreen('CLOSED\n')
-		};
-	}
-	else
-	{
-	 // The browser doesn't support WebSocket
-	 alert("WebSocket NOT supported by your Browser!");
-	}
-}
-
+<script>
+    var playerName = "%PLAYER%"
 </script>
+
+<script src="game.js"/></script>
+
 </head>
 <body onload="load()">
+<div id="PANEL_GAMELIST" style="display:none">
+	Game List<br/>
+	<div id="GameListContent">
+
+	</div>
+	<button type="button" onclick="ws.send('CREATE_GAME')">Create Game</button>
+</div>
+
 <div id="output"></div>
 </body>
 </html>

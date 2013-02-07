@@ -1,10 +1,14 @@
 #include "WSServer.h"
 #include "HTMLServer.h"
+#include "Model.h"
+#include "Controller.h"
 
 int main(void) 
 {
+	Model model;
+	Controller controller(model);
+	WSServer serverWS(controller);
 	HTMLServer serverHTML;
-	WSServer serverWS;
 	getchar();
 	return 0;
 }

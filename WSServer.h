@@ -1,12 +1,28 @@
+#pragma once
+
 #include "MongooseServer.h"
+
+#include <map>
+
+class Controller;
 
 class WSServer : public MongooseServer
 {
 public:
-	WSServer();
-	virtual void OnConnect(int clientID, const std::string& url) override;
-	virtual void OnMessage(int clientID, const std::string& message) override;
-	virtual void OnDisconnect(int clientID) override;
+	WSServer(Controller& controller);
+	virtual void OnConnect(int port, const std::string& url) override;
+	virtual void OnMessage(int port, const std::string& message) override;
+	virtual void OnDisconnect(int port) override;
+
+	bool SendMessage(const std::string& msg, const std::string& player = "") const;
+	void BroadcastMessage(const std::string& msg) const;
 
 private:
+	void RegisterPlayer(int port, const std::string& player);
+
+	std::map<int, std::string> m_mapPortToPlayer;
+	std::map<std::string, int> m_mapPlayerToPort;
+	mutable std::mutex m_mutex;
+
+	Controller& m_controller;
 };

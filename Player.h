@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <memory>
 
 class Player
 {
@@ -13,4 +14,6 @@ public:
 private:
 	std::string m_name;
 };
+
+typedef std::unique_ptr<Player> PlayerPtr;
 

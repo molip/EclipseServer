@@ -77,6 +77,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="App.h" />
+    <ClInclude Include="Controller.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="InfluenceTrack.h" />
     <ClInclude Include="Map.h" />
@@ -91,13 +92,16 @@
     <ClInclude Include="Technology.h" />
     <ClInclude Include="TechTrack.h" />
     <ClInclude Include="Turn.h" />
+    <ClInclude Include="Util.h" />
     <ClInclude Include="WSServer.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Controller.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="InfluenceTrack.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Map.cpp" />
+    <ClCompile Include="Model.cpp" />
     <ClCompile Include="MongooseServer.cpp" />
     <ClCompile Include="mongoose.c" />
     <ClCompile Include="Player.cpp" />
@@ -110,6 +114,7 @@
     <ClCompile Include="Technology.cpp" />
     <ClCompile Include="TechTrack.cpp" />
     <ClCompile Include="Turn.cpp" />
+    <ClCompile Include="Util.cpp" />
     <ClCompile Include="WSServer.cpp" />
   </ItemGroup>
   <ItemGroup>

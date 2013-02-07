@@ -7,10 +7,6 @@
 #include <memory>
 #include <set>
 
-typedef std::unique_ptr<Player> PlayerPtr;
-
-typedef std::unique_ptr<Team> TeamPtr;
-
 class Game
 {
 public:
@@ -29,3 +25,5 @@ private:
 	std::set<TeamPtr> m_teams;
 	std::set<PlayerPtr> m_players;
 };
+
+typedef std::unique_ptr<Game> GamePtr;

@@ -11,4 +11,6 @@
 #include <memory>
 #include <algorithm>
 
+//#define LOCK(m) ; //std::lock_guard<std::mutex> lock(m);
 #define LOCK(m) std::lock_guard<std::mutex> lock(m);
+

@@ -4,6 +4,7 @@
 #include "TechTrack.h"
 
 #include <vector>
+#include <memory>
 
 enum class Resource { Money, Science, Materials, _Count };
 
@@ -44,4 +45,6 @@ private:
 	//colony ships
 	//rep points
 };
+
+typedef std::unique_ptr<Team> TeamPtr;
 
