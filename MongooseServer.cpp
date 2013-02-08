@@ -53,16 +53,38 @@ mg_connection* MongooseServer::FindConnection(int port) const
 
 bool MongooseServer::SendMessage(int port, const std::string& msg) const
 {
-	if (auto pConn = FindConnection(port))
-	{
-		std::string frame;
-		frame.push_back((char)0x81);
-		frame.push_back(msg.size());
-		frame += msg;
+	auto pConn = FindConnection(port);
+	if (!pConn)
+		return false;
 
-		return mg_write(pConn, frame.c_str(), frame.size()) > 0;
+	std::string hdr;
+	hdr.push_back((unsigned char)0x81);
+
+	unsigned long long length = msg.size();
+	int bytes = 0;
+	if (length < 0x7e)
+		bytes = 1;
+	else if (length < 0x1000)
+	{
+		hdr.push_back(0x7e);
+		bytes = 2;
 	}
-	return false;
+	else 
+	{
+		hdr.push_back(0x7f);
+		bytes = 8;
+	}
+
+	for (int i = bytes - 1; i >= 0; --i)
+		hdr.push_back(unsigned char(length >> i * 8));
+
+	if (mg_write(pConn, hdr.c_str(), hdr.size()) < (int)hdr.size())
+		return false;
+		
+	if (mg_write(pConn, msg.c_str(), msg.size()) < (int)msg.size())
+		return false;
+		
+	return true;
 }
 
 static void *callback(enum mg_event event, struct mg_connection *conn) 
@@ -106,39 +128,40 @@ static void *callback(enum mg_event event, struct mg_connection *conn)
 	}
 	else if (event == MG_WEBSOCKET_MESSAGE) 
 	{
-		unsigned char buf[200];
-		int n, i, mask_len, xor, msg_len, len;
+		unsigned char buf[256];
 
-		// Read message from the client.
-		// Accept only small (<126 bytes) messages.
-		len = 0;
-		msg_len = mask_len = 0;
-		for (;;) 
+		if (mg_read(conn, buf, 2) != 2) 
+			return "";
+		
+		assert(buf[0] == 0x81); // Text.
+		assert(buf[1] & 0x80);  // Encoded.
+
+		int length = buf[1] & 0x7f; 
+		if (int nExtra = length == 0x7f ? 8 : length == 0x7e ? 2 : 0) // Real length is in following bytes.
 		{
-			if ((n = mg_read(conn, buf + len, sizeof(buf) - len)) <= 0) 
-				return ""; // Read error, close websocket
-
-			len += n;
-			if (len >= 2) 
-			{
-				msg_len = buf[1] & 127;
-				mask_len = (buf[1] & 128) ? 4 : 0;
-				if (msg_len > 125) 
-					return ""; // Message is too long, close websocket
-
-				// If we've buffered the whole message, exit the loop
-				if (len >= 2 + mask_len + msg_len) 
-					break;
-			}
+			length = 0;
+			if (mg_read(conn, buf, nExtra) != nExtra) 
+				return "";
+			for (int i = 0; i < nExtra; ++i)
+				length += buf[i] << ((nExtra - 1 - i) * 8);
 		}
 
-		// Copy message to string, applying the mask if required.
-		std::string msg;
-		msg.reserve(msg_len);
-		for (i = 0; i < msg_len; i++) 
+		unsigned char mask[4];
+		if (mg_read(conn, mask, 4) != 4) 
+			return "";
+
+		std::string msg(length, ' ');
+		int read = 0;
+		while (read < length)
 		{
-			xor = mask_len == 0 ? 0 : buf[2 + (i % 4)];
-			msg.push_back(buf[i + 2 + mask_len] ^ xor);
+			int n = mg_read(conn, buf, sizeof buf);
+			if (n <= 0)
+				return ""; // Read error. 
+
+			for (int i = 0; i < n; ++i)
+				msg[read + i] = buf[i] ^ mask[i % 4];
+
+			read += n;
 		}
 
 		pServer->OnMessage(request_info->remote_port, msg);
