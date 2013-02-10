@@ -2,6 +2,7 @@
 #include "App.h"
 #include "Util.h"
 #include "Controller.h"
+#include "Output.h"
 
 WSServer::WSServer(Controller& controller) : MongooseServer(8998), m_controller(controller)
 {
@@ -22,18 +23,15 @@ void WSServer::OnMessage(int port, const std::string& message)
 	std::string cmd = v[0];
 	v.erase(v.begin());
 
-	if (cmd == "REGISTER")
+	if (message.substr(0, 9) == "REGISTER:" && message.size() > 9)
 	{
-		if (v.size() == 1)
-			RegisterPlayer(port, v[0]);
-		else
-			__super::SendMessage(port, "ERROR:NO_PLAYER");
+		RegisterPlayer(port, message.substr(9));
 	}
 	else
 	{
 		auto i = m_mapPortToPlayer.find(port);
 		if (i != m_mapPortToPlayer.end())
-			m_controller.OnCommand(i->second, cmd, v);
+			m_controller.OnMessage(i->second, message);
 	}
 }
 
@@ -52,8 +50,7 @@ void WSServer::RegisterPlayer(int port, const std::string& player)
 	m_mapPortToPlayer[port] = player;
 
 	std::cout << "INFO: Port registered: " << port << " -> " << player << std::endl;
-	__super::SendMessage(port, "SHOW:PANEL_GAMELIST");
-	m_controller.UpdateGameList(player);
+	m_controller.OnPlayerRegistered(player);
 }
 
 void WSServer::OnDisconnect(int port) 
@@ -69,6 +66,11 @@ void WSServer::OnDisconnect(int port)
 		m_mapPlayerToPort.erase(i->second);
 		m_mapPortToPlayer.erase(port);
 	}
+}
+
+bool WSServer::SendMessage(const Output::Base& msg, const std::string& player) const
+{
+	return SendMessage(msg.GetXML(), player);
 }
 
 bool WSServer::SendMessage(const std::string& msg, const std::string& player) const

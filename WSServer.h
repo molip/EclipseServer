@@ -5,6 +5,7 @@
 #include <map>
 
 class Controller;
+namespace Output { class Base; }
 
 class WSServer : public MongooseServer
 {
@@ -14,6 +15,7 @@ public:
 	virtual void OnMessage(int port, const std::string& message) override;
 	virtual void OnDisconnect(int port) override;
 
+	bool SendMessage(const Output::Base& msg, const std::string& player = "") const;
 	bool SendMessage(const std::string& msg, const std::string& player = "") const;
 	void BroadcastMessage(const std::string& msg) const;
 

@@ -7,6 +7,7 @@
 </script>
 
 <script src="game.js"></script>
+<script src="commands.js"></script>
 
 </head>
 <body onload="load()">
@@ -17,25 +18,29 @@
     h2 {
         font-family: Impact;
     }
-    div {
-        border:1px solid;
-    }
     #output {
-        height:120px;font:12px Courier;overflow:auto;
+        height:120px; font:12px Courier; overflow:auto; border:1px solid;
+
     }
-    #PANEL_GAMELIST {
-        display:none;
+	.panel {
+        border:1px solid;
+		display:none;
+	}
+    #game_list_panel {
         padding:5px;
-    }
-    #GameListContent {
-        border: none;
     }
 </style>
 
-<div id="PANEL_GAMELIST">
+<div id="game_list_panel" class="panel">
 	<h2>Game List</h2> 
-	<div id="GameListContent">
+	<div id="game_list_content">
 	</div>
+</div>
+<div id="lobby_panel" class="panel">
+	<h2>Lobby</h2> 
+</div>
+<div id="game_panel" class="panel">
+	<h2>Game</h2> 
 </div>
 <br/>
 <div id="output">

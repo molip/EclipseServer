@@ -1,5 +1,6 @@
 var output
 var ws
+var parser
 
 if(!String.prototype.format) {
   String.prototype.format = function() {
@@ -22,22 +23,18 @@ function SendMessage()
 
 function writeToScreen(message)
 {
-	document.getElementById("output").innerHTML += message + '<br/>'
+	document.getElementById("output").innerText += message
+	//document.getElementById("output").innerHTML += '<br/>'
 }
 
 function OnMessage(msg)
 {
-	var tokens = msg.data.split(':')
-	var cmd = tokens.shift()
+	writeToScreen(msg.data)
+	
+	var xml = parser.parseFromString(msg.data, "text/xml");
 
-	writeToScreen('Received message: ' + msg.data)
-
-	if (cmd == 'SHOW')
-		OnCmdShow(tokens)
-	else if (cmd == 'UPDATE')
-		OnCmdUpdate(tokens)
-	else
-		writeToScreen('Error: unknown command: ' + cmd)
+	if (xml.firstChild.nodeName == "command")
+		OnCommand(xml.firstChild)
 }
   
 function OnClose()
@@ -56,52 +53,11 @@ function load()
 	}
 	else
 	{
-		alert("WebSocket not supported by your Browser!");
+		alert("WebSocket not supported by your Browser");
 	}
-}
 
-//-----------------------------------------------------------------------------
-
-function OnCmdShow(params)
-{
-	var panels =['PANEL_GAMELIST', 'PANEL_GAME']
-    var found = false
-    for (var i = 0; i < panels.length; ++i)
-	{
-    	//alert(i, panels[i])
-		var div = document.getElementById(panels[i])
-		if (params[0] == panels[i])
-		{
-			writeToScreen('OnCmdShow: showing ' + panels[i])
-		    div.style.display = "block"
-		    found = true
-		}
-		else
-		{
-			writeToScreen('OnCmdShow: hiding ' + panels[i])
-		    div.style.display = "none" 
-		} 
-	}
-    if(!found)
-        writeToScreen('Error: OnCmdShow: unknown element: ' + params[0])
-}
-
-function OnCmdUpdate(params)
-{
-	var type = params.shift()
-	
-	if (type == "GAMELIST")
-	{
-		var html = ''
-		//var f = '{0} <button type="button" onclick="ws.send(\'JOIN_GAME:{0}\')">Join</button><br/>'
-		var f = '<a href="Join Game" onclick="ws.send(\'JOIN_GAME:{0}\');return false;">{0}</a><br/>'
-
-		for (var i = 0; i < params.length; ++i)
-			html += f.format(params[i])
-		
-		html += '<br/><button type="button" onclick="ws.send(\'CREATE_GAME\')">Create Game</button>'
-		
-		var elem = document.getElementById('GameListContent')
-		elem.innerHTML = html
-	}
+	if (window.DOMParser)
+		parser=new DOMParser();
+	else
+		alert("DOMParser not supported");
 }

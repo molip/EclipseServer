@@ -12,10 +12,12 @@ public:
 	Controller(Model& model);
 	void SetServer(WSServer* p) { m_pServer = p; }
 
-	void UpdateGameList(const std::string& player = "") const;
-	void OnCommand(const std::string& player, const std::string& cmd, const std::vector<std::string>& params);
+	void OnMessage(const std::string& player, const std::string& msg);
+	void OnPlayerRegistered(const std::string& player);
 
 private:
+	void UpdateGameList(const std::string& player = "") const;
+
 	Model& m_model;
 	WSServer* m_pServer;
 };
