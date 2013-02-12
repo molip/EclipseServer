@@ -15,6 +15,8 @@ public:
 
 	const std::vector<GamePtr>& GetGames() const { return m_games; }
 
+	Game* FindGame(const std::string& game);
+
 private:
 	std::vector<GamePtr> m_games;
 

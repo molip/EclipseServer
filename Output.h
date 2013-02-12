@@ -12,10 +12,10 @@ class Model;
 namespace Output
 {
 
-class Base
+class Message
 {
 public:
-	virtual ~Base() {}
+	virtual ~Message() {}
 	const std::string& GetXML() const;
 
 protected:
@@ -28,7 +28,7 @@ private:
 	mutable std::unique_ptr<TiXmlPrinter> m_pPrinter;
 };
 
-struct Command : Base
+struct Command : Message
 {
 	Command(const std::string& cmd);
 	//virtual void Create() { m_doc.In}

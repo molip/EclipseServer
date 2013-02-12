@@ -5,7 +5,7 @@
 namespace Output
 {
 
-const std::string& Base::GetXML() const
+const std::string& Message::GetXML() const
 {
 	assert(!m_pPrinter);
 	//Create();
@@ -14,7 +14,7 @@ const std::string& Base::GetXML() const
 	return m_pPrinter->Str();
 }
 
-TiXmlElement* Base::AddElement(const std::string& name, TiXmlNode& parent)
+TiXmlElement* Message::AddElement(const std::string& name, TiXmlNode& parent)
 {
 	TiXmlElement* pElem = new TiXmlElement(name);
 	parent.LinkEndChild(pElem);
@@ -43,8 +43,14 @@ UpdateGameList::UpdateGameList(const Model& model) : Update("game_list")
 {
 	for (auto& g : model.GetGames())
 	{
-		auto pNode = AddElement("game", *m_pRoot);
-		pNode->SetAttribute("name", g->GetName());
+		auto pGameNode = AddElement("game", *m_pRoot);
+		pGameNode->SetAttribute("name", g->GetName());
+	
+		for (auto& i : g->GetPlayers())
+		{
+			auto pPlayerNode = AddElement("player", *pGameNode);
+			pPlayerNode->SetAttribute("name", i.first);
+		}
 	}
 }
 

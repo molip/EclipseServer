@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <set>
+#include <map>
 
 class Game
 {
@@ -17,13 +18,16 @@ public:
 	bool AddPlayer(const std::string& name);
 	Player* FindPlayer(const std::string& name);
 	bool DeletePlayer(const std::string& name);
+
+	const std::map<std::string, PlayerPtr>& GetPlayers() const { return m_players; }
+
 private:
 	std::string m_name, m_owner;
 
 	Map	m_map;
 
 	std::set<TeamPtr> m_teams;
-	std::set<PlayerPtr> m_players;
+	std::map<std::string, PlayerPtr> m_players;
 };
 
 typedef std::unique_ptr<Game> GamePtr;

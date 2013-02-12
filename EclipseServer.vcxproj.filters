@@ -81,6 +81,9 @@
     <ClInclude Include="Output.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="Singleton.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -154,13 +157,16 @@
     <None Include="web\game.html">
       <Filter>Web</Filter>
     </None>
-    <None Include="web\commands.js">
-      <Filter>Web</Filter>
-    </None>
     <None Include="web\game.js">
       <Filter>Web</Filter>
     </None>
     <None Include="web\index.html">
+      <Filter>Web</Filter>
+    </None>
+    <None Include="web\input.js">
+      <Filter>Web</Filter>
+    </None>
+    <None Include="web\output.js">
       <Filter>Web</Filter>
     </None>
   </ItemGroup>

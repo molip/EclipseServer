@@ -2,8 +2,11 @@
 #include "Model.h"
 #include "WSServer.h"
 #include "Output.h"
+#include "Input.h"
 
 #include "App.h"
+
+SINGLETON(Controller)
 
 Controller::Controller(Model& model) : m_model(model)
 {
@@ -15,15 +18,9 @@ void Controller::UpdateGameList(const std::string& player) const
 	m_pServer->SendMessage(Output::UpdateGameList(m_model), player);
 }
 
-void Controller::OnMessage(const std::string& player, const std::string& msg)
+void Controller::OnMessage(const Input::MessagePtr& pMsg, const std::string& player)
 {
-	if (msg == "CREATE_GAME")
-	{
-		std::ostringstream ss;
-		ss << "Game " <<  m_model.GetGames().size() + 1;
-		m_model.AddGame(ss.str(), player);
-		UpdateGameList();
-	}
+	pMsg->Process(*this, player);
 }
 
 void Controller::OnPlayerRegistered(const std::string& player)

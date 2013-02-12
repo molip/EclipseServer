@@ -50,18 +50,26 @@ function OnCommandUpdateGameList(elem)
 {		
 	var html = ''
 
-	//var f = '{0} <button type="button" onclick="ws.send(\'JOIN_GAME:{0}\')">Join</button><br/>'
-	var f = '<a href="Join Game" onclick="ws.send(\'JOIN_GAME:{0}\');return false;">{0}</a><br/>'
+	var f = '<a href="Join Game" onclick="SendJoinGame(\'{0}\');return false;">{0} </a>'
 
 	var game = elem.firstChild
 	while (game)
 	{
 		if (game.nodeName == "game")
 			html += f.format(game.getAttribute('name'))
+
+		var player = game.firstChild
+		while (player)
+		{
+			if (player.nodeName == "player")
+				html += player.getAttribute('name') + ','
+			player = player.nextSibling
+		}
+		html += '<br/>'
 		game = game.nextSibling
 	}
 	
-	html += '<br/><button type="button" onclick="ws.send(\'CREATE_GAME\')">Create Game</button>'
+	html += '<br/><button type="button" onclick="SendCreateGame()">Create Game</button>'
 	
 	var elem = document.getElementById('game_list_content')
 	elem.innerHTML = html

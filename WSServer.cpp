@@ -3,6 +3,7 @@
 #include "Util.h"
 #include "Controller.h"
 #include "Output.h"
+#include "Input.h"
 
 WSServer::WSServer(Controller& controller) : MongooseServer(8998), m_controller(controller)
 {
@@ -16,23 +17,21 @@ void WSServer::OnConnect(int port, const std::string& url)
 
 void WSServer::OnMessage(int port, const std::string& message)
 {
-	auto v = Util::SplitString(message, ':');
-	if (v.empty())
-		return;
-	
-	std::string cmd = v[0];
-	v.erase(v.begin());
-
-	if (message.substr(0, 9) == "REGISTER:" && message.size() > 9)
+	if (const Input::MessagePtr pMsg = Input::CreateMessage(message))
 	{
-		RegisterPlayer(port, message.substr(9));
+		if (auto pRegister = dynamic_cast<const Input::Register*>(pMsg.get()))
+		{
+			RegisterPlayer(port, pRegister->GetPlayer());
+		}
+		else
+		{
+			auto i = m_mapPortToPlayer.find(port);
+			if (i != m_mapPortToPlayer.end())
+				m_controller.OnMessage(pMsg, i->second);
+		}
 	}
 	else
-	{
-		auto i = m_mapPortToPlayer.find(port);
-		if (i != m_mapPortToPlayer.end())
-			m_controller.OnMessage(i->second, message);
-	}
+		std::cout << "WSServer::OnMessage: Error" << std::endl;
 }
 
 void WSServer::RegisterPlayer(int port, const std::string& player)
@@ -68,7 +67,7 @@ void WSServer::OnDisconnect(int port)
 	}
 }
 
-bool WSServer::SendMessage(const Output::Base& msg, const std::string& player) const
+bool WSServer::SendMessage(const Output::Message& msg, const std::string& player) const
 {
 	return SendMessage(msg.GetXML(), player);
 }
