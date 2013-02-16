@@ -2,6 +2,7 @@
 #include "App.h"
 #include "Model.h"
 #include "Controller.h"
+#include "Output.h"
 
 #include <sstream>
 
@@ -54,11 +55,32 @@ bool JoinGame::Process(Controller& controller, const std::string& player) const
 {
 	Model& model = controller.GetModel();
 	
+	Player* pPlayer = controller.FindPlayer(player);
+	if (!pPlayer)
+		return false;
+
+	if (pPlayer->GetCurrentGame())
+		return false;
+
 	if (Game* pGame = model.FindGame(m_game))
 	{
 		if (pGame->AddPlayer(player))
 		{
+			pPlayer->SetCurrentGame(pGame);
+
 			controller.UpdateGameList();
+
+			if (pGame->HasStarted())
+			{
+				controller.SendMessage(Output::ShowGame(), player);
+				controller.SendMessage(Output::UpdateGame(*pGame));
+			}
+			else
+			{
+				controller.SendMessage(Output::ShowLobby(), player);
+				controller.SendMessage(Output::UpdateLobby(*pGame));
+			}
+
 			return true;	
 		}
 	}
@@ -71,8 +93,11 @@ bool CreateGame::Process(Controller& controller, const std::string& player) cons
 	
 	std::ostringstream ss;
 	ss << "Game " <<  model.GetGames().size() + 1;
-	model.AddGame(ss.str(), player);
+	Game& game = model.AddGame(ss.str(), player);
+
 	controller.UpdateGameList();
+	controller.SendMessage(Output::ShowLobby(), player);
+	controller.SendMessage(Output::UpdateLobby(game));
 
 	return true;	
 }

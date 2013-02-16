@@ -8,6 +8,7 @@
 typedef TiXmlDocument XmlDoc;
 
 class Model;
+class Game;
 
 namespace Output
 {
@@ -46,11 +47,12 @@ struct Update : Command
 	Update(const std::string& param);
 };
 
-struct UpdateGameList : Update
-{
-	UpdateGameList(const Model& model);
-};
+struct UpdateGameList : Update { UpdateGameList(const Model& model); };
+struct UpdateLobby : Update { UpdateLobby(const Game& game); };
+struct UpdateGame : Update { UpdateGame(const Game& game); };
 
 struct ShowGameList : Show { ShowGameList(); };
+struct ShowLobby : Show { ShowLobby(); };
+struct ShowGame : Show { ShowGame(); };
 
 }

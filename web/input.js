@@ -15,7 +15,7 @@ function OnCommandShow(elem)
 {
 	var panel = elem.getAttribute('panel')
 
-	var panels =['game_list_panel', 'game_panel']
+	var panels =['game_list_panel', 'lobby_panel', 'game_panel']
     var found = false
     for (var i = 0; i < panels.length; ++i)
 	{
@@ -42,6 +42,10 @@ function OnCommandUpdate(elem)
 
 	if (param == "game_list")
 		OnCommandUpdateGameList(elem)
+	if (param == "lobby")
+		OnCommandUpdateLobby(elem)
+	if (param == "game")
+		OnCommandUpdateGame(elem)
 	else
         writeToScreen('OnCommandUpdate: unknown param: ' + param)
 }
@@ -50,22 +54,31 @@ function OnCommandUpdateGameList(elem)
 {		
 	var html = ''
 
-	var f = '<a href="Join Game" onclick="SendJoinGame(\'{0}\');return false;">{0} </a>'
+	var f = '<a href="Join Game" onclick="SendJoinGame(\'{0}\');return false;">{0}</a>'
 
 	var game = elem.firstChild
 	while (game)
 	{
 		if (game.nodeName == "game")
-			html += f.format(game.getAttribute('name'))
-
-		var player = game.firstChild
-		while (player)
 		{
-			if (player.nodeName == "player")
-				html += player.getAttribute('name') + ','
-			player = player.nextSibling
+			var owner = game.getAttribute('owner')
+			html += f.format(game.getAttribute('name'))
+			html += ' Players: <b>' + owner + '</b>'
+
+			var player = game.firstChild
+			while (player)
+			{
+				if (player.nodeName == "player")
+				{
+					var name = player.getAttribute('name')
+					if (name != owner)
+						html += ', ' + name
+				}
+
+				player = player.nextSibling
+			}
+			html += '<br/>'
 		}
-		html += '<br/>'
 		game = game.nextSibling
 	}
 	
@@ -75,3 +88,29 @@ function OnCommandUpdateGameList(elem)
 	elem.innerHTML = html
 }
 
+function OnCommandUpdateLobby(elem)
+{		
+	var html = ''
+	var owner = elem.getAttribute('owner')
+	html += '<b>' + owner + '</b>'
+
+	var player = elem.firstChild
+	while (player)
+	{
+		if (player.nodeName == "player")
+		{
+			var name = player.getAttribute('name')
+			if (name != owner)
+				html += ', ' + name
+		}
+
+		player = player.nextSibling
+	}
+
+	document.getElementById('lobby_game_name').innerHTML = elem.getAttribute('game')
+	document.getElementById('lobby_content').innerHTML = html
+}
+
+function OnCommandUpdateGame(elem)
+{		
+}

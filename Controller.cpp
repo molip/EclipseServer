@@ -20,11 +20,25 @@ void Controller::UpdateGameList(const std::string& player) const
 
 void Controller::OnMessage(const Input::MessagePtr& pMsg, const std::string& player)
 {
-	pMsg->Process(*this, player);
+	bool bOK = pMsg->Process(*this, player);
+	assert(bOK);
 }
 
-void Controller::OnPlayerRegistered(const std::string& player)
+bool Controller::SendMessage(const Output::Message& msg, const std::string& player) const
 {
+	return m_pServer->SendMessage(msg, player);
+}
+
+void Controller::OnPlayerConnected(const std::string& player)
+{
+	m_players.AddPlayer(player);
 	m_pServer->SendMessage(Output::ShowGameList(), player);
 	UpdateGameList(player);
 }
+
+void Controller::OnPlayerDisconnected(const std::string& player)
+{
+	m_players.DeletePlayer(player);
+	// TODO: Notify other players in current game. Remove from lobby. 
+}
+

@@ -1,8 +1,9 @@
 #include "Model.h"
 
-void Model::AddGame(const std::string& name, const std::string& owner)
+Game& Model::AddGame(const std::string& name, const std::string& owner)
 {
 	m_games.push_back(GamePtr(new Game(name, owner)));
+	return *m_games.back().get();
 }
 
 Game* Model::FindGame(const std::string& game)
