@@ -64,25 +64,23 @@ bool JoinGame::Process(Controller& controller, const std::string& player) const
 
 	if (Game* pGame = model.FindGame(m_game))
 	{
-		if (pGame->AddPlayer(player))
+		pGame->AddPlayer(player); // Might already have joined.
+		pPlayer->SetCurrentGame(pGame);
+
+		controller.UpdateGameList();
+
+		if (pGame->HasStarted())
 		{
-			pPlayer->SetCurrentGame(pGame);
-
-			controller.UpdateGameList();
-
-			if (pGame->HasStarted())
-			{
-				controller.SendMessage(Output::ShowGame(), player);
-				controller.SendMessage(Output::UpdateGame(*pGame));
-			}
-			else
-			{
-				controller.SendMessage(Output::ShowLobby(), player);
-				controller.SendMessage(Output::UpdateLobby(*pGame));
-			}
-
-			return true;	
+			controller.SendMessage(Output::ShowGame(), player);
+			controller.SendMessage(Output::UpdateGame(*pGame));
 		}
+		else
+		{
+			controller.SendMessage(Output::ShowLobby(), player);
+			controller.SendMessage(Output::UpdateLobby(*pGame));
+		}
+
+		return true;	
 	}
 	return false;
 }
