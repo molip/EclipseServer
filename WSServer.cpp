@@ -12,6 +12,7 @@ WSServer::WSServer(Controller& controller) : MongooseServer(8998), m_controller(
 
 void WSServer::OnConnect(int port, const std::string& url)
 {
+	LOCK(m_mutex); 
 	std::cout << "INFO: Port connected: " << port << std::endl;
 }
 
@@ -19,21 +20,28 @@ void WSServer::OnMessage(int port, const std::string& message)
 {
 	LOCK(m_mutex); // Only process 1 message at a time. 
 
-	if (const Input::MessagePtr pMsg = Input::CreateMessage(message))
+	try 
 	{
-		if (auto pRegister = dynamic_cast<const Input::Register*>(pMsg.get()))
+		if (const Input::MessagePtr pMsg = Input::CreateMessage(message))
 		{
-			RegisterPlayer(port, pRegister->GetPlayer());
+			if (auto pRegister = dynamic_cast<const Input::Register*>(pMsg.get()))
+			{
+				RegisterPlayer(port, pRegister->GetPlayer());
+			}
+			else
+			{
+				auto i = m_mapPortToPlayer.find(port);
+				if (i != m_mapPortToPlayer.end())
+					m_controller.OnMessage(pMsg, i->second);
+			}
 		}
 		else
-		{
-			auto i = m_mapPortToPlayer.find(port);
-			if (i != m_mapPortToPlayer.end())
-				m_controller.OnMessage(pMsg, i->second);
-		}
+			AssertThrow("OnMessage");
 	}
-	else
-		std::cout << "WSServer::OnMessage: Error" << std::endl;
+	catch (Exception& e)
+	{
+		ReportError(e.GetType(), e.what(), port);
+	}
 }
 
 void WSServer::RegisterPlayer(int port, const std::string& player)
@@ -54,6 +62,8 @@ void WSServer::RegisterPlayer(int port, const std::string& player)
 
 void WSServer::OnDisconnect(int port) 
 {
+	LOCK(m_mutex); 
+
 	auto i = m_mapPortToPlayer.find(port);
 	if (i == m_mapPortToPlayer.end())
 		std::cerr << "ERROR: Unregistered port disconnected: " << port << std::endl;
@@ -90,4 +100,14 @@ void WSServer::BroadcastMessage(const std::string& msg) const
 {
 	for (auto i : m_mapPortToPlayer)
 		__super::SendMessage(i.first, msg);
+}
+
+void WSServer::ReportError(const std::string& type, const std::string& msg, int port)
+{
+	std::ostringstream ss;
+	ss << "Exception : " << type << " : " << msg;
+	if (port)
+		ss << "[" << port << "]";
+	
+	std::cerr << ss.str() << std::endl;
 }

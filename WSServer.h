@@ -21,6 +21,7 @@ public:
 
 private:
 	void RegisterPlayer(int port, const std::string& player);
+	void ReportError(const std::string& type, const std::string& msg, int port = 0);
 
 	std::map<int, std::string> m_mapPortToPlayer;
 	std::map<std::string, int> m_mapPlayerToPort;

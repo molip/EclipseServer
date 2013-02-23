@@ -37,18 +37,16 @@ MessagePtr CreateMessage(const std::string& xml)
 	
 Register::Register(const TiXmlElement& node)
 {
-	if (auto p = node.Attribute("player"))
-		m_player = p;
-	else
-		std::cout << "Error: Register" << std::endl;
+	auto p = node.Attribute("player");
+	AssertThrowXML("Register", !!p);
+	m_player = p;
 }
 
 JoinGame::JoinGame(const TiXmlElement& node)
 {
-	if (auto p = node.Attribute("game"))
-		m_game = p;
-	else
-		std::cerr << "Error: JoinGame" << std::endl;
+	auto p = node.Attribute("game");
+	AssertThrowXML("JoinGame", !!p);
+	m_game = p;
 }
 
 bool JoinGame::Process(Controller& controller, const std::string& player) const 

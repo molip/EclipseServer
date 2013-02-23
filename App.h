@@ -19,5 +19,29 @@ extern bool _DebugBreak();
 #ifdef _DEBUG
 	#define ASSERT(f) (bool) ((f) || _DebugBreak())
 #else
-	#define ASSERT(f) (true)
+	#define ASSERT(f) (f)
 #endif
+
+extern void AssertThrow(const std::string& msg, bool b = false);
+extern void AssertThrowXML(const std::string& msg, bool b = false);
+
+class Exception : public std::runtime_error
+{
+public:
+	Exception(const std::string& msg) : std::runtime_error(msg) {}
+	virtual std::string GetType() const = 0;
+};
+
+class XMLException : public Exception
+{
+public:
+	XMLException(const std::string& msg) : Exception(msg) {}
+	virtual std::string GetType() const override { return "XML"; }
+};
+
+class GenericException : Exception
+{
+public:
+	GenericException(const std::string& msg) : Exception(msg) {}
+	virtual std::string GetType() const override { return "Generic"; }
+};
