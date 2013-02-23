@@ -33,13 +33,13 @@ MongooseServer::~MongooseServer()
 void MongooseServer::Register(int port, mg_connection* pConn)
 {
 	LOCK(m_mutex);
-	assert(m_mapPortToConn.insert(std::make_pair(port, pConn)).second);
+	ASSERT(m_mapPortToConn.insert(std::make_pair(port, pConn)).second);
 }
 
 void MongooseServer::Unregister(int port)
 {
 	LOCK(m_mutex);
-	assert(m_mapPortToConn.erase(port) == 1);
+	ASSERT(m_mapPortToConn.erase(port) == 1);
 }
 
 mg_connection* MongooseServer::FindConnection(int port) const
@@ -133,8 +133,8 @@ static void *callback(enum mg_event event, struct mg_connection *conn)
 		if (mg_read(conn, buf, 2) != 2) 
 			return "";
 		
-		assert(buf[0] == 0x81); // Text.
-		assert(buf[1] & 0x80);  // Encoded.
+		ASSERT(buf[0] == 0x81); // Text.
+		ASSERT(buf[1] & 0x80);  // Encoded.
 
 		int length = buf[1] & 0x7f; 
 		if (int nExtra = length == 0x7f ? 8 : length == 0x7e ? 2 : 0) // Real length is in following bytes.

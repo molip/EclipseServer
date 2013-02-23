@@ -56,7 +56,7 @@ bool JoinGame::Process(Controller& controller, const std::string& player) const
 	Model& model = controller.GetModel();
 	
 	Player* pPlayer = controller.FindPlayer(player);
-	if (!pPlayer)
+	if (!ASSERT(pPlayer))
 		return false;
 
 	if (pPlayer->GetCurrentGame())

@@ -21,7 +21,7 @@ void Controller::UpdateGameList(const std::string& player) const
 void Controller::OnMessage(const Input::MessagePtr& pMsg, const std::string& player)
 {
 	bool bOK = pMsg->Process(*this, player);
-	assert(bOK);
+	ASSERT(bOK);
 }
 
 bool Controller::SendMessage(const Output::Message& msg, const std::string& player) const

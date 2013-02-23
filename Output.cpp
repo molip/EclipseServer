@@ -7,7 +7,7 @@ namespace Output
 
 const std::string& Message::GetXML() const
 {
-	assert(!m_pPrinter);
+	ASSERT(!m_pPrinter);
 	//Create();
 	m_pPrinter.reset(new TiXmlPrinter);
 	m_doc.Accept(m_pPrinter.get());
