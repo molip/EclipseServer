@@ -39,7 +39,7 @@ public:
 	virtual std::string GetType() const override { return "XML"; }
 };
 
-class GenericException : Exception
+class GenericException : public Exception
 {
 public:
 	GenericException(const std::string& msg) : Exception(msg) {}
