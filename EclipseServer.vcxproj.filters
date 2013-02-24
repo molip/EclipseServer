@@ -176,5 +176,6 @@
   <ItemGroup>
     <Text Include="Architecture.txt" />
     <Text Include="todo.txt" />
+    <Text Include="journal.txt" />
   </ItemGroup>
 </Project>

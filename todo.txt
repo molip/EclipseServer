@@ -3,3 +3,15 @@ Update clients when server dies?
 Leave lobby / game
 Forward exception to client
 Replace attributes with content
+Stop players joining started games
+Replace bool returns with exceptions
+
+Ideas
+-----
+Use CSS to show/hide elements in XSLT
+Limit scope of Players collection
+	Game should know who's present 
+
+Bugs
+----
+Creating game doesn't show lobby details
