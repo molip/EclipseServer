@@ -4,3 +4,4 @@ Use port + IP for connection map
 Update clients when server dies?
 Leave lobby / game
 Forward exception to client
+Replace attributes with content

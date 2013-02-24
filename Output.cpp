@@ -48,10 +48,11 @@ UpdateGameList::UpdateGameList(const Model& model) : Update("game_list")
 		pGameNode->SetAttribute("owner", g->GetOwner());
 	
 		for (auto& i : g->GetPlayers())
-		{
-			auto pPlayerNode = AddElement("player", *pGameNode);
-			pPlayerNode->SetAttribute("name", i);
-		}
+			if (i != g->GetOwner())
+			{
+				auto pPlayerNode = AddElement("player", *pGameNode);
+				pPlayerNode->SetAttribute("name", i);
+			}
 	}
 }
 
@@ -60,10 +61,11 @@ UpdateLobby::UpdateLobby(const Game& game) : Update("lobby")
 	m_pRoot->SetAttribute("owner", game.GetOwner());
 	m_pRoot->SetAttribute("game", game.GetName());
 	for (auto& i : game.GetPlayers())
-	{
-		auto pPlayerNode = AddElement("player", *m_pRoot);
-		pPlayerNode->SetAttribute("name", i);
-	}
+		if (i != game.GetOwner())
+		{
+			auto pPlayerNode = AddElement("player", *m_pRoot);
+			pPlayerNode->SetAttribute("name", i);
+		}
 }
 
 UpdateGame::UpdateGame(const Game& game) : Update("game")

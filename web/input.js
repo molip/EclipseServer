@@ -1,3 +1,17 @@
+function SetDivFromXML(div, elem, xsl)
+{		
+	var xsl2 = '<?xml version="1.0"?><xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">'
+	xsl2 += xsl + '</xsl:stylesheet>'
+	
+	xslNode = parser.parseFromString(xsl2, "text/xml");
+  
+	xsltProcessor = new XSLTProcessor()
+	xsltProcessor.importStylesheet(xslNode)
+	var htmlNode = xsltProcessor.transformToFragment(elem, document)
+
+	div.innerHTML = ''
+	div.appendChild(htmlNode)
+}
 
 function OnCommand(elem)
 {
@@ -42,73 +56,44 @@ function OnCommandUpdate(elem)
 
 	if (param == "game_list")
 		OnCommandUpdateGameList(elem)
-	if (param == "lobby")
+	else if (param == "lobby")
 		OnCommandUpdateLobby(elem)
-	if (param == "game")
+	else if (param == "game")
 		OnCommandUpdateGame(elem)
 	else
         writeToScreen('OnCommandUpdate: unknown param: ' + param)
 }
 
 function OnCommandUpdateGameList(elem)
-{		
-	var html = ''
+{
+	var xsl = '\
+		<xsl:template match="/command">\
+			<xsl:for-each select="game">\
+				<a href="Join Game" onclick="SendJoinGame(\'{@name}\');return false;"><xsl:value-of select="@name"/></a> (\
+				<b> <xsl:value-of select="@owner"/></b>,\
+				<xsl:for-each select="player">\
+					<xsl:value-of select="@name"/>,\
+				</xsl:for-each>\
+				)<br/>\
+			</xsl:for-each>\
+			<br/><button type="button" onclick="SendCreateGame()">Create Game</button>\
+		</xsl:template>'
 
-	var f = '<a href="Join Game" onclick="SendJoinGame(\'{0}\');return false;">{0}</a>'
-
-	var game = elem.firstChild
-	while (game)
-	{
-		if (game.nodeName == "game")
-		{
-			var owner = game.getAttribute('owner')
-			html += f.format(game.getAttribute('name'))
-			html += ' Players: <b>' + owner + '</b>'
-
-			var player = game.firstChild
-			while (player)
-			{
-				if (player.nodeName == "player")
-				{
-					var name = player.getAttribute('name')
-					if (name != owner)
-						html += ', ' + name
-				}
-
-				player = player.nextSibling
-			}
-			html += '<br/>'
-		}
-		game = game.nextSibling
-	}
-	
-	html += '<br/><button type="button" onclick="SendCreateGame()">Create Game</button>'
-	
-	var elem = document.getElementById('game_list_content')
-	elem.innerHTML = html
+	SetDivFromXML(document.getElementById('game_list_content'), elem, xsl) 
 }
 
 function OnCommandUpdateLobby(elem)
 {		
-	var html = ''
-	var owner = elem.getAttribute('owner')
-	html += '<b>' + owner + '</b>'
+	var xsl = '\
+		<xsl:template match="/command">\
+			<h2><xsl:value-of select="@game"/></h2><br/>\
+			<b> <xsl:value-of select="@owner"/></b>,\
+			<xsl:for-each select="player">\
+				<xsl:value-of select="@name"/>,\
+			</xsl:for-each>\
+		</xsl:template>'
 
-	var player = elem.firstChild
-	while (player)
-	{
-		if (player.nodeName == "player")
-		{
-			var name = player.getAttribute('name')
-			if (name != owner)
-				html += ', ' + name
-		}
-
-		player = player.nextSibling
-	}
-
-	document.getElementById('lobby_game_name').innerHTML = elem.getAttribute('game')
-	document.getElementById('lobby_content').innerHTML = html
+	SetDivFromXML(document.getElementById('lobby_content'), elem, xsl) 
 }
 
 function OnCommandUpdateGame(elem)

@@ -90,6 +90,7 @@ bool CreateGame::Process(Controller& controller, const std::string& player) cons
 	std::ostringstream ss;
 	ss << "Game " <<  model.GetGames().size() + 1;
 	Game& game = model.AddGame(ss.str(), player);
+	game.AddPlayer(player); 
 
 	controller.UpdateGameList();
 	controller.SendMessage(Output::ShowLobby(), player);
