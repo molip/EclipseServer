@@ -11,6 +11,15 @@ function CreateCommandNode(doc, type)
 	return root
 }
 
+function AddTextElem(doc, parent, name, text)
+{
+	var elem = doc.createElement(name)
+	var textNode = doc.createTextNode(text)
+	elem.appendChild(textNode)
+	parent.appendChild(elem)
+	return elem
+}
+
 function SendXMLDoc(doc)
 {
 	var str = new XMLSerializer().serializeToString(doc)
@@ -36,6 +45,9 @@ function SendRegister()
 {
 	var doc = CreateXMLDoc()
 	var node = CreateCommandNode(doc, "register")
+	
 	node.setAttribute("player", playerName)
+	//AddTextElem(doc, node, "player", playerName)
+
 	SendXMLDoc(doc)
 }
