@@ -38,9 +38,16 @@ struct JoinGame: Message
 	std::string m_game;
 };
 
-class CreateGame : public Message 
+struct CreateGame : Message 
 {
 	virtual bool Process(Controller& controller, const std::string& player) const override; 
+};
+
+struct StartGame : Message 
+{
+	StartGame(const TiXmlElement& node);
+	virtual bool Process(Controller& controller, const std::string& player) const override; 
+	std::string m_game;
 };
 
 }

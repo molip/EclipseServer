@@ -24,6 +24,11 @@ Player* Players::FindPlayer(const std::string& name)
 	return nullptr;
 }
 
+const Player* Players::FindPlayer(const std::string& name) const
+{
+	return const_cast<Players*>(this)->FindPlayer(name);
+}
+
 bool Players::DeletePlayer(const std::string& name)
 {
 	return m_map.erase(name) == 1;

@@ -29,6 +29,16 @@ bool Controller::SendMessage(const Output::Message& msg, const std::string& play
 	return m_pServer->SendMessage(msg, player);
 }
 
+bool Controller::SendMessage(const Output::Message& msg, const Game& game) const
+{
+	std::string str = msg.GetXML();
+	for (auto& player : game.GetPlayers())
+		if (const Player* pPlayer = FindPlayer(player))
+			if (pPlayer->GetCurrentGame() == &game)
+				m_pServer->SendMessage(str, player);
+	return true;
+}
+
 void Controller::OnPlayerConnected(const std::string& player)
 {
 	m_players.AddPlayer(player);

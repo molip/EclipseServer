@@ -29,6 +29,7 @@ class Players
 public:
 	bool AddPlayer(const std::string& name);
 	Player* FindPlayer(const std::string& name);
+	const Player* FindPlayer(const std::string& name) const;
 	bool DeletePlayer(const std::string& name);
 
 private:

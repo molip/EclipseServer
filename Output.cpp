@@ -46,6 +46,7 @@ UpdateGameList::UpdateGameList(const Model& model) : Update("game_list")
 		auto pGameNode = AddElement("game", *m_pRoot);
 		pGameNode->SetAttribute("name", g->GetName());
 		pGameNode->SetAttribute("owner", g->GetOwner());
+		pGameNode->SetAttribute("started", g->HasStarted());
 	
 		for (auto& i : g->GetPlayers())
 			if (i != g->GetOwner())
@@ -70,6 +71,14 @@ UpdateLobby::UpdateLobby(const Game& game) : Update("lobby")
 
 UpdateGame::UpdateGame(const Game& game) : Update("game")
 {
+	m_pRoot->SetAttribute("owner", game.GetOwner());
+	m_pRoot->SetAttribute("game", game.GetName());
+	for (auto& i : game.GetPlayers())
+		if (i != game.GetOwner())
+		{
+			auto pPlayerNode = AddElement("player", *m_pRoot);
+			pPlayerNode->SetAttribute("name", i);
+		}
 }
 
 ShowGameList::ShowGameList() : Show("game_list_panel") {}

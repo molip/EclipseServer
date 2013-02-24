@@ -41,6 +41,14 @@ function SendCreateGame()
 	SendXMLDoc(doc)
 }
 
+function SendStartGame(game)
+{
+	var doc = CreateXMLDoc()
+	var node = CreateCommandNode(doc, "start_game")
+	node.setAttribute("game", game)
+	SendXMLDoc(doc)
+}
+
 function SendRegister()
 {
 	var doc = CreateXMLDoc()

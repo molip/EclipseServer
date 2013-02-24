@@ -13,6 +13,11 @@ function SetDivFromXML(div, elem, xsl)
 	div.appendChild(htmlNode)
 }
 
+function SetDivFromCommandElem(div, elem, xsl)
+{		
+	SetDivFromXML(div, elem, '<xsl:template match="/command">' + xsl + '</xsl:template>')
+}
+
 function OnCommand(elem)
 {
 	var type = elem.getAttribute('type')
@@ -67,35 +72,49 @@ function OnCommandUpdate(elem)
 function OnCommandUpdateGameList(elem)
 {
 	var xsl = '\
-		<xsl:template match="/command">\
-			<xsl:for-each select="game">\
-				<a href="Join Game" onclick="SendJoinGame(\'{@name}\');return false;"><xsl:value-of select="@name"/></a> (\
-				<b> <xsl:value-of select="@owner"/></b>,\
-				<xsl:for-each select="player">\
-					<xsl:value-of select="@name"/>,\
-				</xsl:for-each>\
-				)<br/>\
+		<xsl:for-each select="game">\
+			<a href="Join Game" onclick="SendJoinGame(\'{@name}\');return false;"><xsl:value-of select="@name"/></a>\
+			<xsl:if test="@started=1">\
+			[started]\
+			</xsl:if>\
+			(\
+			<b> <xsl:value-of select="@owner"/></b>,\
+			<xsl:for-each select="player">\
+				<xsl:value-of select="@name"/>,\
 			</xsl:for-each>\
-			<br/><button type="button" onclick="SendCreateGame()">Create Game</button>\
-		</xsl:template>'
-
-	SetDivFromXML(document.getElementById('game_list_content'), elem, xsl) 
+			)<br/>\
+		</xsl:for-each>\
+		<br/><button type="button" onclick="SendCreateGame()">Create Game</button>\
+	'
+	SetDivFromCommandElem(document.getElementById('game_list_content'), elem, xsl) 
 }
 
 function OnCommandUpdateLobby(elem)
 {		
 	var xsl = '\
-		<xsl:template match="/command">\
-			<h2><xsl:value-of select="@game"/></h2><br/>\
-			<b> <xsl:value-of select="@owner"/></b>,\
-			<xsl:for-each select="player">\
-				<xsl:value-of select="@name"/>,\
-			</xsl:for-each>\
-		</xsl:template>'
-
-	SetDivFromXML(document.getElementById('lobby_content'), elem, xsl) 
+		<h2><xsl:value-of select="@game"/></h2><br/>\
+		<b> <xsl:value-of select="@owner"/></b>,\
+		<xsl:for-each select="player">\
+			<xsl:value-of select="@name"/>,\
+		</xsl:for-each>\
+	'
+	SetDivFromCommandElem(document.getElementById('lobby_content'), elem, xsl) 
+	
+	if (elem.getAttribute('owner') == playerName)
+	{
+		xsl = '<br/><br/><button type="button" onclick="SendStartGame(\'{@game}\')">Start Game</button>'
+		SetDivFromCommandElem(document.getElementById('lobby_owner_controls'), elem, xsl) 
+	}
 }
 
 function OnCommandUpdateGame(elem)
 {		
+	var xsl = '\
+		<h2><xsl:value-of select="@game"/></h2><br/>\
+		<b> <xsl:value-of select="@owner"/></b>,\
+		<xsl:for-each select="player">\
+			<xsl:value-of select="@name"/>,\
+		</xsl:for-each>\
+	'
+	SetDivFromCommandElem(document.getElementById('game_content'), elem, xsl) 
 }
