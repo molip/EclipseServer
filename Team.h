@@ -7,6 +7,7 @@
 #include <memory>
 
 enum class Resource { Money, Science, Materials, _Count };
+enum class Race { Eridani, Hydran, Planta, Descendants, Mechanema, Orion };
 
 class Resources : private std::vector<int>
 {
@@ -32,10 +33,17 @@ class Storage : public Resources
 class Team
 {
 public:
-	Team();
+
+	Team(const std::string player, Race race);
 	~Team();
 
+	const std::string& GetPlayer() const { return m_player; }
+	Race GetRace() const { return m_race; }
+
 private:
+	std::string m_player;
+	Race m_race;
+
 	Population m_population;
 	Storage m_storage;
 	TechTrack m_tech;
