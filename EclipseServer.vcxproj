@@ -86,7 +86,6 @@
     <ClInclude Include="mongoose.h" />
     <ClInclude Include="MongooseServer.h" />
     <ClInclude Include="Output.h" />
-    <ClInclude Include="Player.h" />
     <ClInclude Include="HTMLServer.h" />
     <ClInclude Include="Singleton.h" />
     <ClInclude Include="stdafx.h" />
@@ -113,7 +112,6 @@
     <ClCompile Include="MongooseServer.cpp" />
     <ClCompile Include="mongoose.c" />
     <ClCompile Include="Output.cpp" />
-    <ClCompile Include="Player.cpp" />
     <ClCompile Include="HTMLServer.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

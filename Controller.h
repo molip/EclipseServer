@@ -2,13 +2,13 @@
 
 #include "Singleton.h"
 #include "Input.h"
-#include "Player.h"
 
 #include <string>
 #include <vector>
 
 class Model;
 class WSServer;
+class Game;
 
 namespace Output { class Message; }
 
@@ -27,13 +27,20 @@ public:
 
 	Model& GetModel() { return m_model; }
 	
-	void UpdateGameList(const std::string& player = "") const;
+	void SendUpdateGameList(const std::string& player = "") const;
 
-	Player* FindPlayer(const std::string& name) { return m_players.FindPlayer(name); }
-	const Player* FindPlayer(const std::string& name) const { return m_players.FindPlayer(name); }
+	//Player* FindPlayer(const std::string& name) { return m_players.FindPlayer(name); }
+	//const Player* FindPlayer(const std::string& name) const { return m_players.FindPlayer(name); }
+
+	const Game* GetPlayerGame(const std::string& player) const;
+	void SetPlayerGame(const std::string& player, const Game* pGame);
 
 private:
+	void UnregisterPlayerFromGame(const std::string& player, const Game* pGame);
+
+	std::map<std::string, const Game*>		m_players;
+	std::map<const Game*, std::set<std::string>>	m_games;
+
 	Model& m_model;
 	WSServer* m_pServer;
-	Players m_players;
 };

@@ -30,9 +30,6 @@
     <ClInclude Include="targetver.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="Player.h">
-      <Filter>Model</Filter>
-    </ClInclude>
     <ClInclude Include="Game.h">
       <Filter>Model</Filter>
     </ClInclude>
@@ -97,9 +94,6 @@
     </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Player.cpp">
-      <Filter>Model</Filter>
     </ClCompile>
     <ClCompile Include="Game.cpp">
       <Filter>Model</Filter>

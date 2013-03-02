@@ -2,11 +2,11 @@
 
 #include "Map.h"
 #include "Team.h"
-#include "Player.h"
 
 #include <memory>
 #include <set>
 #include <map>
+#include <string>
 
 class Game
 {

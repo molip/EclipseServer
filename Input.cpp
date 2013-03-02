@@ -58,14 +58,7 @@ namespace
 	// Should be a command?
 	void DoJoinGame(Controller& controller, const std::string& player, Game& game)
 	{
-		Player* pPlayer = controller.FindPlayer(player);
-		AssertThrow("JoinGame: player not registered: " + player, !!pPlayer);
-		AssertThrow("JoinGame: player already in game: " + player, !pPlayer->GetCurrentGame());
-
-		game.AddPlayer(player); // Might already have joined.
-		pPlayer->SetCurrentGame(&game);
-
-		controller.UpdateGameList();
+		controller.SetPlayerGame(player,  &game);
 
 		if (game.HasStarted())
 		{
@@ -74,9 +67,11 @@ namespace
 		}
 		else
 		{
+			game.AddPlayer(player); // Might already have joined,  doesn't matter.
 			controller.SendMessage(Output::ShowLobby(), player);
 			controller.SendMessage(Output::UpdateLobby(game), game);
 		}
+		controller.SendUpdateGameList();
 	}
 }
 
@@ -113,17 +108,17 @@ bool StartGame::Process(Controller& controller, const std::string& player) const
 {
 	Model& model = controller.GetModel();
 	
-	Player* pPlayer = controller.FindPlayer(player);
-	AssertThrow("StartGame: player not registered: " + player, !!pPlayer);
-
+	const Game* pPlayerGame = controller.GetPlayerGame(player);
 	Game* pGame = model.FindGame(m_game);
-	AssertThrow("StartGame: game does not exist: " + m_game, !!pGame);
-	AssertThrow("StartGame: player's current game doesn't match starting game: " + player + " " + m_game, pGame == pPlayer->GetCurrentGame());
+
+	AssertThrow("StartGame: game not found: " + m_game, !!pGame);
+	AssertThrow("StartGame: player isn't the game owner: " + m_game, player == pGame->GetOwner());
+	AssertThrow("StartGame: player not registered in game: " + m_game, pPlayerGame == pGame);
 	AssertThrow("StartGame: game already started: " + m_game, !pGame->HasStarted());
 	
 	pGame->Start();
 
-	controller.UpdateGameList();
+	controller.SendUpdateGameList();
 	controller.SendMessage(Output::ShowGame(), *pGame);
 	controller.SendMessage(Output::UpdateGame(*pGame), *pGame);
 
