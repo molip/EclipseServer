@@ -83,7 +83,7 @@ namespace
 bool JoinGame::Process(Controller& controller, const std::string& player) const 
 {
 	Game* pGame = controller.GetModel().FindGame(m_game);
-	AssertThrow("StartGame: game does not exist: " + m_game, !!pGame);
+	AssertThrow("JoinGame: game does not exist: " + m_game, !!pGame);
 
 	DoJoinGame(controller, player, *pGame);
 	return true;
@@ -119,7 +119,8 @@ bool StartGame::Process(Controller& controller, const std::string& player) const
 	Game* pGame = model.FindGame(m_game);
 	AssertThrow("StartGame: game does not exist: " + m_game, !!pGame);
 	AssertThrow("StartGame: player's current game doesn't match starting game: " + player + " " + m_game, pGame == pPlayer->GetCurrentGame());
-
+	AssertThrow("StartGame: game already started: " + m_game, !pGame->HasStarted());
+	
 	pGame->Start();
 
 	controller.UpdateGameList();
