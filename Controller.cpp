@@ -44,7 +44,7 @@ bool Controller::SendMessage(const Output::Message& msg, const Game& game) const
 void Controller::OnPlayerConnected(const std::string& player)
 {
 	bool bOK = m_players.insert(std::make_pair(player, nullptr)).second;
-	AssertThrow("Player already connected: " + player, bOK);
+	AssertThrow("Player already connected", bOK);
 
 	m_pServer->SendMessage(Output::ShowGameList(), player);
 	SendUpdateGameList(player);
@@ -53,7 +53,7 @@ void Controller::OnPlayerConnected(const std::string& player)
 void Controller::OnPlayerDisconnected(const std::string& player)
 {
 	auto i = m_players.find(player);
-	AssertThrow("Disconnecting player wasn't connected: " + player, i != m_players.end());
+	AssertThrow("Disconnecting player wasn't connected", i != m_players.end());
 
 	if (const Game* pGame = i->second)
 		UnregisterPlayerFromGame(player, pGame);
@@ -64,11 +64,11 @@ void Controller::OnPlayerDisconnected(const std::string& player)
 void Controller::UnregisterPlayerFromGame(const std::string& player, const Game* pGame)
 {
 	auto j = m_games.find(pGame);
-	AssertThrow("Unregistering player from game: game not found: " + player, j != m_games.end());
+	AssertThrow("Unregistering player from game: game not found: " + pGame->GetName(), j != m_games.end());
 
 	auto& players = j->second;
 	bool bOK = players.erase(player) == 1;
-	AssertThrow("Unregistering player from game: player not found in game: " + player, bOK);
+	AssertThrow("Unregistering player from game: player not found in game: " +  pGame->GetName(), bOK);
 
 	if (players.empty())
 		m_games.erase(j); // Doesn't matter.
@@ -79,14 +79,14 @@ void Controller::UnregisterPlayerFromGame(const std::string& player, const Game*
 const Game* Controller::GetPlayerGame(const std::string& player) const
 {
 	auto i = m_players.find(player);
-	AssertThrow("Controller::GetPlayerGame: Player not found: " + player, i != m_players.end());
+	AssertThrow("Controller::GetPlayerGame: Player not found", i != m_players.end());
 	return i->second;
 }
 
 void Controller::SetPlayerGame(const std::string& player, const Game* pGame) 
 {
 	auto i = m_players.find(player);
-	AssertThrow("SetPlayerGame: Player not found: " + player, i != m_players.end());
+	AssertThrow("SetPlayerGame: Player not found", i != m_players.end());
 
 	if (const Game* pOldGame = i->second)
 		UnregisterPlayerFromGame(player, pOldGame);
@@ -97,6 +97,6 @@ void Controller::SetPlayerGame(const std::string& player, const Game* pGame)
 	{
 		auto& players = m_games[pGame];
 		bool bOK = players.insert(player).second;
-		AssertThrow("SetPlayerGame: Player already registered in game: " + player, bOK);
+		AssertThrow("SetPlayerGame: Player already registered in game: " + pGame->GetName(), bOK);
 	}
 }

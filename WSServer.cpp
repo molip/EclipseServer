@@ -107,7 +107,14 @@ void WSServer::ReportError(const std::string& type, const std::string& msg, int 
 	std::ostringstream ss;
 	ss << "Exception : " << type << " : " << msg;
 	if (port)
-		ss << "[" << port << "]";
-	
+	{
+		ss << " [" << port;
+
+		auto i = m_mapPortToPlayer.find(port);
+		if (i != m_mapPortToPlayer.end())
+			ss << " " << i->second;
+
+		ss << "]";
+	}
 	std::cerr << ss.str() << std::endl;
 }
