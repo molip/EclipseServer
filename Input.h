@@ -45,9 +45,7 @@ struct CreateGame : Message
 
 struct StartGame : Message 
 {
-	StartGame(const TiXmlElement& node);
 	virtual bool Process(Controller& controller, const std::string& player) const override; 
-	std::string m_game;
 };
 
 struct ChooseTeam : Message 

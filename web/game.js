@@ -20,6 +20,11 @@ function writeToScreen(message)
 	//document.getElementById("output").innerHTML += '<br/>'
 }
 
+function IsTrue(str)
+{
+	return str == '1' || str == 'true';
+}
+
 function OnMessage(msg)
 {
 	writeToScreen(msg.data)

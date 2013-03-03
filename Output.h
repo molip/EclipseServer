@@ -54,6 +54,7 @@ struct Action : Command
 
 struct UpdateGameList : Update { UpdateGameList(const Model& model); };
 struct UpdateLobby : Update { UpdateLobby(const Game& game); };
+struct UpdateLobbyControls : Update { UpdateLobbyControls(bool bShow); };
 struct UpdateChoose : Update { UpdateChoose(const Game& game); };
 struct UpdateGame : Update { UpdateGame(const Game& game); };
 

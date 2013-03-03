@@ -107,6 +107,11 @@ UpdateLobby::UpdateLobby(const Game& game) : Update("lobby")
 		}
 }
 
+UpdateLobbyControls::UpdateLobbyControls(bool bShow) : Update("lobby_controls")
+{
+	m_pRoot->SetAttribute("show", bShow);
+}
+
 UpdateChoose::UpdateChoose(const Game& game) : Update("choose_team")
 {
 	m_pRoot->SetAttribute("game", game.GetName());

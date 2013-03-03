@@ -77,6 +77,8 @@ function OnCommandUpdate(elem)
 		OnCommandUpdateGameList(elem)
 	else if (param == "lobby")
 		OnCommandUpdateLobby(elem)
+	else if (param == "lobby_controls")
+		OnCommandUpdateLobbyControls(elem)
 	else if (param == "choose_team")
 		OnCommandUpdateChooseTeam(elem)
 	else if (param == "game")
@@ -88,7 +90,7 @@ function OnCommandUpdate(elem)
 function OnCommandAction(elem)
 {
 	var param = elem.getAttribute('param')
-	var active = elem.getAttribute('active') == '1'
+	var active = IsTrue(elem.getAttribute('active'))
 
 	if (param == "choose_team")
 		OnCommandActionChooseTeam(elem, active)
@@ -126,12 +128,12 @@ function OnCommandUpdateLobby(elem)
 		</xsl:for-each>\
 	'
 	SetDivFromCommandElem(document.getElementById('lobby_content'), elem, xsl) 
-	
-	if (elem.getAttribute('owner') == playerName)
-	{
-		xsl = '<br/><br/><button type="button" onclick="SendStartGame(\'{@game}\')">Start Game</button>'
-		SetDivFromCommandElem(document.getElementById('lobby_owner_controls'), elem, xsl) 
-	}
+}
+function OnCommandUpdateLobbyControls(elem)
+{	
+	var show = IsTrue(elem.getAttribute('show'))
+	var html = show ? '<br/><br/><button type="button" onclick="SendStartGame()">Start Game</button>' : ''
+	document.getElementById('lobby_owner_controls').innerHTML = html
 }
 
 function OnCommandUpdateChooseTeam(elem)

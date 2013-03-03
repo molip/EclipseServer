@@ -43,7 +43,7 @@ MessagePtr CreateCommand(const std::string& type, const TiXmlElement& root)
 	if (type == "create_game")
 		return MessagePtr(new CreateGame);
 	if (type == "start_game")
-		return MessagePtr(new StartGame(root));
+		return MessagePtr(new StartGame);
 	if (type == "choose_team")
 		return MessagePtr(new ChooseTeam(root));
 
@@ -98,6 +98,7 @@ namespace
 			game.AddTeam(player); // Might already have joined,  doesn't matter.
 			controller.SendMessage(Output::ShowLobby(), player);
 			controller.SendMessage(Output::UpdateLobby(game), game);
+			controller.SendMessage(Output::UpdateLobbyControls(player == game.GetOwner()), player);
 		}
 		controller.SendUpdateGameList();
 	}
@@ -125,24 +126,15 @@ bool CreateGame::Process(Controller& controller, const std::string& player) cons
 	return true;	
 }
 
-StartGame::StartGame(const TiXmlElement& node)
-{
-	auto p = node.Attribute("game");
-	AssertThrowXML("StartGame", !!p);
-	m_game = p;
-}
-
 bool StartGame::Process(Controller& controller, const std::string& player) const 
 {
 	Model& model = controller.GetModel();
 	
-	const Game* pPlayerGame = controller.GetPlayerGame(player);
-	Game* pGame = model.FindGame(m_game);
+	Game* pGame = controller.GetPlayerGame(player);
 
-	AssertThrow("StartGame: game not found: " + m_game, !!pGame);
-	AssertThrow("StartGame: player isn't the game owner: " + m_game, player == pGame->GetOwner());
-	AssertThrow("StartGame: player not registered in game: " + m_game, pPlayerGame == pGame);
-	AssertThrow("StartGame: game already started: " + m_game, !pGame->HasStarted());
+	AssertThrow("StartGame: player not registered in any game", !!pGame);
+	AssertThrow("StartGame: player isn't the owner of game: " + pGame->GetName(), player == pGame->GetOwner());
+	AssertThrow("StartGame: game already started: " + pGame->GetName(), !pGame->HasStarted());
 	
 	pGame->Start();
 
