@@ -15,8 +15,9 @@ public:
 	virtual void OnMessage(int port, const std::string& message) override;
 	virtual void OnDisconnect(int port) override;
 
-	bool SendMessage(const Output::Message& msg, const std::string& player = "") const;
-	bool SendMessage(const std::string& msg, const std::string& player = "") const;
+	bool SendMessage(const Output::Message& msg, const std::string& player) const;
+	bool SendMessage(const std::string& msg, const std::string& player) const;
+	void BroadcastMessage(const Output::Message& msg) const;
 	void BroadcastMessage(const std::string& msg) const;
 
 private:

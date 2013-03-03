@@ -50,4 +50,11 @@ struct StartGame : Message
 	std::string m_game;
 };
 
+struct ChooseTeam : Message 
+{
+	ChooseTeam(const TiXmlElement& node);
+	virtual bool Process(Controller& controller, const std::string& player) const override; 
+	std::string m_race, m_colour;
+};
+
 }

@@ -22,17 +22,19 @@ public:
 	void OnPlayerConnected(const std::string& player);
 	void OnPlayerDisconnected(const std::string& player);
 
-	bool SendMessage(const Output::Message& msg, const std::string& player = "") const;
-	bool SendMessage(const Output::Message& msg, const Game& game) const;
+	bool SendMessage(const Output::Message& msg, const std::string& player) const;
+	bool SendMessage(const Output::Message& msg, const Game& game, const std::string& player = "") const;
 
 	Model& GetModel() { return m_model; }
 	
 	void SendUpdateGameList(const std::string& player = "") const;
+	void SendUpdateGame(const Game& game, const std::string& player = "") const;
 
 	//Player* FindPlayer(const std::string& name) { return m_players.FindPlayer(name); }
 	//const Player* FindPlayer(const std::string& name) const { return m_players.FindPlayer(name); }
 
 	const Game* GetPlayerGame(const std::string& player) const;
+	Game* GetPlayerGame(const std::string& player);
 	void SetPlayerGame(const std::string& player, const Game* pGame);
 
 private:

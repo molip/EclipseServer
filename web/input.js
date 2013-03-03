@@ -1,5 +1,15 @@
+function ClearDiv(div)
+{
+	while (div.firstChild) 
+		div.removeChild(div.firstChild);
+}
+
 function SetDivFromXML(div, elem, xsl)
 {		
+	ClearDiv(div);
+	if (xsl == '')
+		return;
+
 	var xsl2 = '<?xml version="1.0"?><xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">'
 	xsl2 += xsl + '</xsl:stylesheet>'
 	
@@ -9,13 +19,15 @@ function SetDivFromXML(div, elem, xsl)
 	xsltProcessor.importStylesheet(xslNode)
 	var htmlNode = xsltProcessor.transformToFragment(elem, document)
 
-	div.innerHTML = ''
 	div.appendChild(htmlNode)
 }
 
 function SetDivFromCommandElem(div, elem, xsl)
 {		
-	SetDivFromXML(div, elem, '<xsl:template match="/command">' + xsl + '</xsl:template>')
+	if (xsl == '')
+		ClearDiv(div);
+	else
+		SetDivFromXML(div, elem, '<xsl:template match="/command">' + xsl + '</xsl:template>')
 }
 
 function OnCommand(elem)
@@ -26,6 +38,8 @@ function OnCommand(elem)
 		OnCommandShow(elem)
 	else if (type == 'update')
 		OnCommandUpdate(elem)
+	else if (type == 'action')
+		OnCommandAction(elem)
 	else
 		writeToScreen('OnCommand: unknown command: ' + type)
 }
@@ -34,7 +48,7 @@ function OnCommandShow(elem)
 {
 	var panel = elem.getAttribute('panel')
 
-	var panels =['game_list_panel', 'lobby_panel', 'game_panel']
+	var panels =['game_list_panel', 'lobby_panel', 'choose_panel', 'game_panel']
     var found = false
     for (var i = 0; i < panels.length; ++i)
 	{
@@ -63,10 +77,23 @@ function OnCommandUpdate(elem)
 		OnCommandUpdateGameList(elem)
 	else if (param == "lobby")
 		OnCommandUpdateLobby(elem)
+	else if (param == "choose_team")
+		OnCommandUpdateChooseTeam(elem)
 	else if (param == "game")
 		OnCommandUpdateGame(elem)
 	else
         writeToScreen('OnCommandUpdate: unknown param: ' + param)
+}
+
+function OnCommandAction(elem)
+{
+	var param = elem.getAttribute('param')
+	var active = elem.getAttribute('active') == '1'
+
+	if (param == "choose_team")
+		OnCommandActionChooseTeam(elem, active)
+	else
+        writeToScreen('OnCommandAction: unknown param: ' + param)
 }
 
 function OnCommandUpdateGameList(elem)
@@ -107,6 +134,20 @@ function OnCommandUpdateLobby(elem)
 	}
 }
 
+function OnCommandUpdateChooseTeam(elem)
+{		
+	var xsl = '\
+		<h2><xsl:value-of select="@game"/></h2><br/>\
+		<xsl:for-each select="team">\
+			<xsl:value-of select="@name"/>:\
+			<xsl:value-of select="@race"/>:\
+			<xsl:value-of select="@colour"/>\
+			<br/>\
+		</xsl:for-each>\
+	'
+	SetDivFromCommandElem(document.getElementById('choose_content'), elem, xsl) 
+}
+
 function OnCommandUpdateGame(elem)
 {		
 	var xsl = '\
@@ -117,4 +158,29 @@ function OnCommandUpdateGame(elem)
 		</xsl:for-each>\
 	'
 	SetDivFromCommandElem(document.getElementById('game_content'), elem, xsl) 
+}
+
+function OnCommandActionChooseTeam(elem, active)
+{		
+	var div = document.getElementById('choose_action')
+	var xsl = ''
+	if (active)
+	{
+		xsl = '\
+			<div>\
+			Race: <select id="select_race">\
+			<xsl:for-each select="races/race">\
+				<option value="{@name}"><xsl:value-of select="@name"/></option>\
+			</xsl:for-each>\
+			</select>\
+			Colour: <select id="select_colour">\
+			<xsl:for-each select="colours/colour">\
+				<option value="{@name}"><xsl:value-of select="@name"/></option>\
+			</xsl:for-each>\
+			</select>\
+			<button type="button" onclick="SendChooseTeam()">OK</button>\
+			</div>\
+		'
+	}
+	SetDivFromCommandElem(div, elem, xsl) 
 }

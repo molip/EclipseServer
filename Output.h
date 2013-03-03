@@ -47,12 +47,21 @@ struct Update : Command
 	Update(const std::string& param);
 };
 
+struct Action : Command
+{
+	Action(const std::string& param, bool bActive = true);
+};
+
 struct UpdateGameList : Update { UpdateGameList(const Model& model); };
 struct UpdateLobby : Update { UpdateLobby(const Game& game); };
+struct UpdateChoose : Update { UpdateChoose(const Game& game); };
 struct UpdateGame : Update { UpdateGame(const Game& game); };
+
+struct ActionChoose : Action { ActionChoose(const Game& game, bool bActive); };
 
 struct ShowGameList : Show { ShowGameList(); };
 struct ShowLobby : Show { ShowLobby(); };
+struct ShowChoose : Show { ShowChoose(); };
 struct ShowGame : Show { ShowGame(); };
 
 }

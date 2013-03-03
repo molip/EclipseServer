@@ -49,6 +49,21 @@ function SendStartGame(game)
 	SendXMLDoc(doc)
 }
 
+function SendChooseTeam()
+{
+	var select_race = document.getElementById('select_race')
+	var select_colour = document.getElementById('select_colour')
+	
+	var race = select_race.options[select_race.selectedIndex].value
+	var colour = select_colour.options[select_colour.selectedIndex].value
+	
+	var doc = CreateXMLDoc()
+	var node = CreateCommandNode(doc, "choose_team")
+	node.setAttribute("race", race)
+	node.setAttribute("colour", colour)
+	SendXMLDoc(doc)
+}
+
 function SendRegister()
 {
 	var doc = CreateXMLDoc()

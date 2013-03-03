@@ -5,6 +5,8 @@
 
 int main(void) 
 {
+	::srand(unsigned(::time(nullptr)));
+	
 	Model model;
 	Controller controller(model);
 	WSServer serverWS(controller);

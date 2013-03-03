@@ -81,18 +81,21 @@ bool WSServer::SendMessage(const Output::Message& msg, const std::string& player
 	return SendMessage(msg.GetXML(), player);
 }
 
+void WSServer::BroadcastMessage(const Output::Message& msg) const
+{
+	return BroadcastMessage(msg.GetXML());
+}
+
 bool WSServer::SendMessage(const std::string& msg, const std::string& player) const
 {
-	if (player.empty())
-		BroadcastMessage(msg);
-	else
-	{
-		auto i = m_mapPlayerToPort.find(player);
-		if (i == m_mapPlayerToPort.end())
-			return false;
+	AssertThrow("WSServer::SendMessage: No player specified", !player.empty());
 
-		__super::SendMessage(i->second, msg);
-	}
+	auto i = m_mapPlayerToPort.find(player);
+	if (i == m_mapPlayerToPort.end())
+		return false;
+
+	__super::SendMessage(i->second, msg);
+
 	return true;
 }
 

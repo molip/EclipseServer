@@ -8,6 +8,32 @@
 
 namespace Input 
 {
+
+Race GetRaceFromName(const std::string& race)
+{
+	if (race == "eridani") return Race::Eridani;
+	if (race == "hydran") return Race::Hydran;
+	if (race == "planta") return Race::Planta;
+	if (race == "descendants") return Race::Descendants;
+	if (race == "mechanema") return Race::Mechanema;
+	if (race == "orion") return Race::Orion;
+	if (race == "human") return Race::Human;
+
+	return Race::_Count;
+}
+
+Colour GetColourFromName(const std::string& colour)
+{
+	if (colour == "black") return Colour::Black;
+	if (colour == "blue") return Colour::Blue;
+	if (colour == "green") return Colour::Green;
+	if (colour == "red") return Colour::Red;
+	if (colour == "white") return Colour::White;
+	if (colour == "yellow") return Colour::Yellow;
+
+	return Colour::_Count;
+}
+
 MessagePtr CreateCommand(const std::string& type, const TiXmlElement& root)
 {
 	if (type == "register")
@@ -18,6 +44,8 @@ MessagePtr CreateCommand(const std::string& type, const TiXmlElement& root)
 		return MessagePtr(new CreateGame);
 	if (type == "start_game")
 		return MessagePtr(new StartGame(root));
+	if (type == "choose_team")
+		return MessagePtr(new ChooseTeam(root));
 
 	AssertThrow("Input command not recognised: " + type);
 	return nullptr;
@@ -62,12 +90,12 @@ namespace
 
 		if (game.HasStarted())
 		{
-			controller.SendMessage(Output::ShowGame(), player);
-			controller.SendMessage(Output::UpdateGame(game), game);
+			controller.SendUpdateGame(game, player);
+			// TODO: Notify other players.
 		}
 		else
 		{
-			game.AddPlayer(player); // Might already have joined,  doesn't matter.
+			game.AddTeam(player); // Might already have joined,  doesn't matter.
 			controller.SendMessage(Output::ShowLobby(), player);
 			controller.SendMessage(Output::UpdateLobby(game), game);
 		}
@@ -119,8 +147,34 @@ bool StartGame::Process(Controller& controller, const std::string& player) const
 	pGame->Start();
 
 	controller.SendUpdateGameList();
-	controller.SendMessage(Output::ShowGame(), *pGame);
-	controller.SendMessage(Output::UpdateGame(*pGame), *pGame);
+	controller.SendUpdateGame(*pGame);
+
+	return true;	
+}
+
+ChooseTeam::ChooseTeam(const TiXmlElement& node)
+{
+	m_race = node.Attribute("race");
+	m_colour = node.Attribute("colour");
+}
+
+bool ChooseTeam::Process(Controller& controller, const std::string& player) const 
+{
+	Game* pGame = controller.GetPlayerGame(player);
+	AssertThrow("ChooseTeam: player not registered in any game", !!pGame);
+	AssertThrow("ChooseTeam: player played out of turn", player == pGame->GetCurrentTeamName());
+	AssertThrow("ChooseTeam: game not in choose phase: " + pGame->GetName(), pGame->GetPhase() == Game::Phase::ChooseTeam);
+
+	Race race = GetRaceFromName(m_race);
+	Colour colour = GetColourFromName(m_colour);
+
+	AssertThrowXML("ChooseTeam:race", race != Race::_Count);
+	AssertThrowXML("ChooseTeam:colour", colour != Colour::_Count);
+
+	pGame->AssignTeam(player, race, colour);
+
+	controller.SendMessage(Output::ActionChoose(*pGame, false), player);
+	controller.SendUpdateGame(*pGame);
 
 	return true;	
 }

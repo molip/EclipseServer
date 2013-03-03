@@ -15,7 +15,11 @@ Controller::Controller(Model& model) : m_model(model)
 
 void Controller::SendUpdateGameList(const std::string& player) const
 {
-	m_pServer->SendMessage(Output::UpdateGameList(m_model), player);
+	Output::UpdateGameList msg(m_model);
+	if (player.empty())
+		m_pServer->BroadcastMessage(msg);
+	else
+		m_pServer->SendMessage(msg, player);
 }
 
 void Controller::OnMessage(const Input::MessagePtr& pMsg, const std::string& player)
@@ -29,14 +33,20 @@ bool Controller::SendMessage(const Output::Message& msg, const std::string& play
 	return m_pServer->SendMessage(msg, player);
 }
 
-bool Controller::SendMessage(const Output::Message& msg, const Game& game) const
+bool Controller::SendMessage(const Output::Message& msg, const Game& game, const std::string& player) const
 {
-	auto i = m_games.find(&game);
-	if (i != m_games.end())
+	std::string str = msg.GetXML();
+	if (player.empty())
 	{
-		std::string str = msg.GetXML();
-		for (auto& player : i->second)
-			m_pServer->SendMessage(str, player);
+		auto i = m_games.find(&game);
+		AssertThrow("Controller::SendMessage: Game not found", i != m_games.end());
+		for (auto& player2 : i->second)
+			m_pServer->SendMessage(str, player2);
+	}
+	else
+	{
+		AssertThrow("Controller::SendMessage: Player not in game: " + player, &game == GetPlayerGame(player));
+		m_pServer->SendMessage(str, player);
 	}
 	return true;
 }
@@ -76,11 +86,16 @@ void Controller::UnregisterPlayerFromGame(const std::string& player, const Game*
 	// TODO: Notify other players in current game. 
 }
 
-const Game* Controller::GetPlayerGame(const std::string& player) const
+const Game* Controller::GetPlayerGame(const std::string& player) const 
 {
 	auto i = m_players.find(player);
 	AssertThrow("Controller::GetPlayerGame: Player not found", i != m_players.end());
 	return i->second;
+}
+
+Game* Controller::GetPlayerGame(const std::string& player) 
+{
+	return const_cast<Game*>(const_cast<const Controller*>(this)->GetPlayerGame(player));
 }
 
 void Controller::SetPlayerGame(const std::string& player, const Game* pGame) 
@@ -98,5 +113,22 @@ void Controller::SetPlayerGame(const std::string& player, const Game* pGame)
 		auto& players = m_games[pGame];
 		bool bOK = players.insert(player).second;
 		AssertThrow("SetPlayerGame: Player already registered in game: " + pGame->GetName(), bOK);
+	}
+}
+
+void Controller::SendUpdateGame(const Game& game, const std::string& player) const
+{
+	if (game.GetPhase() == Game::Phase::ChooseTeam)
+	{
+		SendMessage(Output::ShowChoose(), game, player);
+		SendMessage(Output::UpdateChoose(game), game, player);
+
+		if (player.empty() || player == game.GetCurrentTeamName())
+			SendMessage(Output::ActionChoose(game, true), game.GetCurrentTeamName());
+	}
+	else if(game.GetPhase() == Game::Phase::Main)
+	{
+		SendMessage(Output::ShowGame(), game, player);
+		SendMessage(Output::UpdateGame(game), game, player);
 	}
 }
