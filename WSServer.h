@@ -11,9 +11,9 @@ class WSServer : public MongooseServer
 {
 public:
 	WSServer(Controller& controller);
-	virtual void OnConnect(int port, const std::string& url) override;
-	virtual void OnMessage(int port, const std::string& message) override;
-	virtual void OnDisconnect(int port) override;
+	virtual void OnConnect(ClientID client, const std::string& url) override;
+	virtual void OnMessage(ClientID client, const std::string& message) override;
+	virtual void OnDisconnect(ClientID client) override;
 
 	bool SendMessage(const Output::Message& msg, const std::string& player) const;
 	bool SendMessage(const std::string& msg, const std::string& player) const;
@@ -21,11 +21,11 @@ public:
 	void BroadcastMessage(const std::string& msg) const;
 
 private:
-	void RegisterPlayer(int port, const std::string& player);
-	void ReportError(const std::string& type, const std::string& msg, int port = 0);
+	void RegisterPlayer(ClientID client, const std::string& player);
+	void ReportError(const std::string& type, const std::string& msg, ClientID client = 0);
 
-	std::map<int, std::string> m_mapPortToPlayer;
-	std::map<std::string, int> m_mapPlayerToPort;
+	std::map<ClientID, std::string> m_mapClientToPlayer;
+	std::map<std::string, ClientID> m_mapPlayerToClient;
 	mutable std::mutex m_mutex;
 
 	Controller& m_controller;

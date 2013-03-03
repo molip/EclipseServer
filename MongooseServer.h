@@ -2,6 +2,8 @@
 
 #include "App.h"
 
+typedef unsigned long ClientID;
+
 class IServer
 {
 public:
@@ -9,9 +11,9 @@ public:
 
 	virtual ~IServer() {}
 	virtual bool OnHTTPRequest(const std::string& url, const QueryMap& queries, std::string& reply) { return false; }
-	virtual void OnConnect(int port, const std::string& url) {}
-	virtual void OnDisconnect(int port) {}
-	virtual void OnMessage(int port, const std::string& msg) {}
+	virtual void OnConnect(ClientID client, const std::string& url) {}
+	virtual void OnDisconnect(ClientID client) {}
+	virtual void OnMessage(ClientID client, const std::string& msg) {}
 
 	static QueryMap SplitQuery(const std::string& query);
 };
@@ -25,14 +27,14 @@ public:
 	MongooseServer(int port);
 	virtual ~MongooseServer();
 
-	void Register(int port, mg_connection* pConn);
-	void Unregister(int port);
-	bool SendMessage(int port, const std::string& msg) const;
+	void Register(ClientID client, mg_connection* pConn);
+	void Unregister(ClientID client);
+	bool SendMessage(ClientID client, const std::string& msg) const;
 
 private:
-	mg_connection* MongooseServer::FindConnection(int port) const;
+	mg_connection* MongooseServer::FindConnection(ClientID client) const;
 
 	mg_context* m_pContext;
 	mutable std::mutex m_mutex;
-	std::map<int, mg_connection*> m_mapPortToConn;
+	std::map<ClientID, mg_connection*> m_mapPortToConn;
 };

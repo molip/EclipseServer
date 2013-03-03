@@ -30,30 +30,30 @@ MongooseServer::~MongooseServer()
 	mg_stop(m_pContext);
 }
 
-void MongooseServer::Register(int port, mg_connection* pConn)
+void MongooseServer::Register(ClientID client, mg_connection* pConn)
 {
 	LOCK(m_mutex);
-	ASSERT(m_mapPortToConn.insert(std::make_pair(port, pConn)).second);
+	ASSERT(m_mapPortToConn.insert(std::make_pair(client, pConn)).second);
 }
 
-void MongooseServer::Unregister(int port)
+void MongooseServer::Unregister(ClientID client)
 {
 	LOCK(m_mutex);
-	ASSERT(m_mapPortToConn.erase(port) == 1);
+	ASSERT(m_mapPortToConn.erase(client) == 1);
 }
 
-mg_connection* MongooseServer::FindConnection(int port) const
+mg_connection* MongooseServer::FindConnection(ClientID client) const
 {
 	LOCK(m_mutex);
-	auto it = m_mapPortToConn.find(port);
+	auto it = m_mapPortToConn.find(client);
 	if (it != m_mapPortToConn.end())
 		return it->second;
 	return nullptr;
 }
 
-bool MongooseServer::SendMessage(int port, const std::string& msg) const
+bool MongooseServer::SendMessage(ClientID client, const std::string& msg) const
 {
-	auto pConn = FindConnection(port);
+	auto pConn = FindConnection(client);
 	if (!pConn)
 		return false;
 
@@ -94,6 +94,7 @@ static void *callback(enum mg_event event, struct mg_connection *conn)
 	const struct mg_request_info *request_info = mg_get_request_info(conn);
 	
 	MongooseServer* pServer = reinterpret_cast<MongooseServer*>(request_info->user_data);
+	const ClientID client = reinterpret_cast<ClientID>(conn);
 
 	if (event == MG_NEW_REQUEST) 
 	{
@@ -118,13 +119,13 @@ static void *callback(enum mg_event event, struct mg_connection *conn)
 	}
 	else if (event == MG_WEBSOCKET_READY) 
 	{
-		pServer->Register(request_info->remote_port, conn);
-		pServer->OnConnect(request_info->remote_port, request_info->uri);
+		pServer->Register(client, conn);
+		pServer->OnConnect(client, request_info->uri);
 	}
 	else if (event == MG_WEBSOCKET_CLOSE) 
 	{
-		pServer->Unregister(request_info->remote_port);
-		pServer->OnDisconnect(request_info->remote_port);
+		pServer->Unregister(client);
+		pServer->OnDisconnect(client);
 	}
 	else if (event == MG_WEBSOCKET_MESSAGE) 
 	{
@@ -164,7 +165,7 @@ static void *callback(enum mg_event event, struct mg_connection *conn)
 			read += n;
 		}
 
-		pServer->OnMessage(request_info->remote_port, msg);
+		pServer->OnMessage(client, msg);
 	} 
     return nullptr;
 }

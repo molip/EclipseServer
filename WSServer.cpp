@@ -10,13 +10,13 @@ WSServer::WSServer(Controller& controller) : MongooseServer(8998), m_controller(
 	controller.SetServer(this);
 }
 
-void WSServer::OnConnect(int port, const std::string& url)
+void WSServer::OnConnect(ClientID client, const std::string& url)
 {
 	LOCK(m_mutex); 
-	std::cout << "INFO: Port connected: " << port << std::endl;
+	std::cout << "INFO: Client connected: " << client << std::endl;
 }
 
-void WSServer::OnMessage(int port, const std::string& message)
+void WSServer::OnMessage(ClientID client, const std::string& message)
 {
 	LOCK(m_mutex); // Only process 1 message at a time. 
 
@@ -26,12 +26,12 @@ void WSServer::OnMessage(int port, const std::string& message)
 		{
 			if (auto pRegister = dynamic_cast<const Input::Register*>(pMsg.get()))
 			{
-				RegisterPlayer(port, pRegister->GetPlayer());
+				RegisterPlayer(client, pRegister->GetPlayer());
 			}
 			else
 			{
-				auto i = m_mapPortToPlayer.find(port);
-				if (i != m_mapPortToPlayer.end())
+				auto i = m_mapClientToPlayer.find(client);
+				if (i != m_mapClientToPlayer.end())
 					m_controller.OnMessage(pMsg, i->second);
 			}
 		}
@@ -40,39 +40,39 @@ void WSServer::OnMessage(int port, const std::string& message)
 	}
 	catch (Exception& e)
 	{
-		ReportError(e.GetType(), e.what(), port);
+		ReportError(e.GetType(), e.what(), client);
 	}
 }
 
-void WSServer::RegisterPlayer(int port, const std::string& player)
+void WSServer::RegisterPlayer(ClientID client, const std::string& player)
 {
-	auto i = m_mapPlayerToPort.find(player);
-	if (i != m_mapPlayerToPort.end())
+	auto i = m_mapPlayerToClient.find(player);
+	if (i != m_mapPlayerToClient.end())
 	{
-		__super::SendMessage(port, "ERROR:DUPLICATE_PLAYER");
+		__super::SendMessage(client, "ERROR:DUPLICATE_PLAYER");
 		return;
 	}
 		
-	m_mapPlayerToPort[player] = port;
-	m_mapPortToPlayer[port] = player;
+	m_mapPlayerToClient[player] = client;
+	m_mapClientToPlayer[client] = player;
 
-	std::cout << "INFO: Port registered: " << port << " -> " << player << std::endl;
+	std::cout << "INFO: Client registered: " << client << " -> " << player << std::endl;
 	m_controller.OnPlayerConnected(player);
 }
 
-void WSServer::OnDisconnect(int port) 
+void WSServer::OnDisconnect(ClientID client) 
 {
 	LOCK(m_mutex); 
 
-	auto i = m_mapPortToPlayer.find(port);
-	if (i == m_mapPortToPlayer.end())
-		std::cerr << "ERROR: Unregistered port disconnected: " << port << std::endl;
+	auto i = m_mapClientToPlayer.find(client);
+	if (i == m_mapClientToPlayer.end())
+		std::cerr << "ERROR: Unregistered client disconnected: " << client << std::endl;
 	else
 	{
-		std::cout << "INFO: Port disconnected: " << port << std::endl;
+		std::cout << "INFO: Client disconnected: " << client << std::endl;
 		m_controller.OnPlayerDisconnected(i->second);
-		m_mapPlayerToPort.erase(i->second);
-		m_mapPortToPlayer.erase(port);
+		m_mapPlayerToClient.erase(i->second);
+		m_mapClientToPlayer.erase(client);
 	}
 }
 
@@ -90,8 +90,8 @@ bool WSServer::SendMessage(const std::string& msg, const std::string& player) co
 {
 	AssertThrow("WSServer::SendMessage: No player specified", !player.empty());
 
-	auto i = m_mapPlayerToPort.find(player);
-	if (i == m_mapPlayerToPort.end())
+	auto i = m_mapPlayerToClient.find(player);
+	if (i == m_mapPlayerToClient.end())
 		return false;
 
 	__super::SendMessage(i->second, msg);
@@ -101,20 +101,20 @@ bool WSServer::SendMessage(const std::string& msg, const std::string& player) co
 
 void WSServer::BroadcastMessage(const std::string& msg) const
 {
-	for (auto i : m_mapPortToPlayer)
+	for (auto i : m_mapClientToPlayer)
 		__super::SendMessage(i.first, msg);
 }
 
-void WSServer::ReportError(const std::string& type, const std::string& msg, int port)
+void WSServer::ReportError(const std::string& type, const std::string& msg, ClientID client)
 {
 	std::ostringstream ss;
 	ss << "Exception : " << type << " : " << msg;
-	if (port)
+	if (client)
 	{
-		ss << " [" << port;
+		ss << " [" << client;
 
-		auto i = m_mapPortToPlayer.find(port);
-		if (i != m_mapPortToPlayer.end())
+		auto i = m_mapClientToPlayer.find(client);
+		if (i != m_mapClientToPlayer.end())
 			ss << " " << i->second;
 
 		ss << "]";
