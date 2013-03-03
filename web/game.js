@@ -44,7 +44,7 @@ function load()
 {
 	if ("WebSocket" in window)
 	{
-		ws = new WebSocket("ws://localhost:8998/echo");
+		ws = new WebSocket(webSocketURL);
 		ws.onopen = function() { SendRegister(); }
 		ws.onmessage = OnMessage;
 		ws.onclose = OnClose;

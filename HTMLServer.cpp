@@ -53,19 +53,24 @@ namespace
 typedef std::unique_ptr<Game> GamePtr;
 std::vector<GamePtr> games;
 
-HTMLServer::HTMLServer() : MongooseServer(80)
+HTMLServer::HTMLServer() : MongooseServer(8999)
 {
 }
 
-bool HTMLServer::OnHTTPRequest(const std::string& url, const QueryMap& queries, std::string& reply)
+bool HTMLServer::OnHTTPRequest(const std::string& url, const std::string& host, const QueryMap& queries, std::string& reply)
 {
 	if (url == "/game")
 	{
 		auto pid = queries.find("player");
 		if (pid != queries.end())
 		{
+			ASSERT(host.substr(host.size() - 5) == ":8999");
+			std::string wsURL = std::string("ws://") + host.substr(0, host.size() - 4) + "8998";
+			
 			std::string sPage = LoadFile("web\\game.html");
 			ReplaceToken(sPage, "%PLAYER%", pid->second);
+			ReplaceToken(sPage, "%WSURL%", wsURL);
+
 			reply = sPage;
 			return true;
 		}

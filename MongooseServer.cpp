@@ -103,7 +103,7 @@ static void *callback(enum mg_event event, struct mg_connection *conn)
 			queries = IServer::SplitQuery(request_info->query_string);
 
 		std::string reply;
-		if (pServer->OnHTTPRequest(request_info->uri, queries, reply))
+		if (pServer->OnHTTPRequest(request_info->uri, mg_get_header(conn, "Host"), queries, reply))
 		{
 			mg_printf(conn,
 					  "HTTP/1.1 200 OK\r\n"

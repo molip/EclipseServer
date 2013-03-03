@@ -10,7 +10,7 @@ public:
 	typedef std::map<std::string, std::string> QueryMap;
 
 	virtual ~IServer() {}
-	virtual bool OnHTTPRequest(const std::string& url, const QueryMap& queries, std::string& reply) { return false; }
+	virtual bool OnHTTPRequest(const std::string& url, const std::string& host, const QueryMap& queries, std::string& reply) { return false; }
 	virtual void OnConnect(ClientID client, const std::string& url) {}
 	virtual void OnDisconnect(ClientID client) {}
 	virtual void OnMessage(ClientID client, const std::string& msg) {}
