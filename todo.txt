@@ -1,17 +1,26 @@
-Use port + IP for connection map
-Update clients when server dies?
-Leave lobby / game
-Forward exception to client
-Replace attributes with content
-Stop players joining started games
+Remove chosen team choices for subsequent players 
+	Always remove colour 
+	Optionally remove race according to board availability
+Command stack / move cancelling
 Replace bool returns with exceptions
+
+Non-localhost
+-------------
+
+Release
+-------
+Authentication
+Update clients when server dies?
+Forward exception to client
+	all players, or just one who sent message? (+ opt in list)
+Return to game list 
+Leave game
+Kick player
 
 Ideas
 -----
-Use CSS to show/hide elements in XSLT
-Limit scope of Players collection
-	Game should know who's present 
+Use XSLT + CSS to show/hide elements? (why?)
+Replace attributes with content
 
 Bugs
 ----
-Creating game doesn't show lobby details

@@ -1,0 +1,13 @@
+2/2/13
+Trying to sort out games, pregames, players, teams. Need to distinguish betweeen players online and players in a game. Game doesn't need to know who's online. Controller should have map of game -> online players; this is where observers live too. Game updates go through this. 
+So do we need a separate PreGame class? Maybe not - there's not data there that doesn't really belong in Game. We'll need to map player -> team while while choosing teams, is that still relevant while playing? I guess so, as input msgs will come from a player. 
+So...
+Game list / lobby: Show players, observers, highlight owner & online
+Join unstarted game: Add player to game, add to online list for game
+Join started game: Just add to online list.
+
+Game now maps team name -> team. Currently team name == player name but this could change. 
+
+3/2/13
+OnCommandUpdateLobby - 	not happy with checking owner name in client. Need separate message to show/hide Start Game button. Also no need to pass game to server, it knows what game this player is in.
+ 
