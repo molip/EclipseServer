@@ -129,6 +129,13 @@ void Controller::SendUpdateGame(const Game& game, const std::string& player) con
 	else if(game.GetPhase() == Game::Phase::Main)
 	{
 		SendMessage(Output::ShowGame(), game, player);
-		SendMessage(Output::UpdateGame(game), game, player);
+		SendMessage(Output::UpdateTeams(game), game, player);
+	
+		for (auto& team : game.GetTeams())
+		{
+			const Team* pTeam = team.second.get();
+			AssertThrow("Controller::SendUpdateGame: Team not chosen yet: " + team.first, !!pTeam);
+			SendMessage(Output::UpdateTeam(*pTeam), game, player);
+		}
 	}
 }

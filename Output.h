@@ -9,6 +9,7 @@ typedef TiXmlDocument XmlDoc;
 
 class Model;
 class Game;
+class Team;
 
 namespace Output
 {
@@ -56,7 +57,8 @@ struct UpdateGameList : Update { UpdateGameList(const Model& model); };
 struct UpdateLobby : Update { UpdateLobby(const Game& game); };
 struct UpdateLobbyControls : Update { UpdateLobbyControls(bool bShow); };
 struct UpdateChoose : Update { UpdateChoose(const Game& game); };
-struct UpdateGame : Update { UpdateGame(const Game& game); };
+struct UpdateTeams : Update { UpdateTeams(const Game& game); };
+struct UpdateTeam : Update { UpdateTeam(const Team& team); };
 
 struct ActionChoose : Action { ActionChoose(const Game& game, bool bActive); };
 

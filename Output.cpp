@@ -127,8 +127,26 @@ UpdateChoose::UpdateChoose(const Game& game) : Update("choose_team")
 	}
 }
 
-UpdateGame::UpdateGame(const Game& game) : Update("game")
+UpdateTeams::UpdateTeams(const Game& game) : Update("teams")
 {
+	AssertThrow("UpdateTeams: Game not started yet: " + game.GetName(), game.GetPhase() == Game::Phase::Main);
+
+	m_pRoot->SetAttribute("teams", game.GetName());
+	for (auto& name : game.GetTeamOrder())
+	{
+		const Team* pTeam = game.GetTeam(name);
+		AssertThrow("UpdateTeams: Team not chosen yet: " + name, !!pTeam);
+
+		auto pTeamNode = AddElement("team", *m_pRoot);
+		pTeamNode->SetAttribute("name", name);
+	}
+}
+
+UpdateTeam::UpdateTeam(const Team& team) : Update("team")
+{
+	m_pRoot->SetAttribute("name", team.GetPlayer());
+	m_pRoot->SetAttribute("race", GetRaceName(team.GetRace()));
+	m_pRoot->SetAttribute("colour", GetColourName(team.GetColour()));
 }
 
 ShowGameList::ShowGameList() :	Show("game_list_panel") {}

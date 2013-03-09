@@ -14,6 +14,12 @@ if(!String.prototype.format) {
 };
 }
 
+function Assert(test, msg)
+{
+	if (!test)
+		alert(msg)
+}
+
 function writeToScreen(message)
 {
 	document.getElementById("output").innerText += message
@@ -58,4 +64,28 @@ function load()
 		parser=new DOMParser();
 	else
 		alert("DOMParser not supported");
+}
+
+var team_pages;
+var team_count = 0;
+
+function GetTeamPageIDFromName(team)
+{
+	var index = team_pages[team]
+	return GetTeamPageIDFromIndex(index)
+}
+
+function GetTeamPageIDFromIndex(index)
+{
+	return 'teampage_{0}'.format(index)
+}
+
+function ShowTeamPage(team)
+{
+	var page = team_pages[team]
+    for (var i = 0; i < team_count; ++i)
+	{
+		var div = document.getElementById(GetTeamPageIDFromIndex(i))
+		div.style.display = page == i ? "block" : "none"
+	}
 }

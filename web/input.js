@@ -81,8 +81,10 @@ function OnCommandUpdate(elem)
 		OnCommandUpdateLobbyControls(elem)
 	else if (param == "choose_team")
 		OnCommandUpdateChooseTeam(elem)
-	else if (param == "game")
-		OnCommandUpdateGame(elem)
+	else if (param == "teams")
+		OnCommandUpdateTeams(elem)
+	else if (param == "team")
+		OnCommandUpdateTeam(elem)
 	else
         writeToScreen('OnCommandUpdate: unknown param: ' + param)
 }
@@ -150,16 +152,47 @@ function OnCommandUpdateChooseTeam(elem)
 	SetDivFromCommandElem(document.getElementById('choose_content'), elem, xsl) 
 }
 
-function OnCommandUpdateGame(elem)
+function OnCommandUpdateTeams(elem)
+{		
+	Assert(team_pages == undefined && team_count == 0)
+	team_pages = {}
+	
+	var fmt_tab = '<button type="button" onclick="ShowTeamPage(\'{0}\')">{0}</button>'
+	var fmt_page = '<div id="{0}"></div>'
+	
+	var html_tabs = '', html_pages = ''
+
+	var i = 0
+	for (var team = elem.firstChild; team; team = team.nextSibling)
+	{
+		if (team.nodeName == "team")
+		{
+			var name = team.getAttribute('name')
+			
+			html_tabs += fmt_tab.format(name)
+			html_pages += fmt_page.format(GetTeamPageIDFromIndex(team_count))
+
+			team_pages[name] = team_count++
+		}
+	}
+
+	document.getElementById('game_tabs').innerHTML = html_tabs
+	document.getElementById('game_pages').innerHTML = html_pages
+	
+	ShowTeamPage(playerName)
+}
+
+function OnCommandUpdateTeam(elem)
 {		
 	var xsl = '\
-		<h2><xsl:value-of select="@game"/></h2><br/>\
-		<b> <xsl:value-of select="@owner"/></b>,\
-		<xsl:for-each select="player">\
-			<xsl:value-of select="@name"/>,\
-		</xsl:for-each>\
+		<b>Team:</b> <xsl:value-of select="@name"/><br/>\
+		<b>Race:</b> <xsl:value-of select="@race"/><br/>\
+		<b>Colour:</b> <xsl:value-of select="@colour"/><br/>\
+		<br/>\
 	'
-	SetDivFromCommandElem(document.getElementById('game_content'), elem, xsl) 
+		
+
+	SetDivFromCommandElem(document.getElementById(GetTeamPageIDFromName(elem.getAttribute('name'))), elem, xsl)
 }
 
 function OnCommandActionChooseTeam(elem, active)
