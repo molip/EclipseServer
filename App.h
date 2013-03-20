@@ -1,5 +1,7 @@
 #pragma once
 
+#include "EnumRange.h"
+
 #include <map>
 #include <vector>
 #include <set>

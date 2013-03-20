@@ -37,3 +37,10 @@ public:
 	TechnologyBag();
 };
 
+enum class HexRing; 
+class HexBag : public Bag<int>
+{
+public:
+	HexBag() {}
+	HexBag(HexRing r, int nPlayers);
+};

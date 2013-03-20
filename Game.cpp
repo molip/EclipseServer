@@ -22,11 +22,14 @@ void Game::Start()
 
 	m_iTurn = m_iRound = m_iStartTeam = m_iStartTeamNext = 0;
 
-	for (auto i = m_teams.begin(); i != m_teams.end(); ++i)
-		m_teamOrder.push_back(i->first);
+	for (auto& i : m_teams)
+		m_teamOrder.push_back(i.first);
 
 	std::random_shuffle(m_teamOrder.begin(), m_teamOrder.end());
 
+	for (auto r : EnumRange<HexRing>())
+		m_hexBag[(int)r] = HexBag(r, m_teams.size());
+	
 	m_phase = Phase::ChooseTeam;
 }
 

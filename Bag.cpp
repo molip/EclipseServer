@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Bag.h"
 #include "App.h"
+#include "Game.h"
 
 DiscoveryBag::DiscoveryBag()
 {
@@ -58,4 +59,28 @@ TechnologyBag::TechnologyBag()
 			push_back(threes[j]);
 
 	std::random_shuffle(begin(), end());
+}
+
+HexBag::HexBag(HexRing r, int nPlayers)
+{
+	AssertThrowModel("HexBag::HexBag", nPlayers > 0 && nPlayers < 7);
+
+	int start = 0, count = 0;
+	switch (r)
+	{
+	case HexRing::Inner: start = 101, count	= 8; break;
+	case HexRing::Middle: start = 201, count = 11; break;
+	case HexRing::Outer: start = 301, count	= 18; break;
+	}
+
+	for (int i = start; i <= start + count; ++i)
+		push_back(i);
+
+	std::random_shuffle(begin(), end());
+
+	if (r == HexRing::Outer)
+	{
+		const int outers[] = { 5, 5, 10, 14, 16, 18 };
+		resize(outers[nPlayers - 1]);
+	}
 }

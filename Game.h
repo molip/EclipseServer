@@ -9,6 +9,8 @@
 #include <map>
 #include <string>
 
+enum class HexRing { Inner, Middle, Outer, _Count };
+
 class Game
 {
 public:
@@ -48,6 +50,7 @@ private:
 	ReputationBag m_repBag;
 	TechnologyBag m_techBag;
 	DiscoveryBag m_discBag;
+	HexBag m_hexBag[HexRing::_Count];
 
 	std::vector<std::string> m_teamOrder;
 	int m_iTurn, m_iRound;
