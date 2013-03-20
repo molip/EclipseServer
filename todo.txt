@@ -1,14 +1,18 @@
+Tech board
+Map
 Remove chosen team choices for subsequent players 
 	Always remove colour 
 	Optionally remove race according to board availability
 Command stack / move cancelling
 Replace bool returns with exceptions
+Combat
 
 Non-localhost
 -------------
 
 Release
 -------
+Chat
 Authentication
 Update clients when server dies?
 Forward exception to client
