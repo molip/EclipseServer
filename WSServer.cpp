@@ -101,7 +101,7 @@ bool WSServer::SendMessage(const std::string& msg, const std::string& player) co
 
 void WSServer::BroadcastMessage(const std::string& msg) const
 {
-	for (auto i : m_mapClientToPlayer)
+	for (auto& i : m_mapClientToPlayer)
 		__super::SendMessage(i.first, msg);
 }
 
