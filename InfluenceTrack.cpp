@@ -1,12 +1,15 @@
 #include "stdafx.h"
 #include "InfluenceTrack.h"
+#include "App.h"
+
 #include <algorithm>
 
 int InfluenceTrack::GetUpkeep(int nDiscs)
 {
 	static const int vals[] = { 30, 25, 21, 17, 13, 10, 7, 5, 3, 2, 1 };
 
-	return nDiscs >= 0 && nDiscs < _countof(vals) ? vals[nDiscs] : 0;
+	AssertThrowModel("InfluenceTrack::GetUpkeep", nDiscs >= 0 && nDiscs < _countof(vals));
+	return vals[nDiscs];
 }
 
 //0  1  2  3  4  5  6  7  8  9 10 11

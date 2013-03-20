@@ -55,13 +55,13 @@ Team* Game::GetCurrentTeam()
 	return i->second.get();
 }
 
-void Game::AssignTeam(const std::string& name, Race race, Colour colour)
+void Game::AssignTeam(const std::string& name, RaceType race, Colour colour)
 {
 	auto i = m_teams.find(name);
 	AssertThrow("Game::AssignTeam: Team not found: " + name, i != m_teams.end());
 	AssertThrow("Game::AssignTeam: Team already assigned: " + name, i->second == nullptr);
 
-	i->second = TeamPtr(new Team(name, race, colour));
+	i->second = TeamPtr(new Team(*this, name, race, colour));
 
 	AdvanceTurn();
 	if (m_iTurn == 0)

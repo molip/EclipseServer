@@ -1,15 +1,16 @@
 #pragma once
 
-class Technology
+enum class TechType {	
+	NeutronBomb, StarBase,	   PlasmaCannon, PhaseShield,  AdvMining,  TachyonSource, PlasmaMissile,    GluonComp,
+	GaussShield, ImprovedHull, FusionSource, PositronComp, AdvEconomy, TachyonDrive,  AntimatterCannon, QuantumGrid,
+	NanoRobots,	 FusionDrive,  AdvRobotics,  Orbital,      AdvLabs,    Monolith,      ArtifactKey,      WormholeGen  };
+
+	class Technology
 {
 public:
 	enum class Class { Military, Grid, Nano, _Count };
-	enum class Type {	
-		NeutronBomb, StarBase,	   PlasmaCannon, PhaseShield,  AdvMining,  TachyonSource, PlasmaMissile,    GluonComp,
-		GaussShield, ImprovedHull, FusionSource, PositronComp, AdvEconomy, TachyonDrive,  AntimatterCannon, QuantumGrid,
-		NanoRobots,	 FusionDrive,  AdvRobotics,  Orbital,      AdvLabs,    Monolith,      ArtifactKey,      WormholeGen  };
 
-	Technology(Type t);
+	Technology(TechType t);
 	~Technology();
 
 	int GetTier() const;
@@ -19,6 +20,6 @@ public:
 	static int GetMinCost(int tier);
 
 private:
-	Type m_type;
+	TechType m_type;
 };
 

@@ -2,21 +2,23 @@
 #include "App.h"
 #include "Model.h"
 #include "Team.h"
+#include "Race.h"
+#include "EnumRange.h"
 
 namespace Output
 {
 
-std::string GetRaceName(Race race)
+std::string GetRaceName(RaceType race)
 {
 	switch (race)
 	{
-	case Race::Eridani:		return "eridani";
-	case Race::Hydran:		return "hydran";
-	case Race::Planta:		return "planta";
-	case Race::Descendants:	return "descendants";
-	case Race::Mechanema:	return "mechanema";
-	case Race::Orion:		return "orion";
-	case Race::Human:		return "human";
+	case RaceType::Eridani:		return "eridani";
+	case RaceType::Hydran:		return "hydran";
+	case RaceType::Planta:		return "planta";
+	case RaceType::Descendants:	return "descendants";
+	case RaceType::Mechanema:	return "mechanema";
+	case RaceType::Orion:		return "orion";
+	case RaceType::Human:		return "human";
 	};
 	assert(false);
 	return "";
@@ -160,12 +162,12 @@ ActionChoose::ActionChoose(const Game& game, bool bActive) : Action("choose_team
 		return;
 
 	auto pRacesNode = AddElement("races", *m_pRoot);
-	for (int i = 0; i < (int)Race::_Count; ++i)
-		AddElement("race", *pRacesNode)->SetAttribute("name", GetRaceName(Race(i)));
+	for (auto i : EnumRange<RaceType>())
+		AddElement("race", *pRacesNode)->SetAttribute("name", GetRaceName(i));
 
 	auto pColoursNode = AddElement("colours", *m_pRoot);
-	for (int i = 0; i < (int)Colour::_Count; ++i)
-		AddElement("colour", *pColoursNode)->SetAttribute("name", GetColourName(Colour(i)));
+	for (auto i : EnumRange<Colour>())
+		AddElement("colour", *pColoursNode)->SetAttribute("name", GetColourName(i));
 }
 
 } // namespace

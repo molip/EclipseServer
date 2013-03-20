@@ -14,3 +14,9 @@ void AssertThrowXML(const std::string& msg, bool b)
 	if (!ASSERT(b))
 		throw XMLException(msg);
 }
+
+void AssertThrowModel(const std::string& msg, bool b)
+{
+	if (!ASSERT(b))
+		throw ModelException(msg);
+}

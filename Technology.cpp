@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Technology.h"
 
-Technology::Technology(Type t) : m_type(t)
+Technology::Technology(TechType t) : m_type(t)
 {
 }
 

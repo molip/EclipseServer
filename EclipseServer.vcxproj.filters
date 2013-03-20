@@ -81,6 +81,36 @@
     <ClInclude Include="Singleton.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="Race.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="ShipLayout.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Blueprint.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Ship.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Resources.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Reputation.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="PopulationTrack.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Discovery.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Bag.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="EnumRange.h">
+      <Filter>Model</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -148,6 +178,27 @@
     </ClCompile>
     <ClCompile Include="App.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Race.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="ShipLayout.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Blueprint.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Ship.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Reputation.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="PopulationTrack.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Bag.cpp">
+      <Filter>Model</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

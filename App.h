@@ -24,6 +24,7 @@ extern bool _DebugBreak();
 
 extern void AssertThrow(const std::string& msg, bool b = false);
 extern void AssertThrowXML(const std::string& msg, bool b = false);
+extern void AssertThrowModel(const std::string& msg, bool b = false);
 
 class Exception : public std::runtime_error
 {
@@ -44,4 +45,11 @@ class GenericException : public Exception
 public:
 	GenericException(const std::string& msg) : Exception(msg) {}
 	virtual std::string GetType() const override { return "Generic"; }
+};
+
+class ModelException : public Exception
+{
+public:
+	ModelException(const std::string& msg) : Exception(msg) {}
+	virtual std::string GetType() const override { return "Model"; }
 };

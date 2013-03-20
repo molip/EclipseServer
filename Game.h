@@ -2,6 +2,7 @@
 
 #include "Map.h"
 #include "Team.h"
+#include "Bag.h"
 
 #include <memory>
 #include <set>
@@ -21,7 +22,7 @@ public:
 	const std::map<std::string, TeamPtr>& GetTeams() const { return m_teams; }
 	const std::vector<std::string>& GetTeamOrder() const { return m_teamOrder; }
 
-	void AssignTeam(const std::string& name, Race race, Colour colour);
+	void AssignTeam(const std::string& name, RaceType race, Colour colour);
 	const Team* GetTeam(const std::string& name) const;
 	const std::string& GetCurrentTeamName() const;
 	Team* GetCurrentTeam();
@@ -29,6 +30,10 @@ public:
 	void Start();
 	bool HasStarted() const { return m_phase != Phase::Lobby; }
 	Phase GetPhase() const { return m_phase; }
+
+	ReputationBag& GetReputationBag() { return m_repBag; }
+	TechnologyBag& GetTechnologyBag() { return m_techBag; }
+	DiscoveryBag& GetDiscoveryBag() { return m_discBag; }
 
 private:
 	void AssertStarted() const;
@@ -40,6 +45,9 @@ private:
 	Map	m_map;
 
 	std::map<std::string, TeamPtr> m_teams;
+	ReputationBag m_repBag;
+	TechnologyBag m_techBag;
+	DiscoveryBag m_discBag;
 
 	std::vector<std::string> m_teamOrder;
 	int m_iTurn, m_iRound;

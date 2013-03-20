@@ -77,7 +77,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="App.h" />
+    <ClInclude Include="Bag.h" />
+    <ClInclude Include="Blueprint.h" />
     <ClInclude Include="Controller.h" />
+    <ClInclude Include="Discovery.h" />
+    <ClInclude Include="EnumRange.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="InfluenceTrack.h" />
     <ClInclude Include="Map.h" />
@@ -87,6 +91,12 @@
     <ClInclude Include="MongooseServer.h" />
     <ClInclude Include="Output.h" />
     <ClInclude Include="HTMLServer.h" />
+    <ClInclude Include="PopulationTrack.h" />
+    <ClInclude Include="Race.h" />
+    <ClInclude Include="Reputation.h" />
+    <ClInclude Include="Resources.h" />
+    <ClInclude Include="Ship.h" />
+    <ClInclude Include="ShipLayout.h" />
     <ClInclude Include="Singleton.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
@@ -102,6 +112,8 @@
     <ClCompile Include="..\..\..\Desktop\tinyxml\tinyxmlerror.cpp" />
     <ClCompile Include="..\..\..\Desktop\tinyxml\tinyxmlparser.cpp" />
     <ClCompile Include="App.cpp" />
+    <ClCompile Include="Bag.cpp" />
+    <ClCompile Include="Blueprint.cpp" />
     <ClCompile Include="Controller.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="InfluenceTrack.cpp" />
@@ -113,6 +125,11 @@
     <ClCompile Include="mongoose.c" />
     <ClCompile Include="Output.cpp" />
     <ClCompile Include="HTMLServer.cpp" />
+    <ClCompile Include="PopulationTrack.cpp" />
+    <ClCompile Include="Race.cpp" />
+    <ClCompile Include="Reputation.cpp" />
+    <ClCompile Include="Ship.cpp" />
+    <ClCompile Include="ShipLayout.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>

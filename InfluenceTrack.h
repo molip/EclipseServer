@@ -3,7 +3,7 @@
 class InfluenceTrack
 {
 public:
-	InfluenceTrack() : m_nDiscs(13) {} 
+	InfluenceTrack() : m_nDiscs(0) {} 
 
 	int GetDiscCount() const { return m_nDiscs; }
 	int GetUpkeep() const { return GetUpkeep(m_nDiscs); }

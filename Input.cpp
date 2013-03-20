@@ -3,23 +3,24 @@
 #include "Model.h"
 #include "Controller.h"
 #include "Output.h"
+#include "Race.h"
 
 #include <sstream>
 
 namespace Input 
 {
 
-Race GetRaceFromName(const std::string& race)
+RaceType GetRaceFromName(const std::string& race)
 {
-	if (race == "eridani") return Race::Eridani;
-	if (race == "hydran") return Race::Hydran;
-	if (race == "planta") return Race::Planta;
-	if (race == "descendants") return Race::Descendants;
-	if (race == "mechanema") return Race::Mechanema;
-	if (race == "orion") return Race::Orion;
-	if (race == "human") return Race::Human;
+	if (race == "eridani") return RaceType::Eridani;
+	if (race == "hydran") return RaceType::Hydran;
+	if (race == "planta") return RaceType::Planta;
+	if (race == "descendants") return RaceType::Descendants;
+	if (race == "mechanema") return RaceType::Mechanema;
+	if (race == "orion") return RaceType::Orion;
+	if (race == "human") return RaceType::Human;
 
-	return Race::_Count;
+	return RaceType::_Count;
 }
 
 Colour GetColourFromName(const std::string& colour)
@@ -157,10 +158,10 @@ bool ChooseTeam::Process(Controller& controller, const std::string& player) cons
 	AssertThrow("ChooseTeam: player played out of turn", player == pGame->GetCurrentTeamName());
 	AssertThrow("ChooseTeam: game not in choose phase: " + pGame->GetName(), pGame->GetPhase() == Game::Phase::ChooseTeam);
 
-	Race race = GetRaceFromName(m_race);
+	RaceType race = GetRaceFromName(m_race);
 	Colour colour = GetColourFromName(m_colour);
 
-	AssertThrowXML("ChooseTeam:race", race != Race::_Count);
+	AssertThrowXML("ChooseTeam:race", race != RaceType::_Count);
 	AssertThrowXML("ChooseTeam:colour", colour != Colour::_Count);
 
 	pGame->AssignTeam(player, race, colour);
