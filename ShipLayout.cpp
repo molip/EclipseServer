@@ -11,6 +11,8 @@ ShipLayout::ShipLayout(ShipType type) : m_type(type)
 	case ShipType::Starbase:	slots = 5; break;
 	case ShipType::Cruiser:		slots = 6; break;
 	case ShipType::Dreadnought:	slots = 8; break;
+	case ShipType::Ancient:		slots = 3; break;
+	case ShipType::GCDS:		slots = 11; break;
 	}
 	m_slots.resize(slots);
 }

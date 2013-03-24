@@ -111,6 +111,9 @@
     <ClInclude Include="EnumRange.h">
       <Filter>Model</Filter>
     </ClInclude>
+    <ClInclude Include="Hex.h">
+      <Filter>Model</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -198,6 +201,9 @@
       <Filter>Model</Filter>
     </ClCompile>
     <ClCompile Include="Bag.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Hex.cpp">
       <Filter>Model</Filter>
     </ClCompile>
   </ItemGroup>

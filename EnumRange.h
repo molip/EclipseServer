@@ -16,7 +16,10 @@ template <typename T>
 class EnumRange
 {
 public:
-	EnumIter<T> begin() const { return EnumIter<T>(T(0)); }
-	EnumIter<T> end() const { return EnumIter<T>(T::_Count); }
+	EnumRange(T begin = T(0), T end = T::_Count) : m_begin(begin), m_end(end) {}
+	EnumIter<T> begin() const { return EnumIter<T>(m_begin); }
+	EnumIter<T> end() const { return EnumIter<T>(m_end); }
+private:
+	T m_begin, m_end;
 };
 

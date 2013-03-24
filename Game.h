@@ -25,11 +25,13 @@ public:
 	const std::vector<std::string>& GetTeamOrder() const { return m_teamOrder; }
 
 	void AssignTeam(const std::string& name, RaceType race, Colour colour);
-	const Team* GetTeam(const std::string& name) const;
+	bool HasTeamChosen(const std::string& name) const;
+	const Team& GetTeam(const std::string& name) const;
 	const std::string& GetCurrentTeamName() const;
-	Team* GetCurrentTeam();
+	Team& GetCurrentTeam();
 
-	void Start();
+	void StartChooseTeamPhase();
+	void StartMainPhase();
 	bool HasStarted() const { return m_phase != Phase::Lobby; }
 	Phase GetPhase() const { return m_phase; }
 
@@ -38,6 +40,9 @@ public:
 	DiscoveryBag& GetDiscoveryBag() { return m_discBag; }
 
 private:
+	Team& GetTeam(const std::string& name);
+	void StartRound();
+
 	void AssertStarted() const;
 	void AdvanceTurn();
 	
@@ -45,6 +50,7 @@ private:
 	Phase m_phase;
 
 	Map	m_map;
+	std::multiset<TechType> m_techs;
 
 	std::map<std::string, TeamPtr> m_teams;
 	ReputationBag m_repBag;

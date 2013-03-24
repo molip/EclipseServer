@@ -22,13 +22,13 @@ Team::Team(Game& game, const std::string player, RaceType race, Colour colour) :
 	for (int i = 0; i < r.GetStartReputationTiles(); ++i)
 		m_repTrack.AddReputationTile(m_game.GetReputationBag().TakeTile());
 	
-	for (auto i : EnumRange<ShipType>())
+	for (auto i : EnumRange<ShipType>(ShipType::Interceptor, ShipType::Ancient))
 		m_blueprints[(int)i] = r.GetBlueprint(i);
 
-	m_nShips[(int)ShipType::Interceptor] = 8;
-	m_nShips[(int)ShipType::Cruiser] = 4;
-	m_nShips[(int)ShipType::Dreadnought] = 2;
-	m_nShips[(int)ShipType::Starbase] = 4;
+	AddShips(ShipType::Interceptor, 8);
+	AddShips(ShipType::Cruiser, 4);
+	AddShips(ShipType::Dreadnought, 2);
+	AddShips(ShipType::Starbase, 4);
 
 	//ShipType GetStartShip() const;
 	//int GetStartSector(Colour colour) const;
@@ -36,4 +36,25 @@ Team::Team(Game& game, const std::string player, RaceType race, Colour colour) :
 
 Team::~Team()
 {
+}
+
+void Team::AddShips(ShipType type, int nShips)
+{
+	m_nShips[(int)type] += nShips;
+}
+
+void Team::PopulateStartHex(Hex& hex)
+{
+	for (Square* pSquare : hex.GetAvailableSquares(*this))
+	{
+		m_popTrack.Remove(pSquare->GetType(), 1);
+		pSquare->SetOwner(this);
+	}
+ 
+	ShipType ship = Race(m_race).GetStartShip();
+	hex.AddShip(ship, this);
+	RemoveShips(ship, 1);
+
+	hex.SetOwner(this);
+	m_infTrack.RemoveDiscs(1);
 }

@@ -137,7 +137,7 @@ bool StartGame::Process(Controller& controller, const std::string& player) const
 	AssertThrow("StartGame: player isn't the owner of game: " + pGame->GetName(), player == pGame->GetOwner());
 	AssertThrow("StartGame: game already started: " + pGame->GetName(), !pGame->HasStarted());
 	
-	pGame->Start();
+	pGame->StartChooseTeamPhase();
 
 	controller.SendUpdateGameList();
 	controller.SendUpdateGame(*pGame);

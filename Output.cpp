@@ -121,10 +121,11 @@ UpdateChoose::UpdateChoose(const Game& game) : Update("choose_team")
 	{
 		auto pTeamNode = AddElement("team", *m_pRoot);
 		pTeamNode->SetAttribute("name", i);
-		if (const Team* pTeam = game.GetTeam(i)) // Otherwise not chosen yet.
+		if (game.HasTeamChosen(i))
 		{
-			pTeamNode->SetAttribute("race", GetRaceName(pTeam->GetRace()));
-			pTeamNode->SetAttribute("colour", GetColourName(pTeam->GetColour()));
+			const Team& team = game.GetTeam(i);
+			pTeamNode->SetAttribute("race", GetRaceName(team.GetRace()));
+			pTeamNode->SetAttribute("colour", GetColourName(team.GetColour()));
 		}
 	}
 }
@@ -136,8 +137,7 @@ UpdateTeams::UpdateTeams(const Game& game) : Update("teams")
 	m_pRoot->SetAttribute("teams", game.GetName());
 	for (auto& name : game.GetTeamOrder())
 	{
-		const Team* pTeam = game.GetTeam(name);
-		AssertThrow("UpdateTeams: Team not chosen yet: " + name, !!pTeam);
+		AssertThrow("UpdateTeams: Team not chosen yet: " + name, game.HasTeamChosen(name));
 
 		auto pTeamNode = AddElement("team", *m_pRoot);
 		pTeamNode->SetAttribute("name", name);

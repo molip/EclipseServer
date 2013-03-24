@@ -2,7 +2,7 @@
 
 #include <vector>
 
-enum class Resource { Money, Science, Materials, _Count };
+enum class Resource { Money, Science, Materials, Any, _Count };
 
 class Resources : private std::vector<int>
 {

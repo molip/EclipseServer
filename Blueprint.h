@@ -9,14 +9,19 @@ class Blueprint
 public:
 	Blueprint(const ShipLayout& layout, int fixedInitiative, int fixedPower, int fixedComputer);
 
-	ShipType GetType() const { return m_layout.GetType(); }
-	const ShipLayout& GetLayout() const { return m_layout; }
-	int GetExtraInitiative() const { return m_fixedInitiative; }
-	int GetExtraPower() const { return m_fixedPower; }
-	int GetExtraComputer() const { return m_fixedComputer; }
+	ShipType GetType() const { return m_base.GetType(); }
+	const ShipLayout& GetBaseLayout() const { return m_base; }
+	
+	int GetFixedInitiative() const { return m_fixedInitiative; }
+	int GetFixedPower() const { return m_fixedPower; }
+	int GetFixedComputer() const { return m_fixedComputer; }
+
+	static const Blueprint& GetAncientShip();
+	static const Blueprint& GCDS();
 
 private:
-	const ShipLayout m_layout;
+	const ShipLayout m_base;
+	ShipLayout m_overlay;
 	const int m_fixedInitiative, m_fixedPower, m_fixedComputer;
 };
 

@@ -20,6 +20,8 @@ enum class Buildable { Interceptor, Cruiser, Dreadnought, Starbase, Orbital, Mon
 enum class RaceType;
 
 class Game;
+class Hex;
+
 class Team
 {
 public:
@@ -32,6 +34,18 @@ public:
 	Colour GetColour() const { return m_colour; }
 
 	const std::set<Team*> GetAllies() const { return m_allies; }
+
+	void AddTech(TechType tech) { m_techTrack.Add(tech); }
+	bool HasTech(TechType tech) const { return m_techTrack.Has(tech); }
+	bool CanAdd(TechType tech) const { return m_techTrack.CanAdd(tech); }
+
+	PopulationTrack& GetPopulationTrack() { return m_popTrack; }
+	InfluenceTrack& GetInfluenceTrack() { return m_infTrack; }
+
+	void AddShips(ShipType type, int nShips);
+	void RemoveShips(ShipType type, int nShips) { AddShips(type, -nShips); }
+
+	void PopulateStartHex(Hex& hex);
 
 private:
 	Game& m_game;
@@ -47,8 +61,8 @@ private:
 	TechTrack m_techTrack;
 	Storage m_storage;
 	
-	BlueprintPtr m_blueprints[ShipType::_Count];
-	int m_nShips[ShipType::_Count];
+	BlueprintPtr m_blueprints[4];
+	int m_nShips[4];
 
 	int m_nColonyShips, m_nColonyShipsUsed;
 };

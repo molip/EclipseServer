@@ -1,19 +1,32 @@
 #include "stdafx.h"
 #include "TechTrack.h"
+#include "App.h"
 
 TechTrack::TechTrack()
 {
 }
 
-bool TechTrack::Add(TechType techtype)
+bool TechTrack::CanAdd(TechType techtype) const
 {
-	Technology t(techtype);
-	Technology::Class c = t.GetClass();
-	if (GetCount(c) == 7)
+	if (Has(techtype))
 		return false;
 
-	m_class[(int)c].push_back(t);
-	return true;
+	Technology::Class c = Technology(techtype).GetClass();
+	return GetCount(c) < 7;
+}
+
+void TechTrack::Add(TechType techtype)
+{
+	AssertThrowModel("TechTrack::Add", CanAdd(techtype));
+
+	Technology t(techtype);
+	m_class[(int)t.GetClass()].push_back(t);
+	m_techs.insert(techtype);
+}
+
+bool TechTrack::Has(TechType tech) const
+{
+	return tech == TechType::None || m_techs.find(tech) != m_techs.end();
 }
 
 int TechTrack::GetCount(Technology::Class c) const
