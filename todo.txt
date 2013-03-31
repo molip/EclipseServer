@@ -1,30 +1,29 @@
-Tech board
-Map
-Remove chosen team choices for subsequent players 
-	Always remove colour 
-	Optionally remove race according to board availability
+Remember current game
+Return to game list 
+Persistence
+Race -> colour
+Remove chosen race/colour for subsequent players 
 Command stack / move cancelling
 Replace bool returns with exceptions
 Combat
 
-Non-localhost
--------------
-
 Release
 -------
-Chat
+Chat / log
 Authentication
 Update clients when server dies?
 Forward exception to client
-	all players, or just one who sent message? (+ opt in list)
-Return to game list 
+	all players, or just one who sent message? (+ opt-in list)
 Leave game
 Kick player
+Replay log
 
 Ideas
 -----
 Use XSLT + CSS to show/hide elements? (why?)
 Replace attributes with content
+Variants:
+	Pass order -> play order
 
 Bugs
 ----
