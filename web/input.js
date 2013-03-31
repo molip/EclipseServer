@@ -160,7 +160,7 @@ function OnCommandUpdateTeams(elem)
 	data.team_count = 0
 	data.team_pages = {}
 	
-	var fmt_tab = '<button type="button" onclick="ShowTeamPage(\'{0}\')">{0}</button>'
+	var fmt_tab = '<button type="button" onclick="ShowTeamPage(\'{0}\')">{1}</button>'
 	var fmt_page = '<div id="{0}"></div>'
 	
 	var html_tabs = '', html_pages = ''
@@ -171,11 +171,11 @@ function OnCommandUpdateTeams(elem)
 		if (team.nodeName == "team")
 		{
 			var name = team.getAttribute('name')
-			
-			html_tabs += fmt_tab.format(name)
+			var id = team.getAttribute('id')
+			html_tabs += fmt_tab.format(id, name)
 			html_pages += fmt_page.format(GetTeamPageIDFromIndex(data.team_count))
 
-			data.team_pages[name] = data.team_count++
+			data.team_pages[id] = data.team_count++
 		}
 	}
 
@@ -193,7 +193,7 @@ function OnCommandUpdateTeam(elem)
 		<b>Colour:</b> <xsl:value-of select="@colour"/><br/>\
 		<br/>\
 	'
-	SetDivFromCommandElem(document.getElementById(GetTeamPageIDFromName(elem.getAttribute('name'))), elem, xsl)
+	SetDivFromCommandElem(document.getElementById(GetTeamPageIDFromName(elem.getAttribute('id'))), elem, xsl)
 }
 
 function OnCommandUpdateMap(elem)

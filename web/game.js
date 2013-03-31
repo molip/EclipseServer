@@ -88,9 +88,9 @@ function GetTeamPageIDFromIndex(index)
 	return 'teampage_{0}'.format(index)
 }
 
-function ShowTeamPage(team)
+function ShowTeamPage(player_id)
 {
-	var page = data.team_pages[team]
+	var page = data.team_pages[player_id]
     for (var i = 0; i < data.team_count; ++i)
 	{
 		var div = document.getElementById(GetTeamPageIDFromIndex(i))

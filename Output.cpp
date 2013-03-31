@@ -142,11 +142,13 @@ UpdateTeams::UpdateTeams(const Game& game) : Update("teams")
 
 		auto pTeamNode = AddElement("team", *m_pRoot);
 		pTeamNode->SetAttribute("name", pPlayer->GetName());
+		pTeamNode->SetAttribute("id", pPlayer->GetID());
 	}
 }
 
 UpdateTeam::UpdateTeam(const Team& team) : Update("team")
 {
+	m_pRoot->SetAttribute("id", team.GetPlayer().GetID());
 	m_pRoot->SetAttribute("name", team.GetPlayer().GetName());
 	m_pRoot->SetAttribute("race", GetRaceName(team.GetRace()));
 	m_pRoot->SetAttribute("colour", GetColourName(team.GetColour()));
