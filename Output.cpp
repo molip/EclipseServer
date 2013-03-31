@@ -190,13 +190,25 @@ ActionChoose::ActionChoose(const Game& game, bool bActive) : Action("choose_team
 	if (!bActive)
 		return;
 
-	auto pRacesNode = AddElement("races", *m_pRoot);
-	for (auto i : EnumRange<RaceType>())
-		AddElement("race", *pRacesNode)->SetAttribute("name", GetRaceName(i));
+	for (auto c : EnumRange<Colour>())
+		if (!game.GetTeamFromColour(c))
+		{
+			auto e = AddElement("race", *m_pRoot);
+			e->SetAttribute("name", GetRaceName(RaceType::Human));
+			e->SetAttribute("colour", GetColourName(c));
+		}
 
-	auto pColoursNode = AddElement("colours", *m_pRoot);
-	for (auto i : EnumRange<Colour>())
-		AddElement("colour", *pColoursNode)->SetAttribute("name", GetColourName(i));
+	for (auto r : EnumRange<RaceType>())
+		if (r != RaceType::Human)
+		{
+			Colour c = Race(r).GetColour();
+			if (!game.GetTeamFromColour(c))
+			{
+				auto e = AddElement("race", *m_pRoot);
+				e->SetAttribute("name", GetRaceName(r));
+				e->SetAttribute("colour", GetColourName(c));
+			}
+		}
 }
 
 } // namespace

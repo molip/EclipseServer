@@ -1,7 +1,7 @@
 #include "Race.h"
 #include "App.h"
 #include "Ship.h"
-#include "TEam.h"
+#include "Team.h"
 
 Storage Race::GetStartStorage() const
 {
@@ -256,3 +256,18 @@ int Race::IsAncientsAlly() const
 	return m_type == RaceType::Descendants;
 }
 
+Colour Race::GetColour() const
+{
+	assert(m_type != RaceType::Human);
+
+	switch (m_type)
+	{
+	case RaceType::Eridani:		return Colour::Red;
+	case RaceType::Hydran:		return Colour::Blue;
+	case RaceType::Planta:		return Colour::Green;
+	case RaceType::Descendants:	return Colour::Yellow;
+	case RaceType::Mechanema:	return Colour::White;
+	case RaceType::Orion:		return Colour::Black;
+	}
+	return Colour::None;
+}

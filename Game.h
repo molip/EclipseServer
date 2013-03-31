@@ -29,6 +29,7 @@ public:
 	const Team& GetTeam(const std::string& name) const;
 	const std::string& GetCurrentTeamName() const;
 	Team& GetCurrentTeam();
+	const Team* GetTeamFromColour(Colour c) const;
 
 	void StartChooseTeamPhase();
 	void StartMainPhase();
@@ -56,12 +57,14 @@ private:
 	std::multiset<TechType> m_techs;
 
 	std::map<std::string, TeamPtr> m_teams;
+	
 	ReputationBag m_repBag;
 	TechnologyBag m_techBag;
 	DiscoveryBag m_discBag;
 	HexBag m_hexBag[HexRing::_Count];
 
 	std::vector<std::string> m_teamOrder;
+	std::set<RaceType, Colour> m_availableRaces;
 	int m_iTurn, m_iRound;
 	int m_iStartTeam, m_iStartTeamNext;
 };

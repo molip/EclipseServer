@@ -22,7 +22,7 @@ Team::Team(Game& game, const std::string player, RaceType race, Colour colour) :
 	for (int i = 0; i < r.GetStartReputationTiles(); ++i)
 		m_repTrack.AddReputationTile(m_game.GetReputationBag().TakeTile());
 	
-	for (auto i : EnumRange<ShipType>(ShipType::Interceptor, ShipType::Ancient))
+	for (auto i : EnumRange<ShipType>())
 		m_blueprints[(int)i] = r.GetBlueprint(i);
 
 	AddShips(ShipType::Interceptor, 8);

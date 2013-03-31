@@ -20,7 +20,7 @@ RaceType GetRaceFromName(const std::string& race)
 	if (race == "orion") return RaceType::Orion;
 	if (race == "human") return RaceType::Human;
 
-	return RaceType::_Count;
+	return RaceType::None;
 }
 
 Colour GetColourFromName(const std::string& colour)
@@ -32,7 +32,7 @@ Colour GetColourFromName(const std::string& colour)
 	if (colour == "white") return Colour::White;
 	if (colour == "yellow") return Colour::Yellow;
 
-	return Colour::_Count;
+	return Colour::None;
 }
 
 MessagePtr CreateCommand(const std::string& type, const TiXmlElement& root)
@@ -161,8 +161,12 @@ bool ChooseTeam::Process(Controller& controller, const std::string& player) cons
 	RaceType race = GetRaceFromName(m_race);
 	Colour colour = GetColourFromName(m_colour);
 
-	AssertThrowXML("ChooseTeam:race", race != RaceType::_Count);
-	AssertThrowXML("ChooseTeam:colour", colour != Colour::_Count);
+	AssertThrowXML("ChooseTeam:race", race != RaceType::None);
+	AssertThrowXML("ChooseTeam:colour", colour != Colour::None);
+	AssertThrowXML("ChooseTeam: colour already taken", !pGame->GetTeamFromColour(colour));
+
+	if (race != RaceType::Human)
+		AssertThrowXML("ChooseTeam: colour doesn't match race", colour == Race(race).GetColour());
 
 	pGame->AssignTeam(player, race, colour);
 

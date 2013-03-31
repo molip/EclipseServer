@@ -53,13 +53,12 @@ function SendChooseTeam()
 	var select_race = document.getElementById('select_race')
 	var select_colour = document.getElementById('select_colour')
 	
-	var race = select_race.options[select_race.selectedIndex].value
-	var colour = select_colour.options[select_colour.selectedIndex].value
+	var race_colour = select_race.options[select_race.selectedIndex].value.split(',')
 	
 	var doc = CreateXMLDoc()
 	var node = CreateCommandNode(doc, "choose_team")
-	node.setAttribute("race", race)
-	node.setAttribute("colour", colour)
+	node.setAttribute("race", race_colour[0])
+	node.setAttribute("colour", race_colour[1])
 	SendXMLDoc(doc)
 }
 

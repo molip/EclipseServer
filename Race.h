@@ -4,7 +4,7 @@
 #include "Reputation.h"
 #include "Blueprint.h"
 
-enum class RaceType { Human, Eridani, Hydran, Planta, Descendants, Mechanema, Orion, _Count };
+enum class RaceType { None = -1, Human, Eridani, Hydran, Planta, Descendants, Mechanema, Orion, _Count };
 enum class Resource;
 enum class ShipType;
 enum class Colour;
@@ -39,6 +39,7 @@ public:
 	bool IsPopulationAutoDestroyed() const;
 	int GetExtraVictoryPointsPerHex() const;
 	int IsAncientsAlly() const;
+	Colour GetColour() const;
 
 private:
 	RaceType m_type;

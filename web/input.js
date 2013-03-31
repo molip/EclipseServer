@@ -247,13 +247,8 @@ function OnCommandActionChooseTeam(elem, active)
 		xsl = '\
 			<div>\
 			Race: <select id="select_race">\
-			<xsl:for-each select="races/race">\
-				<option value="{@name}"><xsl:value-of select="@name"/></option>\
-			</xsl:for-each>\
-			</select>\
-			Colour: <select id="select_colour">\
-			<xsl:for-each select="colours/colour">\
-				<option value="{@name}"><xsl:value-of select="@name"/></option>\
+			<xsl:for-each select="race">\
+				<option value="{@name},{@colour}"><xsl:value-of select="@name"/> (<xsl:value-of select="@colour"/>)</option>\
 			</xsl:for-each>\
 			</select>\
 			<button type="button" onclick="SendChooseTeam()">OK</button>\

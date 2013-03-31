@@ -6,7 +6,7 @@
 
 namespace
 {
-	const int FakePlayers = 5;
+	const int FakePlayers = 3;
 }
 
 Game::Game(const std::string& name, const std::string& owner) : 
@@ -125,6 +125,15 @@ const std::string& Game::GetCurrentTeamName() const
 Team& Game::GetCurrentTeam()
 {
 	return GetTeam(GetCurrentTeamName());
+}
+
+const Team* Game::GetTeamFromColour(Colour c) const
+{
+	for (auto& i : m_teams)
+		if (const Team* pTeam = i.second.get())
+			if (pTeam->GetColour() == c)
+				return pTeam;
+	return nullptr;
 }
 
 void Game::AssignTeam(const std::string& name, RaceType race, Colour colour)

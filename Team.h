@@ -14,7 +14,7 @@
 #include <set>
 #include <memory>
 
-enum class Colour { Black, Blue, Green, Red, White, Yellow, _Count };
+enum class Colour { None = -1, Red, Blue, Green, Yellow, White, Black, _Count };
 enum class Buildable { Interceptor, Cruiser, Dreadnought, Starbase, Orbital, Monolith, _Count };
 
 enum class RaceType;
