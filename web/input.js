@@ -157,8 +157,8 @@ function OnCommandUpdateChooseTeam(elem)
 
 function OnCommandUpdateTeams(elem)
 {		
-	Assert(team_pages == undefined && team_count == 0)
-	team_pages = {}
+	data.team_count = 0
+	data.team_pages = {}
 	
 	var fmt_tab = '<button type="button" onclick="ShowTeamPage(\'{0}\')">{0}</button>'
 	var fmt_page = '<div id="{0}"></div>'
@@ -173,9 +173,9 @@ function OnCommandUpdateTeams(elem)
 			var name = team.getAttribute('name')
 			
 			html_tabs += fmt_tab.format(name)
-			html_pages += fmt_page.format(GetTeamPageIDFromIndex(team_count))
+			html_pages += fmt_page.format(GetTeamPageIDFromIndex(data.team_count))
 
-			team_pages[name] = team_count++
+			data.team_pages[name] = data.team_count++
 		}
 	}
 
@@ -211,6 +211,9 @@ function OnCommandUpdateMap(elem)
 	
 	var canvas = document.getElementById('map_canvas')
 	var ctx = canvas.getContext("2d");
+	ctx.setTransform(1, 0, 0, 1, 0, 0)
+	ctx.clearRect(0, 0, 600, 600);
+
 	ctx.translate(300, 300)
 	ctx.scale(0.3, 0.3)
 	

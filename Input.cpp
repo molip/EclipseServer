@@ -42,6 +42,8 @@ MessagePtr CreateCommand(const std::string& type, const TiXmlElement& root)
 		return MessagePtr(new Register(root));
 	if (type == "join_game")
 		return MessagePtr(new JoinGame(root));
+	if (type == "exit_game")
+		return MessagePtr(new ExitGame);
 	if (type == "create_game")
 		return MessagePtr(new CreateGame);
 	if (type == "start_game")
@@ -84,24 +86,17 @@ JoinGame::JoinGame(const TiXmlElement& node)
 
 namespace 
 {
-	// Should be a command?
 	void DoJoinGame(Controller& controller, Player& player, Game& game)
 	{
+		AssertThrow("DoJoinGame: Player already in a game: " + player.GetName(), !player.GetCurrentGame());
 		player.SetCurrentGame(&game);
-
-		if (game.HasStarted())
-		{
-			controller.SendUpdateGame(game, &player);
-			// TODO: Notify other players.
-		}
-		else
+		if (!game.HasStarted())
 		{
 			game.AddTeam(player); // Might already have joined,  doesn't matter.
-			controller.SendMessage(Output::ShowLobby(), player);
 			controller.SendMessage(Output::UpdateLobby(game), game);
-			controller.SendMessage(Output::UpdateLobbyControls(&player == &game.GetOwner()), player);
+			controller.SendUpdateGameList();
 		}
-		controller.SendUpdateGameList();
+		controller.SendUpdateGame(game, &player);
 	}
 }
 
@@ -111,6 +106,17 @@ bool JoinGame::Process(Controller& controller, Player& player) const
 	AssertThrow("JoinGame: game does not exist: " + m_game, !!pGame);
 
 	DoJoinGame(controller, player, *pGame);
+	return true;
+}
+
+bool ExitGame::Process(Controller& controller, Player& player) const 
+{
+	Game* pGame = player.GetCurrentGame();
+	AssertThrow("ExitGame: Player not in any game: " + player.GetName(), !!pGame);
+
+	player.SetCurrentGame(nullptr);
+	controller.SendMessage(Output::ShowGameList(), player);
+	controller.SendUpdateGameList(&player);
 	return true;
 }
 

@@ -34,10 +34,18 @@ function SendJoinGame(game)
 	node.setAttribute("game", game)
 	SendXMLDoc(doc)
 }
+
 function SendCreateGame()
 {
 	var doc = CreateXMLDoc()
 	var node = CreateCommandNode(doc, "create_game")
+	SendXMLDoc(doc)
+}
+
+function SendExitGame()
+{
+	var doc = CreateXMLDoc()
+	var node = CreateCommandNode(doc, "exit_game")
 	SendXMLDoc(doc)
 }
 

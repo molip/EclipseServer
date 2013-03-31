@@ -39,6 +39,11 @@ struct JoinGame: Message
 	std::string m_game;
 };
 
+struct ExitGame : Message // Returns player to game list - they're still in the game.
+{
+	virtual bool Process(Controller& controller, Player& player) const override; 
+};
+
 struct CreateGame : Message 
 {
 	virtual bool Process(Controller& controller, Player& player) const override; 

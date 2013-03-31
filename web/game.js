@@ -2,11 +2,11 @@ var output
 var ws
 var parser
 
-var team_pages;
-var team_count = 0;
-//var hexes;
 
 var data = {}
+data.team_pages = {}
+data.team_count = 0
+
 data.hex_width = 445
 data.hex_height = 387
 
@@ -79,7 +79,7 @@ function load()
 
 function GetTeamPageIDFromName(team)
 {
-	var index = team_pages[team]
+	var index = data.team_pages[team]
 	return GetTeamPageIDFromIndex(index)
 }
 
@@ -90,8 +90,8 @@ function GetTeamPageIDFromIndex(index)
 
 function ShowTeamPage(team)
 {
-	var page = team_pages[team]
-    for (var i = 0; i < team_count; ++i)
+	var page = data.team_pages[team]
+    for (var i = 0; i < data.team_count; ++i)
 	{
 		var div = document.getElementById(GetTeamPageIDFromIndex(i))
 		div.style.display = page == i ? "block" : "none"

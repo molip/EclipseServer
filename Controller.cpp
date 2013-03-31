@@ -53,17 +53,33 @@ bool Controller::SendMessage(const Output::Message& msg, const Game& game, const
 
 void Controller::OnPlayerConnected(Player& player)
 {
-	m_pServer->SendMessage(Output::ShowGameList(), player);
-	SendUpdateGameList(&player);
+	if (Game* pGame = player.GetCurrentGame())
+		SendUpdateGame(*pGame, &player);
+	else
+	{
+		m_pServer->SendMessage(Output::ShowGameList(), player);
+		SendUpdateGameList(&player);
+	}
 }
 
 void Controller::OnPlayerDisconnected(Player& player)
 {
+
 }
 
 void Controller::SendUpdateGame(const Game& game, const Player* pPlayer) const
 {
-	if (game.GetPhase() == Game::Phase::ChooseTeam)
+	if (game.GetPhase() == Game::Phase::Lobby)
+	{
+		SendMessage(Output::UpdateLobby(game), game, pPlayer);
+
+		if (pPlayer)
+		{
+			SendMessage(Output::ShowLobby(), *pPlayer);
+			SendMessage(Output::UpdateLobbyControls(pPlayer == &game.GetOwner()), *pPlayer);
+		}
+	}
+	else if (game.GetPhase() == Game::Phase::ChooseTeam)
 	{
 		SendMessage(Output::ShowChoose(), game, pPlayer);
 		SendMessage(Output::UpdateChoose(game), game, pPlayer);
