@@ -1,16 +1,15 @@
-Remember current game
-Return to game list 
-Persistence
-Race -> colour
-Remove chosen race/colour for subsequent players 
+Player persistence
+Game Persistence
+Authentication
 Command stack / move cancelling
 Replace bool returns with exceptions
 Combat
+Don't internally identify games by name 
 
 Release
 -------
+Remote admin 
 Chat / log
-Authentication
 Update clients when server dies?
 Forward exception to client
 	all players, or just one who sent message? (+ opt-in list)
