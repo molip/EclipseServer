@@ -85,6 +85,8 @@ function OnCommandUpdate(elem)
 		OnCommandUpdateTeams(elem)
 	else if (param == "team")
 		OnCommandUpdateTeam(elem)
+	else if (param == "map")
+		OnCommandUpdateMap(elem)
 	else
         writeToScreen('OnCommandUpdate: unknown param: ' + param)
 }
@@ -131,6 +133,7 @@ function OnCommandUpdateLobby(elem)
 	'
 	SetDivFromCommandElem(document.getElementById('lobby_content'), elem, xsl) 
 }
+
 function OnCommandUpdateLobbyControls(elem)
 {	
 	var show = IsTrue(elem.getAttribute('show'))
@@ -190,9 +193,49 @@ function OnCommandUpdateTeam(elem)
 		<b>Colour:</b> <xsl:value-of select="@colour"/><br/>\
 		<br/>\
 	'
-		
-
 	SetDivFromCommandElem(document.getElementById(GetTeamPageIDFromName(elem.getAttribute('name'))), elem, xsl)
+}
+
+function OnCommandUpdateMap(elem)
+{
+	//hexes = []
+
+	var xsl = '\
+		<xsl:for-each select="hex">\
+			<img id="hex_{@id}" src="/images/hexes/{@id}.png"/>\
+		</xsl:for-each>\
+	'
+	SetDivFromCommandElem(document.getElementById('images'), elem, xsl) 
+	
+	var size_x = data.hex_width, size_y = data.hex_height
+	
+	var canvas = document.getElementById('map_canvas')
+	var ctx = canvas.getContext("2d");
+	ctx.translate(300, 300)
+	ctx.scale(0.3, 0.3)
+	
+	var img = new Image()
+	for (var hex = elem.firstChild; hex; hex = hex.nextSibling)
+	{
+		if (hex.nodeName == "hex")
+		{
+			var id = hex.getAttribute('id')
+			var x = Number(hex.getAttribute('x'))
+			var y = Number(hex.getAttribute('y'))
+
+			var p = GetHexCentre(x, y)
+			
+			//var img = document.getElementById("hex_" + id);
+			img.src = "/images/hexes/" + id + ".png"
+			ctx.translate(-size_x / 2, -size_y / 2)
+			ctx.drawImage(img, p.x, p.y);
+			ctx.translate(size_x / 2, size_y / 2)
+			
+			//writeToScreen("hex {0}: {1}, {2}\n".format(id, p.x, p.y))
+		}
+	}
+	var canvas2 = document.getElementById('map_canvas2')
+	canvas2.addEventListener("mousemove", OnMouse)
 }
 
 function OnCommandActionChooseTeam(elem, active)

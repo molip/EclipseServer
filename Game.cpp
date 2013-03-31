@@ -4,6 +4,11 @@
 
 #include <algorithm>
 
+namespace
+{
+	const int FakePlayers = 5;
+}
+
 Game::Game(const std::string& name, const std::string& owner) : 
 	m_name(name), m_owner(owner), m_phase(Phase::Lobby), m_iTurn(-1), m_iRound(-1), m_iStartTeam(-1), m_iStartTeamNext(-1),
 	m_map(*this)
@@ -29,6 +34,15 @@ void Game::StartChooseTeamPhase()
 	for (auto& i : m_teams)
 		m_teamOrder.push_back(i.first);
 	std::random_shuffle(m_teamOrder.begin(), m_teamOrder.end());
+
+	for (int i = 0; i < FakePlayers; ++i)
+	{
+		std::ostringstream ss;
+		ss << "Fake " << i;
+		m_teams.insert(std::make_pair(ss.str(), nullptr));
+		m_teamOrder.insert(m_teamOrder.begin() + i, ss.str());
+		AssignTeam(ss.str(), RaceType::Human, Colour(i + 1));
+	}
 
 	// Initialise hex bags.
 	for (auto r : EnumRange<HexRing>())

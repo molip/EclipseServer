@@ -18,7 +18,7 @@ MapPos MapPos::GetNeighbour(Edge e) const
 	
 	if (e == Edge::T || e == Edge::TR)
 		dy = -1;
-	else if (e == Edge::BR || e == Edge::B)
+	else if (e == Edge::B || e == Edge::BL)
 		dy = 1;
 
 	if (e == Edge::TR || e == Edge::BR)
@@ -31,12 +31,15 @@ MapPos MapPos::GetNeighbour(Edge e) const
 
 int MapPos::GetDist(const MapPos& rhs) const
 {
-	return std::max(std::max(m_x - rhs.m_x, m_y - rhs.m_y), GetZ() - rhs.GetZ());
+	return std::max(std::max(abs(m_x - rhs.m_x), abs(m_y - rhs.m_y)), abs(GetZ() - rhs.GetZ()));
 }
 
 bool MapPos::operator <(const MapPos& rhs) const 
 { 
-	return m_x < rhs.m_x || m_y < rhs.m_y; 
+	if (m_x != rhs.m_x)
+		return m_x < rhs.m_x;
+	
+	return m_y < rhs.m_y; 
 }
 
 //-----------------------------------------------------------------------------

@@ -151,6 +151,35 @@ UpdateTeam::UpdateTeam(const Team& team) : Update("team")
 	m_pRoot->SetAttribute("colour", GetColourName(team.GetColour()));
 }
 
+UpdateMap::UpdateMap(const Game& game) : Update("map")
+{
+	const Map& map = game.GetMap();
+	auto& hexes = map.GetHexes();
+
+	for (auto& i : hexes)
+	{
+		const MapPos& pos = i.first;
+		const Hex& hex = *i.second.get();
+
+		auto pNode = AddElement("hex", *m_pRoot);
+		pNode->SetAttribute("x", pos.GetX());
+		pNode->SetAttribute("y", pos.GetY());
+		pNode->SetAttribute("id", hex.GetID());
+		pNode->SetAttribute("rotation", hex.GetRotation());
+
+		if (const Team* pTeam = hex.GetOwner())
+			pNode->SetAttribute("colour", GetColourName(pTeam->GetColour()));
+
+
+		//const std::vector<Square> GetSquares() const { return m_squares; }
+		//std::vector<Ship> GetShips() const { return m_ships; }
+		//DiscoveryType GetDiscoveryTile() const { return m_discovery; }
+		//EdgeSet GetWormholes() const { return m_wormholes; }
+		//int GetVictoryPoints() const { return m_nVictory; }
+		//bool HasArtifact() const { return m_bArtifact; }
+	}
+}
+
 ShowGameList::ShowGameList() :	Show("game_list_panel") {}
 ShowChoose::ShowChoose() :		Show("choose_panel") {}
 ShowGame::ShowGame() :			Show("game_panel") {}

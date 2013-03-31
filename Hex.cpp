@@ -54,7 +54,7 @@ void Square::SetOwner(Team* pOwner)
 //-----------------------------------------------------------------------------
 
 Hex::Hex(Map& map, int id, int nRotation) : 
-	m_map(map), m_id(id), m_nRotation(nRotation), m_wormholes(0), m_discovery(DiscoveryType::None), 
+	m_map(map), m_id(id), m_nRotation(nRotation), m_discovery(DiscoveryType::None), 
 	m_nVictory(0), m_bArtifact(false), m_pOwner(nullptr)
 {
 	Init();

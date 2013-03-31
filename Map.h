@@ -16,6 +16,9 @@ public:
 	MapPos GetNeighbour(Edge e) const;
 	int GetDist(const MapPos& rhs) const;
 	bool operator <(const MapPos& rhs) const;
+
+	int GetX() const { return m_x; }
+	int GetY() const { return m_y; }
 	int GetZ() const { return -(m_x + m_y); }
 
 private:
@@ -33,12 +36,14 @@ public:
 	
 	Game& GetGame() { return m_game; }
 
+	typedef std::map<MapPos, std::unique_ptr<Hex>> HexMap;
+	const HexMap& GetHexes() const { return m_hexes; }
+
 	//HexRing GetHexRing(const MapPos& pos) const;
 
 private:
 	Hex* GetHex(const MapPos& pos);
 
-	std::map<MapPos, std::unique_ptr<Hex>> m_hexes;
+	HexMap m_hexes;
 	Game& m_game;
 };
-

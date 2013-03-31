@@ -2,6 +2,17 @@ var output
 var ws
 var parser
 
+var team_pages;
+var team_count = 0;
+//var hexes;
+
+var data = {}
+data.hex_width = 445
+data.hex_height = 387
+
+data.img_select = new Image()
+data.img_select.src = "/images/select.png"
+
 if(!String.prototype.format) {
   String.prototype.format = function() {
     var args = arguments;
@@ -65,9 +76,6 @@ function load()
 	else
 		alert("DOMParser not supported");
 }
-
-var team_pages;
-var team_count = 0;
 
 function GetTeamPageIDFromName(team)
 {

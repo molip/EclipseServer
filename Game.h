@@ -39,6 +39,9 @@ public:
 	TechnologyBag& GetTechnologyBag() { return m_techBag; }
 	DiscoveryBag& GetDiscoveryBag() { return m_discBag; }
 
+	const Map& GetMap() const { return m_map; }
+	Map& GetMap() { return m_map; }
+
 private:
 	Team& GetTeam(const std::string& name);
 	void StartRound();

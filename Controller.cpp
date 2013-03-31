@@ -137,5 +137,6 @@ void Controller::SendUpdateGame(const Game& game, const std::string& player) con
 			AssertThrow("Controller::SendUpdateGame: Team not chosen yet: " + team.first, !!pTeam);
 			SendMessage(Output::UpdateTeam(*pTeam), game, player);
 		}
+		SendMessage(Output::UpdateMap(game), game, player);
 	}
 }

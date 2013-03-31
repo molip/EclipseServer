@@ -10,6 +10,7 @@
 <script src="game.js"></script>
 <script src="input.js"></script>
 <script src="output.js"></script>
+<script src="map.js"></script>
 
 </head>
 <body onload="load()">
@@ -50,13 +51,21 @@
 	<div id="choose_content"></div>
 	<div id="choose_action"></div>
 </div>
-<div id="game_panel" class="panel">
-	<h2>Game</h2> 
-	<div id="game_tabs"></div>
-	<div id="game_pages"></div>
+<div id="game_panel" class="panel" style="height:615px">
+	<div id="images" style="display:none"></div>
+	<div style="margin:5px; border:1px solid; float:left;">
+		<div id="map" style="position:relative; width:600px; height:600px">
+			<canvas id="map_canvas" width="600" height="600" style="position:absolute; background-color:black"></canvas>
+			<canvas id="map_canvas2"  width="600" height="600" style="position:absolute; "></canvas>
+		</div>
+	</div>
+	<div id="players" style="margin:5px; border:1px solid; float:left">
+		<div id="game_tabs"></div>
+		<div id="game_pages"></div>
+	</div>
 </div>
-<br/>
-<div id="output">
+<br>
+<div id="output" style="clear:both">
 </div>
 </body>
 </html>
