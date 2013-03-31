@@ -24,6 +24,8 @@ extern bool _DebugBreak();
 	#define ASSERT(f) (f)
 #endif
 
+extern std::string FormatInt(int n);
+
 extern void AssertThrow(const std::string& msg, bool b = false);
 extern void AssertThrowXML(const std::string& msg, bool b = false);
 extern void AssertThrowModel(const std::string& msg, bool b = false);

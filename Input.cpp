@@ -4,6 +4,7 @@
 #include "Controller.h"
 #include "Output.h"
 #include "Race.h"
+#include "Player.h"
 
 #include <sstream>
 
@@ -68,11 +69,10 @@ MessagePtr CreateMessage(const std::string& xml)
 
 //-----------------------------------------------------------------------------
 	
-Register::Register(const TiXmlElement& node)
+Register::Register(const TiXmlElement& node) : m_idPlayer(0)
 {
-	auto p = node.Attribute("player");
-	AssertThrowXML("Register", !!p);
-	m_player = p;
+	node.Attribute("player", &m_idPlayer);
+	AssertThrowXML("Register", m_idPlayer > 0);
 }
 
 JoinGame::JoinGame(const TiXmlElement& node)
@@ -85,13 +85,13 @@ JoinGame::JoinGame(const TiXmlElement& node)
 namespace 
 {
 	// Should be a command?
-	void DoJoinGame(Controller& controller, const std::string& player, Game& game)
+	void DoJoinGame(Controller& controller, Player& player, Game& game)
 	{
-		controller.SetPlayerGame(player,  &game);
+		player.SetCurrentGame(&game);
 
 		if (game.HasStarted())
 		{
-			controller.SendUpdateGame(game, player);
+			controller.SendUpdateGame(game, &player);
 			// TODO: Notify other players.
 		}
 		else
@@ -99,13 +99,13 @@ namespace
 			game.AddTeam(player); // Might already have joined,  doesn't matter.
 			controller.SendMessage(Output::ShowLobby(), player);
 			controller.SendMessage(Output::UpdateLobby(game), game);
-			controller.SendMessage(Output::UpdateLobbyControls(player == game.GetOwner()), player);
+			controller.SendMessage(Output::UpdateLobbyControls(&player == &game.GetOwner()), player);
 		}
 		controller.SendUpdateGameList();
 	}
 }
 
-bool JoinGame::Process(Controller& controller, const std::string& player) const 
+bool JoinGame::Process(Controller& controller, Player& player) const 
 {
 	Game* pGame = controller.GetModel().FindGame(m_game);
 	AssertThrow("JoinGame: game does not exist: " + m_game, !!pGame);
@@ -114,7 +114,7 @@ bool JoinGame::Process(Controller& controller, const std::string& player) const
 	return true;
 }
 
-bool CreateGame::Process(Controller& controller, const std::string& player) const 
+bool CreateGame::Process(Controller& controller, Player& player) const 
 {
 	Model& model = controller.GetModel();
 	
@@ -127,14 +127,14 @@ bool CreateGame::Process(Controller& controller, const std::string& player) cons
 	return true;	
 }
 
-bool StartGame::Process(Controller& controller, const std::string& player) const 
+bool StartGame::Process(Controller& controller, Player& player) const 
 {
 	Model& model = controller.GetModel();
 	
-	Game* pGame = controller.GetPlayerGame(player);
+	Game* pGame = player.GetCurrentGame();
 
 	AssertThrow("StartGame: player not registered in any game", !!pGame);
-	AssertThrow("StartGame: player isn't the owner of game: " + pGame->GetName(), player == pGame->GetOwner());
+	AssertThrow("StartGame: player isn't the owner of game: " + pGame->GetName(), &player == &pGame->GetOwner());
 	AssertThrow("StartGame: game already started: " + pGame->GetName(), !pGame->HasStarted());
 	
 	pGame->StartChooseTeamPhase();
@@ -151,11 +151,11 @@ ChooseTeam::ChooseTeam(const TiXmlElement& node)
 	m_colour = node.Attribute("colour");
 }
 
-bool ChooseTeam::Process(Controller& controller, const std::string& player) const 
+bool ChooseTeam::Process(Controller& controller, Player& player) const 
 {
-	Game* pGame = controller.GetPlayerGame(player);
+	Game* pGame = player.GetCurrentGame();
 	AssertThrow("ChooseTeam: player not registered in any game", !!pGame);
-	AssertThrow("ChooseTeam: player played out of turn", player == pGame->GetCurrentTeamName());
+	AssertThrow("ChooseTeam: player played out of turn", &player == &pGame->GetCurrentPlayer());
 	AssertThrow("ChooseTeam: game not in choose phase: " + pGame->GetName(), pGame->GetPhase() == Game::Phase::ChooseTeam);
 
 	RaceType race = GetRaceFromName(m_race);

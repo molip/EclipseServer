@@ -7,6 +7,7 @@
 typedef TiXmlDocument XmlDoc;
 
 class Controller;
+class Player;
 
 namespace Input 
 {
@@ -15,7 +16,7 @@ class Message
 {
 public:
 	virtual ~Message() {}
-	virtual bool Process(Controller& controller, const std::string& player) const { return true; }
+	virtual bool Process(Controller& controller, Player& player) const { return true; }
 };
 
 typedef std::unique_ptr<Message> MessagePtr;
@@ -26,32 +27,32 @@ MessagePtr CreateMessage(const std::string& xml);
 struct Register: Message 
 {
 	Register(const TiXmlElement& node);
-	const std::string& GetPlayer() const { return m_player; }
+	int GetPlayerID() const { return m_idPlayer; }
 private:
-	std::string m_player;
+	int m_idPlayer;
 };
 
 struct JoinGame: Message 
 {
 	JoinGame(const TiXmlElement& node);
-	virtual bool Process(Controller& controller, const std::string& player) const override; 
+	virtual bool Process(Controller& controller, Player& player) const override; 
 	std::string m_game;
 };
 
 struct CreateGame : Message 
 {
-	virtual bool Process(Controller& controller, const std::string& player) const override; 
+	virtual bool Process(Controller& controller, Player& player) const override; 
 };
 
 struct StartGame : Message 
 {
-	virtual bool Process(Controller& controller, const std::string& player) const override; 
+	virtual bool Process(Controller& controller, Player& player) const override; 
 };
 
 struct ChooseTeam : Message 
 {
 	ChooseTeam(const TiXmlElement& node);
-	virtual bool Process(Controller& controller, const std::string& player) const override; 
+	virtual bool Process(Controller& controller, Player& player) const override; 
 	std::string m_race, m_colour;
 };
 

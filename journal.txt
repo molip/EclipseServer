@@ -13,3 +13,7 @@ OnCommandUpdateLobby - 	not happy with checking owner name in client. Need separ
  
 12/3/13
 Some classes just wrap an enum, e.g. Technology, Race. Do they need to be classes, or just a bunch of functions that take an enum? There's no advantage to passing them around as a class really. 
+
+31/3/13
+Need a permanent list of players for authentication / remembering current game etc. 
+Replacing string player IDs with Player&. There are loads. 

@@ -114,6 +114,12 @@
     <ClInclude Include="Hex.h">
       <Filter>Model</Filter>
     </ClInclude>
+    <ClInclude Include="Players.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -205,6 +211,12 @@
     </ClCompile>
     <ClCompile Include="Hex.cpp">
       <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Players.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

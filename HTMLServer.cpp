@@ -4,6 +4,8 @@
 
 #include "App.h"
 #include "Game.h"
+#include "Controller.h"
+#include "Model.h"
 
 namespace
 {
@@ -34,12 +36,7 @@ namespace
 							"</html>";
 		return html;
 	}
-	std::string GetGameURL(const std::string& game, const std::string& player)
-	{
-		std::ostringstream ss;
-		ss << "/game?game=" << game << "&player=" << player;
-		return ss.str();
-	}
+
 	bool ReplaceToken(std::string& str, const std::string& token, const std::string& real)
 	{
 		size_t pos = str.find(token);
@@ -61,20 +58,24 @@ bool HTMLServer::OnHTTPRequest(const std::string& url, const std::string& host, 
 {
 	if (url == "/game")
 	{
-		auto pid = queries.find("player");
+		auto pid = queries.find("player"); // TODO: Authentication.
 		if (pid != queries.end())
 		{
-			ASSERT(host.substr(host.size() - 5) == ":8999");
-			std::string wsURL = std::string("ws://") + host.substr(0, host.size() - 4) + "8998";
+			const std::string& name = pid->second;
+			if (const Player* pPlayer = Controller::Get()->GetModel().FindPlayer(name))
+			{
+				ASSERT(host.substr(host.size() - 5) == ":8999");
+				std::string wsURL = std::string("ws://") + host.substr(0, host.size() - 4) + "8998";
 			
-			std::string sPage = LoadFile("web\\game.html");
-			ReplaceToken(sPage, "%PLAYER%", pid->second);
-			ReplaceToken(sPage, "%WSURL%", wsURL);
+				std::string sPage = LoadFile("web\\game.html");
+				ReplaceToken(sPage, "%PLAYER_ID%", FormatInt(pPlayer->GetID()));
+				ReplaceToken(sPage, "%WSURL%", wsURL);
 
-			reply = sPage;
-			return true;
+				reply = sPage;
+				return true;
+			}
 		}
-		reply = "No player name found";
+		reply = "Player name not recognised";
 		return true;
 	}
 	return false; 

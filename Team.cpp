@@ -4,7 +4,7 @@
 #include "Game.h"
 #include "EnumRange.h"
 
-Team::Team(Game& game, const std::string player, RaceType race, Colour colour) : 
+Team::Team(Game& game, Player& player, RaceType race, Colour colour) : 
 	m_game(game), m_player(player), m_race(race), m_colour(colour), m_nColonyShipsUsed(0), m_repTrack(*this)
 {
 	Race r(race);

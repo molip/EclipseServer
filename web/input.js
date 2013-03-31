@@ -182,7 +182,7 @@ function OnCommandUpdateTeams(elem)
 	document.getElementById('game_tabs').innerHTML = html_tabs
 	document.getElementById('game_pages').innerHTML = html_pages
 	
-	ShowTeamPage(playerName)
+	ShowTeamPage(data.playerID)
 }
 
 function OnCommandUpdateTeam(elem)

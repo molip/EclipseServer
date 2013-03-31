@@ -18,31 +18,19 @@ public:
 	Controller(Model& model);
 	void SetServer(WSServer* p) { m_pServer = p; }
 
-	void OnMessage(const Input::MessagePtr& pMsg, const std::string& player);
-	void OnPlayerConnected(const std::string& player);
-	void OnPlayerDisconnected(const std::string& player);
+	void OnMessage(const Input::MessagePtr& pMsg, Player& player);
+	void OnPlayerConnected(Player& player);
+	void OnPlayerDisconnected(Player& player);
 
-	bool SendMessage(const Output::Message& msg, const std::string& player) const;
-	bool SendMessage(const Output::Message& msg, const Game& game, const std::string& player = "") const;
+	bool SendMessage(const Output::Message& msg, const Player& player) const;
+	bool SendMessage(const Output::Message& msg, const Game& game, const Player* pPlayer = nullptr) const;
 
 	Model& GetModel() { return m_model; }
 	
-	void SendUpdateGameList(const std::string& player = "") const;
-	void SendUpdateGame(const Game& game, const std::string& player = "") const;
-
-	//Player* FindPlayer(const std::string& name) { return m_players.FindPlayer(name); }
-	//const Player* FindPlayer(const std::string& name) const { return m_players.FindPlayer(name); }
-
-	const Game* GetPlayerGame(const std::string& player) const;
-	Game* GetPlayerGame(const std::string& player);
-	void SetPlayerGame(const std::string& player, const Game* pGame);
+	void SendUpdateGameList(const Player* pPlayer = nullptr) const;
+	void SendUpdateGame(const Game& game, const Player* pPlayer = nullptr) const;
 
 private:
-	void UnregisterPlayerFromGame(const std::string& player, const Game* pGame);
-
-	std::map<std::string, const Game*>		m_players;
-	std::map<const Game*, std::set<std::string>>	m_games;
-
 	Model& m_model;
 	WSServer* m_pServer;
 };

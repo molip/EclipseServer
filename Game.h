@@ -16,18 +16,19 @@ class Game
 public:
 	enum class Phase { Lobby, ChooseTeam, Main };
 
-	Game(const std::string& name, const std::string& owner);
+	Game(const std::string& name, Player& owner);
 	const std::string& GetName() const { return m_name; }
-	const std::string& GetOwner() const { return m_owner; }
+	const Player& GetOwner() const { return m_owner; }
 
-	bool AddTeam(const std::string& name);
-	const std::map<std::string, TeamPtr>& GetTeams() const { return m_teams; }
-	const std::vector<std::string>& GetTeamOrder() const { return m_teamOrder; }
+	bool AddTeam(Player& player);
+	const std::map<Player*, TeamPtr>& GetTeams() const { return m_teams; }
+	const std::vector<Player*>& GetTeamOrder() const { return m_teamOrder; }
 
-	void AssignTeam(const std::string& name, RaceType race, Colour colour);
-	bool HasTeamChosen(const std::string& name) const;
-	const Team& GetTeam(const std::string& name) const;
-	const std::string& GetCurrentTeamName() const;
+	void AssignTeam(Player& player, RaceType race, Colour colour);
+	bool HasTeamChosen(Player& player) const;
+	const Team& GetTeam(const Player& player) const;
+	const Player& GetCurrentPlayer() const;
+	Player& GetCurrentPlayer();
 	Team& GetCurrentTeam();
 	const Team* GetTeamFromColour(Colour c) const;
 
@@ -44,26 +45,27 @@ public:
 	Map& GetMap() { return m_map; }
 
 private:
-	Team& GetTeam(const std::string& name);
+	Team& GetTeam(Player& player);
 	void StartRound();
 
 	void AssertStarted() const;
 	void AdvanceTurn();
 	
-	std::string m_name, m_owner;
+	std::string m_name;
+	Player& m_owner;
 	Phase m_phase;
 
 	Map	m_map;
 	std::multiset<TechType> m_techs;
 
-	std::map<std::string, TeamPtr> m_teams;
+	std::map<Player*, TeamPtr> m_teams;
 	
 	ReputationBag m_repBag;
 	TechnologyBag m_techBag;
 	DiscoveryBag m_discBag;
 	HexBag m_hexBag[HexRing::_Count];
 
-	std::vector<std::string> m_teamOrder;
+	std::vector<Player*> m_teamOrder;
 	std::set<RaceType, Colour> m_availableRaces;
 	int m_iTurn, m_iRound;
 	int m_iStartTeam, m_iStartTeamNext;

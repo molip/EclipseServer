@@ -92,6 +92,8 @@
     <ClInclude Include="MongooseServer.h" />
     <ClInclude Include="Output.h" />
     <ClInclude Include="HTMLServer.h" />
+    <ClInclude Include="Player.h" />
+    <ClInclude Include="Players.h" />
     <ClInclude Include="PopulationTrack.h" />
     <ClInclude Include="Race.h" />
     <ClInclude Include="Reputation.h" />
@@ -127,6 +129,8 @@
     <ClCompile Include="mongoose.c" />
     <ClCompile Include="Output.cpp" />
     <ClCompile Include="HTMLServer.cpp" />
+    <ClCompile Include="Player.cpp" />
+    <ClCompile Include="Players.cpp" />
     <ClCompile Include="PopulationTrack.cpp" />
     <ClCompile Include="Race.cpp" />
     <ClCompile Include="Reputation.cpp" />

@@ -4,6 +4,7 @@
 #include "Team.h"
 #include "Race.h"
 #include "EnumRange.h"
+#include "Player.h"
 
 namespace Output
 {
@@ -85,27 +86,27 @@ UpdateGameList::UpdateGameList(const Model& model) : Update("game_list")
 	{
 		auto pGameNode = AddElement("game", *m_pRoot);
 		pGameNode->SetAttribute("name", g->GetName());
-		pGameNode->SetAttribute("owner", g->GetOwner());
+		pGameNode->SetAttribute("owner", g->GetOwner().GetName());
 		pGameNode->SetAttribute("started", g->HasStarted());
 	
 		for (auto& i : g->GetTeams())
-			if (i.first != g->GetOwner())
+			if (i.first != &g->GetOwner())
 			{
 				auto pPlayerNode = AddElement("player", *pGameNode);
-				pPlayerNode->SetAttribute("name", i.first);
+				pPlayerNode->SetAttribute("name", i.first->GetName());
 			}
 	}
 }
 
 UpdateLobby::UpdateLobby(const Game& game) : Update("lobby")
 {
-	m_pRoot->SetAttribute("owner", game.GetOwner());
+	m_pRoot->SetAttribute("owner", game.GetOwner().GetName());
 	m_pRoot->SetAttribute("game", game.GetName());
 	for (auto& i : game.GetTeams())
-		if (i.first != game.GetOwner())
+		if (i.first != &game.GetOwner())
 		{
 			auto pPlayerNode = AddElement("player", *m_pRoot);
-			pPlayerNode->SetAttribute("name", i.first);
+			pPlayerNode->SetAttribute("name", i.first->GetName());
 		}
 }
 
@@ -120,10 +121,10 @@ UpdateChoose::UpdateChoose(const Game& game) : Update("choose_team")
 	for (auto& i : game.GetTeamOrder())
 	{
 		auto pTeamNode = AddElement("team", *m_pRoot);
-		pTeamNode->SetAttribute("name", i);
-		if (game.HasTeamChosen(i))
+		pTeamNode->SetAttribute("name", i->GetName());
+		if (game.HasTeamChosen(*i))
 		{
-			const Team& team = game.GetTeam(i);
+			const Team& team = game.GetTeam(*i);
 			pTeamNode->SetAttribute("race", GetRaceName(team.GetRace()));
 			pTeamNode->SetAttribute("colour", GetColourName(team.GetColour()));
 		}
@@ -135,18 +136,18 @@ UpdateTeams::UpdateTeams(const Game& game) : Update("teams")
 	AssertThrow("UpdateTeams: Game not started yet: " + game.GetName(), game.GetPhase() == Game::Phase::Main);
 
 	m_pRoot->SetAttribute("teams", game.GetName());
-	for (auto& name : game.GetTeamOrder())
+	for (Player* pPlayer : game.GetTeamOrder())
 	{
-		AssertThrow("UpdateTeams: Team not chosen yet: " + name, game.HasTeamChosen(name));
+		AssertThrow("UpdateTeams: Team not chosen yet: " + pPlayer->GetName(), game.HasTeamChosen(*pPlayer));
 
 		auto pTeamNode = AddElement("team", *m_pRoot);
-		pTeamNode->SetAttribute("name", name);
+		pTeamNode->SetAttribute("name", pPlayer->GetName());
 	}
 }
 
 UpdateTeam::UpdateTeam(const Team& team) : Update("team")
 {
-	m_pRoot->SetAttribute("name", team.GetPlayer());
+	m_pRoot->SetAttribute("name", team.GetPlayer().GetName());
 	m_pRoot->SetAttribute("race", GetRaceName(team.GetRace()));
 	m_pRoot->SetAttribute("colour", GetColourName(team.GetColour()));
 }

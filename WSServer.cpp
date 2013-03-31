@@ -4,6 +4,8 @@
 #include "Controller.h"
 #include "Output.h"
 #include "Input.h"
+#include "Player.h"
+#include "Model.h"
 
 WSServer::WSServer(Controller& controller) : MongooseServer(8998), m_controller(controller)
 {
@@ -26,13 +28,13 @@ void WSServer::OnMessage(ClientID client, const std::string& message)
 		{
 			if (auto pRegister = dynamic_cast<const Input::Register*>(pMsg.get()))
 			{
-				RegisterPlayer(client, pRegister->GetPlayer());
+				RegisterPlayer(client, m_controller.GetModel().FindPlayer(pRegister->GetPlayerID()));
 			}
 			else
 			{
 				auto i = m_mapClientToPlayer.find(client);
 				if (i != m_mapClientToPlayer.end())
-					m_controller.OnMessage(pMsg, i->second);
+					m_controller.OnMessage(pMsg, *i->second);
 			}
 		}
 		else
@@ -44,19 +46,19 @@ void WSServer::OnMessage(ClientID client, const std::string& message)
 	}
 }
 
-void WSServer::RegisterPlayer(ClientID client, const std::string& player)
+void WSServer::RegisterPlayer(ClientID client, Player& player)
 {
-	auto i = m_mapPlayerToClient.find(player);
+	auto i = m_mapPlayerToClient.find(&player);
 	if (i != m_mapPlayerToClient.end())
 	{
 		__super::SendMessage(client, "ERROR:DUPLICATE_PLAYER");
 		return;
 	}
 		
-	m_mapPlayerToClient[player] = client;
-	m_mapClientToPlayer[client] = player;
+	m_mapPlayerToClient[&player] = client;
+	m_mapClientToPlayer[client] = &player;
 
-	std::cout << "INFO: Client registered: " << client << " -> " << player << std::endl;
+	std::cout << "INFO: Client registered: " << client << " -> " << player.GetName() << std::endl;
 	m_controller.OnPlayerConnected(player);
 }
 
@@ -70,13 +72,13 @@ void WSServer::OnDisconnect(ClientID client)
 	else
 	{
 		std::cout << "INFO: Client disconnected: " << client << std::endl;
-		m_controller.OnPlayerDisconnected(i->second);
+		m_controller.OnPlayerDisconnected(*i->second);
 		m_mapPlayerToClient.erase(i->second);
 		m_mapClientToPlayer.erase(client);
 	}
 }
 
-bool WSServer::SendMessage(const Output::Message& msg, const std::string& player) const
+bool WSServer::SendMessage(const Output::Message& msg, const Player& player) const
 {
 	return SendMessage(msg.GetXML(), player);
 }
@@ -86,11 +88,9 @@ void WSServer::BroadcastMessage(const Output::Message& msg) const
 	return BroadcastMessage(msg.GetXML());
 }
 
-bool WSServer::SendMessage(const std::string& msg, const std::string& player) const
+bool WSServer::SendMessage(const std::string& msg, const Player& player) const
 {
-	AssertThrow("WSServer::SendMessage: No player specified", !player.empty());
-
-	auto i = m_mapPlayerToClient.find(player);
+	auto i = m_mapPlayerToClient.find(const_cast<Player*>(&player));
 	if (i == m_mapPlayerToClient.end())
 		return false;
 

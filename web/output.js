@@ -67,8 +67,8 @@ function SendRegister()
 	var doc = CreateXMLDoc()
 	var node = CreateCommandNode(doc, "register")
 	
-	node.setAttribute("player", playerName)
-	//AddTextElem(doc, node, "player", playerName)
+	node.setAttribute("player", data.playerID)
+	//AddTextElem(doc, node, "player", data.playerID)
 
 	SendXMLDoc(doc)
 }

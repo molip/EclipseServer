@@ -21,15 +21,16 @@ enum class RaceType;
 
 class Game;
 class Hex;
+class Player;
 
 class Team
 {
 public:
 
-	Team(Game& game, const std::string player, RaceType race, Colour colour);
+	Team(Game& game, Player& player, RaceType race, Colour colour);
 	~Team();
 
-	const std::string& GetPlayer() const { return m_player; }
+	const Player& GetPlayer() const { return m_player; }
 	const RaceType& GetRace() const { return m_race; }
 	Colour GetColour() const { return m_colour; }
 
@@ -49,7 +50,7 @@ public:
 
 private:
 	Game& m_game;
-	std::string m_player;
+	Player& m_player;
 	RaceType m_race;
 	Colour m_colour;
 
