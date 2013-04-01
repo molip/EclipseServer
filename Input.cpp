@@ -77,11 +77,10 @@ Register::Register(const TiXmlElement& node) : m_idPlayer(0)
 	AssertThrowXML("Register", m_idPlayer > 0);
 }
 
-JoinGame::JoinGame(const TiXmlElement& node)
+JoinGame::JoinGame(const TiXmlElement& node) : m_idGame(0)
 {
-	auto p = node.Attribute("game");
-	AssertThrowXML("JoinGame", !!p);
-	m_game = p;
+	node.Attribute("game", &m_idGame);
+	AssertThrowXML("JoinGame", m_idGame > 0);
 }
 
 namespace 
@@ -102,8 +101,8 @@ namespace
 
 bool JoinGame::Process(Controller& controller, Player& player) const 
 {
-	Game* pGame = controller.GetModel().FindGame(m_game);
-	AssertThrow("JoinGame: game does not exist: " + m_game, !!pGame);
+	Game* pGame = controller.GetModel().FindGame(m_idGame);
+	AssertThrow("JoinGame: game does not exist: " + FormatInt(m_idGame), !!pGame);
 
 	DoJoinGame(controller, player, *pGame);
 	return true;

@@ -106,7 +106,7 @@ function OnCommandUpdateGameList(elem)
 {
 	var xsl = '\
 		<xsl:for-each select="game">\
-			<a href="Join Game" onclick="SendJoinGame(\'{@name}\');return false;"><xsl:value-of select="@name"/></a>\
+			<a href="Join Game" onclick="SendJoinGame(\'{@id}\');return false;"><xsl:value-of select="@name"/></a>\
 			<xsl:if test="@started=1">\
 			[started]\
 			</xsl:if>\

@@ -27,11 +27,11 @@ function SendXMLDoc(doc)
 	ws.send(str)
 }
 
-function SendJoinGame(game)
+function SendJoinGame(id)
 {
 	var doc = CreateXMLDoc()
 	var node = CreateCommandNode(doc, "join_game")
-	node.setAttribute("game", game)
+	node.setAttribute("game", id)
 	SendXMLDoc(doc)
 }
 

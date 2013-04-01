@@ -16,7 +16,9 @@ class Game
 public:
 	enum class Phase { Lobby, ChooseTeam, Main };
 
-	Game(const std::string& name, Player& owner);
+	Game(int id, const std::string& name, Player& owner);
+	
+	int GetID() const { return m_id; }
 	const std::string& GetName() const { return m_name; }
 	const Player& GetOwner() const { return m_owner; }
 
@@ -51,6 +53,7 @@ private:
 	void AssertStarted() const;
 	void AdvanceTurn();
 	
+	int m_id; 
 	std::string m_name;
 	Player& m_owner;
 	Phase m_phase;

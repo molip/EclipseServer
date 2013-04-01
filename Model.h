@@ -8,7 +8,7 @@ class Controller;
 class Model
 {
 public:
-	Model() : m_pController(nullptr) {}
+	Model();
 
 	void SetController(Controller* p) { m_pController = p; }
 
@@ -16,7 +16,7 @@ public:
 
 	const std::vector<GamePtr>& GetGames() const { return m_games; }
 
-	Game* FindGame(const std::string& game);
+	Game* FindGame(int idGame);
 
 	Player& FindPlayer(int idPlayer) { return m_players.FindPlayer(idPlayer); }
 	const Player& FindPlayer(int idPlayer) const { return m_players.FindPlayer(idPlayer); }
@@ -25,6 +25,7 @@ public:
 private:
 	std::vector<GamePtr> m_games;
 	Players m_players;
+	int m_nNextGameID;
 
 	Controller* m_pController;
 };

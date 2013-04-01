@@ -86,6 +86,7 @@ UpdateGameList::UpdateGameList(const Model& model) : Update("game_list")
 	{
 		auto pGameNode = AddElement("game", *m_pRoot);
 		pGameNode->SetAttribute("name", g->GetName());
+		pGameNode->SetAttribute("id", g->GetID());
 		pGameNode->SetAttribute("owner", g->GetOwner().GetName());
 		pGameNode->SetAttribute("started", g->HasStarted());
 	

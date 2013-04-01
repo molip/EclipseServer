@@ -36,7 +36,7 @@ struct JoinGame: Message
 {
 	JoinGame(const TiXmlElement& node);
 	virtual bool Process(Controller& controller, Player& player) const override; 
-	std::string m_game;
+	int m_idGame;
 };
 
 struct ExitGame : Message // Returns player to game list - they're still in the game.
