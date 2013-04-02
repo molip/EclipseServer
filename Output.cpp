@@ -74,7 +74,7 @@ Update::Update(const std::string& param) : Command("update")
 	m_pRoot->SetAttribute("param", param);
 }
 
-Action::Action(const std::string& param, bool bActive) : Command("action")
+Choose::Choose(const std::string& param, bool bActive) : Command("choose")
 {
 	m_pRoot->SetAttribute("param", param);
 	m_pRoot->SetAttribute("active", bActive);
@@ -189,7 +189,7 @@ ShowChoose::ShowChoose() :		Show("choose_panel") {}
 ShowGame::ShowGame() :			Show("game_panel") {}
 ShowLobby::ShowLobby() :		Show("lobby_panel") {}
 
-ActionChooseTeam::ActionChooseTeam(const Game& game, bool bActive) : Action("choose_team", bActive)
+ChooseTeam::ChooseTeam(const Game& game, bool bActive) : Choose("team", bActive)
 {
 	if (!bActive)
 		return;
@@ -215,7 +215,7 @@ ActionChooseTeam::ActionChooseTeam(const Game& game, bool bActive) : Action("cho
 		}
 }
 
-ActionChooseAction::ActionChooseAction(const Game& game, bool bActive) : Action("choose_action", bActive)
+ChooseAction::ChooseAction(const Game& game, bool bActive) : Choose("action", bActive)
 {
 }
 

@@ -48,9 +48,9 @@ struct Update : Command
 	Update(const std::string& param);
 };
 
-struct Action : Command
+struct Choose : Command
 {
-	Action(const std::string& param, bool bActive = true);
+	Choose(const std::string& param, bool bActive = true);
 };
 
 struct UpdateGameList : Update { UpdateGameList(const Model& model); };
@@ -61,8 +61,8 @@ struct UpdateTeams : Update { UpdateTeams(const Game& game); };
 struct UpdateTeam : Update { UpdateTeam(const Team& team); };
 struct UpdateMap : Update { UpdateMap(const Game& game); };
 
-struct ActionChooseTeam : Action { ActionChooseTeam(const Game& game, bool bActive); };
-struct ActionChooseAction : Action { ActionChooseAction(const Game& game, bool bActive); };
+struct ChooseTeam : Choose { ChooseTeam(const Game& game, bool bActive); };
+struct ChooseAction : Choose { ChooseAction(const Game& game, bool bActive); };
 
 struct ShowGameList : Show { ShowGameList(); };
 struct ShowLobby : Show { ShowLobby(); };

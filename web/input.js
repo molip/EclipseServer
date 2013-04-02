@@ -38,8 +38,8 @@ function OnCommand(elem)
 		OnCommandShow(elem)
 	else if (type == 'update')
 		OnCommandUpdate(elem)
-	else if (type == 'action')
-		OnCommandAction(elem)
+	else if (type == 'choose')
+		OnCommandChoose(elem)
 	else
 		writeToScreen('OnCommand: unknown command: ' + type)
 }
@@ -91,17 +91,17 @@ function OnCommandUpdate(elem)
         writeToScreen('OnCommandUpdate: unknown param: ' + param)
 }
 
-function OnCommandAction(elem)
+function OnCommandChoose(elem)
 {
 	var param = elem.getAttribute('param')
 	var active = IsTrue(elem.getAttribute('active'))
 
-	if (param == "choose_team")
-		OnCommandActionChooseTeam(elem, active)
-	else if (param == "start_turn")
-		OnCommandActionChooseAction(elem, active)
+	if (param == "team")
+		OnCommandChooseTeam(elem, active)
+	else if (param == "action")
+		OnCommandChooseAction(elem, active)
 	else
-        writeToScreen('OnCommandAction: unknown param: ' + param)
+        writeToScreen('OnCommandChoose: unknown param: ' + param)
 }
 
 function OnCommandUpdateGameList(elem)
@@ -259,7 +259,7 @@ function OnCommandUpdateMap(elem)
 	canvas2.addEventListener("mousemove", OnMouse)
 }
 
-function OnCommandActionChooseTeam(elem, active)
+function OnCommandChooseTeam(elem, active)
 {		
 	var div = document.getElementById('choose_team')
 	var xsl = ''
@@ -279,7 +279,7 @@ function OnCommandActionChooseTeam(elem, active)
 	SetDivFromCommandElem(div, elem, xsl) 
 }
 
-function OnCommandActionChooseAction(elem, active)
+function OnCommandChooseAction(elem, active)
 {
 	var div = document.getElementById('choose_action')
 	div.style.display = active ? "block" : "none"

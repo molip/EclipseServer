@@ -88,7 +88,7 @@ void Controller::SendUpdateGame(const Game& game, const Player* pPlayer) const
 		SendMessage(Output::UpdateChoose(game), game, pPlayer);
 
 		if (bSendToCurrentPlayer)
-			SendMessage(Output::ActionChooseTeam(game, true), game.GetCurrentPlayer());
+			SendMessage(Output::ChooseTeam(game, true), game.GetCurrentPlayer());
 	}
 	else if(game.GetPhase() == Game::Phase::Main)
 	{
@@ -104,6 +104,6 @@ void Controller::SendUpdateGame(const Game& game, const Player* pPlayer) const
 		SendMessage(Output::UpdateMap(game), game, pPlayer);
 
 		if (bSendToCurrentPlayer) // TODO: Send current turn state if already started.
-			SendMessage(Output::ActionStartTurn(game, true), game.GetCurrentPlayer());
+			SendMessage(Output::ChooseAction(game, true), game.GetCurrentPlayer());
 	}
 }

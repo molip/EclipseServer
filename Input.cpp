@@ -177,7 +177,7 @@ bool ChooseTeam::Process(Controller& controller, Player& player) const
 
 	pGame->AssignTeam(player, race, colour);
 
-	controller.SendMessage(Output::ActionChooseTeam(*pGame, false), player);
+	controller.SendMessage(Output::ChooseTeam(*pGame, false), player);
 	controller.SendUpdateGame(*pGame);
 
 	return true;	
@@ -195,10 +195,10 @@ bool ChooseAction::Process(Controller& controller, Player& player) const
 	AssertThrow("ChooseAction: player played out of turn", &player == &pGame->GetCurrentPlayer());
 	AssertThrow("ChooseAction: game not in main phase: " + pGame->GetName(), pGame->GetPhase() == Game::Phase::Main);
 
-	controller.SendMessage(Output::ActionStartTurn(*pGame, false), player);
+	controller.SendMessage(Output::ChooseAction(*pGame, false), player);
 	pGame->HaveTurn(player);
 
-	controller.SendMessage(Output::ActionStartTurn(*pGame, true), pGame->GetCurrentPlayer());
+	controller.SendMessage(Output::ChooseAction(*pGame, true), pGame->GetCurrentPlayer());
 
 	return true;	
 }
