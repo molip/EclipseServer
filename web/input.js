@@ -200,8 +200,25 @@ function OnCommandUpdateTeam(elem)
 
 function OnCommandUpdateMap(elem)
 {
-	//hexes = []
+	var canvas = document.getElementById('map_canvas')
 
+	var canvas2 = document.getElementById('map_canvas2')
+	if (canvas2 == null)
+	{
+		canvas2 = document.createElement('canvas');
+		canvas2.setAttribute('id', 'map_canvas2');
+		canvas2.setAttribute('width', canvas.offsetWidth);
+		canvas2.setAttribute('height', canvas.offsetHeight);
+		canvas2.style.backgroundColor = "transparent";
+		canvas2.style.position = "absolute";
+		canvas2.style.left = canvas.offsetLeft+'px';
+		canvas2.style.top = canvas.offsetTop+'px';
+		canvas2.style.width = canvas.offsetWidth+'px';
+		canvas2.style.height = canvas.offsetHeight+'px';
+
+		canvas.parentNode.appendChild(canvas2);
+	}
+	
 	var xsl = '\
 		<xsl:for-each select="hex">\
 			<img id="hex_{@id}" src="/images/hexes/{@id}.png"/>\
@@ -211,7 +228,6 @@ function OnCommandUpdateMap(elem)
 	
 	var size_x = data.hex_width, size_y = data.hex_height
 	
-	var canvas = document.getElementById('map_canvas')
 	var ctx = canvas.getContext("2d");
 	ctx.setTransform(1, 0, 0, 1, 0, 0)
 	ctx.clearRect(0, 0, 600, 600);
