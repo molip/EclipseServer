@@ -98,6 +98,8 @@ function OnCommandAction(elem)
 
 	if (param == "choose_team")
 		OnCommandActionChooseTeam(elem, active)
+	else if (param == "start_turn")
+		OnCommandActionChooseAction(elem, active)
 	else
         writeToScreen('OnCommandAction: unknown param: ' + param)
 }
@@ -152,7 +154,7 @@ function OnCommandUpdateChooseTeam(elem)
 			<br/>\
 		</xsl:for-each>\
 	'
-	SetDivFromCommandElem(document.getElementById('choose_content'), elem, xsl) 
+	SetDivFromCommandElem(document.getElementById('choose_team_content'), elem, xsl) 
 }
 
 function OnCommandUpdateTeams(elem)
@@ -243,7 +245,7 @@ function OnCommandUpdateMap(elem)
 
 function OnCommandActionChooseTeam(elem, active)
 {		
-	var div = document.getElementById('choose_action')
+	var div = document.getElementById('choose_team')
 	var xsl = ''
 	if (active)
 	{
@@ -259,4 +261,10 @@ function OnCommandActionChooseTeam(elem, active)
 		'
 	}
 	SetDivFromCommandElem(div, elem, xsl) 
+}
+
+function OnCommandActionChooseAction(elem, active)
+{
+	var div = document.getElementById('choose_action')
+	div.style.display = active ? "block" : "none"
 }

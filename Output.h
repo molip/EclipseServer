@@ -61,7 +61,8 @@ struct UpdateTeams : Update { UpdateTeams(const Game& game); };
 struct UpdateTeam : Update { UpdateTeam(const Team& team); };
 struct UpdateMap : Update { UpdateMap(const Game& game); };
 
-struct ActionChoose : Action { ActionChoose(const Game& game, bool bActive); };
+struct ActionChooseTeam : Action { ActionChooseTeam(const Game& game, bool bActive); };
+struct ActionChooseAction : Action { ActionChooseAction(const Game& game, bool bActive); };
 
 struct ShowGameList : Show { ShowGameList(); };
 struct ShowLobby : Show { ShowLobby(); };

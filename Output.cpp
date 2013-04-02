@@ -189,7 +189,7 @@ ShowChoose::ShowChoose() :		Show("choose_panel") {}
 ShowGame::ShowGame() :			Show("game_panel") {}
 ShowLobby::ShowLobby() :		Show("lobby_panel") {}
 
-ActionChoose::ActionChoose(const Game& game, bool bActive) : Action("choose_team", bActive)
+ActionChooseTeam::ActionChooseTeam(const Game& game, bool bActive) : Action("choose_team", bActive)
 {
 	if (!bActive)
 		return;
@@ -213,6 +213,10 @@ ActionChoose::ActionChoose(const Game& game, bool bActive) : Action("choose_team
 				e->SetAttribute("colour", GetColourName(c));
 			}
 		}
+}
+
+ActionChooseAction::ActionChooseAction(const Game& game, bool bActive) : Action("choose_action", bActive)
+{
 }
 
 } // namespace

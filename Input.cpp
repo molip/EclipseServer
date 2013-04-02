@@ -50,6 +50,8 @@ MessagePtr CreateCommand(const std::string& type, const TiXmlElement& root)
 		return MessagePtr(new StartGame);
 	if (type == "choose_team")
 		return MessagePtr(new ChooseTeam(root));
+	if (type == "choose_action")
+		return MessagePtr(new ChooseAction(root));
 
 	AssertThrow("Input command not recognised: " + type);
 	return nullptr;
@@ -175,8 +177,28 @@ bool ChooseTeam::Process(Controller& controller, Player& player) const
 
 	pGame->AssignTeam(player, race, colour);
 
-	controller.SendMessage(Output::ActionChoose(*pGame, false), player);
+	controller.SendMessage(Output::ActionChooseTeam(*pGame, false), player);
 	controller.SendUpdateGame(*pGame);
+
+	return true;	
+}
+
+ChooseAction::ChooseAction(const TiXmlElement& node)
+{
+	m_action = node.Attribute("action");
+}
+
+bool ChooseAction::Process(Controller& controller, Player& player) const 
+{
+	Game* pGame = player.GetCurrentGame();
+	AssertThrow("ChooseAction: player not registered in any game", !!pGame);
+	AssertThrow("ChooseAction: player played out of turn", &player == &pGame->GetCurrentPlayer());
+	AssertThrow("ChooseAction: game not in main phase: " + pGame->GetName(), pGame->GetPhase() == Game::Phase::Main);
+
+	controller.SendMessage(Output::ActionStartTurn(*pGame, false), player);
+	pGame->HaveTurn(player);
+
+	controller.SendMessage(Output::ActionStartTurn(*pGame, true), pGame->GetCurrentPlayer());
 
 	return true;	
 }

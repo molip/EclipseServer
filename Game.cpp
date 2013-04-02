@@ -155,6 +155,11 @@ void Game::AssignTeam(Player& player, RaceType race, Colour colour)
 		StartMainPhase();
 }
 
+void Game::HaveTurn(Player& player)
+{
+	AdvanceTurn();
+}
+
 void Game::AdvanceTurn()
 {
 	m_iTurn = (m_iTurn + 1) % m_teams.size();

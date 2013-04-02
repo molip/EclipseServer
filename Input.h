@@ -61,4 +61,11 @@ struct ChooseTeam : Message
 	std::string m_race, m_colour;
 };
 
+struct ChooseAction : Message 
+{
+	ChooseAction(const TiXmlElement& node);
+	virtual bool Process(Controller& controller, Player& player) const override; 
+	std::string m_action;
+};
+
 }

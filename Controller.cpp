@@ -67,8 +67,11 @@ void Controller::OnPlayerDisconnected(Player& player)
 
 }
 
+// Called from: Connect, join game, start game, choose team.
 void Controller::SendUpdateGame(const Game& game, const Player* pPlayer) const
 {
+	bool bSendToCurrentPlayer = game.HasStarted() && (!pPlayer || pPlayer == &game.GetCurrentPlayer());
+
 	if (game.GetPhase() == Game::Phase::Lobby)
 	{
 		SendMessage(Output::UpdateLobby(game), game, pPlayer);
@@ -84,8 +87,8 @@ void Controller::SendUpdateGame(const Game& game, const Player* pPlayer) const
 		SendMessage(Output::ShowChoose(), game, pPlayer);
 		SendMessage(Output::UpdateChoose(game), game, pPlayer);
 
-		if (!pPlayer || pPlayer == &game.GetCurrentPlayer())
-			SendMessage(Output::ActionChoose(game, true), game.GetCurrentPlayer());
+		if (bSendToCurrentPlayer)
+			SendMessage(Output::ActionChooseTeam(game, true), game.GetCurrentPlayer());
 	}
 	else if(game.GetPhase() == Game::Phase::Main)
 	{
@@ -99,5 +102,8 @@ void Controller::SendUpdateGame(const Game& game, const Player* pPlayer) const
 			SendMessage(Output::UpdateTeam(*pTeam), game, pPlayer);
 		}
 		SendMessage(Output::UpdateMap(game), game, pPlayer);
+
+		if (bSendToCurrentPlayer) // TODO: Send current turn state if already started.
+			SendMessage(Output::ActionStartTurn(game, true), game.GetCurrentPlayer());
 	}
 }

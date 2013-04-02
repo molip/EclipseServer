@@ -70,6 +70,14 @@ function SendChooseTeam()
 	SendXMLDoc(doc)
 }
 
+function SendChooseAction(action)
+{
+	var doc = CreateXMLDoc()
+	var node = CreateCommandNode(doc, "choose_action")
+	node.setAttribute("action", action)
+	SendXMLDoc(doc)
+}
+
 function SendRegister()
 {
 	var doc = CreateXMLDoc()

@@ -27,6 +27,8 @@ public:
 	const std::vector<Player*>& GetTeamOrder() const { return m_teamOrder; }
 
 	void AssignTeam(Player& player, RaceType race, Colour colour);
+	void HaveTurn(Player& player);
+	
 	bool HasTeamChosen(Player& player) const;
 	const Team& GetTeam(const Player& player) const;
 	const Player& GetCurrentPlayer() const;

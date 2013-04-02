@@ -48,13 +48,12 @@
 	</div>
 </div>
 <div id="choose_panel" class="panel">
-	<h2>Choose</h2> 
+	<h2>Choose Team</h2> 
 	<a href="Back to game list" onclick="SendExitGame();return false;">Back to game list</a>
-	<div id="choose_content"></div>
-	<div id="choose_action"></div>
+	<div id="choose_team_content"></div>
+	<div id="choose_team"></div>
 </div>
 <div id="game_panel" class="panel" style="height:615px">
-	<a href="Back to game list" onclick="SendExitGame();return false;">Back to game list</a>
 	<div id="images" style="display:none"></div>
 	<div style="margin:5px; border:1px solid; float:left;">
 		<div id="map" style="position:relative; width:600px; height:600px">
@@ -63,8 +62,20 @@
 		</div>
 	</div>
 	<div id="players" style="margin:5px; border:1px solid; float:left">
+		<a href="Back to game list" onclick="SendExitGame();return false;">Back to game list</a>
 		<div id="game_tabs"></div>
 		<div id="game_pages"></div>
+		<div id="choose_action" style="display:none">
+			<button type="button" onclick="SendChooseAction('explore')">Explore</button>
+			<button type="button" onclick="SendChooseAction('influence')">Influence</button>
+			<button type="button" onclick="SendChooseAction('research')">Research</button>
+			<button type="button" onclick="SendChooseAction('upgrade')">Upgrade</button>
+			<button type="button" onclick="SendChooseAction('build')">Build</button>
+			<button type="button" onclick="SendChooseAction('move')">Move</button>
+			<button type="button" onclick="SendChooseAction('colonise')">Colonise</button>
+			<button type="button" onclick="SendChooseAction('diplomacy')">Diplomacy</button>
+			<button type="button" onclick="SendChooseAction('pass')">Pass</button>
+		</div>
 	</div>
 </div>
 <br>
