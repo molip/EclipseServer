@@ -165,3 +165,19 @@ void Game::AdvanceTurn()
 	m_iTurn = (m_iTurn + 1) % m_teams.size();
 }
 
+void Game::StartCmd(CmdPtr pCmd)
+{
+	AssertThrowModel("Game::StartCmd: there's already a current command", m_pCurrentCmd == nullptr);
+	m_pCurrentCmd = std::move(pCmd);
+}
+
+void Game::CommitCurrentCmd()
+{
+	AssertThrow("Game::CommitCurrentCmd: No command to commit", !!m_pCurrentCmd);
+	AssertThrow("Game::CommitCurrentCmd: Command not finished", m_pCurrentCmd->IsFinished());
+
+	m_pCurrentCmd = nullptr;
+	AdvanceTurn();
+}
+
+

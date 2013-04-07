@@ -79,9 +79,11 @@
     <ClInclude Include="App.h" />
     <ClInclude Include="Bag.h" />
     <ClInclude Include="Blueprint.h" />
+    <ClInclude Include="Cmd.h" />
     <ClInclude Include="Controller.h" />
     <ClInclude Include="Discovery.h" />
     <ClInclude Include="EnumRange.h" />
+    <ClInclude Include="ExploreCmd.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Hex.h" />
     <ClInclude Include="InfluenceTrack.h" />
@@ -117,7 +119,9 @@
     <ClCompile Include="App.cpp" />
     <ClCompile Include="Bag.cpp" />
     <ClCompile Include="Blueprint.cpp" />
+    <ClCompile Include="Cmd.cpp" />
     <ClCompile Include="Controller.cpp" />
+    <ClCompile Include="ExploreCmd.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Hex.cpp" />
     <ClCompile Include="InfluenceTrack.cpp" />

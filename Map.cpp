@@ -42,6 +42,19 @@ bool MapPos::operator <(const MapPos& rhs) const
 	return m_y < rhs.m_y; 
 }
 
+HexRing MapPos::GetRing() const
+{
+	AssertThrow("MapPos::GetRing", !IsCentre());
+
+	switch (GetDist(MapPos(0, 0)))
+	{
+	case 1: return HexRing::Inner;
+	case 2: return HexRing::Middle;
+	}
+
+	return HexRing::Outer;
+}
+
 //-----------------------------------------------------------------------------
 
 Map::Map(Game& game) : m_game(game)
@@ -87,11 +100,7 @@ Hex& Map::AddHex(const MapPos& pos, int id, int rotation)
 {
 	AssertThrowModel("Map::AddHex: hex already occupied", GetHex(pos) == nullptr);
 	AssertThrowModel("Map::AddHex: invalid rotation", rotation >= 0 && rotation < 6);
-	Hex* p = new Hex(*this, id,  rotation);
+	Hex* p = new Hex(m_game, id,  rotation);
 	m_hexes.insert(std::make_pair(pos, HexPtr(p)));
 	return *p;
 }
-
-//HexRing Map::GetHexRing(const MapPos& pos) const 
-//{
-//}

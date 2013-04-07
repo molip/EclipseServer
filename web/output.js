@@ -73,8 +73,15 @@ function SendChooseTeam()
 function SendChooseAction(action)
 {
 	var doc = CreateXMLDoc()
-	var node = CreateCommandNode(doc, "choose_action")
+	var node = CreateCommandNode(doc, "start_action")
 	node.setAttribute("action", action)
+	SendXMLDoc(doc)
+}
+
+function SendChooseCommit(action)
+{
+	var doc = CreateXMLDoc()
+	var node = CreateCommandNode(doc, "commit")
 	SendXMLDoc(doc)
 }
 

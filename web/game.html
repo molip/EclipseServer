@@ -6,6 +6,7 @@
 <script src="input.js"></script>
 <script src="output.js"></script>
 <script src="map.js"></script>
+<script src="explore.js"></script>
 
 <script>
     data.playerID = "%PLAYER_ID%"
@@ -56,11 +57,11 @@
 <div id="game_panel" class="panel" style="height:615px">
 	<div id="images" style="display:none"></div>
 	<div style="margin:5px; float:left;">
-		<div id="map" style="">
+		<div id="map">
 			<canvas id="map_canvas" width="600" height="600" style="background-color:black"></canvas>
 		</div>
 	</div>
-	<div id="players" style="border:1px solid; margin:5px 5px 5px 610px; padding:5px; float:none">
+	<div id="players" style="border:1px solid; margin:5px 5px 5px 610px; padding:5px; float:none"> <!-- "float:none" uses all remaining width -->
 		<a href="Back to game list" onclick="SendExitGame();return false;">Back to game list</a>
 		<div id="game_tabs"></div>
 		<div id="game_pages"></div>
@@ -74,6 +75,21 @@
 			<button type="button" onclick="SendChooseAction('colonise')">Colonise</button>
 			<button type="button" onclick="SendChooseAction('diplomacy')">Diplomacy</button>
 			<button type="button" onclick="SendChooseAction('pass')">Pass</button>
+		</div>
+<!--		<div id="choose_commit" style="display:none">
+			<button type="button" onclick="SendChooseCommit()">Commit</button>
+		</div> -->
+		<div id="choose_explore_pos" style="display:none">
+			Choose hex to explore...
+			<button id="choose_explore_pos_btn" type="button" onclick="SendExplorePos()">Next</button>
+		</div>
+		<div id="choose_explore_hex" style="display:none">
+			Choose hex placement...
+			<button type="button" onclick="ExploreRotate(-1)"><-</button>
+			<button type="button" onclick="ExploreRotate(1)">-></button>
+			<button id="choose_explore_hex_switch_btn" type="button" onclick="ExploreSwitch()">Switch Hex</button>
+			<button type="button" onclick="SendExploreHex()">Next</button>
+			<button type="button" onclick="SendExploreReject()">Reject</button>
 		</div>
 	</div>
 </div>

@@ -8,6 +8,7 @@ typedef TiXmlDocument XmlDoc;
 
 class Controller;
 class Player;
+class Game;
 
 namespace Input 
 {
@@ -17,6 +18,9 @@ class Message
 public:
 	virtual ~Message() {}
 	virtual bool Process(Controller& controller, Player& player) const { return true; }
+
+protected:
+	Game& GetGameAssert(Player& player) const;
 };
 
 typedef std::unique_ptr<Message> MessagePtr;
@@ -61,11 +65,46 @@ struct ChooseTeam : Message
 	std::string m_race, m_colour;
 };
 
-struct ChooseAction : Message 
+struct StartAction : Message 
 {
-	ChooseAction(const TiXmlElement& node);
+	StartAction(const TiXmlElement& node);
 	virtual bool Process(Controller& controller, Player& player) const override; 
 	std::string m_action;
+};
+
+struct Undo : Message 
+{
+	virtual bool Process(Controller& controller, Player& player) const override; 
+};
+
+//struct Commit : Message 
+//{
+//	virtual bool Process(Controller& controller, Player& player) const override; 
+//};
+
+//-----------------------------------------------------------------------------
+
+class CmdMessage : public Message
+{
+public:
+	virtual bool Process(Controller& controller, Player& player) const;
+};
+
+struct CmdExplorePos : CmdMessage
+{
+	CmdExplorePos(const TiXmlElement& node);
+	int m_x, m_y;
+};
+
+struct CmdExploreHex : CmdMessage
+{
+	CmdExploreHex(const TiXmlElement& node);
+	int m_rotation;
+	int m_iHex;
+};
+
+struct CmdExploreReject : CmdMessage
+{
 };
 
 }

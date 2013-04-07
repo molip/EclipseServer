@@ -26,6 +26,7 @@ extern bool _DebugBreak();
 
 extern std::string FormatInt(int n);
 
+extern void AssertThrow(bool b = false);
 extern void AssertThrow(const std::string& msg, bool b = false);
 extern void AssertThrowXML(const std::string& msg, bool b = false);
 extern void AssertThrowModel(const std::string& msg, bool b = false);
@@ -47,7 +48,7 @@ public:
 class GenericException : public Exception
 {
 public:
-	GenericException(const std::string& msg) : Exception(msg) {}
+	GenericException(const std::string& msg = "") : Exception(msg) {}
 	virtual std::string GetType() const override { return "Generic"; }
 };
 

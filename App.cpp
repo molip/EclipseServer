@@ -10,6 +10,12 @@ std::string FormatInt(int n)
 	return ss.str();
 }
 
+void AssertThrow(bool b)
+{
+	if (!ASSERT(b))
+		throw GenericException();
+}
+
 void AssertThrow(const std::string& msg, bool b)
 {
 	if (!ASSERT(b))

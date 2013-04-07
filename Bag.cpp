@@ -73,7 +73,7 @@ HexBag::HexBag(HexRing r, int nPlayers)
 	case HexRing::Outer: start = 301, count	= 18; break;
 	}
 
-	for (int i = start; i <= start + count; ++i)
+	for (int i = start; i < start + count; ++i)
 		push_back(i);
 
 	std::random_shuffle(begin(), end());

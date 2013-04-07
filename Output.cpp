@@ -184,6 +184,11 @@ UpdateMap::UpdateMap(const Game& game) : Update("map")
 	}
 }
 
+//UpdateUndo::UpdateUndo(bool bEnable) : Update("undo")
+//{
+//	m_pRoot->SetAttribute("enable", bEnable);
+//}
+
 ShowGameList::ShowGameList() :	Show("game_list_panel") {}
 ShowChoose::ShowChoose() :		Show("choose_panel") {}
 ShowGame::ShowGame() :			Show("game_panel") {}
@@ -215,8 +220,33 @@ ChooseTeam::ChooseTeam(const Game& game, bool bActive) : Choose("team", bActive)
 		}
 }
 
-ChooseAction::ChooseAction(const Game& game, bool bActive) : Choose("action", bActive)
+ChooseAction::ChooseAction() : Choose("action") 
 {
+}
+
+//ChooseCommit::ChooseCommit() : Choose("commit") 
+//{
+//}
+
+ChooseFinished::ChooseFinished() : Choose("finished") 
+{
+}
+
+ChooseExplorePos::ChooseExplorePos() : Choose("explore_pos") 
+{
+}
+
+ChooseExploreHex::ChooseExploreHex(int x, int y, const std::vector<int>& hexes) : Choose("explore_hex") 
+{
+	m_pRoot->SetAttribute("x", x);
+	m_pRoot->SetAttribute("y", y);
+
+	for (int id : hexes)
+	{
+		auto e = AddElement("hex", *m_pRoot);
+		e->SetAttribute("id", id);
+	}
+
 }
 
 } // namespace

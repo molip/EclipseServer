@@ -53,11 +53,11 @@ void Square::SetOwner(Team* pOwner)
 
 //-----------------------------------------------------------------------------
 
-Hex::Hex(Map& map, int id, int nRotation) : 
-	m_map(map), m_id(id), m_nRotation(nRotation), m_discovery(DiscoveryType::None), 
+Hex::Hex(Game& game, int id, int nRotation) : 
+	m_id(id), m_nRotation(nRotation), m_discovery(DiscoveryType::None), 
 	m_nVictory(0), m_bArtifact(false), m_pOwner(nullptr)
 {
-	Init();
+	Init(game);
 }
 
 bool Hex::HasWormhole(Edge e) const
@@ -86,7 +86,7 @@ void Hex::SetOwner(Team* pOwner)
 	m_pOwner = pOwner;
 }
 
-void Hex::Init()
+void Hex::Init(Game& game)
 {
 	auto AddSquare = [&] (int x, int y, Resource type, bool bAdvanced) { m_squares.push_back(Square(x, y, type, bAdvanced)); };
 	auto SetWormholes = [&] (std::string s) { m_wormholes = EdgeSet(s); };
@@ -416,5 +416,5 @@ void Hex::Init()
 		AddShip(ShipType::Ancient, nullptr);
 
 	if (bDiscovery)
-		m_discovery = m_map.GetGame().GetDiscoveryBag().TakeTile();
+		m_discovery = game.GetDiscoveryBag().TakeTile();
 }

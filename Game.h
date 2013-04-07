@@ -3,6 +3,7 @@
 #include "Map.h"
 #include "Team.h"
 #include "Bag.h"
+#include "Cmd.h"
 
 #include <memory>
 #include <set>
@@ -31,6 +32,7 @@ public:
 	
 	bool HasTeamChosen(Player& player) const;
 	const Team& GetTeam(const Player& player) const;
+	Team& GetTeam(Player& player);
 	const Player& GetCurrentPlayer() const;
 	Player& GetCurrentPlayer();
 	Team& GetCurrentTeam();
@@ -44,12 +46,17 @@ public:
 	ReputationBag& GetReputationBag() { return m_repBag; }
 	TechnologyBag& GetTechnologyBag() { return m_techBag; }
 	DiscoveryBag& GetDiscoveryBag() { return m_discBag; }
+	HexBag& GetHexBag(HexRing ring) { return m_hexBag[(int)ring]; }
 
 	const Map& GetMap() const { return m_map; }
 	Map& GetMap() { return m_map; }
 
+	void StartCmd(CmdPtr pCmd);
+	void CommitCurrentCmd();
+	Cmd* GetCurrentCmd() { return m_pCurrentCmd.get(); }
+	const Cmd* GetCurrentCmd() const { return m_pCurrentCmd.get(); }
+
 private:
-	Team& GetTeam(Player& player);
 	void StartRound();
 
 	void AssertStarted() const;
@@ -74,6 +81,8 @@ private:
 	std::set<RaceType, Colour> m_availableRaces;
 	int m_iTurn, m_iRound;
 	int m_iStartTeam, m_iStartTeamNext;
+
+	CmdPtr m_pCurrentCmd;
 };
 
 typedef std::unique_ptr<Game> GamePtr;

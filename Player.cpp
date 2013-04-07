@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Player.h"
+#include "Game.h"
 
 Player::Player() : m_id(0)
 {
@@ -14,3 +15,7 @@ void Player::SetCurrentGame(Game* pGame)
 	m_pCurrentGame = pGame;
 }
 
+Team* Player::GetCurrentTeam()
+{
+	return m_pCurrentGame ? &m_pCurrentGame->GetTeam(*this) : nullptr;
+}

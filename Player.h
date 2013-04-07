@@ -4,6 +4,7 @@
 #include <memory>
 
 class Game;
+class Team;
 
 class Player
 {
@@ -18,6 +19,8 @@ public:
 	const Game* GetCurrentGame() const { return m_pCurrentGame; }
 	Game* GetCurrentGame() { return m_pCurrentGame; }
 	void SetCurrentGame(Game* pGame);
+
+	Team* GetCurrentTeam();
 
 private:
 	Game* m_pCurrentGame;

@@ -67,6 +67,11 @@ function OnCommandShow(elem)
 	}
     if (!found)
         writeToScreen('OnCommandShow: unknown element: ' + panel)
+		
+	if (panel == 'game_panel')
+	{
+		InitMap()
+	}
 }
 
 function OnCommandUpdate(elem)
@@ -99,9 +104,17 @@ function OnCommandChoose(elem)
 	if (param == "team")
 		OnCommandChooseTeam(elem, active)
 	else if (param == "action")
-		OnCommandChooseAction(elem, active)
+		OnCommandChooseAction(elem)
+	// else if (param == "commit")
+		// OnCommandChooseCommit(elem)
+	else if (param == "explore_pos")
+		OnCommandChooseExplorePos(elem)
+	else if (param == "explore_hex")
+		OnCommandChooseExploreHex(elem)
+	else if (param == "finished")
+		OnCommandChooseFinished(elem)
 	else
-        writeToScreen('OnCommandChoose: unknown param: ' + param)
+		writeToScreen('OnCommandChoose: unknown param: ' + param)
 }
 
 function OnCommandUpdateGameList(elem)
@@ -167,18 +180,16 @@ function OnCommandUpdateTeams(elem)
 	
 	var html_tabs = '', html_pages = ''
 
-	var i = 0
-	for (var team = elem.firstChild; team; team = team.nextSibling)
+	var teams = GetChildElements(elem, 'team')
+	for (var i = 0; i < teams.length; ++i)
 	{
-		if (team.nodeName == "team")
-		{
-			var name = team.getAttribute('name')
-			var id = team.getAttribute('id')
-			html_tabs += fmt_tab.format(id, name)
-			html_pages += fmt_page.format(GetTeamPageIDFromIndex(data.team_count))
+		var name = teams[i].getAttribute('name')
+		var id = teams[i].getAttribute('id')
+		
+		html_tabs += fmt_tab.format(id, name)
+		html_pages += fmt_page.format(GetTeamPageIDFromIndex(data.team_count))
 
-			data.team_pages[id] = data.team_count++
-		}
+		data.team_pages[id] = data.team_count++
 	}
 
 	document.getElementById('game_tabs').innerHTML = html_tabs
@@ -200,25 +211,6 @@ function OnCommandUpdateTeam(elem)
 
 function OnCommandUpdateMap(elem)
 {
-	var canvas = document.getElementById('map_canvas')
-
-	var canvas2 = document.getElementById('map_canvas2')
-	if (canvas2 == null)
-	{
-		canvas2 = document.createElement('canvas');
-		canvas2.setAttribute('id', 'map_canvas2');
-		canvas2.setAttribute('width', canvas.offsetWidth);
-		canvas2.setAttribute('height', canvas.offsetHeight);
-		canvas2.style.backgroundColor = "transparent";
-		canvas2.style.position = "absolute";
-		canvas2.style.left = canvas.offsetLeft+'px';
-		canvas2.style.top = canvas.offsetTop+'px';
-		canvas2.style.width = canvas.offsetWidth+'px';
-		canvas2.style.height = canvas.offsetHeight+'px';
-
-		canvas.parentNode.appendChild(canvas2);
-	}
-	
 	var xsl = '\
 		<xsl:for-each select="hex">\
 			<img id="hex_{@id}" src="/images/hexes/{@id}.png"/>\
@@ -226,37 +218,21 @@ function OnCommandUpdateMap(elem)
 	'
 	SetDivFromCommandElem(document.getElementById('images'), elem, xsl) 
 	
-	var size_x = data.hex_width, size_y = data.hex_height
-	
-	var ctx = canvas.getContext("2d");
-	ctx.setTransform(1, 0, 0, 1, 0, 0)
-	ctx.clearRect(0, 0, 600, 600);
+	ClearContext(Map.layer_hot.getContext("2d"))
 
-	ctx.translate(300, 300)
-	ctx.scale(0.3, 0.3)
+	var ctx = Map.canvas.getContext("2d");
+	ClearContext(ctx)
 	
-	var img = new Image()
-	for (var hex = elem.firstChild; hex; hex = hex.nextSibling)
+	var hexes = GetChildElements(elem, 'hex')
+	for (var i = 0; i < hexes.length; ++i)
 	{
-		if (hex.nodeName == "hex")
-		{
-			var id = hex.getAttribute('id')
-			var x = Number(hex.getAttribute('x'))
-			var y = Number(hex.getAttribute('y'))
+		var id = hexes[i].getAttribute('id')
+		var x = hexes[i].getAttribute('x')
+		var y = hexes[i].getAttribute('y')
+		var rotation = hexes[i].getAttribute('rotation')
 
-			var p = GetHexCentre(x, y)
-			
-			//var img = document.getElementById("hex_" + id);
-			img.src = "/images/hexes/" + id + ".png"
-			ctx.translate(-size_x / 2, -size_y / 2)
-			ctx.drawImage(img, p.x, p.y);
-			ctx.translate(size_x / 2, size_y / 2)
-			
-			//writeToScreen("hex {0}: {1}, {2}\n".format(id, p.x, p.y))
-		}
+		DrawHex(ctx, id, x, y, rotation)
 	}
-	var canvas2 = document.getElementById('map_canvas2')
-	canvas2.addEventListener("mousemove", OnMouse)
 }
 
 function OnCommandChooseTeam(elem, active)
@@ -279,8 +255,18 @@ function OnCommandChooseTeam(elem, active)
 	SetDivFromCommandElem(div, elem, xsl) 
 }
 
-function OnCommandChooseAction(elem, active)
+function OnCommandChooseAction(elem)
 {
-	var div = document.getElementById('choose_action')
-	div.style.display = active ? "block" : "none"
+	ShowActionElement('choose_action')
 }
+
+// function OnCommandChooseCommit(elem)
+// {
+	// ShowActionElement('choose_commit')
+// }
+
+function OnCommandChooseFinished(elem)
+{
+	ShowActionElement(null)
+}
+

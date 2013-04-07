@@ -12,7 +12,7 @@ enum class DiscoveryType;
 enum class TechType;
 enum class Edge;
 class Team;
-class Map;
+class Game;
 
 enum class Edge { T, TR, BR, B, BL, TL };
 
@@ -56,7 +56,7 @@ private:
 class Hex
 {
 public:
-	Hex(Map& map, int id, int nRotation);
+	Hex(Game& game, int id, int nRotation);
 	bool HasWormhole(Edge e) const;
 
 	std::vector<Square*> GetAvailableSquares(const Team& team);
@@ -75,7 +75,7 @@ public:
 	bool HasArtifact() const { return m_bArtifact; }
 
 private:
-	void Init();
+	void Init(Game& game);
 
 	int m_id;
 	int m_nRotation; // [0, 5]
@@ -85,7 +85,6 @@ private:
 	EdgeSet m_wormholes;
 	int m_nVictory;
 	bool m_bArtifact;
-	Map& m_map; 
 	Team* m_pOwner;
 	//structures
 };

@@ -103,7 +103,10 @@ void Controller::SendUpdateGame(const Game& game, const Player* pPlayer) const
 		}
 		SendMessage(Output::UpdateMap(game), game, pPlayer);
 
-		if (bSendToCurrentPlayer) // TODO: Send current turn state if already started.
-			SendMessage(Output::ChooseAction(game, true), game.GetCurrentPlayer());
+		if (bSendToCurrentPlayer) 
+			if (const Cmd* pCmd = game.GetCurrentCmd())
+				pCmd->UpdateClient(*this);
+			else
+				SendMessage(Output::ChooseAction(), game.GetCurrentPlayer());
 	}
 }

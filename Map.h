@@ -7,10 +7,12 @@
 #include <map>
 
 class Game;
+enum class HexRing;
 
 class MapPos
 {
 public:
+	MapPos() : m_x(0), m_y(0) {}
 	MapPos(int x, int y) : m_x(x), m_y(y) {}
 	
 	MapPos GetNeighbour(Edge e) const;
@@ -20,6 +22,9 @@ public:
 	int GetX() const { return m_x; }
 	int GetY() const { return m_y; }
 	int GetZ() const { return -(m_x + m_y); }
+
+	bool IsCentre() const { return m_x == 0 && m_y == 0; }
+	HexRing GetRing() const;
 
 private:
 	int m_x; // Increasing SE
@@ -36,10 +41,8 @@ public:
 	
 	Game& GetGame() { return m_game; }
 
-	typedef std::map<MapPos, std::unique_ptr<Hex>> HexMap;
+	typedef std::map<MapPos, HexPtr> HexMap;
 	const HexMap& GetHexes() const { return m_hexes; }
-
-	//HexRing GetHexRing(const MapPos& pos) const;
 
 private:
 	Hex* GetHex(const MapPos& pos);

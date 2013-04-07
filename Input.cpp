@@ -5,6 +5,7 @@
 #include "Output.h"
 #include "Race.h"
 #include "Player.h"
+#include "ExploreCmd.h"
 
 #include <sstream>
 
@@ -50,9 +51,18 @@ MessagePtr CreateCommand(const std::string& type, const TiXmlElement& root)
 		return MessagePtr(new StartGame);
 	if (type == "choose_team")
 		return MessagePtr(new ChooseTeam(root));
-	if (type == "choose_action")
-		return MessagePtr(new ChooseAction(root));
-
+	if (type == "start_action")
+		return MessagePtr(new StartAction(root));
+	//if (type == "commit")
+	//	return MessagePtr(new Commit);
+	
+	if (type == "cmd_explore_pos")
+		return MessagePtr(new CmdExplorePos(root));
+	if (type == "cmd_explore_hex")
+		return MessagePtr(new CmdExploreHex(root));
+	if (type == "cmd_explore_reject")
+		return MessagePtr(new CmdExploreReject);
+	
 	AssertThrow("Input command not recognised: " + type);
 	return nullptr;
 }
@@ -69,6 +79,15 @@ MessagePtr CreateMessage(const std::string& xml)
 			return CreateCommand(pTypeStr, *pRoot);
 	
 	return nullptr;
+}
+
+Game& Message::GetGameAssert(Player& player) const
+{
+	Game* pGame = player.GetCurrentGame();
+	AssertThrow("ChooseMessage: player not registered in any game", !!pGame);
+	AssertThrow("ChooseMessage: player played out of turn", &player == &pGame->GetCurrentPlayer());
+	AssertThrow("ChooseMessage: game not in main phase: " + pGame->GetName(), pGame->GetPhase() == Game::Phase::Main);
+	return *pGame;
 }
 
 //-----------------------------------------------------------------------------
@@ -183,24 +202,84 @@ bool ChooseTeam::Process(Controller& controller, Player& player) const
 	return true;	
 }
 
-ChooseAction::ChooseAction(const TiXmlElement& node)
+StartAction::StartAction(const TiXmlElement& node)
 {
 	m_action = node.Attribute("action");
 }
 
-bool ChooseAction::Process(Controller& controller, Player& player) const 
+bool StartAction::Process(Controller& controller, Player& player) const 
 {
-	Game* pGame = player.GetCurrentGame();
-	AssertThrow("ChooseAction: player not registered in any game", !!pGame);
-	AssertThrow("ChooseAction: player played out of turn", &player == &pGame->GetCurrentPlayer());
-	AssertThrow("ChooseAction: game not in main phase: " + pGame->GetName(), pGame->GetPhase() == Game::Phase::Main);
+	Game& game = GetGameAssert(player);
 
-	controller.SendMessage(Output::ChooseAction(*pGame, false), player);
-	pGame->HaveTurn(player);
+	if (m_action == "explore") 
+		game.StartCmd(CmdPtr(new ExploreCmd(player)));
 
-	controller.SendMessage(Output::ChooseAction(*pGame, true), pGame->GetCurrentPlayer());
-
+	Cmd* pCmd = game.GetCurrentCmd();
+	AssertThrow("StartAction::Process: No command created", !!pCmd);
+	
+	pCmd->UpdateClient(controller);
 	return true;	
+}
+
+bool Undo::Process(Controller& controller, Player& player) const 
+{
+	Game& game = GetGameAssert(player);
+
+	Cmd* pCmd = game.GetCurrentCmd();
+	AssertThrow("Undo::Process: No command to undo", !!pCmd);
+	AssertThrow("Undo::Process: Can't undo", pCmd->CanUndo());
+
+	pCmd->Undo();
+
+	ASSERT(false);
+	controller.SendMessage(Output::UpdateTeam(game.GetTeam(player)), player);
+	controller.SendMessage(Output::UpdateMap(game), player);
+	controller.SendMessage(Output::ChooseAction(), player);
+	
+	pCmd->UpdateClient(controller);
+	return true;	
+}
+
+//bool Commit::Process(Controller& controller, Player& player) const 
+//{
+//	Game& game = GetGameAssert(player);
+//	game.CommitCurrentCmd();
+//
+//	controller.SendMessage(Output::ChooseFinished(), player);
+//	controller.SendMessage(Output::ChooseAction(), game.GetCurrentPlayer());
+//	return true;
+//}
+
+//-----------------------------------------------------------------------------
+
+bool CmdMessage::Process(Controller& controller, Player& player) const
+{
+	Game& game = GetGameAssert(player);
+	Cmd* pCmd = game.GetCurrentCmd();
+	AssertThrow("CmdMessage::Process: No current command", !!pCmd);
+
+	pCmd->AcceptMessage(*this);
+	pCmd->UpdateClient(controller);
+	
+	if (pCmd->IsFinished())
+	{
+		controller.SendMessage(Output::ChooseFinished(), player);
+		game.CommitCurrentCmd();
+		controller.SendMessage(Output::ChooseAction(), game.GetCurrentPlayer());
+	}
+	return true;
+}
+
+CmdExplorePos::CmdExplorePos(const TiXmlElement& node) : m_x(0), m_y(0)
+{
+	AssertThrowXML("CmdExplorePos: x", !!node.Attribute("x", &m_x));
+	AssertThrowXML("CmdExplorePos: y", !!node.Attribute("y", &m_y));
+}
+
+CmdExploreHex::CmdExploreHex(const TiXmlElement& node) : m_rotation(0), m_iHex(0)
+{
+	AssertThrowXML("CmdExploreHex: rotation", !!node.Attribute("rotation", &m_rotation));
+	AssertThrowXML("CmdExploreHex: hex_idx", !!node.Attribute("hex_idx", &m_iHex));
 }
 
 } // namespace

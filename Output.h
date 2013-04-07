@@ -4,12 +4,14 @@
 #include "tinyxml.h"
 
 #include <memory>
+#include <vector>
 
 typedef TiXmlDocument XmlDoc;
 
 class Model;
 class Game;
 class Team;
+class Player;
 
 namespace Output
 {
@@ -60,9 +62,15 @@ struct UpdateChoose : Update { UpdateChoose(const Game& game); };
 struct UpdateTeams : Update { UpdateTeams(const Game& game); };
 struct UpdateTeam : Update { UpdateTeam(const Team& team); };
 struct UpdateMap : Update { UpdateMap(const Game& game); };
+//struct UpdateUndo : Update { UpdateUndo(bool bEnable); };
 
 struct ChooseTeam : Choose { ChooseTeam(const Game& game, bool bActive); };
-struct ChooseAction : Choose { ChooseAction(const Game& game, bool bActive); };
+struct ChooseAction : Choose { ChooseAction(); };
+//struct ChooseCommit : Choose { ChooseCommit(); };
+struct ChooseFinished : Choose { ChooseFinished(); };
+
+struct ChooseExplorePos : Choose { ChooseExplorePos(); };
+struct ChooseExploreHex : Choose { ChooseExploreHex(int x, int y, const std::vector<int>& hexes); };
 
 struct ShowGameList : Show { ShowGameList(); };
 struct ShowLobby : Show { ShowLobby(); };

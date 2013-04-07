@@ -16,6 +16,9 @@
     <Filter Include="Web">
       <UniqueIdentifier>{cb87a66c-574c-4e3e-bb52-3dba65a56363}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Model\Commands">
+      <UniqueIdentifier>{9f1259fb-1431-47dd-a352-5268bbd87bf9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mongoose.h">
@@ -120,6 +123,12 @@
     <ClInclude Include="Player.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="Cmd.h">
+      <Filter>Model\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="ExploreCmd.h">
+      <Filter>Model\Commands</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -217,6 +226,12 @@
     </ClCompile>
     <ClCompile Include="Player.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Cmd.cpp">
+      <Filter>Model\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="ExploreCmd.cpp">
+      <Filter>Model\Commands</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
