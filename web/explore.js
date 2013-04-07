@@ -6,7 +6,11 @@ function OnCommandChooseExplorePos(elem)
 	ShowActionElement('choose_explore_pos')
 	Map.selected = {}
 	Map.selecting = true
+	
+	var can_skip = IsTrue(elem.getAttribute('can_skip'))
+	
 	document.getElementById('choose_explore_pos_btn').disabled = true
+	ShowElementById('choose_explore_pos_reject_btn', can_skip, true)
 }
 
 function OnCommandChooseExploreHex(elem)

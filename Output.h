@@ -69,7 +69,7 @@ struct ChooseAction : Choose { ChooseAction(); };
 //struct ChooseCommit : Choose { ChooseCommit(); };
 struct ChooseFinished : Choose { ChooseFinished(); };
 
-struct ChooseExplorePos : Choose { ChooseExplorePos(); };
+struct ChooseExplorePos : Choose { ChooseExplorePos(bool bCanSkip); };
 struct ChooseExploreHex : Choose { ChooseExploreHex(int x, int y, const std::vector<int>& hexes); };
 
 struct ShowGameList : Show { ShowGameList(); };

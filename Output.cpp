@@ -232,8 +232,9 @@ ChooseFinished::ChooseFinished() : Choose("finished")
 {
 }
 
-ChooseExplorePos::ChooseExplorePos() : Choose("explore_pos") 
+ChooseExplorePos::ChooseExplorePos(bool bCanSkip) : Choose("explore_pos") 
 {
+	m_pRoot->SetAttribute("can_skip", bCanSkip);
 }
 
 ChooseExploreHex::ChooseExploreHex(int x, int y, const std::vector<int>& hexes) : Choose("explore_hex") 
