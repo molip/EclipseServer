@@ -1,8 +1,10 @@
 #pragma once
 
 #include "Cmd.h"
+#include "MapPos.h"
 
 #include <vector> 
+#include <set> 
 
 class Player;
 
@@ -23,6 +25,7 @@ private:
 		Phase() : m_x(0), m_y(0), m_rotation(0), m_iHex(0), m_bReject(false) {}
 		
 		// Stage::Pos
+		std::set<MapPos> m_positions;
 		int m_x, m_y;
 		std::vector<int> m_hexes;
 
@@ -40,6 +43,8 @@ private:
 
 	enum class Stage { Pos, Hex, Influence, Discovery, Finished };
 
+	void GetPossiblePositions();
+		
 	Phase& GetPhase() { return *m_phases.back(); }
 	const Phase& GetPhase() const { return *m_phases.back(); }
 	void EndPhase();

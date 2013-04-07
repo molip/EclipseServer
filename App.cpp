@@ -10,6 +10,11 @@ std::string FormatInt(int n)
 	return ss.str();
 }
 
+int Mod(int a, int b)
+{
+	return a % b + (a < 0 ? b : 0);
+}
+
 void AssertThrow(bool b)
 {
 	if (!ASSERT(b))

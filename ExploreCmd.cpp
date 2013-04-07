@@ -6,6 +6,7 @@
 #include "Player.h"
 #include "Race.h"
 #include "Game.h"
+#include "Map.h"
 
 template <typename T>
 T& CastMessage(const Input::CmdMessage& msg)
@@ -19,12 +20,14 @@ ExploreCmd::ExploreCmd(Player& player) :
 	m_player(player), m_stage(Stage::Pos)
 {
 	m_phases.push_back(PhasePtr(new Phase));
+	GetPossiblePositions();
 }
 
 void ExploreCmd::AcceptMessage(const Input::CmdMessage& msg)
 {
 	Game* pGame = m_player.GetCurrentGame();
 	AssertThrow(!!pGame);
+	Team& team = pGame->GetTeam(m_player);
 	
 	Phase& phase = GetPhase();
 
@@ -49,7 +52,7 @@ void ExploreCmd::AcceptMessage(const Input::CmdMessage& msg)
 			HexRing ring = MapPos(phase.m_x, phase.m_y).GetRing();
 			HexBag& bag = pGame->GetHexBag(ring);
 			
-			for (int i = 0; i < Race(m_player.GetCurrentTeam()->GetRace()).GetExploreChoices(); ++i)
+			for (int i = 0; i < Race(team.GetRace()).GetExploreChoices(); ++i)
 				phase.m_hexes.push_back(bag.TakeTile());
 
 			m_stage = Stage::Hex;
@@ -77,7 +80,8 @@ void ExploreCmd::AcceptMessage(const Input::CmdMessage& msg)
 				AssertThrowXML("ExploreCmd::AcceptMessage (Stage::Hex): hex index", m.m_iHex >= 0 && m.m_iHex < (int)phase.m_hexes.size());
 				phase.m_iHex = m.m_iHex;
 
-				pGame->GetMap().AddHex(MapPos(phase.m_x, phase.m_y), phase.m_hexes[phase.m_iHex], phase.m_rotation);
+				Hex& hex = pGame->GetMap().AddHex(MapPos(phase.m_x, phase.m_y), phase.m_hexes[phase.m_iHex], phase.m_rotation);
+				hex.SetOwner(&team);
 
 				// TODO: Something better.
 				Controller::Get()->SendMessage(Output::UpdateMap(*pGame), *pGame);
@@ -95,6 +99,7 @@ void ExploreCmd::EndPhase()
 	{
 		m_stage = Stage::Pos;
 		m_phases.push_back(PhasePtr(new Phase));
+		GetPossiblePositions();
 	}
 	else
 		m_stage = Stage::Finished;
@@ -107,7 +112,7 @@ void ExploreCmd::UpdateClient(const Controller& controller) const
 	switch (m_stage)
 	{
 	case Stage::Pos:
-		controller.SendMessage(Output::ChooseExplorePos(m_phases.size() > 1), m_player);
+		controller.SendMessage(Output::ChooseExplorePos(phase.m_positions, m_phases.size() > 1), m_player);
 		break;
 	case Stage::Hex:
 		controller.SendMessage(Output::ChooseExploreHex(phase.m_x, phase.m_y, phase.m_hexes), m_player);
@@ -127,4 +132,18 @@ bool ExploreCmd::CanUndo()
 
 void ExploreCmd::Undo()
 {
+}
+
+void ExploreCmd::GetPossiblePositions()
+{
+	Game* pGame = m_player.GetCurrentGame();
+	AssertThrow(!!pGame);
+	Team& team = pGame->GetTeam(m_player);
+
+	auto& positions = GetPhase().m_positions;
+
+	const Map::HexMap& hexes = pGame->GetMap().GetHexes();
+	for (auto& h : hexes)
+		if (h.second->GetOwner() == &team)
+			pGame->GetMap().GetEmptyNeighbours(h.first, team.HasTech(TechType::WormholeGen), positions);
 }

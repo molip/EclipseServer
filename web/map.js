@@ -54,7 +54,7 @@ function ClearContext(ctx)
 	ctx.clearRect(0, 0, 600, 600);
 
 	ctx.translate(300, 300)
-	ctx.scale(0.3, 0.3)
+	ctx.scale(data.map_scale, data.map_scale)
 }
 
 function GetHexCentre(x, y) 
@@ -117,8 +117,8 @@ function OnMouseMove(evt)
 		
 	var p = relMouseCoords(evt, Map.canvas)
 	
-	p.x = (p.x - 300) / 0.3
-	p.y = (p.y - 300) / 0.3
+	p.x = (p.x - 300) / data.map_scale
+	p.y = (p.y - 300) / data.map_scale
 	
 	hex = HitTestHex(p.x, p.y)
 	
@@ -127,11 +127,9 @@ function OnMouseMove(evt)
 	
 	Map.hot = hex
 	
-	var p2 = GetHexCentre(hex.x, hex.y)
-	
 	var ctx = Map.layer_hot.getContext("2d");
 	ClearContext(ctx)
-	DrawCentred(ctx, data.img_select, p2.x, p2.y);
+	DrawCentred(ctx, data.img_select, hex.x, hex.y);
 }
 
 function OnMouseOut()
@@ -147,6 +145,16 @@ function OnMouseDown()
 {
 	if (!Map.selecting)
 		return
+
+	if (data.action && data.action.positions)
+	{
+		var ok = false
+		for (var i = 0; i < data.action.positions.length && !ok; ++i)
+			if (data.action.positions[i].x == Map.hot.x && data.action.positions[i].y == Map.hot.y)
+				ok = true
+		if (!ok)
+			return
+	}
 
 	Map.selected = Map.hot
 	DrawSelected(Map.selected.x, Map.selected.y)
@@ -173,10 +181,27 @@ function DrawSelected(x, y)
 	ctx2.stroke();	
 }
 
+function DrawPositions()
+{
+	if (!data.action || !data.action.positions)
+	{
+		Assert(false, "DrawPositions")
+		return 
+	}
+	
+	var ctx = Map.layer_action.getContext("2d");
+	ClearContext(ctx)
+
+	for (var i = 0; i < data.action.positions.length; ++i)
+		DrawCentred(ctx, data.img_explore, data.action.positions[i].x, data.action.positions[i].y)
+}
+
 function DrawCentred(ctx, img, x,  y, rotation)
 {	
+	var p = GetHexCentre(x, y)
+
 	ctx.save()
-	ctx.translate(x, y)
+	ctx.translate(p.x, p.y)
 	if (rotation != null)
 		ctx.rotate(rotation * Math.PI / 3)
 	ctx.drawImage(img, -img.width / 2, -img.height / 2);
@@ -187,8 +212,6 @@ function DrawHex(ctx, id, x, y, rotation)
 {
 	var size_x = data.hex_width, size_y = data.hex_height
 	
-	var p = GetHexCentre(x, y)
-	
 	Map.img.src = "/images/hexes/" + id + ".png"
-	DrawCentred(ctx, Map.img, p.x, p.y, rotation);
+	DrawCentred(ctx, Map.img, x, y, rotation);
 }

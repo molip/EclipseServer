@@ -57,11 +57,13 @@ Hex::Hex(Game& game, int id, int nRotation) :
 	m_id(id), m_nRotation(nRotation), m_discovery(DiscoveryType::None), 
 	m_nVictory(0), m_bArtifact(false), m_pOwner(nullptr)
 {
+	AssertThrow("Hex::Hex: Invalid rotation", nRotation >= 0 && nRotation < 6);
 	Init(game);
 }
 
 bool Hex::HasWormhole(Edge e) const
 {
+	e = (Edge)Mod(int(e) - m_nRotation, 6);
 	return m_wormholes[e];
 }
 
@@ -408,7 +410,7 @@ void Hex::Init(Game& game)
 
 	if (m_id >= 221 && m_id <= 232) // Starting hex.
 	{
-		SetWormholes("101101");
+		SetWormholes("110110");
 		m_nVictory = 3, m_bArtifact = true;
 	}
 

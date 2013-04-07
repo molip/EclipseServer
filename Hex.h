@@ -14,7 +14,7 @@ enum class Edge;
 class Team;
 class Game;
 
-enum class Edge { T, TR, BR, B, BL, TL };
+enum class Edge { T, TR, BR, B, BL, TL, _Count };
 
 class EdgeSet : public std::bitset<6>
 {
@@ -70,7 +70,7 @@ public:
 	const std::vector<Square> GetSquares() const { return m_squares; }
 	std::vector<Ship> GetShips() const { return m_ships; }
 	DiscoveryType GetDiscoveryTile() const { return m_discovery; }
-	EdgeSet GetWormholes() const { return m_wormholes; }
+	//EdgeSet GetWormholes() const { return m_wormholes; }
 	int GetVictoryPoints() const { return m_nVictory; }
 	bool HasArtifact() const { return m_bArtifact; }
 

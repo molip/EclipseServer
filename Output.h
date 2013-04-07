@@ -1,10 +1,13 @@
 #pragma once
 
+#include "MapPos.h"
+
 #include <string>
 #include "tinyxml.h"
 
 #include <memory>
 #include <vector>
+#include <set>
 
 typedef TiXmlDocument XmlDoc;
 
@@ -69,7 +72,7 @@ struct ChooseAction : Choose { ChooseAction(); };
 //struct ChooseCommit : Choose { ChooseCommit(); };
 struct ChooseFinished : Choose { ChooseFinished(); };
 
-struct ChooseExplorePos : Choose { ChooseExplorePos(bool bCanSkip); };
+struct ChooseExplorePos : Choose { ChooseExplorePos(const std::set<MapPos>& positions, bool bCanSkip); };
 struct ChooseExploreHex : Choose { ChooseExploreHex(int x, int y, const std::vector<int>& hexes); };
 
 struct ShowGameList : Show { ShowGameList(); };

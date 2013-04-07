@@ -6,11 +6,25 @@ function OnCommandChooseExplorePos(elem)
 	ShowActionElement('choose_explore_pos')
 	Map.selected = {}
 	Map.selecting = true
+
+	data.action = {}
+	data.action.positions = []
+
+	var positions = GetChildElements(elem, 'pos')
+	for (var i = 0; i < positions.length; ++i)
+	{
+		var pos = {}
+		pos.x = positions[i].getAttribute('x')
+		pos.y = positions[i].getAttribute('y')
+		data.action.positions.push(pos)
+	}
 	
 	var can_skip = IsTrue(elem.getAttribute('can_skip'))
 	
 	document.getElementById('choose_explore_pos_btn').disabled = true
 	ShowElementById('choose_explore_pos_reject_btn', can_skip, true)
+	
+	DrawPositions()
 }
 
 function OnCommandChooseExploreHex(elem)

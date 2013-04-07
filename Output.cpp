@@ -178,7 +178,6 @@ UpdateMap::UpdateMap(const Game& game) : Update("map")
 		//const std::vector<Square> GetSquares() const { return m_squares; }
 		//std::vector<Ship> GetShips() const { return m_ships; }
 		//DiscoveryType GetDiscoveryTile() const { return m_discovery; }
-		//EdgeSet GetWormholes() const { return m_wormholes; }
 		//int GetVictoryPoints() const { return m_nVictory; }
 		//bool HasArtifact() const { return m_bArtifact; }
 	}
@@ -232,9 +231,16 @@ ChooseFinished::ChooseFinished() : Choose("finished")
 {
 }
 
-ChooseExplorePos::ChooseExplorePos(bool bCanSkip) : Choose("explore_pos") 
+ChooseExplorePos::ChooseExplorePos(const std::set<MapPos>& positions, bool bCanSkip) : Choose("explore_pos") 
 {
 	m_pRoot->SetAttribute("can_skip", bCanSkip);
+
+	for (auto& pos : positions)
+	{
+		auto e = AddElement("pos", *m_pRoot);
+		e->SetAttribute("x", pos.GetX());
+		e->SetAttribute("y", pos.GetY());
+	}
 }
 
 ChooseExploreHex::ChooseExploreHex(int x, int y, const std::vector<int>& hexes) : Choose("explore_hex") 
@@ -247,7 +253,6 @@ ChooseExploreHex::ChooseExploreHex(int x, int y, const std::vector<int>& hexes) 
 		auto e = AddElement("hex", *m_pRoot);
 		e->SetAttribute("id", id);
 	}
-
 }
 
 } // namespace

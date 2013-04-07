@@ -26,6 +26,8 @@ extern bool _DebugBreak();
 
 extern std::string FormatInt(int n);
 
+extern int Mod(int a, int b);
+
 extern void AssertThrow(bool b = false);
 extern void AssertThrow(const std::string& msg, bool b = false);
 extern void AssertThrowXML(const std::string& msg, bool b = false);
