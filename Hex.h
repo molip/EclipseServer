@@ -16,12 +16,16 @@ class Game;
 
 enum class Edge { T, TR, BR, B, BL, TL, _Count };
 
+extern Edge ReverseEdge(Edge e);
+extern Edge RotateEdge(Edge e, int n);
+
 class EdgeSet : public std::bitset<6>
 {
 public:
 	EdgeSet() {}
 	EdgeSet(std::string s);
 	bool operator[](Edge e) const;
+	EdgeSet::reference operator[](Edge e);
 	std::vector<Edge> GetEdges() const;
 };
 
@@ -56,7 +60,7 @@ private:
 class Hex
 {
 public:
-	Hex(Game& game, int id, int nRotation);
+	Hex(Game* pGame, int id, int nRotation);
 	bool HasWormhole(Edge e) const;
 
 	std::vector<Square*> GetAvailableSquares(const Team& team);
@@ -70,12 +74,12 @@ public:
 	const std::vector<Square> GetSquares() const { return m_squares; }
 	std::vector<Ship> GetShips() const { return m_ships; }
 	DiscoveryType GetDiscoveryTile() const { return m_discovery; }
-	//EdgeSet GetWormholes() const { return m_wormholes; }
+	EdgeSet GetWormholes() const { return m_wormholes; } // Non-rotated.
 	int GetVictoryPoints() const { return m_nVictory; }
 	bool HasArtifact() const { return m_bArtifact; }
 
 private:
-	void Init(Game& game);
+	void Init(Game* pGame);
 
 	int m_id;
 	int m_nRotation; // [0, 5]
@@ -90,3 +94,4 @@ private:
 };
 
 typedef std::unique_ptr<Hex> HexPtr;
+

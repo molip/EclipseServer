@@ -44,7 +44,7 @@ void ExploreCmd::AcceptMessage(const Input::CmdMessage& msg)
 
 			auto& m = CastMessage<const Input::CmdExplorePos>(msg);
 			
-			AssertThrow("ExploreCmd::AcceptMessage (Stage::Pos): hexes already taken", phase.m_hexes.empty());
+			AssertThrow("ExploreCmd::AcceptMessage (Stage::Pos): hexes already taken", phase.m_hexChoices.empty());
 			AssertThrow("ExploreCmd::AcceptMessage (Stage::Pos): invalid pos index", m.m_iPos >= 0 && m.m_iPos < (int)phase.m_positions.size());
 			
 			auto it = phase.m_positions.begin();
@@ -56,8 +56,11 @@ void ExploreCmd::AcceptMessage(const Input::CmdMessage& msg)
 			HexRing ring = phase.m_pos.GetRing();
 			HexBag& bag = pGame->GetHexBag(ring);
 			
+			phase.m_hexChoices.clear();
 			for (int i = 0; i < Race(team.GetRace()).GetExploreChoices(); ++i)
-				phase.m_hexes.push_back(bag.TakeTile());
+				phase.m_hexChoices.push_back(HexChoice(bag.TakeTile()));
+
+			GetPossibleRotations(*pGame);
 
 			m_stage = Stage::Hex;
 			break;
@@ -70,7 +73,7 @@ void ExploreCmd::AcceptMessage(const Input::CmdMessage& msg)
 				EndPhase();
 			}
 			
-			if (phase.m_hexes.size() > 1 || phase.m_bReject)
+			if (phase.m_hexChoices.size() > 1 || phase.m_bReject)
 			{
 				// TODO: Add discarded hexes to discard pile. 
 			}
@@ -78,13 +81,16 @@ void ExploreCmd::AcceptMessage(const Input::CmdMessage& msg)
 			if (!phase.m_bReject)
 			{
 				auto& m = CastMessage<const Input::CmdExploreHex>(msg);
-				AssertThrowXML("ExploreCmd::AcceptMessage (Stage::Hex): invalid rotation", m.m_rotation >= 0 && m.m_rotation < 6);
-				phase.m_rotation = m.m_rotation;
-				
-				AssertThrowXML("ExploreCmd::AcceptMessage (Stage::Hex): hex index", m.m_iHex >= 0 && m.m_iHex < (int)phase.m_hexes.size());
+
+				AssertThrowXML("ExploreCmd::AcceptMessage (Stage::Hex): hex index", m.m_iHex >= 0 && m.m_iHex < (int)phase.m_hexChoices.size());
 				phase.m_iHex = m.m_iHex;
 
-				Hex& hex = pGame->GetMap().AddHex(phase.m_pos, phase.m_hexes[phase.m_iHex], phase.m_rotation);
+				auto& hc = phase.m_hexChoices[phase.m_iHex];
+
+				AssertThrowXML("ExploreCmd::AcceptMessage (Stage::Hex): rotation index", m.m_iRot >= 0 && m.m_iRot < (int)hc.m_rotations.size());
+				phase.m_iRot = m.m_iRot;
+				
+				Hex& hex = pGame->GetMap().AddHex(phase.m_pos, phase.m_hexChoices[phase.m_iHex].m_idHex, hc.m_rotations[phase.m_iRot]);
 				hex.SetOwner(&team);
 
 				// TODO: Something better.
@@ -119,8 +125,14 @@ void ExploreCmd::UpdateClient(const Controller& controller) const
 		controller.SendMessage(Output::ChooseExplorePos(phase.m_positions, m_phases.size() > 1), m_player);
 		break;
 	case Stage::Hex:
-		controller.SendMessage(Output::ChooseExploreHex(phase.m_pos.GetX(), phase.m_pos.GetY(), phase.m_hexes), m_player);
-		break;
+		{
+			Output::ChooseExploreHex msg(phase.m_pos.GetX(), phase.m_pos.GetY());
+			for (auto& hc : phase.m_hexChoices)
+				msg.AddHexChoice(hc.m_idHex, hc.m_rotations);
+
+			controller.SendMessage(msg, m_player);
+			break;
+		}
 	}
 }
 
@@ -140,14 +152,50 @@ void ExploreCmd::Undo()
 
 void ExploreCmd::GetPossiblePositions()
 {
-	Game* pGame = m_player.GetCurrentGame();
+	const Game* pGame = m_player.GetCurrentGame();
 	AssertThrow(!!pGame);
-	Team& team = pGame->GetTeam(m_player);
+	const Team& team = pGame->GetTeam(m_player);
 
 	auto& positions = GetPhase().m_positions;
 
 	const Map::HexMap& hexes = pGame->GetMap().GetHexes();
 	for (auto& h : hexes)
-		if (h.second->GetOwner() == &team)
+		if (h.second->GetOwner() == &team) // TODO: Check ships.
 			pGame->GetMap().GetEmptyNeighbours(h.first, team.HasTech(TechType::WormholeGen), positions);
+}
+
+void ExploreCmd::GetPossibleRotations(const Game& game)
+{
+	Phase& phase = GetPhase();
+	const Team& team = game.GetTeam(m_player);
+	bool bWormholeGen = team.HasTech(TechType::WormholeGen);
+
+	std::vector<const Hex*> hexes = game.GetMap().GetSurroundingHexes(phase.m_pos, team);
+
+	for (auto& hc : phase.m_hexChoices)
+	{
+		EdgeSet inner = Hex(nullptr, hc.m_idHex, 0).GetWormholes();
+
+		for (int i = 0; i < 6; ++i) // Try each rotation.
+		{
+			bool bMatch = false;
+			for (auto e : EnumRange<Edge>())
+			{
+				const Hex* pHex = hexes[(int)e];
+				
+				bool bInner = inner[RotateEdge(e, -i)];
+				bool bOuter = pHex && pHex->HasWormhole(ReverseEdge(e));
+
+				if (bWormholeGen)
+					bMatch = pHex && (bOuter || bInner);
+				else
+					bMatch = bOuter && bInner;
+
+				if (bMatch)
+					break;
+			}
+			if (bMatch)
+				hc.m_rotations.push_back(i);
+		}
+	}
 }

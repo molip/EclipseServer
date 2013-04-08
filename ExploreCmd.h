@@ -7,6 +7,7 @@
 #include <set> 
 
 class Player;
+class Map;
 
 class ExploreCmd : public Cmd
 {
@@ -20,17 +21,23 @@ public:
 	virtual void Undo() override;
 
 private:
+	struct HexChoice
+	{
+		HexChoice(int idHex = 0) : m_idHex(idHex) {}
+		int m_idHex;
+		std::vector<int> m_rotations;
+	};
 	struct Phase
 	{
-		Phase() : m_rotation(0), m_iHex(0), m_bReject(false) {}
+		Phase() : m_iRot(0), m_iHex(0), m_bReject(false) {}
 		
 		// Stage::Pos
 		std::set<MapPos> m_positions;
 		MapPos m_pos;
-		std::vector<int> m_hexes;
+		std::vector<HexChoice> m_hexChoices;
 
 		// Stage::Hex
-		int m_rotation;
+		int m_iRot;
 		int m_iHex;
 		bool m_bReject;
 
@@ -44,6 +51,7 @@ private:
 	enum class Stage { Pos, Hex, Influence, Discovery, Finished };
 
 	void GetPossiblePositions();
+	void GetPossibleRotations(const Game& game);
 		
 	Phase& GetPhase() { return *m_phases.back(); }
 	const Phase& GetPhase() const { return *m_phases.back(); }

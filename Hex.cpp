@@ -7,6 +7,18 @@
 #include "Game.h"
 #include "Technology.h"
 
+Edge ReverseEdge(Edge e)
+{
+	return RotateEdge(e, 3);
+}
+
+Edge RotateEdge(Edge e, int n)
+{
+	return (Edge)Mod(int(e) + n, 6);
+}
+
+//-----------------------------------------------------------------------------
+
 EdgeSet::EdgeSet(std::string s)
 {
 	std::reverse(s.begin(), s.end());
@@ -14,6 +26,11 @@ EdgeSet::EdgeSet(std::string s)
 }
 
 bool EdgeSet::operator[](Edge e) const
+{
+	return __super::operator[]((int)e);
+}
+
+EdgeSet::reference EdgeSet::operator[](Edge e)
 {
 	return __super::operator[]((int)e);
 }
@@ -53,18 +70,17 @@ void Square::SetOwner(Team* pOwner)
 
 //-----------------------------------------------------------------------------
 
-Hex::Hex(Game& game, int id, int nRotation) : 
+Hex::Hex(Game* pGame, int id, int nRotation) : 
 	m_id(id), m_nRotation(nRotation), m_discovery(DiscoveryType::None), 
 	m_nVictory(0), m_bArtifact(false), m_pOwner(nullptr)
 {
 	AssertThrow("Hex::Hex: Invalid rotation", nRotation >= 0 && nRotation < 6);
-	Init(game);
+	Init(pGame);
 }
 
 bool Hex::HasWormhole(Edge e) const
 {
-	e = (Edge)Mod(int(e) - m_nRotation, 6);
-	return m_wormholes[e];
+	return m_wormholes[RotateEdge(e, -m_nRotation)];
 }
 
 std::vector<Square*> Hex::GetAvailableSquares(const Team& team) 
@@ -88,7 +104,7 @@ void Hex::SetOwner(Team* pOwner)
 	m_pOwner = pOwner;
 }
 
-void Hex::Init(Game& game)
+void Hex::Init(Game* pGame)
 {
 	auto AddSquare = [&] (int x, int y, Resource type, bool bAdvanced) { m_squares.push_back(Square(x, y, type, bAdvanced)); };
 	auto SetWormholes = [&] (std::string s) { m_wormholes = EdgeSet(s); };
@@ -417,6 +433,6 @@ void Hex::Init(Game& game)
 	for (int i = 0; i < nAncients; ++i)
 		AddShip(ShipType::Ancient, nullptr);
 
-	if (bDiscovery)
-		m_discovery = game.GetDiscoveryBag().TakeTile();
+	if (bDiscovery && pGame)
+		m_discovery = pGame->GetDiscoveryBag().TakeTile();
 }

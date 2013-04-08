@@ -22,6 +22,7 @@ public:
 	typedef std::map<MapPos, HexPtr> HexMap;
 	const HexMap& GetHexes() const { return m_hexes; }
 	void GetEmptyNeighbours(const MapPos& pos, bool bHasWormholeGen, std::set<MapPos>& neighbours) const;
+	std::vector<const Hex*> GetSurroundingHexes(const MapPos& pos, const Team& team) const; // Returns empty hexes too.
 
 private:
 	Hex* GetHex(const MapPos& pos);

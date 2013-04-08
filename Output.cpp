@@ -243,15 +243,20 @@ ChooseExplorePos::ChooseExplorePos(const std::set<MapPos>& positions, bool bCanS
 	}
 }
 
-ChooseExploreHex::ChooseExploreHex(int x, int y, const std::vector<int>& hexes) : Choose("explore_hex") 
+ChooseExploreHex::ChooseExploreHex(int x, int y) : Choose("explore_hex") 
 {
 	m_pRoot->SetAttribute("x", x);
 	m_pRoot->SetAttribute("y", y);
+}
 
-	for (int id : hexes)
+void ChooseExploreHex::AddHexChoice(int idHex, const std::vector<int>& rotations)
+{
+	auto e = AddElement("hex", *m_pRoot);
+	e->SetAttribute("id", idHex);
+	for (int r : rotations)
 	{
-		auto e = AddElement("hex", *m_pRoot);
-		e->SetAttribute("id", id);
+		auto e2 = AddElement("rotation", *e);
+		e2->SetAttribute("steps", r);
 	}
 }
 

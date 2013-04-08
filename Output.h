@@ -73,7 +73,11 @@ struct ChooseAction : Choose { ChooseAction(); };
 struct ChooseFinished : Choose { ChooseFinished(); };
 
 struct ChooseExplorePos : Choose { ChooseExplorePos(const std::set<MapPos>& positions, bool bCanSkip); };
-struct ChooseExploreHex : Choose { ChooseExploreHex(int x, int y, const std::vector<int>& hexes); };
+struct ChooseExploreHex : Choose 
+{
+	ChooseExploreHex(int x, int y);
+	void AddHexChoice(int idHex, const std::vector<int>& rotations);
+};
 
 struct ShowGameList : Show { ShowGameList(); };
 struct ShowLobby : Show { ShowLobby(); };

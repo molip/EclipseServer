@@ -52,7 +52,7 @@ Hex& Map::AddHex(const MapPos& pos, int id, int rotation)
 {
 	AssertThrowModel("Map::AddHex: hex already occupied", GetHex(pos) == nullptr);
 	AssertThrowModel("Map::AddHex: invalid rotation", rotation >= 0 && rotation < 6);
-	Hex* p = new Hex(m_game, id,  rotation);
+	Hex* p = new Hex(&m_game, id,  rotation);
 	m_hexes.insert(std::make_pair(pos, HexPtr(p)));
 	return *p;
 }
@@ -70,4 +70,17 @@ void Map::GetEmptyNeighbours(const MapPos& pos, bool bWormholeGen, std::set<MapP
 				if (GetHex(pos2) == nullptr)
 					neighbours.insert(pos2);
 		}
+}
+
+std::vector<const Hex*> Map::GetSurroundingHexes(const MapPos& pos, const Team& team) const
+{
+	std::vector<const Hex*> hexes;
+	hexes.resize(6);
+
+	for (auto e : EnumRange<Edge>())
+		if (const Hex* pHex = GetHex(pos.GetNeighbour(e)))
+			if (pHex->GetOwner() == &team) // TODO: Check ships.
+				hexes[(int)e] = pHex;
+
+	return hexes;		
 }

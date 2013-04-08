@@ -99,7 +99,7 @@ struct CmdExplorePos : CmdMessage
 struct CmdExploreHex : CmdMessage
 {
 	CmdExploreHex(const TiXmlElement& node);
-	int m_rotation;
+	int m_iRot;
 	int m_iHex;
 };
 
