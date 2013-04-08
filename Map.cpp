@@ -66,8 +66,8 @@ void Map::GetEmptyNeighbours(const MapPos& pos, bool bWormholeGen, std::set<MapP
 		if (bWormholeGen || pHex->HasWormhole(e))
 		{
 			MapPos pos2 = pos.GetNeighbour(e);
-			if (!m_game.GetHexBag(pos2.GetRing()).IsEmpty())
-				if (GetHex(pos2) == nullptr)
+			if (GetHex(pos2) == nullptr)
+				if (!m_game.GetHexBag(pos2.GetRing()).IsEmpty())
 					neighbours.insert(pos2);
 		}
 }
