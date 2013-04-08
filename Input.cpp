@@ -270,10 +270,9 @@ bool CmdMessage::Process(Controller& controller, Player& player) const
 	return true;
 }
 
-CmdExplorePos::CmdExplorePos(const TiXmlElement& node) : m_x(0), m_y(0)
+CmdExplorePos::CmdExplorePos(const TiXmlElement& node) : m_iPos(-1)
 {
-	AssertThrowXML("CmdExplorePos: x", !!node.Attribute("x", &m_x));
-	AssertThrowXML("CmdExplorePos: y", !!node.Attribute("y", &m_y));
+	AssertThrowXML("CmdExplorePos: pos_idx", !!node.Attribute("pos_idx", &m_iPos));
 }
 
 CmdExploreHex::CmdExploreHex(const TiXmlElement& node) : m_rotation(0), m_iHex(0)

@@ -93,7 +93,7 @@ public:
 struct CmdExplorePos : CmdMessage
 {
 	CmdExplorePos(const TiXmlElement& node);
-	int m_x, m_y;
+	int m_iPos;
 };
 
 struct CmdExploreHex : CmdMessage

@@ -151,7 +151,10 @@ function OnMouseDown()
 		var ok = false
 		for (var i = 0; i < data.action.positions.length && !ok; ++i)
 			if (data.action.positions[i].x == Map.hot.x && data.action.positions[i].y == Map.hot.y)
-				ok = true
+			{
+				data.action.pos_idx = i
+				ok = true;
+			}
 		if (!ok)
 			return
 	}

@@ -44,12 +44,16 @@ void ExploreCmd::AcceptMessage(const Input::CmdMessage& msg)
 
 			auto& m = CastMessage<const Input::CmdExplorePos>(msg);
 			
-			AssertThrow("ExploreCmd::AcceptMessage (Stage::Pos)", phase.m_hexes.empty());
+			AssertThrow("ExploreCmd::AcceptMessage (Stage::Pos): hexes already taken", phase.m_hexes.empty());
+			AssertThrow("ExploreCmd::AcceptMessage (Stage::Pos): invalid pos index", m.m_iPos >= 0 && m.m_iPos < (int)phase.m_positions.size());
 			
-			phase.m_x = m.m_x;
-			phase.m_y = m.m_y;
+			auto it = phase.m_positions.begin();
+			for (int i = 0; i < m.m_iPos; ++i)	
+				++it;
 
-			HexRing ring = MapPos(phase.m_x, phase.m_y).GetRing();
+			phase.m_pos = *it;
+
+			HexRing ring = phase.m_pos.GetRing();
 			HexBag& bag = pGame->GetHexBag(ring);
 			
 			for (int i = 0; i < Race(team.GetRace()).GetExploreChoices(); ++i)
@@ -80,7 +84,7 @@ void ExploreCmd::AcceptMessage(const Input::CmdMessage& msg)
 				AssertThrowXML("ExploreCmd::AcceptMessage (Stage::Hex): hex index", m.m_iHex >= 0 && m.m_iHex < (int)phase.m_hexes.size());
 				phase.m_iHex = m.m_iHex;
 
-				Hex& hex = pGame->GetMap().AddHex(MapPos(phase.m_x, phase.m_y), phase.m_hexes[phase.m_iHex], phase.m_rotation);
+				Hex& hex = pGame->GetMap().AddHex(phase.m_pos, phase.m_hexes[phase.m_iHex], phase.m_rotation);
 				hex.SetOwner(&team);
 
 				// TODO: Something better.
@@ -115,7 +119,7 @@ void ExploreCmd::UpdateClient(const Controller& controller) const
 		controller.SendMessage(Output::ChooseExplorePos(phase.m_positions, m_phases.size() > 1), m_player);
 		break;
 	case Stage::Hex:
-		controller.SendMessage(Output::ChooseExploreHex(phase.m_x, phase.m_y, phase.m_hexes), m_player);
+		controller.SendMessage(Output::ChooseExploreHex(phase.m_pos.GetX(), phase.m_pos.GetY(), phase.m_hexes), m_player);
 		break;
 	}
 }

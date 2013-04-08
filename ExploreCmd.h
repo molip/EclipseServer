@@ -22,11 +22,11 @@ public:
 private:
 	struct Phase
 	{
-		Phase() : m_x(0), m_y(0), m_rotation(0), m_iHex(0), m_bReject(false) {}
+		Phase() : m_rotation(0), m_iHex(0), m_bReject(false) {}
 		
 		// Stage::Pos
 		std::set<MapPos> m_positions;
-		int m_x, m_y;
+		MapPos m_pos;
 		std::vector<int> m_hexes;
 
 		// Stage::Hex

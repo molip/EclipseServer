@@ -18,6 +18,7 @@ function OnCommandChooseExplorePos(elem)
 		pos.y = positions[i].getAttribute('y')
 		data.action.positions.push(pos)
 	}
+	data.action.pos_idx = -1
 	
 	var can_skip = IsTrue(elem.getAttribute('can_skip'))
 	
@@ -59,8 +60,7 @@ function SendExplorePos()
 {
 	var doc = CreateXMLDoc()
 	var node = CreateCommandNode(doc, "cmd_explore_pos")
-	node.setAttribute("x", Map.selected.x)
-	node.setAttribute("y", Map.selected.y)
+	node.setAttribute("pos_idx", data.action.pos_idx)
 	SendXMLDoc(doc)
 }
 
