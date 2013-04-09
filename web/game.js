@@ -7,17 +7,6 @@ var data = {}
 data.team_pages = {}
 data.team_count = 0
 
-data.hex_width = 445
-data.hex_height = 387
-
-data.map_scale = 0.2
-
-data.img_select = new Image()
-data.img_select.src = "/images/select.png"
-
-data.img_explore = new Image()
-data.img_explore.src = "/images/explore.png"
-
 data.current_action_elem = null
 data.action = null
 

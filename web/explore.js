@@ -1,7 +1,9 @@
+var Explore = {}
+
 ///////////////////////////////////////////////////////////////////////////////
 // Input
 
-function OnCommandChooseExplorePos(elem)
+Explore.OnCommandChoosePos = function(elem)
 {
 	ShowActionElement('choose_explore_pos')
 	Map.selected = {}
@@ -25,10 +27,10 @@ function OnCommandChooseExplorePos(elem)
 	document.getElementById('choose_explore_pos_btn').disabled = true
 	ShowElementById('choose_explore_pos_reject_btn', can_skip, true)
 	
-	DrawPositions()
+	Map.DrawPositions()
 }
 
-function OnCommandChooseExploreHex(elem)
+Explore.OnCommandChooseHex = function(elem)
 {
 	Map.selecting = false
 	ShowActionElement('choose_explore_hex')
@@ -57,14 +59,14 @@ function OnCommandChooseExploreHex(elem)
 
 	ShowElementById('choose_explore_hex_switch_btn', hexes.length > 1, true)
 	
-	DrawExploreHex()
-	DrawSelected(data.action.x, data.action.y)
+	Explore.DrawHex()
+	Map.DrawSelected(data.action.x, data.action.y)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 // Output
 
-function SendExplorePos()
+Explore.SendPos = function()
 {
 	var doc = CreateXMLDoc()
 	var node = CreateCommandNode(doc, "cmd_explore_pos")
@@ -72,10 +74,10 @@ function SendExplorePos()
 	SendXMLDoc(doc)
 }
 
-function SendExploreHex()
+Explore.SendHex = function()
 {
-	ClearCanvas(Map.layer_action)
-	ClearCanvas(Map.layer_select)
+	Map.ClearCanvas(Map.layer_action)
+	Map.ClearCanvas(Map.layer_select)
 
 	var hex = data.action.hexes[data.action.hex_idx]
 	
@@ -89,10 +91,10 @@ function SendExploreHex()
 	SendXMLDoc(doc)
 }
 
-function SendExploreReject()
+Explore.SendReject = function()
 {
-	ClearCanvas(Map.layer_action)
-	ClearCanvas(Map.layer_select)
+	Map.ClearCanvas(Map.layer_action)
+	Map.ClearCanvas(Map.layer_select)
 	data.action = null
 
 	var doc = CreateXMLDoc()
@@ -103,16 +105,16 @@ function SendExploreReject()
 ///////////////////////////////////////////////////////////////////////////////
 // UI
 
-function DrawExploreHex()
+Explore.DrawHex = function()
 {
 	var hex = data.action.hexes[data.action.hex_idx]
 
 	var ctx = Map.layer_action.getContext("2d");
-	ClearContext(ctx)
-	DrawHex(ctx, hex.id, data.action.x, data.action.y, hex.rotations[hex.rot_idx])
+	Map.ClearContext(ctx)
+	Map.DrawHex(ctx, hex.id, data.action.x, data.action.y, hex.rotations[hex.rot_idx])
 }
 
-function ExploreRotate(steps)
+Explore.Rotate = function(steps)
 {
 	var hex = data.action.hexes[data.action.hex_idx]
 
@@ -120,12 +122,12 @@ function ExploreRotate(steps)
 	if (hex.rot_idx < 0)
 		hex.rot_idx += hex.rotations.length
 
-	DrawExploreHex()
+	Explore.DrawHex()
 }
 
-function ExploreSwitch()
+Explore.Switch = function()
 {
 	data.action.hex_idx = (data.action.hex_idx + 1) % data.action.hexes.length
-	DrawExploreHex()
+	Explore.DrawHex()
 }
 

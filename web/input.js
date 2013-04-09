@@ -70,7 +70,7 @@ function OnCommandShow(elem)
 		
 	if (panel == 'game_panel')
 	{
-		InitMap()
+		Map.Init()
 	}
 }
 
@@ -108,9 +108,9 @@ function OnCommandChoose(elem)
 	// else if (param == "commit")
 		// OnCommandChooseCommit(elem)
 	else if (param == "explore_pos")
-		OnCommandChooseExplorePos(elem)
+		Explore.OnCommandChoosePos(elem)
 	else if (param == "explore_hex")
-		OnCommandChooseExploreHex(elem)
+		Explore.OnCommandChooseHex(elem)
 	else if (param == "finished")
 		OnCommandChooseFinished(elem)
 	else
@@ -218,10 +218,10 @@ function OnCommandUpdateMap(elem)
 	'
 	SetDivFromCommandElem(document.getElementById('images'), elem, xsl) 
 	
-	ClearContext(Map.layer_hot.getContext("2d"))
+	Map.ClearContext(Map.layer_hot.getContext("2d"))
 
 	var ctx = Map.canvas.getContext("2d");
-	ClearContext(ctx)
+	Map.ClearContext(ctx)
 	
 	var hexes = GetChildElements(elem, 'hex')
 	for (var i = 0; i < hexes.length; ++i)
@@ -231,7 +231,7 @@ function OnCommandUpdateMap(elem)
 		var y = hexes[i].getAttribute('y')
 		var rotation = hexes[i].getAttribute('rotation')
 
-		DrawHex(ctx, id, x, y, rotation)
+		Map.DrawHex(ctx, id, x, y, rotation)
 	}
 }
 

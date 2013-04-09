@@ -4,30 +4,40 @@ Map.selected = {}
 Map.hot = {}
 Map.selecting = false
 
-OnMouseOut()
+Map.hex_width = 445
+Map.hex_height = 387
+Map.scale = 0.2
 
-function InitMap()
+Map.img_select = new Image()
+Map.img_select.src = "/images/select.png"
+
+Map.img_explore = new Image()
+Map.img_explore.src = "/images/explore.png"
+
+Map.Init = function()
 {
 	if (Map.canvas == null)
 	{
 		Map.canvas = document.getElementById('map_canvas')
 
-		Map.layer_action = AddLayer()
-		Map.layer_select = AddLayer()
-		Map.layer_hot = AddLayer()
+		Map.layer_action = Map.AddLayer()
+		Map.layer_select = Map.AddLayer()
+		Map.layer_hot = Map.AddLayer()
 
-		Map.layer_hot.onmousemove = OnMouseMove
-		Map.layer_hot.onmouseout = OnMouseOut
-		Map.layer_hot.onmousedown = OnMouseDown
+		Map.layer_hot.onmousemove = Map.OnMouseMove
+		Map.layer_hot.onmouseout = Map.OnMouseOut
+		Map.layer_hot.onmousedown = Map.OnMouseDown
+
+		Map.OnMouseOut()
 	}
 
 	Map.selecting = false
-	ClearCanvas(Map.layer_action)
-	ClearCanvas(Map.layer_select)
-	ClearCanvas(Map.layer_hot)
+	Map.ClearCanvas(Map.layer_action)
+	Map.ClearCanvas(Map.layer_select)
+	Map.ClearCanvas(Map.layer_hot)
 }
 
-function AddLayer()
+Map.AddLayer = function()
 {
 	var layer = document.createElement('canvas');
 	layer.setAttribute('width', Map.canvas.offsetWidth);
@@ -43,31 +53,31 @@ function AddLayer()
 	return layer
 }
 
-function ClearCanvas(canvas)
+Map.ClearCanvas = function(canvas)
 {
-	ClearContext(canvas.getContext("2d"))	
+	Map.ClearContext(canvas.getContext("2d"))	
 }
 
-function ClearContext(ctx)
+Map.ClearContext = function(ctx)
 {
 	ctx.setTransform(1, 0, 0, 1, 0, 0)
 	ctx.clearRect(0, 0, 600, 600);
 
 	ctx.translate(300, 300)
-	ctx.scale(data.map_scale, data.map_scale)
+	ctx.scale(Map.scale, Map.scale)
 }
 
-function GetHexCentre(x, y) 
+Map.GetHexCentre = function(x, y) 
 {
-	var cx = Number(x) * data.hex_width * 3 / 4
-	var cy = (Number(x) + Number(y) * 2) * data.hex_height / 2
+	var cx = Number(x) * Map.hex_width * 3 / 4
+	var cy = (Number(x) + Number(y) * 2) * Map.hex_height / 2
 	return { x: cx, y: cy }
 } 
 
-function HitTestHex(px, py) // logical pixels
+Map.HitTestHex = function(px, py) // logical pixels
 {
-	var colWidth = data.hex_width / 4;
-	var rowHeight = data.hex_height / 2;
+	var colWidth = Map.hex_width / 4;
+	var rowHeight = Map.hex_height / 2;
 
 	var iRow = Math.floor(py / rowHeight);
 	var iCol = Math.floor(px / colWidth);
@@ -91,7 +101,8 @@ function HitTestHex(px, py) // logical pixels
 	return { x: hitX, y: hitY };
 }
 
-function relMouseCoords(event, el){
+Map.RelMouseCoords = function(event, el)
+{
     var totalOffsetX = 0;
     var totalOffsetY = 0;
     var canvasX = 0;
@@ -110,17 +121,17 @@ function relMouseCoords(event, el){
     return {x:canvasX, y:canvasY}
 }
 
-function OnMouseMove(evt)
+Map.OnMouseMove = function(evt)
 { 
 	if (!Map.selecting)
 		return
 		
-	var p = relMouseCoords(evt, Map.canvas)
+	var p = Map.RelMouseCoords(evt, Map.canvas)
 	
-	p.x = (p.x - 300) / data.map_scale
-	p.y = (p.y - 300) / data.map_scale
+	p.x = (p.x - 300) / Map.scale
+	p.y = (p.y - 300) / Map.scale
 	
-	hex = HitTestHex(p.x, p.y)
+	hex = Map.HitTestHex(p.x, p.y)
 	
 	if (Map.hot == hex)
 		return
@@ -128,20 +139,20 @@ function OnMouseMove(evt)
 	Map.hot = hex
 	
 	var ctx = Map.layer_hot.getContext("2d");
-	ClearContext(ctx)
-	DrawCentred(ctx, data.img_select, hex.x, hex.y);
+	Map.ClearContext(ctx)
+	Map.DrawCentred(ctx, Map.img_select, hex.x, hex.y);
 }
 
-function OnMouseOut()
+Map.OnMouseOut = function()
 {
 	Map.hot.x = null
 	Map.hot.y = null
 
 	if (Map.layer_hot)
-		ClearCanvas(Map.layer_hot)	
+		Map.ClearCanvas(Map.layer_hot)	
 }
 
-function OnMouseDown()
+Map.OnMouseDown = function()
 {
 	if (!Map.selecting)
 		return
@@ -160,23 +171,23 @@ function OnMouseDown()
 	}
 
 	Map.selected = Map.hot
-	DrawSelected(Map.selected.x, Map.selected.y)
+	Map.DrawSelected(Map.selected.x, Map.selected.y)
 
 	document.getElementById('choose_explore_pos_btn').disabled = false
 }
 
-function DrawSelected(x, y)
+Map.DrawSelected = function(x, y)
 {	
 	var ctx2 = Map.layer_select.getContext("2d");
-	ClearContext(ctx2)
+	Map.ClearContext(ctx2)
 
 	if (x == null || y == null)
 		return
 
-	var p = GetHexCentre(x, y)
+	var p = Map.GetHexCentre(x, y)
 	
 	ctx2.beginPath()
-	ctx2.arc(p.x, p.y, data.hex_width / 2, 0,2 * Math.PI)
+	ctx2.arc(p.x, p.y, Map.hex_width / 2, 0,2 * Math.PI)
 	ctx2.closePath()
 	ctx2.strokeStyle="#FF0000";
 	ctx2.lineWidth=10
@@ -184,24 +195,24 @@ function DrawSelected(x, y)
 	ctx2.stroke();	
 }
 
-function DrawPositions()
+Map.DrawPositions = function()
 {
 	if (!data.action || !data.action.positions)
 	{
-		Assert(false, "DrawPositions")
+		Assert(false, "Map.DrawPositions")
 		return 
 	}
 	
 	var ctx = Map.layer_action.getContext("2d");
-	ClearContext(ctx)
+	Map.ClearContext(ctx)
 
 	for (var i = 0; i < data.action.positions.length; ++i)
-		DrawCentred(ctx, data.img_explore, data.action.positions[i].x, data.action.positions[i].y)
+		Map.DrawCentred(ctx, Map.img_explore, data.action.positions[i].x, data.action.positions[i].y)
 }
 
-function DrawCentred(ctx, img, x,  y, rotation)
+Map.DrawCentred = function(ctx, img, x,  y, rotation)
 {	
-	var p = GetHexCentre(x, y)
+	var p = Map.GetHexCentre(x, y)
 
 	ctx.save()
 	ctx.translate(p.x, p.y)
@@ -211,10 +222,10 @@ function DrawCentred(ctx, img, x,  y, rotation)
 	ctx.restore()
 }
 
-function DrawHex(ctx, id, x, y, rotation)
+Map.DrawHex = function(ctx, id, x, y, rotation)
 {
-	var size_x = data.hex_width, size_y = data.hex_height
+	var size_x = Map.hex_width, size_y = Map.hex_height
 	
 	Map.img.src = "/images/hexes/" + id + ".png"
-	DrawCentred(ctx, Map.img, x, y, rotation);
+	Map.DrawCentred(ctx, Map.img, x, y, rotation);
 }
