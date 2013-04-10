@@ -54,9 +54,18 @@
 	<div id="choose_team_content"></div>
 	<div id="choose_team"></div>
 </div>
-<div id="game_panel" class="panel" style="height:615px">
+<div id="game_panel" class="panel" style="height:640px">
 	<div id="images" style="display:none"></div>
-	<div style="margin:5px; float:left;">
+	<div id="map_panel" style="margin:5px; float:left;">
+		<div id="map_ctrls" style="height:27px"> <!-- Ensure map_canvas doesn't move after loading-->
+			<input type = "image" id="map_zoom_in_btn" src="/images/btn_zoom_in.png" onclick="Map.Zoom(-1)">
+			<input type = "image" id="map_zoom_out_btn" src="/images/btn_zoom_out.png" onclick="Map.Zoom(1)">
+			<input type = "image" id="map_pan_left_btn" src="/images/btn_pan_l.png" onclick="Map.PanX(-1)">
+			<input type = "image" id="map_pan_right_btn" src="/images/btn_pan_r.png" onclick="Map.PanX(1)">
+			<input type = "image" id="map_pan_up_btn" src="/images/btn_pan_u.png" onclick="Map.PanY(-1)">
+			<input type = "image" id="map_pan_down_btn" src="/images/btn_pan_d.png" onclick="Map.PanY(1)">
+			<input type = "image" id="map_pan_centre_btn" src="/images/btn_pan_centre.png" onclick="Map.PanCentre()">
+		</div>
 		<div id="map">
 			<canvas id="map_canvas" width="600" height="600" style="background-color:black"></canvas>
 		</div>

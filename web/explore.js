@@ -27,7 +27,7 @@ Explore.OnCommandChoosePos = function(elem)
 	document.getElementById('choose_explore_pos_btn').disabled = true
 	ShowElementById('choose_explore_pos_reject_btn', can_skip, true)
 	
-	Map.DrawPositions()
+	Map.DrawActionLayer()
 }
 
 Explore.OnCommandChooseHex = function(elem)
@@ -40,6 +40,8 @@ Explore.OnCommandChooseHex = function(elem)
 	data.action.y = Number(elem.getAttribute('y'))
 	data.action.hexes = [] // id, rotations, rot_idx
 	data.action.hex_idx = 0
+	Map.selected.x = data.action.x
+	Map.selected.y = data.action.y
 	
 	var hexes = GetChildElements(elem, 'hex')
 	for (var i = 0; i < hexes.length; ++i)
@@ -59,8 +61,8 @@ Explore.OnCommandChooseHex = function(elem)
 
 	ShowElementById('choose_explore_hex_switch_btn', hexes.length > 1, true)
 	
-	Explore.DrawHex()
-	Map.DrawSelected(data.action.x, data.action.y)
+	Map.DrawActionLayer()
+	Map.DrawSelectLayer()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -87,6 +89,7 @@ Explore.SendHex = function()
 	node.setAttribute("hex_idx", data.action.hex_idx)
 
 	data.action = null
+	Map.selected = null
 
 	SendXMLDoc(doc)
 }
@@ -96,7 +99,8 @@ Explore.SendReject = function()
 	Map.ClearCanvas(Map.layer_action)
 	Map.ClearCanvas(Map.layer_select)
 	data.action = null
-
+	Map.selected = null
+	
 	var doc = CreateXMLDoc()
 	var node = CreateCommandNode(doc, "cmd_explore_reject")
 	SendXMLDoc(doc)
@@ -105,13 +109,10 @@ Explore.SendReject = function()
 ///////////////////////////////////////////////////////////////////////////////
 // UI
 
-Explore.DrawHex = function()
+Explore.DrawHex = function(ctx)
 {
 	var hex = data.action.hexes[data.action.hex_idx]
-
-	var ctx = Map.layer_action.getContext("2d");
-	Map.ClearContext(ctx)
-	Map.DrawHex(ctx, hex.id, data.action.x, data.action.y, hex.rotations[hex.rot_idx])
+	Map.DrawHex(ctx, new Map.Hex(hex.id, data.action.x, data.action.y, hex.rotations[hex.rot_idx]))
 }
 
 Explore.Rotate = function(steps)
@@ -122,12 +123,12 @@ Explore.Rotate = function(steps)
 	if (hex.rot_idx < 0)
 		hex.rot_idx += hex.rotations.length
 
-	Explore.DrawHex()
+	Map.DrawActionLayer()
 }
 
 Explore.Switch = function()
 {
 	data.action.hex_idx = (data.action.hex_idx + 1) % data.action.hexes.length
-	Explore.DrawHex()
+	Map.DrawActionLayer()
 }
 

@@ -218,10 +218,7 @@ function OnCommandUpdateMap(elem)
 	'
 	SetDivFromCommandElem(document.getElementById('images'), elem, xsl) 
 	
-	Map.ClearContext(Map.layer_hot.getContext("2d"))
-
-	var ctx = Map.canvas.getContext("2d");
-	Map.ClearContext(ctx)
+	Map.Clear()
 	
 	var hexes = GetChildElements(elem, 'hex')
 	for (var i = 0; i < hexes.length; ++i)
@@ -231,8 +228,9 @@ function OnCommandUpdateMap(elem)
 		var y = hexes[i].getAttribute('y')
 		var rotation = hexes[i].getAttribute('rotation')
 
-		Map.DrawHex(ctx, id, x, y, rotation)
+		Map.AddHex(new Map.Hex(id, x, y, rotation))
 	}
+	Map.Draw()
 }
 
 function OnCommandChooseTeam(elem, active)
