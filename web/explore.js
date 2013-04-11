@@ -6,11 +6,13 @@ var Explore = {}
 Explore.OnCommandChoosePos = function(elem)
 {
 	ShowActionElement('choose_explore_pos')
-	Map.selected = {}
 	Map.selecting = true
 
 	data.action = {}
 	data.action.positions = []
+	data.action.OnHexMouseDown = Explore.OnHexMouseDown
+	data.action.OnDraw = Explore.OnDrawPositions
+	data.action.selected = {}
 
 	var positions = GetChildElements(elem, 'pos')
 	for (var i = 0; i < positions.length; ++i)
@@ -36,12 +38,12 @@ Explore.OnCommandChooseHex = function(elem)
 	ShowActionElement('choose_explore_hex')
 
 	data.action = {}
-	data.action.x = Number(elem.getAttribute('x'))
-	data.action.y = Number(elem.getAttribute('y'))
+	data.action.selected = {}
+	data.action.selected.x = Number(elem.getAttribute('x'))
+	data.action.selected.y = Number(elem.getAttribute('y'))
 	data.action.hexes = [] // id, rotations, rot_idx
 	data.action.hex_idx = 0
-	Map.selected.x = data.action.x
-	Map.selected.y = data.action.y
+	data.action.OnDraw = Explore.OnDrawHex
 	
 	var hexes = GetChildElements(elem, 'hex')
 	for (var i = 0; i < hexes.length; ++i)
@@ -73,6 +75,9 @@ Explore.SendPos = function()
 	var doc = CreateXMLDoc()
 	var node = CreateCommandNode(doc, "cmd_explore_pos")
 	node.setAttribute("pos_idx", data.action.pos_idx)
+
+	data.action = null
+
 	SendXMLDoc(doc)
 }
 
@@ -89,7 +94,6 @@ Explore.SendHex = function()
 	node.setAttribute("hex_idx", data.action.hex_idx)
 
 	data.action = null
-	Map.selected = null
 
 	SendXMLDoc(doc)
 }
@@ -99,7 +103,6 @@ Explore.SendReject = function()
 	Map.ClearCanvas(Map.layer_action)
 	Map.ClearCanvas(Map.layer_select)
 	data.action = null
-	Map.selected = null
 	
 	var doc = CreateXMLDoc()
 	var node = CreateCommandNode(doc, "cmd_explore_reject")
@@ -108,12 +111,6 @@ Explore.SendReject = function()
 
 ///////////////////////////////////////////////////////////////////////////////
 // UI
-
-Explore.DrawHex = function(ctx)
-{
-	var hex = data.action.hexes[data.action.hex_idx]
-	Map.DrawHex(ctx, new Map.Hex(hex.id, data.action.x, data.action.y, hex.rotations[hex.rot_idx]))
-}
 
 Explore.Rotate = function(steps)
 {
@@ -132,3 +129,35 @@ Explore.Switch = function()
 	Map.DrawActionLayer()
 }
 
+Explore.OnHexMouseDown = function(x, y)
+{
+	if (data.action && data.action.positions)
+	{
+		for (var i = 0; i < data.action.positions.length; ++i)
+			if (data.action.positions[i].x == Map.hot.x && data.action.positions[i].y == Map.hot.y)
+			{
+				data.action.selected.x = Map.hot.x
+				data.action.selected.y = Map.hot.y
+				data.action.pos_idx = i
+				document.getElementById('choose_explore_pos_btn').disabled = false
+				return true
+			}
+	}
+	return false
+}
+
+Explore.OnDrawPositions = function(ctx)
+{
+	Assert(data.action.positions, "Explore.OnDrawPositions")
+
+	for (var i = 0; i < data.action.positions.length; ++i)
+		Map.DrawCentred(ctx, Map.img_explore, data.action.positions[i].x, data.action.positions[i].y)
+}
+
+Explore.OnDrawHex = function(ctx)
+{
+	Assert(data.action.selected && data.action.hexes, "Explore.OnDrawHex")
+
+	var hex = data.action.hexes[data.action.hex_idx]
+	Map.DrawHex(ctx, new Map.Hex(hex.id, data.action.selected.x, data.action.selected.y, hex.rotations[hex.rot_idx]))
+}

@@ -1,6 +1,5 @@
 var Map = {}
 Map.img = new Image()
-Map.selected = {}
 Map.hot = {}
 Map.selecting = false
 
@@ -43,8 +42,6 @@ Map.Init = function()
 
 		Map.OnMouseOut()
 		Map.UpdateScale()
-	
-		alert(Map.canvas.offsetTop)
 	}
 
 	Map.selecting = false
@@ -171,23 +168,9 @@ Map.OnMouseDown = function()
 	if (!Map.selecting)
 		return
 
-	if (data.action && data.action.positions)
-	{
-		var ok = false
-		for (var i = 0; i < data.action.positions.length && !ok; ++i)
-			if (data.action.positions[i].x == Map.hot.x && data.action.positions[i].y == Map.hot.y)
-			{
-				data.action.pos_idx = i
-				ok = true;
-			}
-		if (!ok)
-			return
-	}
-
-	Map.selected = Map.hot
-	Map.DrawSelectLayer()
-
-	document.getElementById('choose_explore_pos_btn').disabled = false
+	if (data.action && data.action.OnHexMouseDown)
+		if (data.action.OnHexMouseDown(Map.hot.x, Map.hot.y))
+			Map.DrawSelectLayer()
 }
 
 Map.DrawCentred = function(ctx, img, x,  y, rotation)
@@ -242,19 +225,8 @@ Map.DrawActionLayer = function()
 	var ctx = Map.layer_action.getContext("2d");
 	Map.ClearContext(ctx)
 
-	if (!data.action)
-		return
-	
-	// TODO: Move these to Explore.js, set data.action.Draw
-	if (data.action.positions)
-	{
-		for (var i = 0; i < data.action.positions.length; ++i)
-			Map.DrawCentred(ctx, Map.img_explore, data.action.positions[i].x, data.action.positions[i].y)
-	}
-	else if (data.action.x != null && data.action.y != null)
-	{
-		Explore.DrawHex(ctx)
-	}
+	if (data.action && data.action.OnDraw)
+		data.action.OnDraw(ctx)
 }
 
 Map.DrawSelectLayer = function()
@@ -262,10 +234,10 @@ Map.DrawSelectLayer = function()
 	var ctx2 = Map.layer_select.getContext("2d");
 	Map.ClearContext(ctx2)
 
-	if (Map.selected == null || Map.selected.x == null || Map.selected.y == null)
+	if (!data.action || !data.action.selected)
 		return
 
-	var p = Map.GetHexCentre(Map.selected.x, Map.selected.y)
+	var p = Map.GetHexCentre(data.action.selected.x, data.action.selected.y)
 	
 	ctx2.beginPath()
 	ctx2.arc(p.x, p.y, Map.hex_width / 2, 0,2 * Math.PI)
