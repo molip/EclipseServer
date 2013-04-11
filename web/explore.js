@@ -6,17 +6,16 @@ var Explore = {}
 Explore.ChoosePosStage = function(positions)
 {
 	this.positions = positions
-	this.selected = {}
+	this.selected = null
 	this.pos_idx = -1
 }
 
-Explore.ChoosePosStage.prototype.OnHexMouseDown = function(x, y)
+Explore.ChoosePosStage.prototype.OnHexMouseDown = function(pt)
 {
 	for (var i = 0; i < this.positions.length; ++i)
-		if (this.positions[i].x == x && this.positions[i].y == y)
+		if (this.positions[i].equals(pt))
 		{
-			this.selected.x = x
-			this.selected.y = y
+			this.selected = pt.Clone()
 			this.pos_idx = i
 			document.getElementById('choose_explore_pos_btn').disabled = false
 			return true
@@ -27,14 +26,14 @@ Explore.ChoosePosStage.prototype.OnHexMouseDown = function(x, y)
 Explore.ChoosePosStage.prototype.OnDraw = function(ctx)
 {
 	for (var i = 0; i < this.positions.length; ++i)
-		Map.DrawCentred(ctx, Map.img_explore, this.positions[i].x, this.positions[i].y)
+		Map.DrawCentred(ctx, Map.img_explore, this.positions[i])
 }
 
 ///////////////////////
 
-Explore.ChooseHexStage = function(x, y)
+Explore.ChooseHexStage = function(pos)
 {
-	this.selected = { x:x, y:y }
+	this.selected = pos.Clone()
 	this.hexes = [] // id, rotations, rot_idx
 	this.hex_idx = 0
 }
@@ -48,7 +47,7 @@ Explore.ChooseHexStage.prototype.AddHex = function(id, rotations)
 Explore.ChooseHexStage.prototype.OnDraw = function(ctx)
 {
 	var hex = this.hexes[this.hex_idx]
-	Map.DrawHex(ctx, new Map.Hex(hex.id, this.selected.x, this.selected.y, hex.rotations[hex.rot_idx]))
+	Map.DrawHex(ctx, new Map.Hex(hex.id, this.selected, hex.rotations[hex.rot_idx]))
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -65,8 +64,7 @@ Explore.OnCommandChoosePos = function(elem)
 	{
 		var x = pos_elems[i].getAttribute('x')
 		var y = pos_elems[i].getAttribute('y')
-		var pos = { x:x, y:y }
-		positions.push(pos)
+		positions.push(new Point(x, y))
 	}
 
 	data.action = new Explore.ChoosePosStage(positions)
@@ -87,7 +85,7 @@ Explore.OnCommandChooseHex = function(elem)
 	var x = Number(elem.getAttribute('x'))
 	var y = Number(elem.getAttribute('y'))
 
-	data.action = new Explore.ChooseHexStage(x, y)
+	data.action = new Explore.ChooseHexStage(new Point(x, y))
 	
 	var hexes = GetChildElements(elem, 'hex')
 	for (var i = 0; i < hexes.length; ++i)

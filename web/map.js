@@ -1,6 +1,7 @@
 var Map = {}
+var Map = {}
 Map.img = new Image()
-Map.hot = {}
+Map.hot = null
 Map.selecting = false
 
 Map.hex_width = 445
@@ -18,11 +19,10 @@ Map.img_explore.src = "/images/explore.png"
 
 Map._hexes = []
 
-Map.Hex = function(id, x, y, rotation) 
+Map.Hex = function(id, pos, rotation) 
 {
 	this.id = id
-	this.x = x
-	this.y = y
+	this.pos = pos.Clone()
 	this.rotation = rotation
 }
 
@@ -81,26 +81,26 @@ Map.ClearContext = function(ctx)
 	ctx.translate(-Map.pan_x, -Map.pan_y)
 }
 
-Map.GetHexCentre = function(x, y) 
+Map.GetHexCentre = function(pos) 
 {
-	var cx = Number(x) * Map.hex_width * 3 / 4
-	var cy = (Number(x) + Number(y) * 2) * Map.hex_height / 2
-	return { x: cx, y: cy }
+	var cx = Number(pos.x) * Map.hex_width * 3 / 4
+	var cy = (Number(pos.x) + Number(pos.y) * 2) * Map.hex_height / 2
+	return new Point(cx, cy)
 } 
 
-Map.HitTestHex = function(px, py) // logical pixels
+Map.HitTestHex = function(pt) // logical pixels
 {
 	var colWidth = Map.hex_width / 4;
 	var rowHeight = Map.hex_height / 2;
 
-	var iRow = Math.floor(py / rowHeight);
-	var iCol = Math.floor(px / colWidth);
+	var iRow = Math.floor(pt.y / rowHeight);
+	var iCol = Math.floor(pt.x / colWidth);
 	
 	var colStart = iCol * colWidth;
 	var rowStart = iRow * rowHeight;
 
-	var dx = (px - colStart) / colWidth;
-	var dy = (py - rowStart) / rowHeight;
+	var dx = (pt.x - colStart) / colWidth;
+	var dy = (pt.y - rowStart) / rowHeight;
 
 	var bEvenRow = iRow % 2 == 0;
 	var bEvenCol = iCol % 2 == 0;
@@ -112,15 +112,13 @@ Map.HitTestHex = function(px, py) // logical pixels
 	var hitX = iHexCol;
 	var hitY = (Math.floor((iRow + 1 + iHexCol) / 2)) - iHexCol;
 	
-	return { x: hitX, y: hitY };
+	return new Point(hitX, hitY)
 }
 
 Map.RelMouseCoords = function(event, el)
 {
     var totalOffsetX = 0;
     var totalOffsetY = 0;
-    var canvasX = 0;
-    var canvasY = 0;
     var currentElement = el;
 
     do{
@@ -129,10 +127,7 @@ Map.RelMouseCoords = function(event, el)
     }
     while(currentElement = currentElement.offsetParent)
 
-    canvasX = event.pageX - totalOffsetX;
-    canvasY = event.pageY - totalOffsetY;
-
-    return {x:canvasX, y:canvasY}
+    return new Point(event.pageX - totalOffsetX, event.pageY - totalOffsetY)
 }
 
 Map.OnMouseMove = function(evt)
@@ -140,24 +135,25 @@ Map.OnMouseMove = function(evt)
 	if (!Map.selecting)
 		return
 		
-	var p = Map.RelMouseCoords(evt, Map.canvas)
+	var pt = Map.RelMouseCoords(evt, Map.canvas)
 	
-	p.x = (p.x - 300) / Map.scale - Map.pan_x
-	p.y = (p.y - 300) / Map.scale - Map.pan_y
+	pt.x = (pt.x - 300) / Map.scale + Map.pan_x
+	pt.y = (pt.y - 300) / Map.scale + Map.pan_y
+
+	//alert(pt.y)
 	
-	hex = Map.HitTestHex(p.x, p.y)
+	hex = Map.HitTestHex(pt)
 	
-	if (Map.hot == hex)
+	if (CompareObjects(Map.hot, hex))
 		return
 	
-	Map.hot = hex
+	Map.hot = hex ? hex.Clone() : null
 	Map.DrawHotLayer()
 }
 
 Map.OnMouseOut = function()
 {
-	Map.hot.x = null
-	Map.hot.y = null
+	Map.hot = null
 
 	if (Map.layer_hot)
 		Map.ClearCanvas(Map.layer_hot)	
@@ -169,16 +165,16 @@ Map.OnMouseDown = function()
 		return
 
 	if (data.action && data.action.OnHexMouseDown)
-		if (data.action.OnHexMouseDown(Map.hot.x, Map.hot.y))
+		if (data.action.OnHexMouseDown(Map.hot))
 			Map.DrawSelectLayer()
 }
 
-Map.DrawCentred = function(ctx, img, x,  y, rotation)
+Map.DrawCentred = function(ctx, img, pos, rotation)
 {	
-	var p = Map.GetHexCentre(x, y)
+	var pt = Map.GetHexCentre(pos)
 
 	ctx.save()
-	ctx.translate(p.x, p.y)
+	ctx.translate(pt.x, pt.y)
 	if (rotation != null)
 		ctx.rotate(rotation * Math.PI / 3)
 	ctx.drawImage(img, -img.width / 2, -img.height / 2);
@@ -190,7 +186,7 @@ Map.DrawHex = function(ctx, hex)
 	var size_x = Map.hex_width, size_y = Map.hex_height
 	
 	Map.img.src = "/images/hexes/" + hex.id + ".png"
-	Map.DrawCentred(ctx, Map.img, hex.x, hex.y, hex.rotation);
+	Map.DrawCentred(ctx, Map.img, hex.pos, hex.rotation);
 }
 
 Map.Clear = function()
@@ -198,9 +194,9 @@ Map.Clear = function()
 	Map._hexes = []
 }
 
-Map.AddHex = function(hex)
+Map.AddHex = function(id, pos, rotation)
 {
-	Map._hexes.push(hex)
+	Map._hexes.push(new Map.Hex(id, pos.Clone(), rotation))
 }
 
 Map.Draw = function()
@@ -237,10 +233,10 @@ Map.DrawSelectLayer = function()
 	if (!data.action || !data.action.selected)
 		return
 
-	var p = Map.GetHexCentre(data.action.selected.x, data.action.selected.y)
+	var pt = Map.GetHexCentre(data.action.selected)
 	
 	ctx2.beginPath()
-	ctx2.arc(p.x, p.y, Map.hex_width / 2, 0,2 * Math.PI)
+	ctx2.arc(pt.x, pt.y, Map.hex_width / 2, 0,2 * Math.PI)
 	ctx2.closePath()
 	ctx2.strokeStyle="#FF0000";
 	ctx2.lineWidth=10
@@ -252,8 +248,8 @@ Map.DrawHotLayer = function()
 {
 	var ctx = Map.layer_hot.getContext("2d");
 	Map.ClearContext(ctx)
-	if (Map.hot && Map.hot.x != null && Map.hot.y != null)
-		Map.DrawCentred(ctx, Map.img_select, Map.hot.x, Map.hot.y);
+	if (Map.hot)
+		Map.DrawCentred(ctx, Map.img_select, Map.hot);
 }
 
 Map.Zoom = function(n)

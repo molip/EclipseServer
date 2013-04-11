@@ -10,6 +10,27 @@ data.team_count = 0
 data.current_action_elem = null
 data.action = null
 
+function Point(x, y)
+{
+	this.x = x
+	this.y = y
+}
+
+Point.prototype.Clone = function()
+{
+	return new Point(this.x, this.y)
+}
+
+Point.prototype.equals = function(rhs)
+{
+	return rhs && this.x == rhs.x && this.y == rhs.y
+}
+
+function CompareObjects(lhs, rhs)
+{
+	return lhs == null ? rhs == null : lhs.equals(rhs)
+}
+
 if(!String.prototype.format) {
   String.prototype.format = function() {
     var args = arguments;
