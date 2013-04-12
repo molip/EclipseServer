@@ -29,6 +29,17 @@ Explore.ChoosePosStage.prototype.OnDraw = function(ctx)
 		Map.DrawCentred(ctx, Map.img_explore, this.positions[i])
 }
 
+Explore.ChoosePosStage.prototype.SendPos = function()
+{
+	var doc = CreateXMLDoc()
+	var node = CreateCommandNode(doc, "cmd_explore_pos")
+	node.setAttribute("pos_idx", this.pos_idx)
+
+	data.action = null
+
+	SendXMLDoc(doc)
+}
+
 ///////////////////////
 
 Explore.ChooseHexStage = function(pos)
@@ -48,6 +59,40 @@ Explore.ChooseHexStage.prototype.OnDraw = function(ctx)
 {
 	var hex = this.hexes[this.hex_idx]
 	Map.DrawHex(ctx, new Map.Hex(hex.id, this.selected, hex.rotations[hex.rot_idx]))
+}
+
+Explore.ChooseHexStage.prototype.SendHex = function()
+{
+	Map.ClearCanvas(Map.layer_action)
+	Map.ClearCanvas(Map.layer_select)
+
+	var hex = this.hexes[this.hex_idx]
+	
+	var doc = CreateXMLDoc()
+	var node = CreateCommandNode(doc, "cmd_explore_hex")
+	node.setAttribute("rot_idx", hex.rot_idx)
+	node.setAttribute("hex_idx", this.hex_idx)
+
+	data.action = null
+
+	SendXMLDoc(doc)
+}
+
+Explore.ChooseHexStage.prototype.Rotate = function(steps)
+{
+	var hex = this.hexes[this.hex_idx]
+
+	hex.rot_idx = (hex.rot_idx + steps) % hex.rotations.length
+	if (hex.rot_idx < 0)
+		hex.rot_idx += hex.rotations.length
+
+	Map.DrawActionLayer()
+}
+
+Explore.ChooseHexStage.prototype.Switch = function()
+{
+	this.hex_idx = (this.hex_idx + 1) % this.hexes.length
+	Map.DrawActionLayer()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -106,37 +151,6 @@ Explore.OnCommandChooseHex = function(elem)
 	Map.DrawSelectLayer()
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// Output
-
-Explore.SendPos = function()
-{
-	var doc = CreateXMLDoc()
-	var node = CreateCommandNode(doc, "cmd_explore_pos")
-	node.setAttribute("pos_idx", data.action.pos_idx)
-
-	data.action = null
-
-	SendXMLDoc(doc)
-}
-
-Explore.SendHex = function()
-{
-	Map.ClearCanvas(Map.layer_action)
-	Map.ClearCanvas(Map.layer_select)
-
-	var hex = data.action.hexes[data.action.hex_idx]
-	
-	var doc = CreateXMLDoc()
-	var node = CreateCommandNode(doc, "cmd_explore_hex")
-	node.setAttribute("rot_idx", hex.rot_idx)
-	node.setAttribute("hex_idx", data.action.hex_idx)
-
-	data.action = null
-
-	SendXMLDoc(doc)
-}
-
 Explore.SendReject = function()
 {
 	Map.ClearCanvas(Map.layer_action)
@@ -146,24 +160,4 @@ Explore.SendReject = function()
 	var doc = CreateXMLDoc()
 	var node = CreateCommandNode(doc, "cmd_explore_reject")
 	SendXMLDoc(doc)
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// UI
-
-Explore.Rotate = function(steps)
-{
-	var hex = data.action.hexes[data.action.hex_idx]
-
-	hex.rot_idx = (hex.rot_idx + steps) % hex.rotations.length
-	if (hex.rot_idx < 0)
-		hex.rot_idx += hex.rotations.length
-
-	Map.DrawActionLayer()
-}
-
-Explore.Switch = function()
-{
-	data.action.hex_idx = (data.action.hex_idx + 1) % data.action.hexes.length
-	Map.DrawActionLayer()
 }

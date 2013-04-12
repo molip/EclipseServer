@@ -90,15 +90,15 @@
 		</div> -->
 		<div id="choose_explore_pos" style="display:none">
 			Choose hex to explore...
-			<button id="choose_explore_pos_btn" type="button" onclick="Explore.SendPos()">Next</button>
+			<button id="choose_explore_pos_btn" type="button" onclick="data.action.SendPos()">Next</button>
 			<button id="choose_explore_pos_reject_btn" type="button" onclick="Explore.SendReject()">Skip</button>
 		</div>
 		<div id="choose_explore_hex" style="display:none">
 			Choose hex placement...
-			<button type="button" onclick="Explore.Rotate(-1)"><-</button>
-			<button type="button" onclick="Explore.Rotate(1)">-></button>
+			<button type="button" onclick="data.action.Rotate(-1)"><-</button>
+			<button type="button" onclick="data.action.Rotate(1)">-></button>
 			<button id="choose_explore_hex_switch_btn" type="button" onclick="Explore.Switch()">Switch Hex</button>
-			<button type="button" onclick="Explore.SendHex()">Next</button>
+			<button type="button" onclick="data.action.SendHex()">Next</button>
 			<button type="button" onclick="Explore.SendReject()">Reject</button>
 		</div>
 	</div>
