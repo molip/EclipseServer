@@ -53,14 +53,7 @@ void ExploreCmd::AcceptMessage(const Input::CmdMessage& msg)
 
 			phase.m_pos = *it;
 
-			HexRing ring = phase.m_pos.GetRing();
-			HexBag& bag = pGame->GetHexBag(ring);
-			
-			phase.m_hexChoices.clear();
-			for (int i = 0; i < Race(team.GetRace()).GetExploreChoices(); ++i)
-				phase.m_hexChoices.push_back(HexChoice(bag.TakeTile()));
-
-			GetPossibleRotations(*pGame);
+			GetHexChoices(*pGame);
 
 			m_stage = Stage::Hex;
 			break;
@@ -91,7 +84,9 @@ void ExploreCmd::AcceptMessage(const Input::CmdMessage& msg)
 				phase.m_iRot = m.m_iRot;
 				
 				Hex& hex = pGame->GetMap().AddHex(phase.m_pos, phase.m_hexChoices[phase.m_iHex].m_idHex, hc.m_rotations[phase.m_iRot]);
-				hex.SetOwner(&team);
+				
+				if (m.m_bInfluence)
+					hex.SetOwner(&team);
 
 				// TODO: Something better.
 				Controller::Get()->SendMessage(Output::UpdateMap(*pGame), *pGame);
@@ -128,7 +123,7 @@ void ExploreCmd::UpdateClient(const Controller& controller) const
 		{
 			Output::ChooseExploreHex msg(phase.m_pos.GetX(), phase.m_pos.GetY());
 			for (auto& hc : phase.m_hexChoices)
-				msg.AddHexChoice(hc.m_idHex, hc.m_rotations);
+				msg.AddHexChoice(hc.m_idHex, hc.m_rotations, hc.m_bCanInfluence);
 
 			controller.SendMessage(msg, m_player);
 			break;
@@ -164,7 +159,7 @@ void ExploreCmd::GetPossiblePositions()
 			pGame->GetMap().GetEmptyNeighbours(h.first, team.HasTech(TechType::WormholeGen), positions);
 }
 
-void ExploreCmd::GetPossibleRotations(const Game& game)
+void ExploreCmd::GetHexChoices(Game& game)
 {
 	Phase& phase = GetPhase();
 	const Team& team = game.GetTeam(m_player);
@@ -172,9 +167,20 @@ void ExploreCmd::GetPossibleRotations(const Game& game)
 
 	std::vector<const Hex*> hexes = game.GetMap().GetSurroundingHexes(phase.m_pos, team);
 
-	for (auto& hc : phase.m_hexChoices)
+	HexRing ring = phase.m_pos.GetRing();
+	HexBag& bag = game.GetHexBag(ring);
+	Race race(team.GetRace());
+
+	phase.m_hexChoices.clear();
+	
+	for (int i = 0; i < race.GetExploreChoices(); ++i)
 	{
-		EdgeSet inner = Hex(nullptr, hc.m_idHex, 0).GetWormholes();
+		int id = bag.TakeTile();
+		Hex hex(nullptr, id, 0);
+
+		HexChoice hc(id, hex.GetShips().empty() || race.IsAncientsAlly());
+		
+		EdgeSet inner = hex.GetWormholes();
 
 		for (int i = 0; i < 6; ++i) // Try each rotation.
 		{
@@ -197,5 +203,6 @@ void ExploreCmd::GetPossibleRotations(const Game& game)
 			if (bMatch)
 				hc.m_rotations.push_back(i);
 		}
+		phase.m_hexChoices.push_back(hc);
 	}
 }

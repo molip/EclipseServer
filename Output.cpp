@@ -249,10 +249,12 @@ ChooseExploreHex::ChooseExploreHex(int x, int y) : Choose("explore_hex")
 	m_pRoot->SetAttribute("y", y);
 }
 
-void ChooseExploreHex::AddHexChoice(int idHex, const std::vector<int>& rotations)
+void ChooseExploreHex::AddHexChoice(int idHex, const std::vector<int>& rotations, bool bCanInfluence)
 {
 	auto e = AddElement("hex", *m_pRoot);
 	e->SetAttribute("id", idHex);
+	e->SetAttribute("can_influence", bCanInfluence);
+	
 	for (int r : rotations)
 	{
 		auto e2 = AddElement("rotation", *e);

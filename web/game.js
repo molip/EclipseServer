@@ -10,6 +10,8 @@ data.team_count = 0
 data.current_action_elem = null
 data.action = null
 
+Colour = { 'red': '#cd171a', 'blue': '#283583', 'green': '#3fa535', 'yellow': '#ffd500', 'white': '#fff', 'black': '#111' }
+
 function Point(x, y)
 {
 	this.x = x

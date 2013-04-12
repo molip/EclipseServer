@@ -23,8 +23,9 @@ public:
 private:
 	struct HexChoice
 	{
-		HexChoice(int idHex = 0) : m_idHex(idHex) {}
+		HexChoice(int idHex = 0, bool bCanInfluence = false) : m_idHex(idHex), m_bCanInfluence(bCanInfluence) {}
 		int m_idHex;
+		bool m_bCanInfluence;
 		std::vector<int> m_rotations;
 	};
 	struct Phase
@@ -51,7 +52,7 @@ private:
 	enum class Stage { Pos, Hex, Influence, Discovery, Finished };
 
 	void GetPossiblePositions();
-	void GetPossibleRotations(const Game& game);
+	void GetHexChoices(Game& game);
 		
 	Phase& GetPhase() { return *m_phases.back(); }
 	const Phase& GetPhase() const { return *m_phases.back(); }

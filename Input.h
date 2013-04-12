@@ -101,6 +101,7 @@ struct CmdExploreHex : CmdMessage
 	CmdExploreHex(const TiXmlElement& node);
 	int m_iRot;
 	int m_iHex;
+	bool m_bInfluence;
 };
 
 struct CmdExploreReject : CmdMessage

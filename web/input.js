@@ -227,8 +227,9 @@ function OnCommandUpdateMap(elem)
 		var x = hexes[i].getAttribute('x')
 		var y = hexes[i].getAttribute('y')
 		var rotation = hexes[i].getAttribute('rotation')
+		var team = hexes[i].getAttribute('colour')
 
-		Map.AddHex(id, new Point(x, y), rotation)
+		Map.AddHex(id, new Point(x, y), rotation, team)
 	}
 	Map.Draw()
 }

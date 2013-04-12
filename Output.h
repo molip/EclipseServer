@@ -76,7 +76,7 @@ struct ChooseExplorePos : Choose { ChooseExplorePos(const std::set<MapPos>& posi
 struct ChooseExploreHex : Choose 
 {
 	ChooseExploreHex(int x, int y);
-	void AddHexChoice(int idHex, const std::vector<int>& rotations);
+	void AddHexChoice(int idHex, const std::vector<int>& rotations, bool bCanInfluence);
 };
 
 struct ShowGameList : Show { ShowGameList(); };

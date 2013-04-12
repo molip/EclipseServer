@@ -45,13 +45,13 @@ Explore.ChoosePosStage.prototype.SendPos = function()
 Explore.ChooseHexStage = function(pos)
 {
 	this.selected = pos.Clone()
-	this.hexes = [] // id, rotations, rot_idx
+	this.hexes = [] // id, rotations, rot_idx, can_influence
 	this.hex_idx = 0
 }
 
-Explore.ChooseHexStage.prototype.AddHex = function(id, rotations)
+Explore.ChooseHexStage.prototype.AddHex = function(id, rotations, can_influence)
 {
-	var hex = { id:id, rot_idx:0, rotations:rotations }
+	var hex = { id:id, rot_idx:0, rotations:rotations, can_influence:can_influence }
 	this.hexes.push(hex)
 }
 
@@ -67,11 +67,13 @@ Explore.ChooseHexStage.prototype.SendHex = function()
 	Map.ClearCanvas(Map.layer_select)
 
 	var hex = this.hexes[this.hex_idx]
+	var influence = hex.can_influence && document.getElementById('choose_explore_hex_influence_check').checked 
 	
 	var doc = CreateXMLDoc()
 	var node = CreateCommandNode(doc, "cmd_explore_hex")
 	node.setAttribute("rot_idx", hex.rot_idx)
 	node.setAttribute("hex_idx", this.hex_idx)
+	node.setAttribute("influence", influence)
 
 	data.action = null
 
@@ -92,10 +94,19 @@ Explore.ChooseHexStage.prototype.Rotate = function(steps)
 Explore.ChooseHexStage.prototype.Switch = function()
 {
 	this.hex_idx = (this.hex_idx + 1) % this.hexes.length
+	this.UpdateInfluenceCheckbox()
 	Map.DrawActionLayer()
 }
 
-///////////////////////////////////////////////////////////////////////////////
+Explore.ChooseHexStage.prototype.UpdateInfluenceCheckbox = function()
+{
+	var cb = document.getElementById('choose_explore_hex_influence_check')
+	var hex = this.hexes[this.hex_idx]
+
+	cb.checked = hex.can_influence
+	cb.disabled = !hex.can_influence 
+}
+	///////////////////////////////////////////////////////////////////////////////
 // Input
 
 Explore.OnCommandChoosePos = function(elem)
@@ -136,16 +147,19 @@ Explore.OnCommandChooseHex = function(elem)
 	for (var i = 0; i < hexes.length; ++i)
 	{
 		var id = hexes[i].getAttribute('id')
+		var can_influence = IsTrue(hexes[i].getAttribute('can_influence'))
 		var rotations = []
 		
 		var rot_elems = GetChildElements(hexes[i], 'rotation')
 		for (var j = 0; j < rot_elems.length; ++j)
 			rotations.push(rot_elems[j].getAttribute('steps'))
 		
-		data.action.AddHex(id, rotations)
+		data.action.AddHex(id, rotations, can_influence)
 	}
 
 	ShowElementById('choose_explore_hex_switch_btn', hexes.length > 1, true)
+	
+	data.action.UpdateInfluenceCheckbox()
 	
 	Map.DrawActionLayer()
 	Map.DrawSelectLayer()

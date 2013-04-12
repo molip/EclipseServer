@@ -6,6 +6,7 @@ Map.selecting = false
 
 Map.hex_width = 445
 Map.hex_height = 387
+Map.disc_rad = 40
 Map.zoom = 5
 Map.scale = 1
 Map.pan_x = 0
@@ -19,11 +20,12 @@ Map.img_explore.src = "/images/explore.png"
 
 Map._hexes = []
 
-Map.Hex = function(id, pos, rotation) 
+Map.Hex = function(id, pos, rotation, team) 
 {
 	this.id = id
 	this.pos = pos.Clone()
 	this.rotation = rotation
+	this.team = team
 }
 
 Map.Init = function()
@@ -187,6 +189,26 @@ Map.DrawHex = function(ctx, hex)
 	
 	Map.img.src = "/images/hexes/" + hex.id + ".png"
 	Map.DrawCentred(ctx, Map.img, hex.pos, hex.rotation);
+	
+	var pt = Map.GetHexCentre(hex.pos)
+
+	if (hex.team != null)
+	{	
+		ctx.beginPath()
+		ctx.arc(pt.x, pt.y, Map.disc_rad, 0, 2 * Math.PI)
+		ctx.closePath()
+		Map.DrawTeamPath(ctx, hex.team)
+	}
+}
+
+Map.DrawTeamPath = function(ctx, team)
+{
+	ctx.fillStyle = Colour[team]
+	ctx.fill();	
+
+	ctx.strokeStyle = team == 'black' || team == 'blue' ? '#fff' : '#000'
+	ctx.lineWidth = 3
+	ctx.stroke()
 }
 
 Map.Clear = function()
@@ -194,9 +216,9 @@ Map.Clear = function()
 	Map._hexes = []
 }
 
-Map.AddHex = function(id, pos, rotation)
+Map.AddHex = function(id, pos, rotation, team)
 {
-	Map._hexes.push(new Map.Hex(id, pos.Clone(), rotation))
+	Map._hexes.push(new Map.Hex(id, pos.Clone(), rotation, team))
 }
 
 Map.Draw = function()

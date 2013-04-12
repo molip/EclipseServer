@@ -275,10 +275,11 @@ CmdExplorePos::CmdExplorePos(const TiXmlElement& node) : m_iPos(-1)
 	AssertThrowXML("CmdExplorePos: pos_idx", !!node.Attribute("pos_idx", &m_iPos));
 }
 
-CmdExploreHex::CmdExploreHex(const TiXmlElement& node) : m_iRot(0), m_iHex(0)
+CmdExploreHex::CmdExploreHex(const TiXmlElement& node) : m_iRot(0), m_iHex(0), m_bInfluence(false)
 {
 	AssertThrowXML("CmdExploreHex: rot_idx", !!node.Attribute("rot_idx", &m_iRot));
 	AssertThrowXML("CmdExploreHex: hex_idx", !!node.Attribute("hex_idx", &m_iHex));
+	AssertThrowXML("CmdExploreHex: influence", node.QueryBoolAttribute("influence", &m_bInfluence) == TIXML_SUCCESS);
 }
 
 } // namespace
