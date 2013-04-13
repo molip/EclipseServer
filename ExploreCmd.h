@@ -45,7 +45,7 @@ private:
 		bool m_bInfluence;
 		
 		// Stage::Discovery
-		//DiscoveryType m_discovery;
+		DiscoveryType m_discovery;
 		//std::unique_ptr<DiscoveryChoice> m_pDiscoveryChoice;
 		
 		//Take victory points
