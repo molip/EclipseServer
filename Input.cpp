@@ -53,6 +53,8 @@ MessagePtr CreateCommand(const std::string& type, const TiXmlElement& root)
 		return MessagePtr(new ChooseTeam(root));
 	if (type == "start_action")
 		return MessagePtr(new StartAction(root));
+	if (type == "undo")
+		return MessagePtr(new Undo);
 	//if (type == "commit")
 	//	return MessagePtr(new Commit);
 	
@@ -229,14 +231,16 @@ bool Undo::Process(Controller& controller, Player& player) const
 	AssertThrow("Undo::Process: No command to undo", !!pCmd);
 	AssertThrow("Undo::Process: Can't undo", pCmd->CanUndo());
 
-	pCmd->Undo();
+	if (pCmd->Undo()) // Delete cmd
+	{
+		game.AbortCurrentCmd();
+		controller.SendMessage(Output::ChooseAction(), player);
+	}
+	else
+	{
+		pCmd->UpdateClient(controller);
+	}
 
-	ASSERT(false);
-	controller.SendMessage(Output::UpdateTeam(game.GetTeam(player)), player);
-	controller.SendMessage(Output::UpdateMap(game), player);
-	controller.SendMessage(Output::ChooseAction(), player);
-	
-	pCmd->UpdateClient(controller);
 	return true;	
 }
 

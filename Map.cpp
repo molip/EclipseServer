@@ -57,6 +57,12 @@ Hex& Map::AddHex(const MapPos& pos, int id, int rotation)
 	return *p;
 }
 
+void Map::DeleteHex(const MapPos& pos)
+{
+	bool bOK = m_hexes.erase(pos) == 1;
+	AssertThrowModel("Map::DeleteHex", bOK);
+}
+
 void Map::GetEmptyNeighbours(const MapPos& pos, bool bWormholeGen, std::set<MapPos>& neighbours) const
 {
 	const Hex* pHex = GetHex(pos);

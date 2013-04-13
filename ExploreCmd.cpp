@@ -85,7 +85,7 @@ void ExploreCmd::AcceptMessage(const Input::CmdMessage& msg)
 				
 				Hex& hex = pGame->GetMap().AddHex(phase.m_pos, phase.m_hexChoices[phase.m_iHex].m_idHex, hc.m_rotations[phase.m_iRot]);
 				
-				if (m.m_bInfluence)
+				if (phase.m_bInfluence = m.m_bInfluence)
 					hex.SetOwner(&team);
 
 				// TODO: Something better.
@@ -138,11 +138,30 @@ bool ExploreCmd::IsFinished() const
 
 bool ExploreCmd::CanUndo()
 {
-	return m_stage != Stage::Hex;
+	return m_stage != Stage::Hex && m_stage != Stage::Discovery; // Hex/tile has been revealed.
 }
 
-void ExploreCmd::Undo()
+bool ExploreCmd::Undo()
 {
+	AssertThrow("ExploreCmd::Undo", CanUndo()); 
+	
+	if (m_stage == Stage::Pos) 
+	{
+		if (m_phases.size() == 1)
+			return true; 
+
+		Game* pGame = m_player.GetCurrentGame();
+		AssertThrow(!!pGame);
+
+		m_phases.pop_back();
+		m_stage = Stage::Hex;
+		pGame->GetMap().DeleteHex(m_phases.back()->m_pos);
+
+		// TODO: Something better.
+		Controller::Get()->SendMessage(Output::UpdateMap(*pGame), *pGame);
+	}
+
+	return false;
 }
 
 void ExploreCmd::GetPossiblePositions()

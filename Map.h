@@ -15,6 +15,7 @@ public:
 	Map(Game& game);
 
 	Hex& AddHex(const MapPos& pos, int id, int rotation);
+	void DeleteHex(const MapPos& pos);
 	std::vector<MapPos> GetTeamStartPositions() const;
 	
 	Game& GetGame() { return m_game; }

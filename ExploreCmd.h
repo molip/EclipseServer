@@ -2,6 +2,7 @@
 
 #include "Cmd.h"
 #include "MapPos.h"
+#include "Discovery.h"
 
 #include <vector> 
 #include <set> 
@@ -18,7 +19,7 @@ public:
 	virtual void UpdateClient(const Controller& controller) const override;
 	virtual bool IsFinished() const override;
 	virtual bool CanUndo() override;
-	virtual void Undo() override;
+	virtual bool Undo() override;
 
 private:
 	struct HexChoice
@@ -30,7 +31,7 @@ private:
 	};
 	struct Phase
 	{
-		Phase() : m_iRot(0), m_iHex(0), m_bReject(false) {}
+		Phase() : m_iRot(0), m_iHex(0), m_bReject(false), m_bInfluence(false), m_discovery(DiscoveryType::None) {}
 		
 		// Stage::Pos
 		std::set<MapPos> m_positions;
@@ -41,15 +42,22 @@ private:
 		int m_iRot;
 		int m_iHex;
 		bool m_bReject;
-
-		// Stage::Influence
-		//bool m_bInfluence;
-
+		bool m_bInfluence;
+		
 		// Stage::Discovery
+		//DiscoveryType m_discovery;
 		//std::unique_ptr<DiscoveryChoice> m_pDiscoveryChoice;
+		
+		//Take victory points
+		//Take discovery
+		//	Tech 
+		//		choose tech
+		//	Ship part: 
+		//		Choose slot
+		//		Save for later
 	};
 
-	enum class Stage { Pos, Hex, Influence, Discovery, Finished };
+	enum class Stage { Pos, Hex, Discovery, Finished };
 
 	void GetPossiblePositions();
 	void GetHexChoices(Game& game);

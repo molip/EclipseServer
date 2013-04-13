@@ -74,6 +74,9 @@
 		<a href="Back to game list" onclick="SendExitGame();return false;">Back to game list</a>
 		<div id="game_tabs"></div>
 		<div id="game_pages"></div>
+		<div id="choose_undo" style="display:none">
+			<button type="button" id="choose_undo_btn" onclick="SendChooseUndo()">Undo</button>
+		</div>
 		<div id="choose_action" style="display:none">
 			<button type="button" onclick="SendChooseAction('explore')">Explore</button>
 			<button type="button" onclick="SendChooseAction('influence')">Influence</button>

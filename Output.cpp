@@ -234,6 +234,7 @@ ChooseFinished::ChooseFinished() : Choose("finished")
 ChooseExplorePos::ChooseExplorePos(const std::set<MapPos>& positions, bool bCanSkip) : Choose("explore_pos") 
 {
 	m_pRoot->SetAttribute("can_skip", bCanSkip);
+	m_pRoot->SetAttribute("can_undo", true);
 
 	for (auto& pos : positions)
 	{
@@ -247,6 +248,7 @@ ChooseExploreHex::ChooseExploreHex(int x, int y) : Choose("explore_hex")
 {
 	m_pRoot->SetAttribute("x", x);
 	m_pRoot->SetAttribute("y", y);
+	m_pRoot->SetAttribute("can_undo", false);
 }
 
 void ChooseExploreHex::AddHexChoice(int idHex, const std::vector<int>& rotations, bool bCanInfluence)

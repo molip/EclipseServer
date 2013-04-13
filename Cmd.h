@@ -13,7 +13,7 @@ public:
 	virtual void UpdateClient(const Controller& controller) const {}
 	virtual bool IsFinished() const = 0;
 	virtual bool CanUndo() { return false; }
-	virtual void Undo() {}
+	virtual bool Undo() { return false; } // Return true to delete cmd.
 
 private:
 };

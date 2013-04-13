@@ -35,9 +35,15 @@ Explore.ChoosePosStage.prototype.SendPos = function()
 	var node = CreateCommandNode(doc, "cmd_explore_pos")
 	node.setAttribute("pos_idx", this.pos_idx)
 
-	data.action = null
+	ExitAction()
 
 	SendXMLDoc(doc)
+}
+
+Explore.ChoosePosStage.prototype.CleanUp = function()
+{
+	Map.ClearCanvas(Map.layer_action)
+	Map.ClearCanvas(Map.layer_select)
 }
 
 ///////////////////////
@@ -63,9 +69,6 @@ Explore.ChooseHexStage.prototype.OnDraw = function(ctx)
 
 Explore.ChooseHexStage.prototype.SendHex = function()
 {
-	Map.ClearCanvas(Map.layer_action)
-	Map.ClearCanvas(Map.layer_select)
-
 	var hex = this.hexes[this.hex_idx]
 	var influence = hex.can_influence && document.getElementById('choose_explore_hex_influence_check').checked 
 	
@@ -75,9 +78,15 @@ Explore.ChooseHexStage.prototype.SendHex = function()
 	node.setAttribute("hex_idx", this.hex_idx)
 	node.setAttribute("influence", influence)
 
-	data.action = null
-
+	ExitAction()
+	
 	SendXMLDoc(doc)
+}
+
+Explore.ChooseHexStage.prototype.CleanUp = function()
+{
+	Map.ClearCanvas(Map.layer_action)
+	Map.ClearCanvas(Map.layer_select)
 }
 
 Explore.ChooseHexStage.prototype.Rotate = function(steps)
@@ -126,9 +135,13 @@ Explore.OnCommandChoosePos = function(elem)
 	data.action = new Explore.ChoosePosStage(positions)
 	
 	var can_skip = IsTrue(elem.getAttribute('can_skip'))
+	var can_undo = IsTrue(elem.getAttribute('can_undo'))
 	
 	document.getElementById('choose_explore_pos_btn').disabled = true
 	ShowElementById('choose_explore_pos_reject_btn', can_skip, true)
+
+	ShowElementById('choose_undo', true)
+	document.getElementById('choose_undo_btn').disabled = !can_undo
 	
 	Map.DrawActionLayer()
 }
@@ -160,6 +173,10 @@ Explore.OnCommandChooseHex = function(elem)
 	ShowElementById('choose_explore_hex_switch_btn', hexes.length > 1, true)
 	
 	data.action.UpdateInfluenceCheckbox()
+
+	var can_undo = IsTrue(elem.getAttribute('can_undo'))
+	ShowElementById('choose_undo', true)
+	document.getElementById('choose_undo_btn').disabled = !can_undo
 	
 	Map.DrawActionLayer()
 	Map.DrawSelectLayer()
@@ -167,10 +184,8 @@ Explore.OnCommandChooseHex = function(elem)
 
 Explore.SendReject = function()
 {
-	Map.ClearCanvas(Map.layer_action)
-	Map.ClearCanvas(Map.layer_select)
-	data.action = null
-	
+	ExitAction()
+
 	var doc = CreateXMLDoc()
 	var node = CreateCommandNode(doc, "cmd_explore_reject")
 	SendXMLDoc(doc)

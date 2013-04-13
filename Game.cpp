@@ -180,4 +180,9 @@ void Game::CommitCurrentCmd()
 	AdvanceTurn();
 }
 
+void Game::AbortCurrentCmd()
+{
+	AssertThrow("Game::CommitCurrentCmd: No command to abort", !!m_pCurrentCmd);
+	m_pCurrentCmd = nullptr;
+}
 

@@ -53,6 +53,7 @@ public:
 
 	void StartCmd(CmdPtr pCmd);
 	void CommitCurrentCmd();
+	void AbortCurrentCmd();
 	Cmd* GetCurrentCmd() { return m_pCurrentCmd.get(); }
 	const Cmd* GetCurrentCmd() const { return m_pCurrentCmd.get(); }
 

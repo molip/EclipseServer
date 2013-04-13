@@ -256,6 +256,10 @@ function OnCommandChooseTeam(elem, active)
 
 function OnCommandChooseAction(elem)
 {
+	// In case we got here via undo.
+	ExitAction()
+	
+	ShowElementById('choose_undo', false)
 	ShowActionElement('choose_action')
 }
 
@@ -266,6 +270,7 @@ function OnCommandChooseAction(elem)
 
 function OnCommandChooseFinished(elem)
 {
+	ShowElementById('choose_undo', false)
 	ShowActionElement(null)
 }
 

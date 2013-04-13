@@ -78,10 +78,17 @@ function SendChooseAction(action)
 	SendXMLDoc(doc)
 }
 
-function SendChooseCommit(action)
+function SendChooseCommit()
 {
 	var doc = CreateXMLDoc()
 	var node = CreateCommandNode(doc, "commit")
+	SendXMLDoc(doc)
+}
+
+function SendChooseUndo()
+{
+	var doc = CreateXMLDoc()
+	var node = CreateCommandNode(doc, "undo")
 	SendXMLDoc(doc)
 }
 

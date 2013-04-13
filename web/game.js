@@ -12,6 +12,13 @@ data.action = null
 
 Colour = { 'red': '#cd171a', 'blue': '#283583', 'green': '#3fa535', 'yellow': '#ffd500', 'white': '#fff', 'black': '#111' }
 
+function ExitAction()
+{
+	if (data.action && data.action.CleanUp)
+		data.action.CleanUp()
+	data.action = null
+}
+
 function Point(x, y)
 {
 	this.x = x
