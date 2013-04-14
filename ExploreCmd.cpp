@@ -91,8 +91,21 @@ void ExploreCmd::AcceptMessage(const Input::CmdMessage& msg)
 				// TODO: Something better.
 				Controller::Get()->SendMessage(Output::UpdateMap(*pGame), *pGame);
 
-				EndPhase();
+				phase.m_discovery = hex.GetDiscoveryTile();
+				if (!hex.GetShips().empty())
+					phase.m_discovery = DiscoveryType::None;
+
+				if (phase.m_discovery == DiscoveryType::None)
+					EndPhase();
+				else
+					m_stage = Stage::Discovery;
 			}
+			break;
+		}
+		case Stage::Discovery:
+		{
+			auto& m = CastMessage<const Input::CmdExploreDiscovery>(msg);
+			EndPhase();
 			break;
 		}
 	}
@@ -128,6 +141,12 @@ void ExploreCmd::UpdateClient(const Controller& controller) const
 			controller.SendMessage(msg, m_player);
 			break;
 		}
+	case Stage::Discovery:
+		{
+			Output::ChooseExploreDiscovery msg;
+			controller.SendMessage(msg, m_player);
+			break;
+		}
 	}
 }
 
@@ -154,11 +173,18 @@ bool ExploreCmd::Undo()
 		AssertThrow(!!pGame);
 
 		m_phases.pop_back();
-		m_stage = Stage::Hex;
-		pGame->GetMap().DeleteHex(m_phases.back()->m_pos);
 
-		// TODO: Something better.
-		Controller::Get()->SendMessage(Output::UpdateMap(*pGame), *pGame);
+		const Phase& phase = GetPhase();
+		if (phase.m_discovery == DiscoveryType::None)
+		{
+			m_stage = Stage::Hex;
+			pGame->GetMap().DeleteHex(m_phases.back()->m_pos);
+
+			// TODO: Something better.
+			Controller::Get()->SendMessage(Output::UpdateMap(*pGame), *pGame);
+		}
+		else
+			m_stage = Stage::Discovery;
 	}
 
 	return false;

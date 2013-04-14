@@ -62,6 +62,8 @@ MessagePtr CreateCommand(const std::string& type, const TiXmlElement& root)
 		return MessagePtr(new CmdExplorePos(root));
 	if (type == "cmd_explore_hex")
 		return MessagePtr(new CmdExploreHex(root));
+	if (type == "cmd_explore_discovery")
+		return MessagePtr(new CmdExploreDiscovery(root));
 	if (type == "cmd_explore_reject")
 		return MessagePtr(new CmdExploreReject);
 	
@@ -284,6 +286,10 @@ CmdExploreHex::CmdExploreHex(const TiXmlElement& node) : m_iRot(0), m_iHex(0), m
 	AssertThrowXML("CmdExploreHex: rot_idx", !!node.Attribute("rot_idx", &m_iRot));
 	AssertThrowXML("CmdExploreHex: hex_idx", !!node.Attribute("hex_idx", &m_iHex));
 	AssertThrowXML("CmdExploreHex: influence", node.QueryBoolAttribute("influence", &m_bInfluence) == TIXML_SUCCESS);
+}
+
+CmdExploreDiscovery::CmdExploreDiscovery(const TiXmlElement& node)
+{
 }
 
 } // namespace

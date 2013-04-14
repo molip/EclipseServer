@@ -111,6 +111,8 @@ function OnCommandChoose(elem)
 		Explore.OnCommandChoosePos(elem)
 	else if (param == "explore_hex")
 		Explore.OnCommandChooseHex(elem)
+	else if (param == "explore_discovery")
+		Explore.OnCommandChooseDiscovery(elem)
 	else if (param == "finished")
 		OnCommandChooseFinished(elem)
 	else

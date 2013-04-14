@@ -264,6 +264,10 @@ void ChooseExploreHex::AddHexChoice(int idHex, const std::vector<int>& rotations
 	}
 }
 
+ChooseExploreDiscovery::ChooseExploreDiscovery() : Choose("explore_discovery") 
+{
+}
+
 } // namespace
 
 

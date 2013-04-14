@@ -433,6 +433,8 @@ void Hex::Init(Game* pGame)
 	for (int i = 0; i < nAncients; ++i)
 		AddShip(ShipType::Ancient, nullptr);
 
+	bDiscovery |= nAncients > 0;
+
 	if (bDiscovery && pGame)
 		m_discovery = pGame->GetDiscoveryBag().TakeTile();
 }

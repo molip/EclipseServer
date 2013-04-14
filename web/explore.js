@@ -46,7 +46,7 @@ Explore.ChoosePosStage.prototype.CleanUp = function()
 	Map.ClearCanvas(Map.layer_select)
 }
 
-///////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 Explore.ChooseHexStage = function(pos)
 {
@@ -115,7 +115,24 @@ Explore.ChooseHexStage.prototype.UpdateInfluenceCheckbox = function()
 	cb.checked = hex.can_influence
 	cb.disabled = !hex.can_influence 
 }
-	///////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////
+
+Explore.ChooseDiscoveryStage = function(pos)
+{
+}
+
+Explore.ChooseDiscoveryStage.prototype.SendDiscovery = function()
+{
+	var doc = CreateXMLDoc()
+	var node = CreateCommandNode(doc, "cmd_explore_discovery")
+
+	ExitAction()
+	
+	SendXMLDoc(doc)
+}
+
+///////////////////////////////////////////////////////////////////////////////
 // Input
 
 Explore.OnCommandChoosePos = function(elem)
@@ -177,6 +194,18 @@ Explore.OnCommandChooseHex = function(elem)
 	var can_undo = IsTrue(elem.getAttribute('can_undo'))
 	ShowElementById('choose_undo', true)
 	document.getElementById('choose_undo_btn').disabled = !can_undo
+	
+	Map.DrawActionLayer()
+	Map.DrawSelectLayer()
+}
+
+Explore.OnCommandChooseDiscovery = function(elem)
+{
+	data.action = new Explore.ChooseDiscoveryStage()
+
+	ShowActionElement('choose_explore_discovery')
+	ShowElementById('choose_undo', true)
+	document.getElementById('choose_undo_btn').disabled = true
 	
 	Map.DrawActionLayer()
 	Map.DrawSelectLayer()

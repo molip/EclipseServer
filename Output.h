@@ -78,6 +78,7 @@ struct ChooseExploreHex : Choose
 	ChooseExploreHex(int x, int y);
 	void AddHexChoice(int idHex, const std::vector<int>& rotations, bool bCanInfluence);
 };
+struct ChooseExploreDiscovery : Choose { ChooseExploreDiscovery(); };
 
 struct ShowGameList : Show { ShowGameList(); };
 struct ShowLobby : Show { ShowLobby(); };
