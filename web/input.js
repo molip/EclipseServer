@@ -213,13 +213,6 @@ function OnCommandUpdateTeam(elem)
 
 function OnCommandUpdateMap(elem)
 {
-	var xsl = '\
-		<xsl:for-each select="hex">\
-			<img id="hex_{@id}" src="/images/hexes/{@id}.png"/>\
-		</xsl:for-each>\
-	'
-	SetDivFromCommandElem(document.getElementById('images'), elem, xsl) 
-	
 	Map.Clear()
 	
 	var hexes = GetChildElements(elem, 'hex')

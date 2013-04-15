@@ -51,31 +51,32 @@ Explore.ChoosePosStage.prototype.CleanUp = function()
 Explore.ChooseHexStage = function(pos)
 {
 	this.selected = pos.Clone()
-	this.hexes = [] // id, rotations, rot_idx, can_influence
-	this.hex_idx = 0
+	this.choices = [] // id, rotations, rot_idx, can_influence
+	this.choice_idx = 0
 }
 
 Explore.ChooseHexStage.prototype.AddHex = function(id, rotations, can_influence)
 {
-	var hex = { id:id, rot_idx:0, rotations:rotations, can_influence:can_influence }
-	this.hexes.push(hex)
+	var choice = { id:id, rot_idx:0, rotations:rotations, can_influence:can_influence }
+	this.choice.push(choice)
 }
 
 Explore.ChooseHexStage.prototype.OnDraw = function(ctx)
 {
-	var hex = this.hexes[this.hex_idx]
-	Map.DrawHex(ctx, new Map.Hex(hex.id, this.selected, hex.rotations[hex.rot_idx]))
+	var choice = this.choices[this.choice_idx]
+	var hex = new Map.Hex(choice.id, this.selected, choice.rotations[choice.rot_idx], null, Map.DrawActionLayer)
+	Map.DrawHex(ctx, hex)
 }
 
 Explore.ChooseHexStage.prototype.SendHex = function()
 {
-	var hex = this.hexes[this.hex_idx]
-	var influence = hex.can_influence && document.getElementById('choose_explore_hex_influence_check').checked 
+	var hex = this.choices[this.choice_idx]
+	var influence = choice.can_influence && document.getElementById('choose_explore_hex_influence_check').checked 
 	
 	var doc = CreateXMLDoc()
 	var node = CreateCommandNode(doc, "cmd_explore_hex")
-	node.setAttribute("rot_idx", hex.rot_idx)
-	node.setAttribute("hex_idx", this.hex_idx)
+	node.setAttribute("rot_idx", choice.rot_idx)
+	node.setAttribute("hex_idx", this.choice_idx)
 	node.setAttribute("influence", influence)
 
 	ExitAction()
@@ -91,18 +92,18 @@ Explore.ChooseHexStage.prototype.CleanUp = function()
 
 Explore.ChooseHexStage.prototype.Rotate = function(steps)
 {
-	var hex = this.hexes[this.hex_idx]
+	var choice = this.choices[this.choice_idx]
 
-	hex.rot_idx = (hex.rot_idx + steps) % hex.rotations.length
-	if (hex.rot_idx < 0)
-		hex.rot_idx += hex.rotations.length
+	choice.rot_idx = (choice.rot_idx + steps) % choice.rotations.length
+	if (choice.rot_idx < 0)
+		choice.rot_idx += choice.rotations.length
 
 	Map.DrawActionLayer()
 }
 
 Explore.ChooseHexStage.prototype.Switch = function()
 {
-	this.hex_idx = (this.hex_idx + 1) % this.hexes.length
+	this.choice_idx = (this.choice_idx + 1) % this.choices.length
 	this.UpdateInfluenceCheckbox()
 	Map.DrawActionLayer()
 }
@@ -110,10 +111,10 @@ Explore.ChooseHexStage.prototype.Switch = function()
 Explore.ChooseHexStage.prototype.UpdateInfluenceCheckbox = function()
 {
 	var cb = document.getElementById('choose_explore_hex_influence_check')
-	var hex = this.hexes[this.hex_idx]
+	var choice = this.choices[this.choice_idx]
 
-	cb.checked = hex.can_influence
-	cb.disabled = !hex.can_influence 
+	cb.checked = choice.can_influence
+	cb.disabled = !choice.can_influence 
 }
 
 ///////////////////////////////////////////////////////////////////////////////

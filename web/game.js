@@ -19,6 +19,15 @@ function ExitAction()
 	data.action = null
 }
 
+function LoadImage(path, onload)
+{
+	var img = new Image()
+	img.src = path
+	if (!img.completed)
+		img.onload = onload
+	return img
+}
+
 function Point(x, y)
 {
 	this.x = x

@@ -20,12 +20,15 @@ Map.img_explore.src = "/images/explore.png"
 
 Map._hexes = []
 
-Map.Hex = function(id, pos, rotation, team) 
+Map.Hex = function(id, pos, rotation, team, onload) 
 {
+	var self = this
+	
 	this.id = id
 	this.pos = pos.Clone()
 	this.rotation = rotation
 	this.team = team
+	this.img = LoadImage("/images/hexes/" + id + ".png", function() { onload(self) })
 }
 
 Map.Init = function()
@@ -187,8 +190,7 @@ Map.DrawHex = function(ctx, hex)
 {
 	var size_x = Map.hex_width, size_y = Map.hex_height
 	
-	Map.img.src = "/images/hexes/" + hex.id + ".png"
-	Map.DrawCentred(ctx, Map.img, hex.pos, hex.rotation);
+	Map.DrawCentred(ctx, hex.img, hex.pos, hex.rotation);
 	
 	var pt = Map.GetHexCentre(hex.pos)
 
@@ -218,7 +220,7 @@ Map.Clear = function()
 
 Map.AddHex = function(id, pos, rotation, team)
 {
-	Map._hexes.push(new Map.Hex(id, pos.Clone(), rotation, team))
+	Map._hexes.push(new Map.Hex(id, pos.Clone(), rotation, team, Map.DrawHexLayerSingle))
 }
 
 Map.Draw = function()
@@ -227,6 +229,12 @@ Map.Draw = function()
 	Map.DrawActionLayer()
 	Map.DrawSelectLayer()
 	Map.DrawHotLayer()
+}
+
+Map.DrawHexLayerSingle = function(hex)
+{
+	var ctx = Map.canvas.getContext("2d");
+	Map.DrawHex(ctx, hex)
 }
 
 Map.DrawHexLayer = function()
