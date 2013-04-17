@@ -58,7 +58,7 @@ Explore.ChooseHexStage = function(pos)
 Explore.ChooseHexStage.prototype.AddHex = function(id, rotations, can_influence)
 {
 	var choice = { id:id, rot_idx:0, rotations:rotations, can_influence:can_influence }
-	this.choice.push(choice)
+	this.choices.push(choice)
 }
 
 Explore.ChooseHexStage.prototype.OnDraw = function(ctx)
@@ -70,7 +70,7 @@ Explore.ChooseHexStage.prototype.OnDraw = function(ctx)
 
 Explore.ChooseHexStage.prototype.SendHex = function()
 {
-	var hex = this.choices[this.choice_idx]
+	var choice = this.choices[this.choice_idx]
 	var influence = choice.can_influence && document.getElementById('choose_explore_hex_influence_check').checked 
 	
 	var doc = CreateXMLDoc()
