@@ -155,6 +155,12 @@ UpdateTeam::UpdateTeam(const Team& team) : Update("team")
 	m_pRoot->SetAttribute("colour", GetColourName(team.GetColour()));
 }
 
+UpdateInfluenceTrack::UpdateInfluenceTrack(const Team& team) : Update("influence_track")
+{
+	m_pRoot->SetAttribute("id", team.GetPlayer().GetID());
+	m_pRoot->SetAttribute("discs", team.GetInfluenceTrack().GetDiscCount());
+}
+
 UpdateMap::UpdateMap(const Game& game) : Update("map")
 {
 	const Map& map = game.GetMap();

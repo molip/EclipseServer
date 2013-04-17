@@ -216,7 +216,7 @@ bool StartAction::Process(Controller& controller, Player& player) const
 	Game& game = GetGameAssert(player);
 
 	if (m_action == "explore") 
-		game.StartCmd(CmdPtr(new ExploreCmd(player)));
+		game.StartCmd(CmdPtr(new ExploreCmd(game, player)));
 
 	Cmd* pCmd = game.GetCurrentCmd();
 	AssertThrow("StartAction::Process: No command created", !!pCmd);

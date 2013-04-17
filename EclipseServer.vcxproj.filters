@@ -13,9 +13,6 @@
     <Filter Include="Model">
       <UniqueIdentifier>{59d16326-07e6-4af2-a4cf-d48abe6b018f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Web">
-      <UniqueIdentifier>{cb87a66c-574c-4e3e-bb52-3dba65a56363}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Model\Commands">
       <UniqueIdentifier>{9f1259fb-1431-47dd-a352-5268bbd87bf9}</UniqueIdentifier>
     </Filter>
@@ -239,27 +236,8 @@
     <ClCompile Include="MapPos.cpp">
       <Filter>Model</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="web\game.html">
-      <Filter>Web</Filter>
-    </None>
-    <None Include="web\game.js">
-      <Filter>Web</Filter>
-    </None>
-    <None Include="web\index.html">
-      <Filter>Web</Filter>
-    </None>
-    <None Include="web\input.js">
-      <Filter>Web</Filter>
-    </None>
-    <None Include="web\output.js">
-      <Filter>Web</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="Architecture.txt" />
-    <Text Include="todo.txt" />
-    <Text Include="journal.txt" />
+    <ClCompile Include="Discovery.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

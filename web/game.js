@@ -122,10 +122,13 @@ function load()
 		alert("DOMParser not supported");
 }
 
-function GetTeamPageIDFromName(team)
+function GetTeamDivIDFromName(team, div)
 {
 	var index = data.team_pages[team]
-	return GetTeamPageIDFromIndex(index)
+	var id =  GetTeamPageIDFromIndex(index)
+	if (div)	
+		id += '_' + div
+	return id
 }
 
 function GetTeamPageIDFromIndex(index)

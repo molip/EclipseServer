@@ -9,11 +9,13 @@
 
 class Player;
 class Map;
+class Team;
+class Game;
 
 class ExploreCmd : public Cmd
 {
 public:
-	ExploreCmd(Player& player);
+	ExploreCmd(Game& game, Player& player);
 
 	virtual void AcceptMessage(const Input::CmdMessage& msg) override;
 	virtual void UpdateClient(const Controller& controller) const override;
@@ -60,7 +62,7 @@ private:
 	enum class Stage { Pos, Hex, Discovery, Finished };
 
 	void GetPossiblePositions();
-	void GetHexChoices(Game& game);
+	void GetHexChoices();
 		
 	Phase& GetPhase() { return *m_phases.back(); }
 	const Phase& GetPhase() const { return *m_phases.back(); }
@@ -68,6 +70,8 @@ private:
 
 	Stage m_stage;
 	Player& m_player;
+	Game& m_game;
+	Team& m_team;
 
 	typedef std::unique_ptr<Phase> PhasePtr;
 	std::vector<PhasePtr> m_phases;

@@ -122,6 +122,7 @@
     <ClCompile Include="Blueprint.cpp" />
     <ClCompile Include="Cmd.cpp" />
     <ClCompile Include="Controller.cpp" />
+    <ClCompile Include="Discovery.cpp" />
     <ClCompile Include="ExploreCmd.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Hex.cpp" />
@@ -153,18 +154,6 @@
     <ClCompile Include="Turn.cpp" />
     <ClCompile Include="Util.cpp" />
     <ClCompile Include="WSServer.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="web\game.html" />
-    <None Include="web\game.js" />
-    <None Include="web\index.html" />
-    <None Include="web\input.js" />
-    <None Include="web\output.js" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="Architecture.txt" />
-    <Text Include="journal.txt" />
-    <Text Include="todo.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -16,8 +16,8 @@ T& CastMessage(const Input::CmdMessage& msg)
 	return *pMsg;
 }
 
-ExploreCmd::ExploreCmd(Player& player) : 
-	m_player(player), m_stage(Stage::Pos)
+ExploreCmd::ExploreCmd(Game& game, Player& player) : 
+	m_player(player), m_stage(Stage::Pos), m_game(game), m_team(game.GetTeam(player))
 {
 	m_phases.push_back(PhasePtr(new Phase));
 	GetPossiblePositions();
@@ -25,10 +25,6 @@ ExploreCmd::ExploreCmd(Player& player) :
 
 void ExploreCmd::AcceptMessage(const Input::CmdMessage& msg)
 {
-	Game* pGame = m_player.GetCurrentGame();
-	AssertThrow(!!pGame);
-	Team& team = pGame->GetTeam(m_player);
-	
 	Phase& phase = GetPhase();
 
 	switch (m_stage)
@@ -53,7 +49,7 @@ void ExploreCmd::AcceptMessage(const Input::CmdMessage& msg)
 
 			phase.m_pos = *it;
 
-			GetHexChoices(*pGame);
+			GetHexChoices();
 
 			m_stage = Stage::Hex;
 			break;
@@ -83,17 +79,20 @@ void ExploreCmd::AcceptMessage(const Input::CmdMessage& msg)
 				AssertThrowXML("ExploreCmd::AcceptMessage (Stage::Hex): rotation index", m.m_iRot >= 0 && m.m_iRot < (int)hc.m_rotations.size());
 				phase.m_iRot = m.m_iRot;
 				
-				Hex& hex = pGame->GetMap().AddHex(phase.m_pos, phase.m_hexChoices[phase.m_iHex].m_idHex, hc.m_rotations[phase.m_iRot]);
+				Controller* pCtrlr = Controller::Get(); // TODO: Something better.
+
+				// TODO: exception safety
+				Hex& hex = m_game.GetMap().AddHex(phase.m_pos, phase.m_hexChoices[phase.m_iHex].m_idHex, hc.m_rotations[phase.m_iRot]);
 				
 				if (phase.m_bInfluence = m.m_bInfluence)
-					hex.SetOwner(&team);
+				{
+					m_team.GetInfluenceTrack().RemoveDiscs(1);
+					hex.SetOwner(&m_team);
+					pCtrlr->SendMessage(Output::UpdateInfluenceTrack(m_team), m_game);
+					phase.m_discovery = hex.GetDiscoveryTile();
+				}					
 
-				// TODO: Something better.
-				Controller::Get()->SendMessage(Output::UpdateMap(*pGame), *pGame);
-
-				phase.m_discovery = hex.GetDiscoveryTile();
-				if (!hex.GetShips().empty())
-					phase.m_discovery = DiscoveryType::None;
+				pCtrlr->SendMessage(Output::UpdateMap(m_game), m_game);
 
 				if (phase.m_discovery == DiscoveryType::None)
 					EndPhase();
@@ -113,7 +112,7 @@ void ExploreCmd::AcceptMessage(const Input::CmdMessage& msg)
 
 void ExploreCmd::EndPhase()
 {
-	if ((int)m_phases.size() < Race(m_player.GetCurrentTeam()->GetRace()).GetExploreRate())
+	if ((int)m_phases.size() < Race(m_team.GetRace()).GetExploreRate())
 	{
 		m_stage = Stage::Pos;
 		m_phases.push_back(PhasePtr(new Phase));
@@ -169,19 +168,26 @@ bool ExploreCmd::Undo()
 		if (m_phases.size() == 1)
 			return true; 
 
-		Game* pGame = m_player.GetCurrentGame();
-		AssertThrow(!!pGame);
-
 		m_phases.pop_back();
 
 		const Phase& phase = GetPhase();
 		if (phase.m_discovery == DiscoveryType::None)
 		{
 			m_stage = Stage::Hex;
-			pGame->GetMap().DeleteHex(m_phases.back()->m_pos);
 
-			// TODO: Something better.
-			Controller::Get()->SendMessage(Output::UpdateMap(*pGame), *pGame);
+			Controller* pCtrlr = Controller::Get(); // TODO: Something better.
+			
+			if (!phase.m_bReject)
+			{
+				pCtrlr->SendMessage(Output::UpdateMap(m_game), m_game);
+				m_game.GetMap().DeleteHex(m_phases.back()->m_pos);
+			}
+
+			if (phase.m_bInfluence)
+			{
+				m_team.GetInfluenceTrack().AddDiscs(1);
+				pCtrlr->SendMessage(Output::UpdateInfluenceTrack(m_team), m_game);
+			}					
 		}
 		else
 			m_stage = Stage::Discovery;
@@ -192,29 +198,24 @@ bool ExploreCmd::Undo()
 
 void ExploreCmd::GetPossiblePositions()
 {
-	const Game* pGame = m_player.GetCurrentGame();
-	AssertThrow(!!pGame);
-	const Team& team = pGame->GetTeam(m_player);
-
 	auto& positions = GetPhase().m_positions;
 
-	const Map::HexMap& hexes = pGame->GetMap().GetHexes();
+	const Map::HexMap& hexes = m_game.GetMap().GetHexes();
 	for (auto& h : hexes)
-		if (h.second->GetOwner() == &team) // TODO: Check ships.
-			pGame->GetMap().GetEmptyNeighbours(h.first, team.HasTech(TechType::WormholeGen), positions);
+		if (h.second->GetOwner() == &m_team) // TODO: Check ships.
+			m_game.GetMap().GetEmptyNeighbours(h.first, m_team.HasTech(TechType::WormholeGen), positions);
 }
 
-void ExploreCmd::GetHexChoices(Game& game)
+void ExploreCmd::GetHexChoices()
 {
 	Phase& phase = GetPhase();
-	const Team& team = game.GetTeam(m_player);
-	bool bWormholeGen = team.HasTech(TechType::WormholeGen);
+	bool bWormholeGen = m_team.HasTech(TechType::WormholeGen);
 
-	std::vector<const Hex*> hexes = game.GetMap().GetSurroundingHexes(phase.m_pos, team);
+	std::vector<const Hex*> hexes = m_game.GetMap().GetSurroundingHexes(phase.m_pos, m_team);
 
 	HexRing ring = phase.m_pos.GetRing();
-	HexBag& bag = game.GetHexBag(ring);
-	Race race(team.GetRace());
+	HexBag& bag = m_game.GetHexBag(ring);
+	Race race(m_team.GetRace());
 
 	phase.m_hexChoices.clear();
 	
@@ -223,7 +224,8 @@ void ExploreCmd::GetHexChoices(Game& game)
 		int id = bag.TakeTile();
 		Hex hex(nullptr, id, 0);
 
-		HexChoice hc(id, hex.GetShips().empty() || race.IsAncientsAlly());
+		bool bCanInfluenceHex = hex.GetShips().empty() || race.IsAncientsAlly();
+		HexChoice hc(id, bCanInfluenceHex && m_team.GetInfluenceTrack().GetDiscCount() > 0);
 		
 		EdgeSet inner = hex.GetWormholes();
 

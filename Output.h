@@ -64,6 +64,7 @@ struct UpdateLobbyControls : Update { UpdateLobbyControls(bool bShow); };
 struct UpdateChoose : Update { UpdateChoose(const Game& game); };
 struct UpdateTeams : Update { UpdateTeams(const Game& game); };
 struct UpdateTeam : Update { UpdateTeam(const Team& team); };
+struct UpdateInfluenceTrack : Update { UpdateInfluenceTrack(const Team& team); };
 struct UpdateMap : Update { UpdateMap(const Game& game); };
 //struct UpdateUndo : Update { UpdateUndo(bool bEnable); };
 

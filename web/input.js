@@ -90,6 +90,8 @@ function OnCommandUpdate(elem)
 		OnCommandUpdateTeams(elem)
 	else if (param == "team")
 		OnCommandUpdateTeam(elem)
+	else if (param == "influence_track")
+		OnCommandUpdateInfluenceTrack(elem)
 	else if (param == "map")
 		OnCommandUpdateMap(elem)
 	else
@@ -178,7 +180,11 @@ function OnCommandUpdateTeams(elem)
 	data.team_pages = {}
 	
 	var fmt_tab = '<button type="button" onclick="ShowTeamPage(\'{0}\')">{1}</button>'
-	var fmt_page = '<div id="{0}"></div>'
+	var fmt_page = '\
+					<div id="{0}">\
+						<div id="{0}_summary"></div>\
+						<div id="{0}_influence"></div>\
+					</div>'
 	
 	var html_tabs = '', html_pages = ''
 
@@ -208,7 +214,15 @@ function OnCommandUpdateTeam(elem)
 		<b>Colour:</b> <xsl:value-of select="@colour"/><br/>\
 		<br/>\
 	'
-	SetDivFromCommandElem(document.getElementById(GetTeamPageIDFromName(elem.getAttribute('id'))), elem, xsl)
+	SetDivFromCommandElem(document.getElementById(GetTeamDivIDFromName(elem.getAttribute('id'), 'summary')), elem, xsl)
+}
+
+function OnCommandUpdateInfluenceTrack(elem)
+{
+	var xsl = '\
+		<b>Influence discs:</b> <xsl:value-of select="@discs"/><br/>\
+	'
+	SetDivFromCommandElem(document.getElementById(GetTeamDivIDFromName(elem.getAttribute('id'), 'influence')), elem, xsl)
 }
 
 function OnCommandUpdateMap(elem)

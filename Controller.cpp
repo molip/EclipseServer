@@ -100,6 +100,7 @@ void Controller::SendUpdateGame(const Game& game, const Player* pPlayer) const
 			const Team* pTeam = team.second.get();
 			AssertThrow("Controller::SendUpdateGame: Team not chosen yet: " + team.first->GetName(), !!pTeam);
 			SendMessage(Output::UpdateTeam(*pTeam), game, pPlayer);
+			SendMessage(Output::UpdateInfluenceTrack(*pTeam), game, pPlayer);
 		}
 		SendMessage(Output::UpdateMap(game), game, pPlayer);
 

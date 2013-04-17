@@ -41,7 +41,10 @@ public:
 	bool CanAdd(TechType tech) const { return m_techTrack.CanAdd(tech); }
 
 	PopulationTrack& GetPopulationTrack() { return m_popTrack; }
+	const PopulationTrack& GetPopulationTrack() const { return m_popTrack; }
+	
 	InfluenceTrack& GetInfluenceTrack() { return m_infTrack; }
+	const InfluenceTrack& GetInfluenceTrack() const { return m_infTrack; }
 
 	void AddShips(ShipType type, int nShips);
 	void RemoveShips(ShipType type, int nShips) { AddShips(type, -nShips); }
