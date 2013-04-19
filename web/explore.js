@@ -61,11 +61,17 @@ Explore.ChooseHexStage.prototype.AddHex = function(id, rotations, can_influence)
 	this.choices.push(choice)
 }
 
-Explore.ChooseHexStage.prototype.OnDraw = function(ctx)
+Explore.ChooseHexStage.prototype.UpdateHex = function()
 {
 	var choice = this.choices[this.choice_idx]
-	var hex = new Map.Hex(choice.id, this.selected, choice.rotations[choice.rot_idx], null, Map.DrawActionLayer)
-	Map.DrawHex(ctx, hex)
+	this.hex = new Map.Hex(choice.id, this.selected, choice.rotations[choice.rot_idx], null, Map.DrawActionLayer)
+	Map.DrawActionLayer()
+}
+
+Explore.ChooseHexStage.prototype.OnDraw = function(ctx)
+{
+	if (this.hex)
+		Map.DrawHex(ctx, this.hex)
 }
 
 Explore.ChooseHexStage.prototype.SendHex = function()
@@ -98,14 +104,15 @@ Explore.ChooseHexStage.prototype.Rotate = function(steps)
 	if (choice.rot_idx < 0)
 		choice.rot_idx += choice.rotations.length
 
-	Map.DrawActionLayer()
+	this.UpdateHex()
 }
 
 Explore.ChooseHexStage.prototype.Switch = function()
 {
 	this.choice_idx = (this.choice_idx + 1) % this.choices.length
 	this.UpdateInfluenceCheckbox()
-	Map.DrawActionLayer()
+
+	this.UpdateHex()
 }
 
 Explore.ChooseHexStage.prototype.UpdateInfluenceCheckbox = function()
@@ -191,12 +198,12 @@ Explore.OnCommandChooseHex = function(elem)
 	ShowElementById('choose_explore_hex_switch_btn', hexes.length > 1, true)
 	
 	data.action.UpdateInfluenceCheckbox()
+	data.action.UpdateHex()
 
 	var can_undo = IsTrue(elem.getAttribute('can_undo'))
 	ShowElementById('choose_undo', true)
 	document.getElementById('choose_undo_btn').disabled = !can_undo
 	
-	Map.DrawActionLayer()
 	Map.DrawSelectLayer()
 }
 
