@@ -174,10 +174,15 @@ Map.OnMouseDown = function()
 			Map.DrawSelectLayer()
 }
 
-Map.DrawCentred = function(ctx, img, pos, rotation)
+Map.DrawCentred = function(ctx, img, pos, rotation, offset)
 {	
 	var pt = Map.GetHexCentre(pos)
 
+	if (offset)
+	{
+		pt.x += offset.x;
+		pt.y += offset.y;
+	}
 	ctx.save()
 	ctx.translate(pt.x, pt.y)
 	if (rotation != null)
@@ -192,14 +197,9 @@ Map.DrawHex = function(ctx, hex)
 	
 	Map.DrawCentred(ctx, hex.img, hex.pos, hex.rotation);
 	
-	var pt = Map.GetHexCentre(hex.pos)
-
 	if (hex.team != null)
-	{	
-		ctx.beginPath()
-		ctx.arc(pt.x, pt.y, Map.disc_rad, 0, 2 * Math.PI)
-		ctx.closePath()
-		Map.DrawTeamPath(ctx, hex.team)
+	{
+		Map.DrawCentred(ctx, data.disc_imgs[hex.team], hex.pos, 0, new Point(7, -7))
 	}
 }
 

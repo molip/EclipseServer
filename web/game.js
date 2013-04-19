@@ -2,7 +2,6 @@ var output
 var ws
 var parser
 
-
 var data = {}
 data.team_pages = {}
 data.team_count = 0
@@ -11,6 +10,13 @@ data.current_action_elem = null
 data.action = null
 
 Colour = { 'red': '#cd171a', 'blue': '#283583', 'green': '#3fa535', 'yellow': '#ffd500', 'white': '#fff', 'black': '#111' }
+
+data.disc_imgs = {}
+for (var col in Colour)
+{
+	data.disc_imgs[col] = new Image() 
+	data.disc_imgs[col].src = "/images/discs/" + col + ".png"
+}
 
 function ExitAction()
 {
