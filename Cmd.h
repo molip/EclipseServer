@@ -12,7 +12,7 @@ public:
 	virtual void AcceptMessage(const Input::CmdMessage& msg) = 0;
 	virtual void UpdateClient(const Controller& controller) const {}
 	virtual bool IsFinished() const = 0;
-	virtual bool CanUndo() { return false; }
+	virtual bool CanUndo() const { return false; }
 	virtual bool Undo() { return false; } // Return true to delete cmd.
 
 private:

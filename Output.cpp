@@ -274,6 +274,26 @@ ChooseExploreDiscovery::ChooseExploreDiscovery() : Choose("explore_discovery")
 {
 }
 
+ChooseInfluencePos::ChooseInfluencePos(const std::vector<MapPos>& positions, bool bEnableTrack, const std::string& param) : Choose(param) 
+{
+	m_pRoot->SetAttribute("can_select_track", bEnableTrack);
+
+	for (auto& pos : positions)
+	{
+		auto e = AddElement("pos", *m_pRoot);
+		e->SetAttribute("x", pos.GetX());
+		e->SetAttribute("y", pos.GetY());
+	}
+}
+
+ChooseInfluenceSrc::ChooseInfluenceSrc(const std::vector<MapPos>& positions, bool bEnableTrack) : 
+	ChooseInfluencePos(positions, bEnableTrack, "influence_src") 
+{
+}
+
+ChooseInfluenceDst::ChooseInfluenceDst(const std::vector<MapPos>& positions, bool bEnableTrack) : 
+	ChooseInfluencePos(positions, bEnableTrack, "influence_dst") {}
+
 } // namespace
 
 

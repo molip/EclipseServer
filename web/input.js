@@ -115,6 +115,10 @@ function OnCommandChoose(elem)
 		Explore.OnCommandChooseHex(elem)
 	else if (param == "explore_discovery")
 		Explore.OnCommandChooseDiscovery(elem)
+	else if (param == "influence_src")
+		Influence.OnCommandChooseSrc(elem)
+	else if (param == "influence_dst")
+		Influence.OnCommandChooseDst(elem)
 	else if (param == "finished")
 		OnCommandChooseFinished(elem)
 	else
@@ -183,7 +187,7 @@ function OnCommandUpdateTeams(elem)
 	var fmt_page = '\
 					<div id="{0}">\
 						<div id="{0}_summary"></div>\
-						<div id="{0}_influence"></div>\
+						<div id="{0}_influence" onclick="if (data.action && data.action.OnClickInfluenceTrack) data.action.OnClickInfluenceTrack()"></div>\
 					</div>'
 	
 	var html_tabs = '', html_pages = ''

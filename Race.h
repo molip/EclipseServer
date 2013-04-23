@@ -38,7 +38,7 @@ public:
 	int GetExploreChoices() const;
 	bool IsPopulationAutoDestroyed() const;
 	int GetExtraVictoryPointsPerHex() const;
-	int IsAncientsAlly() const;
+	bool IsAncientsAlly() const;
 	Colour GetColour() const;
 
 private:

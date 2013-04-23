@@ -58,3 +58,14 @@ void Team::PopulateStartHex(Hex& hex)
 	hex.SetOwner(this);
 	m_infTrack.RemoveDiscs(1);
 }
+
+void Team::UseColonyShips(int nShips)
+{
+	AssertThrowModel("Team::UseColonyShips", m_nColonyShipsUsed + nShips <= m_nColonyShips);
+	m_nColonyShipsUsed += nShips;
+}
+
+void Team::ReturnColonyShips(int nShips)
+{
+	m_nColonyShipsUsed = std::max(0, m_nColonyShipsUsed - nShips);
+}

@@ -251,7 +251,7 @@ int Race::GetExtraVictoryPointsPerHex() const
 	return m_type == RaceType::Planta ? 1 : 0;
 }
 
-int Race::IsAncientsAlly() const
+bool Race::IsAncientsAlly() const
 {
 	return m_type == RaceType::Descendants;
 }

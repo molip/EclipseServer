@@ -68,11 +68,13 @@ public:
 	void SetOwner(Team* pOwner);
 
 	void AddShip(ShipType type, Team* pOwner);
+	bool HasShip(const Team* pOwner) const;
+	bool HasEnemyShip(const Team* pTeam) const;
 
 	int GetID() const { return m_id; }
 	int GetRotation() const { return m_nRotation; }
-	const std::vector<Square> GetSquares() const { return m_squares; }
-	std::vector<Ship> GetShips() const { return m_ships; }
+	const std::vector<Square>& GetSquares() const { return m_squares; }
+	const std::vector<Ship>& GetShips() const { return m_ships; }
 	DiscoveryType GetDiscoveryTile() const { return m_discovery; }
 	EdgeSet GetWormholes() const { return m_wormholes; } // Non-rotated.
 	int GetVictoryPoints() const { return m_nVictory; }

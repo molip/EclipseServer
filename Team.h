@@ -51,6 +51,11 @@ public:
 
 	void PopulateStartHex(Hex& hex);
 
+	void UseColonyShips(int nShips);
+	void ReturnColonyShips(int nShips);
+	int GetColonyShips() const { return m_nColonyShips; }
+	int GetUsedColonyShips() const { return m_nColonyShipsUsed; }
+
 private:
 	Game& m_game;
 	Player& m_player;

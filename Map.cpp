@@ -63,6 +63,26 @@ void Map::DeleteHex(const MapPos& pos)
 	AssertThrowModel("Map::DeleteHex", bOK);
 }
 
+void Map::GetInfluencableNeighbours(const MapPos& pos, const Team& team, std::set<MapPos>& neighbours) const
+{
+	const bool bWormholeGen = team.HasTech(TechType::WormholeGen);
+
+	const Hex* pHex = GetHex(pos);
+	AssertThrow("Map::GetInfluencableNeighbours: invalid position", !!pHex);
+	AssertThrow("Map::GetInfluencableNeighbours: wrong owner", pHex->GetOwner() == nullptr || pHex->GetOwner() == &team);
+
+	for (auto e : EnumRange<Edge>())
+		if (int nWormholes = pHex->HasWormhole(e) + bWormholeGen)
+		{
+			MapPos pos2 = pos.GetNeighbour(e);
+			if (const Hex* pHex2 = GetHex(pos2))
+				if (pHex2->GetOwner() == nullptr)
+					if (nWormholes + pHex2->HasWormhole(ReverseEdge(e)) >= 2)
+						if (!pHex2->HasEnemyShip(&team))
+							neighbours.insert(pos2);
+		}
+}
+
 void Map::GetEmptyNeighbours(const MapPos& pos, bool bWormholeGen, std::set<MapPos>& neighbours) const
 {
 	const Hex* pHex = GetHex(pos);

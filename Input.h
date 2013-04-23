@@ -113,4 +113,16 @@ struct CmdExploreReject : CmdMessage
 {
 };
 
+struct CmdInfluenceSrc : CmdMessage
+{
+	CmdInfluenceSrc(const TiXmlElement& node);
+	int m_iPos;
+};
+
+struct CmdInfluenceDst : CmdMessage
+{
+	CmdInfluenceDst(const TiXmlElement& node);
+	int m_iPos;
+};
+
 }

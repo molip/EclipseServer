@@ -7,6 +7,7 @@
 <script src="output.js"></script>
 <script src="map.js"></script>
 <script src="explore.js"></script>
+<script src="influence.js"></script>
 
 <script>
     data.playerID = "%PLAYER_ID%"
@@ -107,6 +108,15 @@
 		<div id="choose_explore_discovery" style="display:none">
 			You have discovered something!
 			<button id="choose_explore_discovery" type="button" onclick="data.action.SendDiscovery()">Next</button>
+		</div>
+		<div id="choose_influence_src" style="display:none">
+			Choose disc to move...
+			<button id="choose_influence_src_btn" type="button" onclick="data.action.Send()">Next</button>
+			<button id="choose_explore_pos_reject_btn" type="button" onclick="Explore.SendReject()">Finish</button>
+		</div>
+		<div id="choose_influence_dst" style="display:none">
+			Choose disc destination...
+			<button id="choose_influence_dst_btn" type="button" onclick="data.action.Send()">Next</button>
 		</div>
 	</div>
 </div>

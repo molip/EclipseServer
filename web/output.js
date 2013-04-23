@@ -87,6 +87,8 @@ function SendChooseCommit()
 
 function SendChooseUndo()
 {
+	ExitAction()
+
 	var doc = CreateXMLDoc()
 	var node = CreateCommandNode(doc, "undo")
 	SendXMLDoc(doc)

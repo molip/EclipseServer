@@ -154,7 +154,7 @@ bool ExploreCmd::IsFinished() const
 	return m_stage == Stage::Finished;
 }
 
-bool ExploreCmd::CanUndo()
+bool ExploreCmd::CanUndo() const
 {
 	return m_stage != Stage::Hex && m_stage != Stage::Discovery; // Hex/tile has been revealed.
 }

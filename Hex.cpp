@@ -98,9 +98,27 @@ void Hex::AddShip(ShipType type, Team* pOwner)
 	m_ships.push_back(Ship(type, pOwner));
 }
 
+bool Hex::HasShip(const Team* pOwner) const
+{
+	for (auto& s : m_ships)
+		if (s.GetOwner() == pOwner)
+			return true;
+	return false;
+}
+
+bool Hex::HasEnemyShip(const Team* pTeam) const
+{
+	const bool bAncientsAlly = pTeam && Race(pTeam->GetRace()).IsAncientsAlly();
+
+	for (auto& s : m_ships)
+		if (s.GetOwner() != pTeam && !(bAncientsAlly && s.GetOwner() == nullptr))
+			return true;
+	return false;
+}
+
 void Hex::SetOwner(Team* pOwner)
 {
-	AssertThrowModel("Hex::SetOwner", m_pOwner == nullptr);
+	AssertThrowModel("Hex::SetOwner", (pOwner == nullptr) != (m_pOwner == nullptr));
 	m_pOwner = pOwner;
 }
 

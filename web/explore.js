@@ -148,14 +148,7 @@ Explore.OnCommandChoosePos = function(elem)
 	ShowActionElement('choose_explore_pos')
 	Map.selecting = true
 
-	var positions = []
-	var pos_elems = GetChildElements(elem, 'pos')
-	for (var i = 0; i < pos_elems.length; ++i)
-	{
-		var x = pos_elems[i].getAttribute('x')
-		var y = pos_elems[i].getAttribute('y')
-		positions.push(new Point(x, y))
-	}
+	var positions = ReadPoints(elem, 'pos')
 
 	data.action = new Explore.ChoosePosStage(positions)
 	

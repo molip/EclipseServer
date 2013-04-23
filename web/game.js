@@ -50,6 +50,19 @@ Point.prototype.equals = function(rhs)
 	return rhs && this.x == rhs.x && this.y == rhs.y
 }
 
+function ReadPoints(elem, elem_name)
+{
+	var points = []
+	var elems = GetChildElements(elem, elem_name)
+	for (var i = 0; i < elems.length; ++i)
+	{
+		var x = elems[i].getAttribute('x')
+		var y = elems[i].getAttribute('y')
+		points.push(new Point(x, y))
+	}
+	return points
+}
+
 function CompareObjects(lhs, rhs)
 {
 	return lhs == null ? rhs == null : lhs.equals(rhs)

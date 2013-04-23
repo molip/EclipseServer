@@ -14,6 +14,8 @@ public:
 	MapPos GetNeighbour(Edge e) const;
 	int GetDist(const MapPos& rhs) const;
 	bool operator <(const MapPos& rhs) const;
+	bool operator ==(const MapPos& rhs) const { return m_x == rhs.m_x && m_y == rhs.m_y; }
+	bool operator !=(const MapPos& rhs) const { return !operator ==(rhs); }
 
 	int GetX() const { return m_x; }
 	int GetY() const { return m_y; }

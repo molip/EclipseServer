@@ -6,6 +6,7 @@
 #include "Race.h"
 #include "Player.h"
 #include "ExploreCmd.h"
+#include "InfluenceCmd.h"
 
 #include <sstream>
 
@@ -64,6 +65,10 @@ MessagePtr CreateCommand(const std::string& type, const TiXmlElement& root)
 		return MessagePtr(new CmdExploreHex(root));
 	if (type == "cmd_explore_discovery")
 		return MessagePtr(new CmdExploreDiscovery(root));
+	if (type == "cmd_influence_src")
+		return MessagePtr(new CmdInfluenceSrc(root));
+	if (type == "cmd_influence_dst")
+		return MessagePtr(new CmdInfluenceDst(root));
 	if (type == "cmd_explore_reject")
 		return MessagePtr(new CmdExploreReject);
 	
@@ -217,6 +222,8 @@ bool StartAction::Process(Controller& controller, Player& player) const
 
 	if (m_action == "explore") 
 		game.StartCmd(CmdPtr(new ExploreCmd(game, player)));
+	else if (m_action == "influence") 
+		game.StartCmd(CmdPtr(new InfluenceCmd(game, player)));
 
 	Cmd* pCmd = game.GetCurrentCmd();
 	AssertThrow("StartAction::Process: No command created", !!pCmd);
@@ -290,6 +297,16 @@ CmdExploreHex::CmdExploreHex(const TiXmlElement& node) : m_iRot(0), m_iHex(0), m
 
 CmdExploreDiscovery::CmdExploreDiscovery(const TiXmlElement& node)
 {
+}
+
+CmdInfluenceSrc::CmdInfluenceSrc(const TiXmlElement& node) : m_iPos(-1)
+{
+	AssertThrowXML("CmdInfluenceSrc: pos_idx", !!node.Attribute("pos_idx", &m_iPos));
+}
+
+CmdInfluenceDst::CmdInfluenceDst(const TiXmlElement& node) : m_iPos(-1)
+{
+	AssertThrowXML("CmdInfluenceDst: pos_idx", !!node.Attribute("pos_idx", &m_iPos));
 }
 
 } // namespace

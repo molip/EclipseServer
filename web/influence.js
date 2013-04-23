@@ -1,0 +1,108 @@
+var Influence = {}
+
+///////////////////////////////////////////////////////////////////////////////
+// Stages
+
+Influence.Stage = function(positions, can_select_track, btn_id, command)
+{
+	this.positions = positions
+	this.can_select_track = can_select_track
+	this.btn_id = btn_id
+	this.command = command
+	this.selected = null
+	this.track_selected = false
+	this.pos_idx = can_select_track ? -1 : 0
+
+	document.getElementById(btn_id).disabled = true
+
+	ShowElementById('choose_undo', true)
+	document.getElementById('choose_undo_btn').disabled = false
+
+	this.UpdateTrackSelection()
+}
+
+Influence.Stage.prototype.OnClickInfluenceTrack = function()
+{
+	if (this.can_select_track)
+	{
+		this.selected = null
+		this.pos_idx = -1
+		this.track_selected = true
+		this.UpdateTrackSelection()
+		Map.DrawSelectLayer()
+		document.getElementById(this.btn_id).disabled = false
+	}
+}
+
+Influence.Stage.prototype.OnHexMouseDown = function(pt)
+{
+	for (var i = 0; i < this.positions.length; ++i)
+		if (this.positions[i].equals(pt))
+		{
+			this.selected = pt.Clone()
+			this.pos_idx = i
+			this.track_selected = false
+			this.UpdateTrackSelection()
+			document.getElementById(this.btn_id).disabled = false
+			return true
+		}
+	return false
+}
+
+Influence.Stage.prototype.OnDraw = function(ctx)
+{
+	for (var i = 0; i < this.positions.length; ++i)
+		Map.DrawCentred(ctx, Map.img_explore, this.positions[i])
+}
+
+Influence.Stage.prototype.Send = function()
+{
+	var doc = CreateXMLDoc()
+	var node = CreateCommandNode(doc, this.command)
+	node.setAttribute("pos_idx", this.pos_idx)
+
+	ExitAction()
+
+	SendXMLDoc(doc)
+}
+
+Influence.Stage.prototype.UpdateTrackSelection = function()
+{
+	var style = ""
+	
+	if (this.can_select_track)
+		style = this.track_selected ? "2px solid red" : "2px solid green"
+		
+	document.getElementById(GetTeamDivIDFromName(data.playerID, 'influence')).style.border = style
+}
+
+Influence.Stage.prototype.CleanUp = function()
+{
+	Map.ClearCanvas(Map.layer_select)
+	Map.ClearCanvas(Map.layer_action)
+	this.track_selected = this.can_select_track = false
+	this.UpdateTrackSelection()
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// Input
+
+Influence.OnCommandChooseSrc = function(elem)
+{
+	ShowActionElement('choose_influence_src')
+	Map.selecting = true
+
+	var positions = ReadPoints(elem, 'pos')
+	data.action = new Influence.Stage(positions, IsTrue(elem.getAttribute('can_select_track')), 'choose_influence_src_btn', 'cmd_influence_src')
+	Map.DrawActionLayer()
+}
+
+Influence.OnCommandChooseDst = function(elem)
+{
+	ShowActionElement('choose_influence_dst')
+	Map.selecting = true
+
+	var positions = ReadPoints(elem, 'pos')
+	data.action = new Influence.Stage(positions, IsTrue(elem.getAttribute('can_select_track')), 'choose_influence_dst_btn', 'cmd_influence_dst')
+	Map.DrawActionLayer()
+}

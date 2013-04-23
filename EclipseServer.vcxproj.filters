@@ -129,6 +129,9 @@
     <ClInclude Include="MapPos.h">
       <Filter>Model</Filter>
     </ClInclude>
+    <ClInclude Include="InfluenceCmd.h">
+      <Filter>Model\Commands</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -238,6 +241,9 @@
     </ClCompile>
     <ClCompile Include="Discovery.cpp">
       <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="InfluenceCmd.cpp">
+      <Filter>Model\Commands</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

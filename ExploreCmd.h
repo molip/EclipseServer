@@ -20,7 +20,7 @@ public:
 	virtual void AcceptMessage(const Input::CmdMessage& msg) override;
 	virtual void UpdateClient(const Controller& controller) const override;
 	virtual bool IsFinished() const override;
-	virtual bool CanUndo() override;
+	virtual bool CanUndo() const override;
 	virtual bool Undo() override;
 
 private:
