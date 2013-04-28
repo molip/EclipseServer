@@ -19,6 +19,7 @@ public:
 
 	virtual void UpdateClient(const Controller& controller) const override;
 	virtual CmdPtr Process(const Input::CmdMessage& msg, const Controller& controller) override;
+	virtual bool IsAction() const override { return true; } 
 
 private:
 	std::vector<MapPos> m_positions;

@@ -225,13 +225,22 @@ ChooseTeam::ChooseTeam(const Game& game, bool bActive) : Choose("team", bActive)
 		}
 }
 
-ChooseAction::ChooseAction() : Choose("action") 
+ChooseAction::ChooseAction(const Game& game) : Choose("action") 
 {
-}
+	AssertThrow("ChooseAction::ChooseAction", !game.GetCurrentCmd());
 
-//ChooseCommit::ChooseCommit() : Choose("commit") 
-//{
-//}
+	bool bCanDoAction = game.CanDoAction();
+
+	m_pRoot->SetAttribute("can_undo",		game.CanUndo());
+	m_pRoot->SetAttribute("can_explore",	bCanDoAction);
+	m_pRoot->SetAttribute("can_influence",	bCanDoAction);
+	m_pRoot->SetAttribute("can_research",	false);
+	m_pRoot->SetAttribute("can_upgrade",	false);
+	m_pRoot->SetAttribute("can_build",		false);
+	m_pRoot->SetAttribute("can_move",		false);
+	m_pRoot->SetAttribute("can_colonise",	false);
+	m_pRoot->SetAttribute("can_diplomacy",	false);
+}
 
 ChooseFinished::ChooseFinished() : Choose("finished") 
 {

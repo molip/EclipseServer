@@ -77,10 +77,10 @@ struct Undo : Message
 	virtual bool Process(Controller& controller, Player& player) const override; 
 };
 
-//struct Commit : Message 
-//{
-//	virtual bool Process(Controller& controller, Player& player) const override; 
-//};
+struct Commit : Message 
+{
+	virtual bool Process(Controller& controller, Player& player) const override; 
+};
 
 //-----------------------------------------------------------------------------
 

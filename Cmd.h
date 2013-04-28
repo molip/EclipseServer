@@ -21,6 +21,7 @@ public:
 	virtual void UpdateClient(const Controller& controller) const {}
 	virtual CmdPtr Process(const Input::CmdMessage& msg, const Controller& controller) = 0;
 	
+	virtual bool IsAction() const { return false; } 
 	virtual bool CanAbort() const { return true; } 
 	virtual void Undo(const Controller& controller) { } 
 

@@ -107,8 +107,6 @@ function OnCommandChoose(elem)
 		OnCommandChooseTeam(elem, active)
 	else if (param == "action")
 		OnCommandChooseAction(elem)
-	// else if (param == "commit")
-		// OnCommandChooseCommit(elem)
 	else if (param == "explore_pos")
 		Explore.OnCommandChoosePos(elem)
 	else if (param == "explore_hex")
@@ -269,17 +267,19 @@ function OnCommandChooseTeam(elem, active)
 
 function OnCommandChooseAction(elem)
 {
-	// In case we got here via undo.
-	//ExitAction() 
-	
-	ShowElementById('choose_undo', false)
+	document.getElementById('choose_undo_btn').disabled = !IsTrue(elem.getAttribute('can_undo'))
+	document.getElementById('choose_action_explore_btn').disabled = !IsTrue(elem.getAttribute('can_explore'))
+	document.getElementById('choose_action_influence_btn').disabled = !IsTrue(elem.getAttribute('can_influence'))
+	document.getElementById('choose_action_research_btn').disabled = !IsTrue(elem.getAttribute('can_research'))
+	document.getElementById('choose_action_upgrade_btn').disabled = !IsTrue(elem.getAttribute('can_upgrade'))
+	document.getElementById('choose_action_build_btn').disabled = !IsTrue(elem.getAttribute('can_build'))
+	document.getElementById('choose_action_move_btn').disabled = !IsTrue(elem.getAttribute('can_move'))
+	document.getElementById('choose_action_colonise_btn').disabled = !IsTrue(elem.getAttribute('can_colonise'))
+	document.getElementById('choose_action_diplomacy_btn').disabled = !IsTrue(elem.getAttribute('can_diplomacy'))
+
+	ShowElementById('choose_undo', true)
 	ShowActionElement('choose_action')
 }
-
-// function OnCommandChooseCommit(elem)
-// {
-	// ShowActionElement('choose_commit')
-// }
 
 function OnCommandChooseFinished(elem)
 {

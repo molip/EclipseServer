@@ -69,8 +69,7 @@ struct UpdateMap : Update { UpdateMap(const Game& game); };
 //struct UpdateUndo : Update { UpdateUndo(bool bEnable); };
 
 struct ChooseTeam : Choose { ChooseTeam(const Game& game, bool bActive); };
-struct ChooseAction : Choose { ChooseAction(); };
-//struct ChooseCommit : Choose { ChooseCommit(); };
+struct ChooseAction : Choose { ChooseAction(const Game& game); };
 struct ChooseFinished : Choose { ChooseFinished(); };
 
 struct ChooseExplorePos : Choose { ChooseExplorePos(const std::vector<MapPos>& positions, bool bCanSkip); };

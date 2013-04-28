@@ -78,19 +78,16 @@
 			<button type="button" id="choose_undo_btn" onclick="SendChooseUndo()">Undo</button>
 		</div>
 		<div id="choose_action" style="display:none">
-			<button type="button" onclick="SendChooseAction('explore')">Explore</button>
-			<button type="button" onclick="SendChooseAction('influence')">Influence</button>
-			<button type="button" onclick="SendChooseAction('research')">Research</button>
-			<button type="button" onclick="SendChooseAction('upgrade')">Upgrade</button>
-			<button type="button" onclick="SendChooseAction('build')">Build</button>
-			<button type="button" onclick="SendChooseAction('move')">Move</button>
-			<button type="button" onclick="SendChooseAction('colonise')">Colonise</button>
-			<button type="button" onclick="SendChooseAction('diplomacy')">Diplomacy</button>
-			<button type="button" onclick="SendChooseAction('pass')">Pass</button>
+			<button id="choose_action_explore_btn" type="button" onclick="SendChooseAction('explore')">Explore</button>
+			<button id="choose_action_influence_btn" type="button" onclick="SendChooseAction('influence')">Influence</button>
+			<button id="choose_action_research_btn" type="button" onclick="SendChooseAction('research')">Research</button>
+			<button id="choose_action_upgrade_btn" type="button" onclick="SendChooseAction('upgrade')">Upgrade</button>
+			<button id="choose_action_build_btn" type="button" onclick="SendChooseAction('build')">Build</button>
+			<button id="choose_action_move_btn" type="button" onclick="SendChooseAction('move')">Move</button>
+			<button id="choose_action_colonise_btn" type="button" onclick="SendChooseAction('colonise')">Colonise</button>
+			<button id="choose_action_diplomacy_btn" type="button" onclick="SendChooseAction('diplomacy')">Diplomacy</button>
+			<button type="button" onclick="SendChooseCommit()">End Turn</button>
 		</div>
-<!--		<div id="choose_commit" style="display:none">
-			<button type="button" onclick="SendChooseCommit()">Commit</button>
-		</div> -->
 		<div id="choose_explore_pos" style="display:none">
 			Choose hex to explore...
 			<button id="choose_explore_pos_btn" type="button" onclick="data.action.SendPos()">Next</button>

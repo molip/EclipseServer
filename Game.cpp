@@ -133,6 +133,11 @@ Team& Game::GetCurrentTeam()
 	return GetTeam(GetCurrentPlayer());
 }
 
+const Team& Game::GetCurrentTeam() const
+{
+	return GetTeam(GetCurrentPlayer());
+}
+
 const Team* Game::GetTeamFromColour(Colour c) const
 {
 	for (auto& i : m_teams)
@@ -169,39 +174,54 @@ void Game::PushCmd(CmdPtr pCmd)
 {
 	AssertThrow("Game::PushCmd: Already got one", !m_pCmd);
 	m_pCmd = std::move(pCmd);
+	if (m_pCmd->IsAction())
+		GetCurrentTeam().GetInfluenceTrack().RemoveDiscs(1);
 }
 
 void Game::FinishCmd()
 {
 	AssertThrow("Game::FinishCmd: No command to finish", !!m_pCmd);
-	m_cmdsDone.push(std::move(m_pCmd));
+	m_cmdsDone.push_back(std::move(m_pCmd));
 }
 
 void Game::PopCmd()
 {
 	if (m_pCmd)
+	{
 		AssertThrow("Game::PopCmd: command not abortable", m_pCmd->CanAbort());
-	
+		if (m_pCmd->IsAction())
+			GetCurrentTeam().GetInfluenceTrack().AddDiscs(1);
+	}
+
 	m_pCmd = nullptr; // Abandon current cmd (hasn't been done yet).
 
 	if (!m_cmdsDone.empty())
 	{
-		m_pCmd = std::move(m_cmdsDone.top());
-		m_cmdsDone.pop();
+		m_pCmd = std::move(m_cmdsDone.back());
+		m_cmdsDone.pop_back();
 	}
+}
+
+bool Game::CanDoAction() const
+{
+	if (GetCurrentTeam().GetInfluenceTrack().GetDiscCount() == 0)
+		return false;
+	
+	for (auto& cmd : m_cmdsDone)
+		if (cmd->IsAction())
+			return false;
+	return true;
+}
+
+bool Game::CanUndo() const
+{
+	return m_pCmd ? m_pCmd->CanAbort() : !m_cmdsDone.empty();
 }
 
 void Game::FinishTurn()
 {
-	m_cmdsDone = std::stack<CmdPtr>();
+	AssertThrow("Game::FinishTurn", !m_pCmd);
+
+	m_cmdsDone.clear();
 	AdvanceTurn();
 }
-
-//void Game::CommitCurrentCmd()
-//{
-//	AssertThrow("Game::CommitCurrentCmd: No command to commit", !!m_pCurrentCmd);
-//	AssertThrow("Game::CommitCurrentCmd: Command not finished", m_pCurrentCmd->IsFinished());
-//
-//	m_pCurrentCmd = nullptr;
-//	AdvanceTurn();
-//}

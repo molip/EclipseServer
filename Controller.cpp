@@ -108,6 +108,6 @@ void Controller::SendUpdateGame(const Game& game, const Player* pPlayer) const
 			if (const Cmd* pCmd = game.GetCurrentCmd())
 				pCmd->UpdateClient(*this);
 			else
-				SendMessage(Output::ChooseAction(), game.GetCurrentPlayer());
+				SendMessage(Output::ChooseAction(game), game.GetCurrentPlayer());
 	}
 }

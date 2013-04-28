@@ -9,7 +9,7 @@
 #include <set>
 #include <map>
 #include <string>
-#include <stack>
+#include <deque>
 
 enum class HexRing { Inner, Middle, Outer, _Count };
 
@@ -36,6 +36,7 @@ public:
 	Team& GetTeam(Player& player);
 	const Player& GetCurrentPlayer() const;
 	Player& GetCurrentPlayer();
+	const Team& GetCurrentTeam() const;
 	Team& GetCurrentTeam();
 	const Team* GetTeamFromColour(Colour c) const;
 
@@ -55,9 +56,10 @@ public:
 	void PushCmd(CmdPtr pCmd);
 	void PopCmd(); 
 	void FinishCmd();
+	bool CanUndo() const;
+	bool CanDoAction() const;
 
 	void FinishTurn();
-	//void CommitCurrentCmd();
 	Cmd* GetCurrentCmd() { return m_pCmd.get(); }
 	const Cmd* GetCurrentCmd() const { return m_pCmd.get(); }
 
@@ -87,7 +89,7 @@ private:
 	int m_iTurn, m_iRound;
 	int m_iStartTeam, m_iStartTeamNext;
 
-	std::stack<CmdPtr> m_cmdsDone;
+	std::deque<CmdPtr> m_cmdsDone;
 	CmdPtr m_pCmd;
 };
 

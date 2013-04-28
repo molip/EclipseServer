@@ -56,8 +56,8 @@ MessagePtr CreateCommand(const std::string& type, const TiXmlElement& root)
 		return MessagePtr(new StartAction(root));
 	if (type == "undo")
 		return MessagePtr(new Undo);
-	//if (type == "commit")
-	//	return MessagePtr(new Commit);
+	if (type == "commit")
+		return MessagePtr(new Commit);
 	
 	if (type == "cmd_explore_pos")
 		return MessagePtr(new CmdExplorePos(root));
@@ -228,6 +228,9 @@ bool StartAction::Process(Controller& controller, Player& player) const
 	Cmd* pCmd = game.GetCurrentCmd();
 	AssertThrow("StartAction::Process: No command created", !!pCmd);
 	
+	if (pCmd->IsAction())
+		controller.SendMessage(Output::UpdateInfluenceTrack(*player.GetCurrentTeam()), game);
+
 	pCmd->UpdateClient(controller);
 	return true;	
 }
@@ -236,7 +239,12 @@ bool Undo::Process(Controller& controller, Player& player) const
 {
 	Game& game = GetGameAssert(player);
 
+	bool bAction = game.GetCurrentCmd() && game.GetCurrentCmd()->IsAction();
+
 	game.PopCmd();
+
+	if (bAction)
+		controller.SendMessage(Output::UpdateInfluenceTrack(*player.GetCurrentTeam()), game);
 
 	if (Cmd* pCmd = game.GetCurrentCmd())
 	{
@@ -244,20 +252,21 @@ bool Undo::Process(Controller& controller, Player& player) const
 		pCmd->UpdateClient(controller);
 	}
 	else
-		controller.SendMessage(Output::ChooseAction(), player);
+		controller.SendMessage(Output::ChooseAction(game), player);
 
 	return true;	
 }
 
-//bool Commit::Process(Controller& controller, Player& player) const 
-//{
-//	Game& game = GetGameAssert(player);
-//	game.CommitCurrentCmd();
-//
-//	controller.SendMessage(Output::ChooseFinished(), player);
-//	controller.SendMessage(Output::ChooseAction(), game.GetCurrentPlayer());
-//	return true;
-//}
+bool Commit::Process(Controller& controller, Player& player) const 
+{
+	Game& game = GetGameAssert(player);
+
+	game.FinishTurn();
+
+	controller.SendMessage(Output::ChooseFinished(), player);
+	controller.SendMessage(Output::ChooseAction(game), game.GetCurrentPlayer());
+	return true;
+}
 
 //-----------------------------------------------------------------------------
 
@@ -277,10 +286,7 @@ bool CmdMessage::Process(Controller& controller, Player& player) const
 	}
 	else
 	{
-		// TODO: Return to choose action, wait for End Turn
-		controller.SendMessage(Output::ChooseFinished(), player);
-		game.FinishTurn();
-		controller.SendMessage(Output::ChooseAction(), game.GetCurrentPlayer());
+		controller.SendMessage(Output::ChooseAction(game), game.GetCurrentPlayer());
 	}
 	return true;
 }
