@@ -73,7 +73,7 @@ struct ChooseAction : Choose { ChooseAction(); };
 //struct ChooseCommit : Choose { ChooseCommit(); };
 struct ChooseFinished : Choose { ChooseFinished(); };
 
-struct ChooseExplorePos : Choose { ChooseExplorePos(const std::set<MapPos>& positions, bool bCanSkip); };
+struct ChooseExplorePos : Choose { ChooseExplorePos(const std::vector<MapPos>& positions, bool bCanSkip); };
 struct ChooseExploreHex : Choose 
 {
 	ChooseExploreHex(int x, int y);

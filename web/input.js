@@ -270,7 +270,7 @@ function OnCommandChooseTeam(elem, active)
 function OnCommandChooseAction(elem)
 {
 	// In case we got here via undo.
-	ExitAction()
+	//ExitAction() 
 	
 	ShowElementById('choose_undo', false)
 	ShowActionElement('choose_action')

@@ -80,6 +80,8 @@ public:
 	int GetVictoryPoints() const { return m_nVictory; }
 	bool HasArtifact() const { return m_bArtifact; }
 
+	void RemoveDiscoveryTile();
+
 private:
 	void Init(Game* pGame);
 

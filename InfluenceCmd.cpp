@@ -7,213 +7,122 @@
 #include "Race.h"
 #include "Game.h"
 #include "Map.h"
+#include "DiscoverCmd.h"
 
-template <typename T>
-T& CastMessage(const Input::CmdMessage& msg)
+InfluenceCmd::InfluenceCmd(Player& player, int iPhase) : Cmd(player), m_iPhase(iPhase)
 {
-	T* pMsg = dynamic_cast<T*>(&msg);
-	AssertThrow(std::string("InfluenceCmd::AcceptMessage: Expected ") + typeid(T).name() + ", got " + typeid(msg).name(), !!pMsg);
-	return *pMsg;
-}
-
-InfluenceCmd::InfluenceCmd(Game& game, Player& player) : 
-	m_player(player), m_stage(Stage::Src), m_game(game), m_team(game.GetTeam(player))
-{
-	m_phases.push_back(PhasePtr(new Phase));
-	GetSrcChoices();
-}
-
-void InfluenceCmd::AcceptMessage(const Input::CmdMessage& msg)
-{
-	Phase& phase = GetPhase();
-
-	switch (m_stage)
-	{
-		case Stage::Src:
-		{
-			if (dynamic_cast<const Input::CmdExploreReject*>(&msg))
-			{
-				phase.m_bReject = true;
-				m_stage = Stage::Finished;
-				return;
-			}
-			auto& m = CastMessage<const Input::CmdInfluenceSrc>(msg);
-			AssertThrow("InfluenceCmd::AcceptMessage (Stage::Src): invalid pos index", m.m_iPos >= -1 && m.m_iPos < (int)phase.m_srcs.size());
-			phase.m_iSrc = m.m_iPos;
-			GetDstChoices();
-			m_stage = Stage::Dst;
-			break;
-		}
-		case Stage::Dst:
-		{
-			auto& m = CastMessage<const Input::CmdInfluenceDst>(msg);
-			AssertThrow("InfluenceCmd::AcceptMessage (Stage::Dst): invalid pos index", m.m_iPos >= -1 && m.m_iPos < (int)phase.m_dsts.size());
-			phase.m_iDst = m.m_iPos;
-
-			Hex* pDstHex = TransferDisc(phase.m_iSrc < 0 ? nullptr : &phase.m_srcs[phase.m_iSrc], 
-										phase.m_iDst < 0 ? nullptr : &phase.m_dsts[phase.m_iDst]);
-
-			Controller* pCtrlr = Controller::Get(); // TODO: Something better.
-
-			pCtrlr->SendMessage(Output::UpdateMap(m_game), m_game);
-			if (phase.m_iSrc < 0 || phase.m_iDst < 0)
-				pCtrlr->SendMessage(Output::UpdateInfluenceTrack(m_team), m_game);
-			
-			phase.m_discovery = pDstHex ? pDstHex->GetDiscoveryTile() : DiscoveryType::None;
-
-			if (phase.m_discovery == DiscoveryType::None)
-				EndPhase();
-			else
-				m_stage = Stage::Discovery;
-
-			break;
-		}
-		case Stage::Discovery:
-		{
-			auto& m = CastMessage<const Input::CmdExploreDiscovery>(msg);
-			EndPhase();
-			break;
-		}
-	}
-}
-
-void InfluenceCmd::EndPhase()
-{
-	if (m_phases.size() < 2)
-	{
-		m_stage = Stage::Src;
-		m_phases.push_back(PhasePtr(new Phase));
-		GetSrcChoices();
-	}
-	else
-		m_stage = Stage::Finished;
+	const Map& map = GetGame().GetMap();
+	const Map::HexMap& hexes = map.GetHexes();
+	for (auto& h : hexes)
+		if (h.second->GetOwner() == &GetTeam())
+			m_srcs.push_back(h.first);
 }
 
 void InfluenceCmd::UpdateClient(const Controller& controller) const
 {
-	const Phase& phase = GetPhase();
-
-	switch (m_stage)
-	{
-		case Stage::Src:
-			controller.SendMessage(Output::ChooseInfluenceSrc(phase.m_srcs, m_team.GetInfluenceTrack().GetDiscCount() > 0), m_player);
-			break;
-		case Stage::Dst:
-			controller.SendMessage(Output::ChooseInfluenceDst(phase.m_dsts, phase.m_iSrc >= 0), m_player);
-			break;
-		case Stage::Discovery:
-		{
-			Output::ChooseExploreDiscovery msg;
-			controller.SendMessage(msg, m_player);
-			break;
-		}
-	}
+	controller.SendMessage(Output::ChooseInfluenceSrc(m_srcs, GetTeam().GetInfluenceTrack().GetDiscCount() > 0), m_player);
 }
 
-bool InfluenceCmd::IsFinished() const 
+CmdPtr InfluenceCmd::Process(const Input::CmdMessage& msg, const Controller& controller)
 {
-	return m_stage == Stage::Finished;
+	// TODO: Flip colony ships.
+
+	if (dynamic_cast<const Input::CmdExploreReject*>(&msg))
+		return nullptr;
+
+	auto& m = CastThrow<const Input::CmdInfluenceSrc>(msg);
+	AssertThrow("InfluenceCmd::Process (Stage::Src): invalid pos index", m.m_iPos == -1 || InRange(m_srcs, m.m_iPos));
+
+	return CmdPtr(new InfluenceDstCmd(m_player, m.m_iPos < 0 ? nullptr : &m_srcs[m.m_iPos], m_iPhase));
 }
 
-bool InfluenceCmd::CanUndo() const
+//-----------------------------------------------------------------------------
+
+InfluenceDstCmd::InfluenceDstCmd(Player& player, const MapPos* pSrcPos, int iPhase) : Cmd(player), m_iPhase(iPhase),
+	m_pDstPos(nullptr), m_discovery(DiscoveryType::None)
 {
-	return m_stage != Stage::Discovery; 
-}
-
-bool InfluenceCmd::Undo()
-{
-	AssertThrow("InfluenceCmd::Undo", CanUndo()); 
-	
-	if (m_stage == Stage::Src) 
-	{
-		if (m_phases.size() == 1)
-			return true; 
-
-		m_phases.pop_back();
-
-		const Phase& phase = GetPhase();
-		if (phase.m_discovery == DiscoveryType::None)
-		{
-			m_stage = Stage::Dst;
-
-			TransferDisc(	phase.m_iDst < 0 ? nullptr : &phase.m_dsts[phase.m_iDst], 
-							phase.m_iSrc < 0 ? nullptr : &phase.m_srcs[phase.m_iSrc]);
-
-			Controller* pCtrlr = Controller::Get(); // TODO: Something better.
-
-			pCtrlr->SendMessage(Output::UpdateMap(m_game), m_game);
-			if (phase.m_iSrc < 0 || phase.m_iDst < 0)
-				pCtrlr->SendMessage(Output::UpdateInfluenceTrack(m_team), m_game);
-		}
-		else
-			m_stage = Stage::Discovery;
-	}
-	else if (m_stage == Stage::Dst) 
-		m_stage = Stage::Src;
-
-	return false;
-}
-
-void InfluenceCmd::GetSrcChoices()
-{
-	auto& srcs = GetPhase().m_srcs;
-
-	const Map& map = m_game.GetMap();
-	const Map::HexMap& hexes = map.GetHexes();
-	for (auto& h : hexes)
-		if (h.second->GetOwner() == &m_team)
-			srcs.push_back(h.first);
-}
-
-void InfluenceCmd::GetDstChoices()
-{
-	Phase& phase = GetPhase();
+	if (pSrcPos)
+		m_pSrcPos.reset(new MapPos(*pSrcPos));
 
 	std::set<MapPos> dsts;
-	const MapPos* pSrc = phase.m_iSrc < 0 ? nullptr : &phase.m_srcs[phase.m_iSrc];
 
-	const bool bWormholeGen = m_team.HasTech(TechType::WormholeGen);
-	const bool bAncientsAlly = Race(m_team.GetRace()).IsAncientsAlly();
+	const bool bWormholeGen = GetTeam().HasTech(TechType::WormholeGen);
+	const bool bAncientsAlly = Race(GetTeam().GetRace()).IsAncientsAlly();
 
-	const Map& map = m_game.GetMap();
+	const Map& map = GetGame().GetMap();
 	const Map::HexMap& hexes = map.GetHexes();
 	for (auto& h : hexes)
 	{
-		if (h.second->GetOwner() == nullptr && h.second->HasShip(&m_team))
+		if (h.second->GetOwner() == nullptr && h.second->HasShip(&GetTeam()))
 			dsts.insert(h.first);
-		if (!pSrc || h.first != *pSrc) // Would break the wormhole, see FAQ.
-			if (h.second->GetOwner() == &m_team || h.second->HasShip(&m_team))
-				map.GetInfluencableNeighbours(h.first, m_team, dsts);
+		if (!pSrcPos || h.first != *pSrcPos) // Would break the wormhole, see FAQ.
+			if (h.second->GetOwner() == &GetTeam() || h.second->HasShip(&GetTeam()))
+				map.GetInfluencableNeighbours(h.first, GetTeam(), dsts);
 	}
 
-	GetPhase().m_dsts.clear();
-	GetPhase().m_dsts.insert(GetPhase().m_dsts.begin(), dsts.begin(), dsts.end());
+	m_dsts.insert(m_dsts.begin(), dsts.begin(), dsts.end());
 }
 
-Hex* InfluenceCmd::TransferDisc(const MapPos* pSrcPos, const MapPos* pDstPos)
+void InfluenceDstCmd::UpdateClient(const Controller& controller) const
+{
+	controller.SendMessage(Output::ChooseInfluenceDst(m_dsts, !!m_pSrcPos), m_player);
+}
+
+CmdPtr InfluenceDstCmd::Process(const Input::CmdMessage& msg, const Controller& controller)
+{
+	auto& m = CastThrow<const Input::CmdInfluenceDst>(msg);
+	AssertThrow("InfluenceCmd::Process (Stage::Dst): invalid pos index", m.m_iPos == -1 || InRange(m_dsts, m.m_iPos));
+	
+	m_pDstPos = m.m_iPos >= 0 ? &m_dsts[m.m_iPos] : nullptr;
+	
+	Hex* pDstHex = TransferDisc(m_pSrcPos.get(), m_pDstPos, controller);
+
+	Cmd* pNext = m_iPhase == 0 ? new InfluenceCmd(m_player, 1) : nullptr;
+
+	if (pDstHex && pDstHex->GetDiscoveryTile() != DiscoveryType::None)
+	{
+		pNext = new DiscoverCmd(m_player, pDstHex->GetDiscoveryTile(), CmdPtr(pNext));
+		pDstHex->RemoveDiscoveryTile();
+	}
+
+	controller.SendMessage(Output::UpdateMap(GetGame()), GetGame());
+
+	return CmdPtr(pNext);
+}
+
+void InfluenceDstCmd::Undo(const Controller& controller)
+{
+	TransferDisc(m_pDstPos, m_pSrcPos.get(), controller);
+	controller.SendMessage(Output::UpdateMap(GetGame()), GetGame());
+}
+
+Hex* InfluenceDstCmd::TransferDisc(const MapPos* pSrcPos, const MapPos* pDstPos, const Controller& controller)
 {
 	AssertThrowModel("InfluenceCmd::TransferDisc: no op", pSrcPos != pDstPos);
 
 	if (pSrcPos)
 	{
-		Hex* pHex = m_game.GetMap().GetHex(*pSrcPos);
+		Hex* pHex = GetGame().GetMap().GetHex(*pSrcPos);
 		AssertThrowModel("InfluenceCmd::TransferDisc: Invalid src", !!pHex);
-		AssertThrowModel("InfluenceCmd::TransferDisc: Src not owned", pHex->GetOwner() == &m_team);
+		AssertThrowModel("InfluenceCmd::TransferDisc: Src not owned", pHex->GetOwner() == &GetTeam());
 		pHex->SetOwner(nullptr);
 	}
 	else
-		m_team.GetInfluenceTrack().RemoveDiscs(1);
+		GetTeam().GetInfluenceTrack().RemoveDiscs(1);
 
 	Hex* pDstHex = nullptr;
 	if (pDstPos)
 	{
-		pDstHex = m_game.GetMap().GetHex(*pDstPos);
+		pDstHex = GetGame().GetMap().GetHex(*pDstPos);
 		AssertThrowModel("InfluenceCmd::TransferDisc: Invalid dst", !!pDstHex);
 		AssertThrowModel("InfluenceCmd::TransferDisc: Dst already owned", pDstHex->GetOwner() == nullptr);
-		pDstHex->SetOwner(&m_team);
+		pDstHex->SetOwner(&GetTeam());
 	}
 	else
-		m_team.GetInfluenceTrack().AddDiscs(1);
+		GetTeam().GetInfluenceTrack().AddDiscs(1);
 	
+	if (!pSrcPos || !pDstPos)
+		controller.SendMessage(Output::UpdateInfluenceTrack(GetTeam()), GetGame());
+
 	return pDstHex;
 }

@@ -237,7 +237,7 @@ ChooseFinished::ChooseFinished() : Choose("finished")
 {
 }
 
-ChooseExplorePos::ChooseExplorePos(const std::set<MapPos>& positions, bool bCanSkip) : Choose("explore_pos") 
+ChooseExplorePos::ChooseExplorePos(const std::vector<MapPos>& positions, bool bCanSkip) : Choose("explore_pos") 
 {
 	m_pRoot->SetAttribute("can_skip", bCanSkip);
 	m_pRoot->SetAttribute("can_undo", true);

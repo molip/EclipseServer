@@ -3,19 +3,36 @@
 #include <memory>
 
 class Controller;
+class Player;
+class Team;
+class Game;
+
 namespace Input { class CmdMessage; }
+
+class Cmd;
+typedef std::unique_ptr<Cmd> CmdPtr;
 
 class Cmd
 {
 public:
+	Cmd(Player& player);
 	virtual ~Cmd() {}
-	virtual void AcceptMessage(const Input::CmdMessage& msg) = 0;
+	
 	virtual void UpdateClient(const Controller& controller) const {}
-	virtual bool IsFinished() const = 0;
-	virtual bool CanUndo() const { return false; }
-	virtual bool Undo() { return false; } // Return true to delete cmd.
+	virtual CmdPtr Process(const Input::CmdMessage& msg, const Controller& controller) = 0;
+	
+	virtual bool CanAbort() const { return true; } 
+	virtual void Undo(const Controller& controller) { } 
+
+protected:
+	Team& GetTeam() { return *m_pTeam; }
+	const Team& GetTeam() const { return *m_pTeam; }
+	Game& GetGame() { return *m_pGame; }
+	const Game& GetGame() const { return *m_pGame; }
+
+	Player& m_player;
 
 private:
+	Team* m_pTeam;
+	Game* m_pGame;
 };
-
-typedef std::unique_ptr<Cmd> CmdPtr;

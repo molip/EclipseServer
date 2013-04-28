@@ -9,6 +9,7 @@
 #include <set>
 #include <map>
 #include <string>
+#include <stack>
 
 enum class HexRing { Inner, Middle, Outer, _Count };
 
@@ -51,11 +52,14 @@ public:
 	const Map& GetMap() const { return m_map; }
 	Map& GetMap() { return m_map; }
 
-	void StartCmd(CmdPtr pCmd);
-	void CommitCurrentCmd();
-	void AbortCurrentCmd();
-	Cmd* GetCurrentCmd() { return m_pCurrentCmd.get(); }
-	const Cmd* GetCurrentCmd() const { return m_pCurrentCmd.get(); }
+	void PushCmd(CmdPtr pCmd);
+	void PopCmd(); 
+	void FinishCmd();
+
+	void FinishTurn();
+	//void CommitCurrentCmd();
+	Cmd* GetCurrentCmd() { return m_pCmd.get(); }
+	const Cmd* GetCurrentCmd() const { return m_pCmd.get(); }
 
 private:
 	void StartRound();
@@ -83,7 +87,8 @@ private:
 	int m_iTurn, m_iRound;
 	int m_iStartTeam, m_iStartTeamNext;
 
-	CmdPtr m_pCurrentCmd;
+	std::stack<CmdPtr> m_cmdsDone;
+	CmdPtr m_pCmd;
 };
 
 typedef std::unique_ptr<Game> GamePtr;

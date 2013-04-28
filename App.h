@@ -60,3 +60,17 @@ public:
 	ModelException(const std::string& msg) : Exception(msg) {}
 	virtual std::string GetType() const override { return "Model"; }
 };
+
+template <typename T2, typename T1>
+T2& CastThrow(const T1& obj)
+{
+	T2* pObj = dynamic_cast<T2*>(&obj);
+	AssertThrow(std::string("CastThrow: Expected ") + typeid(T2).name() + ", got " + typeid(T1).name(), !!pObj);
+	return *pObj;
+}
+
+template<typename T>
+bool InRange(const T& cntr, int n)
+{
+	return n >= 0 && n < (int)cntr.size();
+}

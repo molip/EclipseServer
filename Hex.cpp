@@ -122,6 +122,12 @@ void Hex::SetOwner(Team* pOwner)
 	m_pOwner = pOwner;
 }
 
+void Hex::RemoveDiscoveryTile()
+{
+	AssertThrowModel("Hex::RemoveDiscoveryTile", m_discovery != DiscoveryType::None);
+	m_discovery = DiscoveryType::None;
+}
+
 void Hex::Init(Game* pGame)
 {
 	auto AddSquare = [&] (int x, int y, Resource type, bool bAdvanced) { m_squares.push_back(Square(x, y, type, bAdvanced)); };

@@ -81,6 +81,7 @@
     <ClInclude Include="Blueprint.h" />
     <ClInclude Include="Cmd.h" />
     <ClInclude Include="Controller.h" />
+    <ClInclude Include="DiscoverCmd.h" />
     <ClInclude Include="Discovery.h" />
     <ClInclude Include="EnumRange.h" />
     <ClInclude Include="ExploreCmd.h" />
@@ -123,6 +124,7 @@
     <ClCompile Include="Blueprint.cpp" />
     <ClCompile Include="Cmd.cpp" />
     <ClCompile Include="Controller.cpp" />
+    <ClCompile Include="DiscoverCmd.cpp" />
     <ClCompile Include="Discovery.cpp" />
     <ClCompile Include="ExploreCmd.cpp" />
     <ClCompile Include="Game.cpp" />

@@ -132,6 +132,9 @@
     <ClInclude Include="InfluenceCmd.h">
       <Filter>Model\Commands</Filter>
     </ClInclude>
+    <ClInclude Include="DiscoverCmd.h">
+      <Filter>Model\Commands</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -243,6 +246,9 @@
       <Filter>Model</Filter>
     </ClCompile>
     <ClCompile Include="InfluenceCmd.cpp">
+      <Filter>Model\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="DiscoverCmd.cpp">
       <Filter>Model\Commands</Filter>
     </ClCompile>
   </ItemGroup>

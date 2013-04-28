@@ -165,24 +165,43 @@ void Game::AdvanceTurn()
 	m_iTurn = (m_iTurn + 1) % m_teams.size();
 }
 
-void Game::StartCmd(CmdPtr pCmd)
+void Game::PushCmd(CmdPtr pCmd)
 {
-	AssertThrowModel("Game::StartCmd: there's already a current command", m_pCurrentCmd == nullptr);
-	m_pCurrentCmd = std::move(pCmd);
+	AssertThrow("Game::PushCmd: Already got one", !m_pCmd);
+	m_pCmd = std::move(pCmd);
 }
 
-void Game::CommitCurrentCmd()
+void Game::FinishCmd()
 {
-	AssertThrow("Game::CommitCurrentCmd: No command to commit", !!m_pCurrentCmd);
-	AssertThrow("Game::CommitCurrentCmd: Command not finished", m_pCurrentCmd->IsFinished());
+	AssertThrow("Game::FinishCmd: No command to finish", !!m_pCmd);
+	m_cmdsDone.push(std::move(m_pCmd));
+}
 
-	m_pCurrentCmd = nullptr;
+void Game::PopCmd()
+{
+	if (m_pCmd)
+		AssertThrow("Game::PopCmd: command not abortable", m_pCmd->CanAbort());
+	
+	m_pCmd = nullptr; // Abandon current cmd (hasn't been done yet).
+
+	if (!m_cmdsDone.empty())
+	{
+		m_pCmd = std::move(m_cmdsDone.top());
+		m_cmdsDone.pop();
+	}
+}
+
+void Game::FinishTurn()
+{
+	m_cmdsDone = std::stack<CmdPtr>();
 	AdvanceTurn();
 }
 
-void Game::AbortCurrentCmd()
-{
-	AssertThrow("Game::CommitCurrentCmd: No command to abort", !!m_pCurrentCmd);
-	m_pCurrentCmd = nullptr;
-}
-
+//void Game::CommitCurrentCmd()
+//{
+//	AssertThrow("Game::CommitCurrentCmd: No command to commit", !!m_pCurrentCmd);
+//	AssertThrow("Game::CommitCurrentCmd: Command not finished", m_pCurrentCmd->IsFinished());
+//
+//	m_pCurrentCmd = nullptr;
+//	AdvanceTurn();
+//}

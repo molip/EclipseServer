@@ -7,48 +7,35 @@
 #include <vector> 
 #include <set> 
 
-class Player;
-class Map;
-class Team;
-class Game;
-
 class InfluenceCmd : public Cmd
 {
 public:
-	InfluenceCmd(Game& game, Player& player);
+	InfluenceCmd(Player& player, int iPhase = 0);
 
-	virtual void AcceptMessage(const Input::CmdMessage& msg) override;
 	virtual void UpdateClient(const Controller& controller) const override;
-	virtual bool IsFinished() const override;
-	virtual bool CanUndo() const override;
-	virtual bool Undo() override;
+	virtual CmdPtr Process(const Input::CmdMessage& msg, const Controller& controller) override;
 
 private:
-	struct Phase
-	{
-		Phase() : m_iSrc(-1), m_iDst(-1), m_bReject(false), m_discovery(DiscoveryType::None) {}
-		
-		std::vector<MapPos> m_srcs, m_dsts;
-		bool m_bReject;
-		int m_iSrc, m_iDst; // -1: influence track.
-		DiscoveryType m_discovery;
-	};
+	std::vector<MapPos> m_srcs;
+	int m_iPhase;
+};
 
-	enum class Stage { Src, Dst, Discovery, Finished };
+class InfluenceDstCmd : public Cmd
+{
+public:
+	InfluenceDstCmd(Player& player, const MapPos* pSrcPos, int iPhase = 0);
 
-	void GetSrcChoices();
-	void GetDstChoices();
-	Hex* TransferDisc(const MapPos* pSrcPos, const MapPos* pDstPos);
-		
-	Phase& GetPhase() { return *m_phases.back(); }
-	const Phase& GetPhase() const { return *m_phases.back(); }
-	void EndPhase();
+	virtual void UpdateClient(const Controller& controller) const override;
+	virtual CmdPtr Process(const Input::CmdMessage& msg, const Controller& controller) override;
+	virtual void Undo(const Controller& controller) override;
 
-	Stage m_stage;
-	Player& m_player;
-	Game& m_game;
-	Team& m_team;
+private:
+	std::unique_ptr<MapPos> m_pSrcPos;
+	MapPos* m_pDstPos;
+	std::vector<MapPos> m_dsts;
+	DiscoveryType m_discovery;
 
-	typedef std::unique_ptr<Phase> PhasePtr;
-	std::vector<PhasePtr> m_phases;
+	Hex* TransferDisc(const MapPos* pSrcPos, const MapPos* pDstPos, const Controller& controller);
+
+	int m_iPhase;
 };

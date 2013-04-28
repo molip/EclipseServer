@@ -15,13 +15,26 @@ class Game;
 class ExploreCmd : public Cmd
 {
 public:
-	ExploreCmd(Game& game, Player& player);
+	ExploreCmd(Player& player, int iPhase = 0);
 
-	virtual void AcceptMessage(const Input::CmdMessage& msg) override;
 	virtual void UpdateClient(const Controller& controller) const override;
-	virtual bool IsFinished() const override;
-	virtual bool CanUndo() const override;
-	virtual bool Undo() override;
+	virtual CmdPtr Process(const Input::CmdMessage& msg, const Controller& controller) override;
+
+private:
+	std::vector<MapPos> m_positions;
+	bool m_bReject;
+	int m_iPhase;
+};
+
+class ExploreHexCmd : public Cmd
+{
+public:
+	ExploreHexCmd(Player& player, const MapPos& pos, int iPhase);
+
+	virtual void UpdateClient(const Controller& controller) const override;
+	virtual CmdPtr Process(const Input::CmdMessage& msg, const Controller& controller) override;
+	virtual bool CanAbort() const override { return false; }
+	virtual void Undo(const Controller& controller) override;
 
 private:
 	struct HexChoice
@@ -31,48 +44,11 @@ private:
 		bool m_bCanInfluence;
 		std::vector<int> m_rotations;
 	};
-	struct Phase
-	{
-		Phase() : m_iRot(0), m_iHex(0), m_bReject(false), m_bInfluence(false), m_discovery(DiscoveryType::None) {}
-		
-		// Stage::Pos
-		std::set<MapPos> m_positions;
-		MapPos m_pos;
-		std::vector<HexChoice> m_hexChoices;
 
-		// Stage::Hex
-		int m_iRot;
-		int m_iHex;
-		bool m_bReject;
-		bool m_bInfluence;
-		
-		// Stage::Discovery
-		DiscoveryType m_discovery;
-		//std::unique_ptr<DiscoveryChoice> m_pDiscoveryChoice;
-		
-		//Take victory points
-		//Take discovery
-		//	Tech 
-		//		choose tech
-		//	Ship part: 
-		//		Choose slot
-		//		Save for later
-	};
-
-	enum class Stage { Pos, Hex, Discovery, Finished };
-
-	void GetPossiblePositions();
-	void GetHexChoices();
-		
-	Phase& GetPhase() { return *m_phases.back(); }
-	const Phase& GetPhase() const { return *m_phases.back(); }
-	void EndPhase();
-
-	Stage m_stage;
-	Player& m_player;
-	Game& m_game;
-	Team& m_team;
-
-	typedef std::unique_ptr<Phase> PhasePtr;
-	std::vector<PhasePtr> m_phases;
+	std::vector<HexChoice> m_hexChoices;
+	int m_iRot;
+	int m_iHex;
+	bool m_bInfluence;
+	const MapPos& m_pos;
+	int m_iPhase;
 };

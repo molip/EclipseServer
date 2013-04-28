@@ -221,9 +221,9 @@ bool StartAction::Process(Controller& controller, Player& player) const
 	Game& game = GetGameAssert(player);
 
 	if (m_action == "explore") 
-		game.StartCmd(CmdPtr(new ExploreCmd(game, player)));
+		game.PushCmd(CmdPtr(new ExploreCmd(player)));
 	else if (m_action == "influence") 
-		game.StartCmd(CmdPtr(new InfluenceCmd(game, player)));
+		game.PushCmd(CmdPtr(new InfluenceCmd(player)));
 
 	Cmd* pCmd = game.GetCurrentCmd();
 	AssertThrow("StartAction::Process: No command created", !!pCmd);
@@ -236,19 +236,15 @@ bool Undo::Process(Controller& controller, Player& player) const
 {
 	Game& game = GetGameAssert(player);
 
-	Cmd* pCmd = game.GetCurrentCmd();
-	AssertThrow("Undo::Process: No command to undo", !!pCmd);
-	AssertThrow("Undo::Process: Can't undo", pCmd->CanUndo());
+	game.PopCmd();
 
-	if (pCmd->Undo()) // Delete cmd
+	if (Cmd* pCmd = game.GetCurrentCmd())
 	{
-		game.AbortCurrentCmd();
-		controller.SendMessage(Output::ChooseAction(), player);
-	}
-	else
-	{
+		pCmd->Undo(controller);
 		pCmd->UpdateClient(controller);
 	}
+	else
+		controller.SendMessage(Output::ChooseAction(), player);
 
 	return true;	
 }
@@ -271,13 +267,19 @@ bool CmdMessage::Process(Controller& controller, Player& player) const
 	Cmd* pCmd = game.GetCurrentCmd();
 	AssertThrow("CmdMessage::Process: No current command", !!pCmd);
 
-	pCmd->AcceptMessage(*this);
-	pCmd->UpdateClient(controller);
-	
-	if (pCmd->IsFinished())
+	CmdPtr pNext = pCmd->Process(*this, controller);
+	game.FinishCmd();
+
+	if (pNext)
 	{
+		pNext->UpdateClient(controller);
+		game.PushCmd(std::move(pNext));
+	}
+	else
+	{
+		// TODO: Return to choose action, wait for End Turn
 		controller.SendMessage(Output::ChooseFinished(), player);
-		game.CommitCurrentCmd();
+		game.FinishTurn();
 		controller.SendMessage(Output::ChooseAction(), game.GetCurrentPlayer());
 	}
 	return true;
