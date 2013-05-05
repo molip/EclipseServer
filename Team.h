@@ -55,6 +55,7 @@ public:
 	void ReturnColonyShips(int nShips);
 	int GetColonyShips() const { return m_nColonyShips; }
 	int GetUsedColonyShips() const { return m_nColonyShipsUsed; }
+	int GetUnusedColonyShips() const { return m_nColonyShips - m_nColonyShipsUsed; }
 
 private:
 	Game& m_game;

@@ -20,7 +20,7 @@ Map.img_explore.src = "/images/explore.png"
 
 Map._hexes = []
 
-Map.Hex = function(id, pos, rotation, team, onload) 
+Map.Hex = function(id, pos, rotation, team, squares, onload) 
 {
 	var self = this
 	
@@ -28,6 +28,7 @@ Map.Hex = function(id, pos, rotation, team, onload)
 	this.pos = pos.Clone()
 	this.rotation = rotation
 	this.team = team
+	this.squares = squares ? squares : []
 	this.img = LoadImage("/images/hexes/" + id + ".png", function() { onload(self) })
 }
 
@@ -201,6 +202,24 @@ Map.DrawHex = function(ctx, hex)
 	{
 		Map.DrawCentred(ctx, data.disc_imgs[hex.team], hex.pos, 0, new Point(7, -7))
 	}
+	
+	var size = 26
+	var pt = Map.GetHexCentre(hex.pos)
+	ctx.save()
+	ctx.translate(pt.x, pt.y)
+	if (hex.rotation != null)
+		ctx.rotate(hex.rotation * Math.PI / 3)
+	ctx.translate(-Map.hex_width / 2, -Map.hex_height / 2)
+
+	for (var i = 0; i < hex.squares.length; ++i)
+	{
+		var pt = hex.squares[i]
+		ctx.beginPath()
+		ctx.rect(pt.x - size / 2, pt.y - size / 2, size, size)
+		ctx.closePath()
+		Map.DrawTeamPath(ctx, hex.team)
+	}
+	ctx.restore()
 }
 
 Map.DrawTeamPath = function(ctx, team)
@@ -218,9 +237,9 @@ Map.Clear = function()
 	Map._hexes = []
 }
 
-Map.AddHex = function(id, pos, rotation, team)
+Map.AddHex = function(id, pos, rotation, team, squares)
 {
-	Map._hexes.push(new Map.Hex(id, pos.Clone(), rotation, team, Map.DrawHexLayerSingle))
+	Map._hexes.push(new Map.Hex(id, pos.Clone(), rotation, team, squares, Map.DrawHexLayerSingle))
 }
 
 Map.Draw = function()

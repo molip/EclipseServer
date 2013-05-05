@@ -13,6 +13,8 @@ public:
 	void Add(Resource r, int nAdd);
 	void Remove(Resource r, int nRemove) { Add(r, -nRemove); }
 
+	const Population& GetPopulation() const { return m_pop; }
+
 	static int GetIncome(int nPop);
 
 private:

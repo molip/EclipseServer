@@ -25,6 +25,9 @@ public:
 	virtual bool CanAbort() const { return true; } 
 	virtual void Undo(const Controller& controller) { } 
 
+	void SetStart() { m_bStart = true; }
+	bool IsStart() const { return m_bStart; }
+
 protected:
 	Team& GetTeam() { return *m_pTeam; }
 	const Team& GetTeam() const { return *m_pTeam; }
@@ -36,4 +39,5 @@ protected:
 private:
 	Team* m_pTeam;
 	Game* m_pGame;
+	bool m_bStart; // First cmd of a set.
 };

@@ -45,9 +45,10 @@ void Team::AddShips(ShipType type, int nShips)
 
 void Team::PopulateStartHex(Hex& hex)
 {
-	for (Square* pSquare : hex.GetAvailableSquares(*this))
+	hex.SetOwner(this);
+	for (Square* pSquare : hex.GetAvailableSquares())
 	{
-		m_popTrack.Remove(pSquare->GetType(), 1);
+		m_popTrack.Remove(SquareTypeToResource(pSquare->GetType()), 1);
 		pSquare->SetOwner(this);
 	}
  
@@ -55,7 +56,6 @@ void Team::PopulateStartHex(Hex& hex)
 	hex.AddShip(ship, this);
 	RemoveShips(ship, 1);
 
-	hex.SetOwner(this);
 	m_infTrack.RemoveDiscs(1);
 }
 

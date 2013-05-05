@@ -117,6 +117,10 @@ function OnCommandChoose(elem)
 		Influence.OnCommandChooseSrc(elem)
 	else if (param == "influence_dst")
 		Influence.OnCommandChooseDst(elem)
+	else if (param == "colonise_pos")
+		Colonise.OnCommandChoosePos(elem)
+	else if (param == "colonise_squares")
+		Colonise.OnCommandChooseSquares(elem)
 	else if (param == "finished")
 		OnCommandChooseFinished(elem)
 	else
@@ -240,7 +244,19 @@ function OnCommandUpdateMap(elem)
 		var rotation = hexes[i].getAttribute('rotation')
 		var team = hexes[i].getAttribute('colour')
 
-		Map.AddHex(id, new Point(x, y), rotation, team)
+		var squares = []
+		var squares_elem = GetFirstChildElement(hexes[i], 'squares')
+		if (squares_elem)
+		{
+			var square_elems = GetChildElements(squares_elem, 'square')
+			for (var j = 0; j < square_elems.length; ++j)
+			{
+				var x2 = square_elems[j].getAttribute('x')
+				var y2 = square_elems[j].getAttribute('y')
+				squares.push(new Point(x2, y2))
+			}
+		}
+		Map.AddHex(id, new Point(x, y), rotation, team, squares)
 	}
 	Map.Draw()
 }

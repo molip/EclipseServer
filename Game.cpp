@@ -34,7 +34,7 @@ void Game::StartChooseTeamPhase()
 	// Decide team order.
 	for (auto& i : m_teams)
 		m_teamOrder.push_back(i.first);
-	std::random_shuffle(m_teamOrder.begin(), m_teamOrder.end());
+	std::shuffle(m_teamOrder.begin(), m_teamOrder.end(), GetRandom());
 
 	//for (int i = 0; i < FakePlayers; ++i)
 	//{
@@ -173,9 +173,10 @@ void Game::AdvanceTurn()
 void Game::PushCmd(CmdPtr pCmd)
 {
 	AssertThrow("Game::PushCmd: Already got one", !m_pCmd);
+	
 	m_pCmd = std::move(pCmd);
 	if (m_pCmd->IsAction())
-		GetCurrentTeam().GetInfluenceTrack().RemoveDiscs(1);
+		GetCurrentTeam().GetInfluenceTrack().RemoveDiscs(1); // TODO: return these at end of round
 }
 
 void Game::FinishCmd()
@@ -186,16 +187,18 @@ void Game::FinishCmd()
 
 void Game::PopCmd()
 {
+	bool bUndoPrev = true;
 	if (m_pCmd)
 	{
 		AssertThrow("Game::PopCmd: command not abortable", m_pCmd->CanAbort());
 		if (m_pCmd->IsAction())
 			GetCurrentTeam().GetInfluenceTrack().AddDiscs(1);
+		bUndoPrev = !m_pCmd->IsStart();
 	}
 
 	m_pCmd = nullptr; // Abandon current cmd (hasn't been done yet).
 
-	if (!m_cmdsDone.empty())
+	if (bUndoPrev && !m_cmdsDone.empty())
 	{
 		m_pCmd = std::move(m_cmdsDone.back());
 		m_cmdsDone.pop_back();

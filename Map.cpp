@@ -52,7 +52,7 @@ Hex& Map::AddHex(const MapPos& pos, int id, int rotation)
 {
 	AssertThrowModel("Map::AddHex: hex already occupied", GetHex(pos) == nullptr);
 	AssertThrowModel("Map::AddHex: invalid rotation", rotation >= 0 && rotation < 6);
-	Hex* p = new Hex(&m_game, id,  rotation);
+	Hex* p = new Hex(&m_game, id, pos, rotation);
 	m_hexes.insert(std::make_pair(pos, HexPtr(p)));
 	return *p;
 }

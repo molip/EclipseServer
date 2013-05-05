@@ -106,6 +106,14 @@ function GetChildElements(elem, name)
 	return array
 }
 
+function GetFirstChildElement(elem, name)
+{
+	for (var e = elem.firstChild; e; e = e.nextSibling)
+		if (e.nodeName == name)
+			return e
+	return null
+}
+
 function OnMessage(msg)
 {
 	writeToScreen(msg.data)

@@ -80,6 +80,7 @@
     <ClInclude Include="Bag.h" />
     <ClInclude Include="Blueprint.h" />
     <ClInclude Include="Cmd.h" />
+    <ClInclude Include="ColoniseCmd.h" />
     <ClInclude Include="Controller.h" />
     <ClInclude Include="DiscoverCmd.h" />
     <ClInclude Include="Discovery.h" />
@@ -123,6 +124,7 @@
     <ClCompile Include="Bag.cpp" />
     <ClCompile Include="Blueprint.cpp" />
     <ClCompile Include="Cmd.cpp" />
+    <ClCompile Include="ColoniseCmd.cpp" />
     <ClCompile Include="Controller.cpp" />
     <ClCompile Include="DiscoverCmd.cpp" />
     <ClCompile Include="Discovery.cpp" />

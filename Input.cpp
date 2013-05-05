@@ -7,6 +7,7 @@
 #include "Player.h"
 #include "ExploreCmd.h"
 #include "InfluenceCmd.h"
+#include "ColoniseCmd.h"
 
 #include <sstream>
 
@@ -65,12 +66,18 @@ MessagePtr CreateCommand(const std::string& type, const TiXmlElement& root)
 		return MessagePtr(new CmdExploreHex(root));
 	if (type == "cmd_explore_discovery")
 		return MessagePtr(new CmdExploreDiscovery(root));
+	if (type == "cmd_colonise")
+		return MessagePtr(new CmdColonisePos(root));
 	if (type == "cmd_influence_src")
 		return MessagePtr(new CmdInfluenceSrc(root));
 	if (type == "cmd_influence_dst")
 		return MessagePtr(new CmdInfluenceDst(root));
 	if (type == "cmd_explore_reject")
 		return MessagePtr(new CmdExploreReject);
+	if (type == "cmd_colonise_pos")
+		return MessagePtr(new CmdColonisePos(root));
+	if (type == "cmd_colonise_squares")
+		return MessagePtr(new CmdColoniseSquares(root));
 	
 	AssertThrow("Input command not recognised: " + type);
 	return nullptr;
@@ -224,10 +231,14 @@ bool StartAction::Process(Controller& controller, Player& player) const
 		game.PushCmd(CmdPtr(new ExploreCmd(player)));
 	else if (m_action == "influence") 
 		game.PushCmd(CmdPtr(new InfluenceCmd(player)));
+	else if (m_action == "colonise") 
+		game.PushCmd(CmdPtr(new ColoniseCmd(player)));
 
 	Cmd* pCmd = game.GetCurrentCmd();
 	AssertThrow("StartAction::Process: No command created", !!pCmd);
 	
+	pCmd->SetStart();
+
 	if (pCmd->IsAction())
 		controller.SendMessage(Output::UpdateInfluenceTrack(*player.GetCurrentTeam()), game);
 
@@ -305,6 +316,30 @@ CmdExploreHex::CmdExploreHex(const TiXmlElement& node) : m_iRot(0), m_iHex(0), m
 
 CmdExploreDiscovery::CmdExploreDiscovery(const TiXmlElement& node)
 {
+}
+
+CmdColonisePos::CmdColonisePos(const TiXmlElement& node) : m_iPos(-1)
+{
+	AssertThrowXML("CmdColonisePos: pos_idx", !!node.Attribute("pos_idx", &m_iPos));
+}
+
+CmdColoniseSquares::CmdColoniseSquares(const TiXmlElement& node)
+{
+	auto Read = [&] (const TiXmlElement& node, const std::string& type, Population& pops)
+	{
+		if (const TiXmlElement* pEl = node.FirstChildElement(type))
+		{
+			pEl->Attribute("money", &pops[Resource::Money]);
+			pEl->Attribute("science", &pops[Resource::Science]);
+			pEl->Attribute("materials", &pops[Resource::Materials]);
+		}
+	};
+	
+	Read(node, "fixed", m_fixed);
+	Read(node, "grey", m_grey);
+	Read(node, "orbital", m_orbital);
+
+	AssertThrowXML("CmdColonise: trying to add materials to orbital", m_orbital[Resource::Materials] == 0);
 }
 
 CmdInfluenceSrc::CmdInfluenceSrc(const TiXmlElement& node) : m_iPos(-1)

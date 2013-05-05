@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Resources.h"
+
 #include <string>
 #include <memory>
 #include "tinyxml.h"
@@ -107,6 +109,19 @@ struct CmdExploreHex : CmdMessage
 struct CmdExploreDiscovery : CmdMessage
 {
 	CmdExploreDiscovery(const TiXmlElement& node);
+};
+
+struct CmdColonisePos : CmdMessage
+{
+	CmdColonisePos(const TiXmlElement& node);
+	int m_iPos;
+};
+
+struct CmdColoniseSquares : CmdMessage
+{
+	CmdColoniseSquares(const TiXmlElement& node);
+	
+	Population m_fixed, m_grey, m_orbital;
 };
 
 struct CmdExploreReject : CmdMessage

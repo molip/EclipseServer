@@ -8,6 +8,7 @@
 <script src="map.js"></script>
 <script src="explore.js"></script>
 <script src="influence.js"></script>
+<script src="colonise.js"></script>
 
 <script>
     data.playerID = "%PLAYER_ID%"
@@ -114,6 +115,16 @@
 		<div id="choose_influence_dst" style="display:none">
 			Choose disc destination...
 			<button id="choose_influence_dst_btn" type="button" onclick="data.action.Send()">Next</button>
+		</div>
+		<div id="choose_colonise_pos" style="display:none">
+			Choose hex to colonise...
+			<button id="choose_colonise_pos_btn" type="button" onclick="data.action.Send()">Next</button>
+		</div>
+		<div id="choose_colonise_squares" style="display:none">
+			Choose squares to colonise...
+			<div id="choose_colonise_squares_content">
+			</div>
+			<button id="choose_colonise_squares_btn" type="button" onclick="data.action.Send()">Next</button>
 		</div>
 	</div>
 </div>

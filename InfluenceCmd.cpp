@@ -31,7 +31,7 @@ CmdPtr InfluenceCmd::Process(const Input::CmdMessage& msg, const Controller& con
 		return nullptr;
 
 	auto& m = CastThrow<const Input::CmdInfluenceSrc>(msg);
-	AssertThrow("InfluenceCmd::Process (Stage::Src): invalid pos index", m.m_iPos == -1 || InRange(m_srcs, m.m_iPos));
+	AssertThrow("InfluenceCmd::Process: invalid pos index", m.m_iPos == -1 || InRange(m_srcs, m.m_iPos));
 
 	return CmdPtr(new InfluenceDstCmd(m_player, m.m_iPos < 0 ? nullptr : &m_srcs[m.m_iPos], m_iPhase));
 }
@@ -71,7 +71,7 @@ void InfluenceDstCmd::UpdateClient(const Controller& controller) const
 CmdPtr InfluenceDstCmd::Process(const Input::CmdMessage& msg, const Controller& controller)
 {
 	auto& m = CastThrow<const Input::CmdInfluenceDst>(msg);
-	AssertThrow("InfluenceCmd::Process (Stage::Dst): invalid pos index", m.m_iPos == -1 || InRange(m_dsts, m.m_iPos));
+	AssertThrow("InfluenceDstCmd::Process: invalid pos index", m.m_iPos == -1 || InRange(m_dsts, m.m_iPos));
 	
 	m_pDstPos = m.m_iPos >= 0 ? &m_dsts[m.m_iPos] : nullptr;
 	

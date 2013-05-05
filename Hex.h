@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Resources.h"
+#include "MapPos.h"
 
 #include <vector>
 #include <bitset>
@@ -13,8 +14,6 @@ enum class TechType;
 enum class Edge;
 class Team;
 class Game;
-
-enum class Edge { T, TR, BR, B, BL, TL, _Count };
 
 extern Edge ReverseEdge(Edge e);
 extern Edge RotateEdge(Edge e, int n);
@@ -29,18 +28,23 @@ public:
 	std::vector<Edge> GetEdges() const;
 };
 
+enum class SquareType { Money, Science, Materials, Any, Orbital, _Count };
+
 class Square
 {
 public:
-	Square(int x = 0, int y = 0, Resource type = Resource::Any, bool bAdvanced = false);
+	Square(int x = 0, int y = 0, SquareType type = SquareType::Any, bool bAdvanced = false);
 	TechType GetRequiredTech() const;
 	Team* GetOwner() const { return m_pOwner; }
 	void SetOwner(Team* pOwner);
-	Resource GetType() const { return m_type; }
+	SquareType GetType() const { return m_type; }
+
+	int GetX() const { return m_x; }
+	int GetY() const { return m_y; }
 
 private:
 	int m_x, m_y; // Centre (pixels from TL of hex image).
-	Resource m_type;
+	SquareType m_type;
 	bool m_bAdvanced;
 	Team* m_pOwner;
 };
@@ -60,10 +64,10 @@ private:
 class Hex
 {
 public:
-	Hex(Game* pGame, int id, int nRotation);
+	Hex(Game* pGame, int id, const MapPos& pos, int nRotation);
 	bool HasWormhole(Edge e) const;
 
-	std::vector<Square*> GetAvailableSquares(const Team& team);
+	std::vector<Square*> GetAvailableSquares();
 	Team* GetOwner() const { return m_pOwner; }
 	void SetOwner(Team* pOwner);
 
@@ -72,6 +76,7 @@ public:
 	bool HasEnemyShip(const Team* pTeam) const;
 
 	int GetID() const { return m_id; }
+	const MapPos& GetPos() const { return m_pos; }
 	int GetRotation() const { return m_nRotation; }
 	const std::vector<Square>& GetSquares() const { return m_squares; }
 	const std::vector<Ship>& GetShips() const { return m_ships; }
@@ -86,6 +91,7 @@ private:
 	void Init(Game* pGame);
 
 	int m_id;
+	const MapPos m_pos;
 	int m_nRotation; // [0, 5]
 	std::vector<Square> m_squares;
 	std::vector<Ship> m_ships;

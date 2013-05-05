@@ -3,42 +3,37 @@
 #include "Cmd.h"
 #include "MapPos.h"
 #include "Discovery.h"
+#include "Hex.h"
 
 #include <vector> 
 #include <set> 
 
-class Hex;
+enum class Resource;
 
-class InfluenceCmd : public Cmd
+class ColoniseCmd : public Cmd
 {
 public:
-	InfluenceCmd(Player& player, int iPhase = 0);
+	ColoniseCmd(Player& player);
 
 	virtual void UpdateClient(const Controller& controller) const override;
 	virtual CmdPtr Process(const Input::CmdMessage& msg, const Controller& controller) override;
-	virtual bool IsAction() const override { return true; } 
 
 private:
-	std::vector<MapPos> m_srcs;
-	int m_iPhase;
+	std::vector<MapPos> m_positions;
 };
 
-class InfluenceDstCmd : public Cmd
+class ColoniseSquaresCmd : public Cmd
 {
 public:
-	InfluenceDstCmd(Player& player, const MapPos* pSrcPos, int iPhase = 0);
+	ColoniseSquaresCmd(Player& player, const MapPos& pos);
 
 	virtual void UpdateClient(const Controller& controller) const override;
 	virtual CmdPtr Process(const Input::CmdMessage& msg, const Controller& controller) override;
 	virtual void Undo(const Controller& controller) override;
 
 private:
-	std::unique_ptr<MapPos> m_pSrcPos;
-	MapPos* m_pDstPos;
-	std::vector<MapPos> m_dsts;
-	DiscoveryType m_discovery;
+	void Init(const MapPos& pos);
 
-	Hex* TransferDisc(const MapPos* pSrcPos, const MapPos* pDstPos, const Controller& controller);
-
-	int m_iPhase;
+	std::vector<std::pair<Square*, Resource>> m_moves;
+	int m_squareCounts[SquareType::_Count];
 };

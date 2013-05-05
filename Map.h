@@ -1,6 +1,7 @@
 #pragma once
 
 #include "MapPos.h"
+#include "Hex.h"
 
 #include <memory>
 #include <vector>
@@ -8,6 +9,7 @@
 #include <set>
 
 class Game;
+class MapPos;
 
 class Map
 {

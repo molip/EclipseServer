@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Hex.h"
-
 class Game;
 enum class HexRing;
+
+enum class Edge { T, TR, BR, B, BL, TL, _Count };
 
 class MapPos
 {

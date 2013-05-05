@@ -40,6 +40,32 @@ std::string GetColourName(Colour colour)
 	return "";
 }
 
+std::string GetResourceName(Resource type)
+{
+	switch (type)
+	{
+	case SquareType::Materials:	return "materials";
+	case SquareType::Money:		return "money";
+	case SquareType::Science:	return "science";
+	};
+	assert(false);
+	return "";
+}
+
+std::string GetSquareTypeName(SquareType type)
+{
+	switch (type)
+	{
+	case SquareType::Materials:	return "materials";
+	case SquareType::Money:		return "money";
+	case SquareType::Science:	return "science";
+	case SquareType::Any:		return "any";
+	case SquareType::Orbital:	return "orbital";
+	};
+	assert(false);
+	return "";
+}
+
 const std::string& Message::GetXML() const
 {
 	ASSERT(!m_pPrinter);
@@ -178,7 +204,19 @@ UpdateMap::UpdateMap(const Game& game) : Update("map")
 		pNode->SetAttribute("rotation", hex.GetRotation());
 
 		if (const Team* pTeam = hex.GetOwner())
+		{
 			pNode->SetAttribute("colour", GetColourName(pTeam->GetColour()));
+		
+			auto pSquaresNode = AddElement("squares", *pNode);
+			for (auto& square : hex.GetSquares())
+				if (Team* pSquareOwner = square.GetOwner())
+				{
+					AssertThrow("UpdateMap::UpdateMap", pSquareOwner == pTeam);
+					auto pSquareNode = AddElement("square", *pSquaresNode);
+					pSquareNode->SetAttribute("x", square.GetX());
+					pSquareNode->SetAttribute("y", square.GetY());
+				}
+		}
 
 
 		//const std::vector<Square> GetSquares() const { return m_squares; }
@@ -238,7 +276,7 @@ ChooseAction::ChooseAction(const Game& game) : Choose("action")
 	m_pRoot->SetAttribute("can_upgrade",	false);
 	m_pRoot->SetAttribute("can_build",		false);
 	m_pRoot->SetAttribute("can_move",		false);
-	m_pRoot->SetAttribute("can_colonise",	false);
+	m_pRoot->SetAttribute("can_colonise",	game.GetCurrentTeam().GetUnusedColonyShips() > 0); 
 	m_pRoot->SetAttribute("can_diplomacy",	false);
 }
 
@@ -281,6 +319,36 @@ void ChooseExploreHex::AddHexChoice(int idHex, const std::vector<int>& rotations
 
 ChooseExploreDiscovery::ChooseExploreDiscovery() : Choose("explore_discovery") 
 {
+}
+
+ChooseColonisePos::ChooseColonisePos(const std::vector<MapPos>& hexes) : Choose("colonise_pos") 
+{
+	for (auto& hex : hexes)
+	{
+		auto e = AddElement("pos", *m_pRoot);
+		e->SetAttribute("x", hex.GetX());
+		e->SetAttribute("y", hex.GetY());
+	}
+}
+
+ChooseColoniseSquares::ChooseColoniseSquares(const int squares[SquareType::_Count], const Population& pop, int nShips) : Choose("colonise_squares") 
+{
+	m_pRoot->SetAttribute("ships", nShips);
+
+	auto pEl = AddElement("square_counts", *m_pRoot);
+	for (int i = 0; i < (int)SquareType::_Count; ++i)
+	{
+		auto pElType = AddElement("type", *pEl);
+		pElType->SetAttribute("name", GetSquareTypeName(SquareType(i)));
+		pElType->SetAttribute("count", squares[i]);
+	}
+	pEl = AddElement("max_cubes", *m_pRoot);
+	for (auto r : EnumRange<Resource>())
+	{
+		auto pElType = AddElement("type", *pEl);
+		pElType->SetAttribute("name", GetResourceName(r));
+		pElType->SetAttribute("count", pop[r]);
+	}
 }
 
 ChooseInfluencePos::ChooseInfluencePos(const std::vector<MapPos>& positions, bool bEnableTrack, const std::string& param) : Choose(param) 

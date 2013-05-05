@@ -1,6 +1,7 @@
 #pragma once
 
 #include "MapPos.h"
+#include "Hex.h"
 
 #include <string>
 #include "tinyxml.h"
@@ -15,6 +16,7 @@ class Model;
 class Game;
 class Team;
 class Player;
+class Hex;
 
 namespace Output
 {
@@ -79,6 +81,8 @@ struct ChooseExploreHex : Choose
 	void AddHexChoice(int idHex, const std::vector<int>& rotations, bool bCanInfluence);
 };
 struct ChooseExploreDiscovery : Choose { ChooseExploreDiscovery(); };
+struct ChooseColonisePos : Choose { ChooseColonisePos(const std::vector<MapPos>& hexes); };
+struct ChooseColoniseSquares : Choose { ChooseColoniseSquares(const int squares[SquareType::_Count], const Population& pop, int nShips); };
 
 struct ChooseInfluencePos : Choose { ChooseInfluencePos(const std::vector<MapPos>& positions, bool bEnableTrack, const std::string& param); };
 struct ChooseInfluenceSrc : ChooseInfluencePos { ChooseInfluenceSrc(const std::vector<MapPos>& positions, bool bEnableTrack); };

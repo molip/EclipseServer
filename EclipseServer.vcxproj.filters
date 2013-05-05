@@ -135,6 +135,9 @@
     <ClInclude Include="DiscoverCmd.h">
       <Filter>Model\Commands</Filter>
     </ClInclude>
+    <ClInclude Include="ColoniseCmd.h">
+      <Filter>Model\Commands</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -249,6 +252,9 @@
       <Filter>Model\Commands</Filter>
     </ClCompile>
     <ClCompile Include="DiscoverCmd.cpp">
+      <Filter>Model\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="ColoniseCmd.cpp">
       <Filter>Model\Commands</Filter>
     </ClCompile>
   </ItemGroup>

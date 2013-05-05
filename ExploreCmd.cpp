@@ -53,7 +53,7 @@ ExploreHexCmd::ExploreHexCmd(Player& player, const MapPos& pos, int iPhase) : Cm
 	for (int i = 0; i < race.GetExploreChoices(); ++i)
 	{
 		int id = bag.TakeTile();
-		Hex hex(nullptr, id, 0);
+		Hex hex(nullptr, id, pos, 0);
 
 		bool bCanInfluenceHex = hex.GetShips().empty() || race.IsAncientsAlly();
 		HexChoice hc(id, bCanInfluenceHex && GetTeam().GetInfluenceTrack().GetDiscCount() > 0);

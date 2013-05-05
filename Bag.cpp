@@ -20,7 +20,7 @@ DiscoveryBag::DiscoveryBag()
 	push_back(DiscoveryType::ConformalDrive);
 	push_back(DiscoveryType::FluxShield);
 
-	std::random_shuffle(begin(), end());
+	std::shuffle(begin(), end(), GetRandom());
 }
 
 ReputationBag::ReputationBag()
@@ -31,7 +31,7 @@ ReputationBag::ReputationBag()
 		for (int i = 0; i < num[val - 1]; ++i)
 			push_back(val);
 
-	std::random_shuffle(begin(), end());
+	std::shuffle(begin(), end(), GetRandom());
 }
 
 TechnologyBag::TechnologyBag()
@@ -58,7 +58,7 @@ TechnologyBag::TechnologyBag()
 		for (int j = 0; j < _countof(threes); ++j)
 			push_back(threes[j]);
 
-	std::random_shuffle(begin(), end());
+	std::shuffle(begin(), end(), GetRandom());
 }
 
 HexBag::HexBag(HexRing r, int nPlayers)
@@ -76,7 +76,7 @@ HexBag::HexBag(HexRing r, int nPlayers)
 	for (int i = start; i < start + count; ++i)
 		push_back(i);
 
-	std::random_shuffle(begin(), end());
+	std::shuffle(begin(), end(), GetRandom());
 
 	if (r == HexRing::Outer)
 	{

@@ -12,6 +12,7 @@
 #include <cassert>
 #include <memory>
 #include <algorithm>
+#include <random>
 
 //#define LOCK(m) ; //std::lock_guard<std::mutex> lock(m);
 #define LOCK(m) std::lock_guard<std::mutex> lock(m);
@@ -74,3 +75,12 @@ bool InRange(const T& cntr, int n)
 {
 	return n >= 0 && n < (int)cntr.size();
 }
+
+
+enum class SquareType;
+enum class Resource;
+
+extern Resource SquareTypeToResource(SquareType t);
+extern SquareType ResourceToSquareType(Resource t);
+
+extern std::default_random_engine& GetRandom();
