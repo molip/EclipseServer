@@ -11,6 +11,7 @@ Colonise.ChoosePosStage = function(positions)
 
 	document.getElementById('choose_colonise_pos_btn').disabled = true
 
+	ShowElementById('choose_subaction', true)
 	ShowElementById('choose_undo', true)
 	document.getElementById('choose_undo_btn').disabled = false
 }
@@ -64,6 +65,7 @@ Colonise.ChooseSquaresStage = function(num_ships, square_counts, max_cubes)
 
 	document.getElementById('choose_colonise_squares_btn').disabled = true
 
+	ShowElementById('choose_subaction', true)
 	ShowElementById('choose_undo', true)
 	document.getElementById('choose_undo_btn').disabled = false
 

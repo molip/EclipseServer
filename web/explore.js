@@ -158,6 +158,7 @@ Explore.OnCommandChoosePos = function(elem)
 	document.getElementById('choose_explore_pos_btn').disabled = true
 	ShowElementById('choose_explore_pos_reject_btn', can_skip, true)
 
+	ShowElementById('choose_subaction', true)
 	ShowElementById('choose_undo', true)
 	document.getElementById('choose_undo_btn').disabled = !can_undo
 	
@@ -193,6 +194,8 @@ Explore.OnCommandChooseHex = function(elem)
 	data.action.UpdateInfluenceCheckbox()
 	data.action.UpdateHex()
 
+	ShowElementById('choose_subaction', true)
+
 	var can_undo = IsTrue(elem.getAttribute('can_undo'))
 	ShowElementById('choose_undo', true)
 	document.getElementById('choose_undo_btn').disabled = !can_undo
@@ -203,6 +206,8 @@ Explore.OnCommandChooseHex = function(elem)
 Explore.OnCommandChooseDiscovery = function(elem)
 {
 	data.action = new Explore.ChooseDiscoveryStage()
+
+	ShowElementById('choose_subaction', false)
 
 	ShowActionElement('choose_explore_discovery')
 	ShowElementById('choose_undo', true)

@@ -293,12 +293,15 @@ function OnCommandChooseAction(elem)
 	document.getElementById('choose_action_colonise_btn').disabled = !IsTrue(elem.getAttribute('can_colonise'))
 	document.getElementById('choose_action_diplomacy_btn').disabled = !IsTrue(elem.getAttribute('can_diplomacy'))
 
+	ShowElementById('choose_subaction', true)
+
 	ShowElementById('choose_undo', true)
 	ShowActionElement('choose_action')
 }
 
 function OnCommandChooseFinished(elem)
 {
+	ShowElementById('choose_subaction', false)
 	ShowElementById('choose_undo', false)
 	ShowActionElement(null)
 }
