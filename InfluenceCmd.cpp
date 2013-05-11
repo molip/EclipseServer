@@ -81,7 +81,8 @@ CmdPtr InfluenceDstCmd::Process(const Input::CmdMessage& msg, const Controller& 
 
 	if (pDstHex && pDstHex->GetDiscoveryTile() != DiscoveryType::None)
 	{
-		pNext = new DiscoverCmd(m_player, pDstHex->GetDiscoveryTile(), CmdPtr(pNext));
+		m_discovery = pDstHex->GetDiscoveryTile();
+		pNext = new DiscoverCmd(m_player, m_discovery, CmdPtr(pNext));
 		pDstHex->RemoveDiscoveryTile();
 	}
 

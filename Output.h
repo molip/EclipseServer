@@ -77,7 +77,7 @@ struct ChooseFinished : Choose { ChooseFinished(); };
 struct ChooseExplorePos : Choose { ChooseExplorePos(const std::vector<MapPos>& positions, bool bCanSkip); };
 struct ChooseExploreHex : Choose 
 {
-	ChooseExploreHex(int x, int y);
+	ChooseExploreHex(int x, int y, bool bCanTake);
 	void AddHexChoice(int idHex, const std::vector<int>& rotations, bool bCanInfluence);
 };
 struct ChooseExploreDiscovery : Choose { ChooseExploreDiscovery(); };

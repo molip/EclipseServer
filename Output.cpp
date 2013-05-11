@@ -297,10 +297,11 @@ ChooseExplorePos::ChooseExplorePos(const std::vector<MapPos>& positions, bool bC
 	}
 }
 
-ChooseExploreHex::ChooseExploreHex(int x, int y) : Choose("explore_hex") 
+ChooseExploreHex::ChooseExploreHex(int x, int y, bool bCanTake) : Choose("explore_hex") 
 {
 	m_pRoot->SetAttribute("x", x);
 	m_pRoot->SetAttribute("y", y);
+	m_pRoot->SetAttribute("can_take", bCanTake);
 	m_pRoot->SetAttribute("can_undo", false);
 }
 

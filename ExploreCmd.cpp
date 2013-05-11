@@ -9,7 +9,7 @@
 #include "Map.h"
 #include "DiscoverCmd.h"
 
-ExploreCmd::ExploreCmd(Player& player, int iPhase) : Cmd(player), m_bReject(false), m_iPhase(iPhase)
+ExploreCmd::ExploreCmd(Player& player, int iPhase) : Cmd(player), m_idHex(-1), m_iPos(-1), m_iPhase(iPhase)
 {
 	std::set<MapPos> positions;
 	const Map::HexMap& hexes = GetGame().GetMap().GetHexes();
@@ -32,27 +32,33 @@ CmdPtr ExploreCmd::Process(const Input::CmdMessage& msg, const Controller& contr
 
 	auto& m = CastThrow<const Input::CmdExplorePos>(msg);
 	AssertThrow("ExploreCmd::Process: invalid pos index", InRange(m_positions, m.m_iPos));
-	return CmdPtr(new ExploreHexCmd(m_player, m_positions[m.m_iPos], m_iPhase));
+	m_iPos = m.m_iPos;
+
+	const MapPos& pos = m_positions[m_iPos];
+
+	m_idHex = GetGame().GetHexBag(pos.GetRing()).TakeTile();
+	
+	std::vector<int> hexIDs;
+	hexIDs.push_back(m_idHex);
+	return CmdPtr(new ExploreHexCmd(m_player, pos, hexIDs, m_iPhase));
 }
 
 //-----------------------------------------------------------------------------
 
-ExploreHexCmd::ExploreHexCmd(Player& player, const MapPos& pos, int iPhase) : Cmd(player), m_pos(pos), m_iPhase(iPhase),
-	m_iRot(-1), m_iHex(-1), m_bInfluence(false)
+ExploreHexCmd::ExploreHexCmd(Player& player, const MapPos& pos, std::vector<int> hexIDs, int iPhase) : 
+	Cmd(player), m_pos(pos), m_iPhase(iPhase), m_hexIDs(hexIDs), m_iRot(-1), m_iHex(-1), m_bInfluence(false), 
+	m_idTaken(-1), m_discovery(DiscoveryType::None)
 {
 	bool bWormholeGen = GetTeam().HasTech(TechType::WormholeGen);
 
 	std::vector<const Hex*> hexes = GetGame().GetMap().GetSurroundingHexes(m_pos, GetTeam());
 
-	HexRing ring = m_pos.GetRing();
-	HexBag& bag = GetGame().GetHexBag(ring);
 	Race race(GetTeam().GetRace());
 
 	m_hexChoices.clear();
 	
-	for (int i = 0; i < race.GetExploreChoices(); ++i)
+	for (int id : hexIDs)
 	{
-		int id = bag.TakeTile();
 		Hex hex(nullptr, id, pos, 0);
 
 		bool bCanInfluenceHex = hex.GetShips().empty() || race.IsAncientsAlly();
@@ -87,7 +93,9 @@ ExploreHexCmd::ExploreHexCmd(Player& player, const MapPos& pos, int iPhase) : Cm
 
 void ExploreHexCmd::UpdateClient(const Controller& controller) const
 {
-	Output::ChooseExploreHex msg(m_pos.GetX(), m_pos.GetY());
+	bool bCanTake = Race(GetTeam().GetRace()).GetExploreChoices() > (int)m_hexChoices.size();
+
+	Output::ChooseExploreHex msg(m_pos.GetX(), m_pos.GetY(), bCanTake);
 	for (auto& hc : m_hexChoices)
 		msg.AddHexChoice(hc.m_idHex, hc.m_rotations, hc.m_bCanInfluence);
 
@@ -99,7 +107,14 @@ CmdPtr ExploreHexCmd::Process(const Input::CmdMessage& msg, const Controller& co
 {
 	Game& game = GetGame();
 
-	DiscoveryType discovery = DiscoveryType::None;
+	if (dynamic_cast<const Input::CmdExploreHexTake*>(&msg))
+	{
+		m_idTaken = GetGame().GetHexBag(m_pos.GetRing()).TakeTile(); 
+		std::vector<int> hexIDs = m_hexIDs;
+		hexIDs.insert(hexIDs.begin(), m_idTaken); // At front so it appears first.
+		m_idTaken = true;
+		return CmdPtr(new ExploreHexCmd(m_player, m_pos, hexIDs, m_iPhase));
+	}
 
 	bool bReject = !!dynamic_cast<const Input::CmdExploreReject*>(&msg);
 	if (bReject)
@@ -127,8 +142,8 @@ CmdPtr ExploreHexCmd::Process(const Input::CmdMessage& msg, const Controller& co
 			hex.SetOwner(&GetTeam());
 			controller.SendMessage(Output::UpdateInfluenceTrack(GetTeam()), game);
 			
-			discovery = hex.GetDiscoveryTile();
-			if (discovery != DiscoveryType::None)
+			m_discovery = hex.GetDiscoveryTile();
+			if (m_discovery != DiscoveryType::None)
 				hex.RemoveDiscoveryTile();
 		}					
 	}
@@ -136,8 +151,8 @@ CmdPtr ExploreHexCmd::Process(const Input::CmdMessage& msg, const Controller& co
 	bool bFinished = m_iPhase + 1 == Race(GetTeam().GetRace()).GetExploreRate();
 	Cmd* pNext = bFinished ? nullptr : new ExploreCmd(m_player, m_iPhase + 1);
 	
-	if (discovery != DiscoveryType::None)
-		pNext = new DiscoverCmd(m_player, discovery, CmdPtr(pNext));
+	if (m_discovery != DiscoveryType::None)
+		pNext = new DiscoverCmd(m_player, m_discovery, CmdPtr(pNext));
 
 	if (!bReject)
 		controller.SendMessage(Output::UpdateMap(game), game);

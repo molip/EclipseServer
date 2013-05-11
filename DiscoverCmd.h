@@ -13,7 +13,6 @@ public:
 
 	virtual void UpdateClient(const Controller& controller) const override;
 	virtual CmdPtr Process(const Input::CmdMessage& msg, const Controller& controller) override;
-	virtual bool CanAbort() const override { return false; }
 	virtual void Undo(const Controller& controller) override;
 
 private:

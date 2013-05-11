@@ -190,7 +190,6 @@ void Game::PopCmd()
 	bool bUndoPrev = true;
 	if (m_pCmd)
 	{
-		AssertThrow("Game::PopCmd: command not abortable", m_pCmd->CanAbort());
 		if (m_pCmd->IsAction())
 			GetCurrentTeam().GetInfluenceTrack().AddDiscs(1);
 		bUndoPrev = !m_pCmd->IsStart();
@@ -218,7 +217,7 @@ bool Game::CanDoAction() const
 
 bool Game::CanUndo() const
 {
-	return m_pCmd ? m_pCmd->CanAbort() : !m_cmdsDone.empty();
+	return (m_cmdsDone.empty() && m_pCmd) || (!m_cmdsDone.empty() && m_cmdsDone.back()->CanUndo());
 }
 
 void Game::FinishTurn()

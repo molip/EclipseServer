@@ -90,6 +90,16 @@ Explore.ChooseHexStage.prototype.SendHex = function()
 	SendXMLDoc(doc)
 }
 
+Explore.ChooseHexStage.prototype.SendTake = function()
+{
+	var doc = CreateXMLDoc()
+	var node = CreateCommandNode(doc, "cmd_explore_hex_take")
+
+	ExitAction()
+
+	SendXMLDoc(doc)
+}
+
 Explore.ChooseHexStage.prototype.CleanUp = function()
 {
 	Map.ClearCanvas(Map.layer_action)
@@ -172,7 +182,8 @@ Explore.OnCommandChooseHex = function(elem)
 
 	var x = Number(elem.getAttribute('x'))
 	var y = Number(elem.getAttribute('y'))
-
+	var can_take = IsTrue(elem.getAttribute('can_take'))
+	
 	data.action = new Explore.ChooseHexStage(new Point(x, y))
 	
 	var hexes = GetChildElements(elem, 'hex')
@@ -190,6 +201,7 @@ Explore.OnCommandChooseHex = function(elem)
 	}
 
 	ShowElementById('choose_explore_hex_switch_btn', hexes.length > 1, true)
+	ShowElementById('choose_explore_hex_take_btn', can_take, true)
 	
 	data.action.UpdateInfluenceCheckbox()
 	data.action.UpdateHex()

@@ -106,6 +106,8 @@ struct CmdExploreHex : CmdMessage
 	bool m_bInfluence;
 };
 
+struct CmdExploreHexTake : CmdMessage {};
+
 struct CmdExploreDiscovery : CmdMessage
 {
 	CmdExploreDiscovery(const TiXmlElement& node);

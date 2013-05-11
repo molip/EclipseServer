@@ -64,6 +64,8 @@ MessagePtr CreateCommand(const std::string& type, const TiXmlElement& root)
 		return MessagePtr(new CmdExplorePos(root));
 	if (type == "cmd_explore_hex")
 		return MessagePtr(new CmdExploreHex(root));
+	if (type == "cmd_explore_hex_take")
+		return MessagePtr(new CmdExploreHexTake());
 	if (type == "cmd_explore_discovery")
 		return MessagePtr(new CmdExploreDiscovery(root));
 	if (type == "cmd_colonise")

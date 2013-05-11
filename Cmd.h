@@ -22,7 +22,7 @@ public:
 	virtual CmdPtr Process(const Input::CmdMessage& msg, const Controller& controller) = 0;
 	
 	virtual bool IsAction() const { return false; } 
-	virtual bool CanAbort() const { return true; } 
+	virtual bool CanUndo() const { return true; } 
 	virtual void Undo(const Controller& controller) { } 
 
 	void SetStart() { m_bStart = true; }
