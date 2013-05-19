@@ -77,10 +77,10 @@ struct ChooseFinished : Choose { ChooseFinished(); };
 struct ChooseExplorePos : Choose { ChooseExplorePos(const std::vector<MapPos>& positions, bool bCanSkip); };
 struct ChooseExploreHex : Choose 
 {
-	ChooseExploreHex(int x, int y, bool bCanTake);
+	ChooseExploreHex(int x, int y, bool bCanTake, bool bCanUndo);
 	void AddHexChoice(int idHex, const std::vector<int>& rotations, bool bCanInfluence);
 };
-struct ChooseExploreDiscovery : Choose { ChooseExploreDiscovery(); };
+struct ChooseDiscovery : Choose { ChooseDiscovery(bool bCanUndo); };
 struct ChooseColonisePos : Choose { ChooseColonisePos(const std::vector<MapPos>& hexes); };
 struct ChooseColoniseSquares : Choose { ChooseColoniseSquares(const int squares[SquareType::_Count], const Population& pop, int nShips); };
 

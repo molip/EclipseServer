@@ -95,7 +95,7 @@ void ExploreHexCmd::UpdateClient(const Controller& controller) const
 {
 	bool bCanTake = Race(GetTeam().GetRace()).GetExploreChoices() > (int)m_hexChoices.size();
 
-	Output::ChooseExploreHex msg(m_pos.GetX(), m_pos.GetY(), bCanTake);
+	Output::ChooseExploreHex msg(m_pos.GetX(), m_pos.GetY(), bCanTake, GetGame().CanRemoveCmd());
 	for (auto& hc : m_hexChoices)
 		msg.AddHexChoice(hc.m_idHex, hc.m_rotations, hc.m_bCanInfluence);
 

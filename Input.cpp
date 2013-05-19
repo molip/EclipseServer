@@ -230,17 +230,15 @@ bool StartAction::Process(Controller& controller, Player& player) const
 	Game& game = GetGameAssert(player);
 
 	if (m_action == "explore") 
-		game.PushCmd(CmdPtr(new ExploreCmd(player)));
+		game.StartCmd(CmdPtr(new ExploreCmd(player)));
 	else if (m_action == "influence") 
-		game.PushCmd(CmdPtr(new InfluenceCmd(player)));
+		game.StartCmd(CmdPtr(new InfluenceCmd(player)));
 	else if (m_action == "colonise") 
-		game.PushCmd(CmdPtr(new ColoniseCmd(player)));
+		game.StartCmd(CmdPtr(new ColoniseCmd(player)));
 
 	Cmd* pCmd = game.GetCurrentCmd();
 	AssertThrow("StartAction::Process: No command created", !!pCmd);
 	
-	pCmd->SetStart();
-
 	if (pCmd->IsAction())
 		controller.SendMessage(Output::UpdateInfluenceTrack(*player.GetCurrentTeam()), game);
 
@@ -252,20 +250,19 @@ bool Undo::Process(Controller& controller, Player& player) const
 {
 	Game& game = GetGameAssert(player);
 
-	bool bAction = game.GetCurrentCmd() && game.GetCurrentCmd()->IsAction();
+	const Cmd* pCmd = game.GetCurrentCmd();
+	bool bAction = pCmd && pCmd->IsAction();
 
-	game.PopCmd();
+	if (Cmd* pUndo = game.RemoveCmd())
+		pUndo->Undo(controller);
+	
+	if (Cmd* pCmd2 = game.GetCurrentCmd())
+		pCmd2->UpdateClient(controller);
+	else
+		controller.SendMessage(Output::ChooseAction(game), player);
 
 	if (bAction)
 		controller.SendMessage(Output::UpdateInfluenceTrack(*player.GetCurrentTeam()), game);
-
-	if (Cmd* pCmd = game.GetCurrentCmd())
-	{
-		pCmd->Undo(controller);
-		pCmd->UpdateClient(controller);
-	}
-	else
-		controller.SendMessage(Output::ChooseAction(game), player);
 
 	return true;	
 }
@@ -289,18 +286,14 @@ bool CmdMessage::Process(Controller& controller, Player& player) const
 	Cmd* pCmd = game.GetCurrentCmd();
 	AssertThrow("CmdMessage::Process: No current command", !!pCmd);
 
-	CmdPtr pNext = pCmd->Process(*this, controller);
-	game.FinishCmd();
+	CmdPtr pNext = pCmd->Process(*this, controller); // Might be null.
+	game.AddCmd(std::move(pNext)); 
 
-	if (pNext)
-	{
-		pNext->UpdateClient(controller);
-		game.PushCmd(std::move(pNext));
-	}
+	if (Cmd* pNewCmd = game.GetCurrentCmd())
+		pNewCmd->UpdateClient(controller);
 	else
-	{
 		controller.SendMessage(Output::ChooseAction(game), game.GetCurrentPlayer());
-	}
+
 	return true;
 }
 

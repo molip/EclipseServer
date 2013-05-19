@@ -138,6 +138,9 @@
     <ClInclude Include="ColoniseCmd.h">
       <Filter>Model\Commands</Filter>
     </ClInclude>
+    <ClInclude Include="CmdStack.h">
+      <Filter>Model</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -256,6 +259,9 @@
     </ClCompile>
     <ClCompile Include="ColoniseCmd.cpp">
       <Filter>Model\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="CmdStack.cpp">
+      <Filter>Model</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -2,6 +2,7 @@
 #include "Game.h"
 #include "App.h"
 #include "Player.h"
+#include "CmdStack.h"
 
 #include <algorithm>
 
@@ -14,6 +15,12 @@ Game::Game(int id, const std::string& name, Player& owner) :
 	m_id(id), m_name(name), m_owner(owner), m_phase(Phase::Lobby), m_iTurn(-1), m_iRound(-1), m_iStartTeam(-1), m_iStartTeamNext(-1),
 	m_map(*this)
 {
+	m_pCmdStack = new CmdStack;
+}
+
+Game::~Game()
+{
+	delete m_pCmdStack;
 }
 
 bool Game::AddTeam(Player& player)
@@ -170,38 +177,30 @@ void Game::AdvanceTurn()
 	m_iTurn = (m_iTurn + 1) % m_teams.size();
 }
 
-void Game::PushCmd(CmdPtr pCmd)
+void Game::AddCmd(CmdPtr pCmd)
 {
-	AssertThrow("Game::PushCmd: Already got one", !m_pCmd);
+	m_pCmdStack->AddCmd(pCmd);
+}
+
+void Game::StartCmd(CmdPtr pCmd)
+{
+	m_pCmdStack->StartCmd(pCmd);
 	
-	m_pCmd = std::move(pCmd);
-	if (m_pCmd->IsAction())
+	if (GetCurrentCmd()->IsAction())
 		GetCurrentTeam().GetInfluenceTrack().RemoveDiscs(1); // TODO: return these at end of round
 }
 
-void Game::FinishCmd()
+Cmd* Game::RemoveCmd()
 {
-	AssertThrow("Game::FinishCmd: No command to finish", !!m_pCmd);
-	m_cmdsDone.push_back(std::move(m_pCmd));
-}
+	const Cmd* pCmd = GetCurrentCmd();
+	bool bAction = pCmd && pCmd->IsAction();
 
-void Game::PopCmd()
-{
-	bool bUndoPrev = true;
-	if (m_pCmd)
-	{
-		if (m_pCmd->IsAction())
-			GetCurrentTeam().GetInfluenceTrack().AddDiscs(1);
-		bUndoPrev = !m_pCmd->IsStart();
-	}
+	Cmd* pUndo = m_pCmdStack->RemoveCmd();
 
-	m_pCmd = nullptr; // Abandon current cmd (hasn't been done yet).
+	if (bAction)
+		GetCurrentTeam().GetInfluenceTrack().AddDiscs(1);
 
-	if (bUndoPrev && !m_cmdsDone.empty())
-	{
-		m_pCmd = std::move(m_cmdsDone.back());
-		m_cmdsDone.pop_back();
-	}
+	return pUndo;
 }
 
 bool Game::CanDoAction() const
@@ -209,21 +208,26 @@ bool Game::CanDoAction() const
 	if (GetCurrentTeam().GetInfluenceTrack().GetDiscCount() == 0)
 		return false;
 	
-	for (auto& cmd : m_cmdsDone)
-		if (cmd->IsAction())
-			return false;
-	return true;
+	return !m_pCmdStack->HasAction(); // Only one action per turn.
 }
 
-bool Game::CanUndo() const
+bool Game::CanRemoveCmd() const
 {
-	return (m_cmdsDone.empty() && m_pCmd) || (!m_cmdsDone.empty() && m_cmdsDone.back()->CanUndo());
+	return m_pCmdStack->CanRemoveCmd();
+}
+
+Cmd* Game::GetCurrentCmd()
+{
+	return m_pCmdStack->GetCurrentCmd();
+}
+
+const Cmd* Game::GetCurrentCmd() const
+{
+	return m_pCmdStack->GetCurrentCmd();
 }
 
 void Game::FinishTurn()
 {
-	AssertThrow("Game::FinishTurn", !m_pCmd);
-
-	m_cmdsDone.clear();
+	m_pCmdStack->Clear();
 	AdvanceTurn();
 }

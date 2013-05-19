@@ -163,14 +163,13 @@ Explore.OnCommandChoosePos = function(elem)
 	data.action = new Explore.ChoosePosStage(positions)
 	
 	var can_skip = IsTrue(elem.getAttribute('can_skip'))
-	var can_undo = IsTrue(elem.getAttribute('can_undo'))
 	
 	document.getElementById('choose_explore_pos_btn').disabled = true
 	ShowElementById('choose_explore_pos_reject_btn', can_skip, true)
 
 	ShowElementById('choose_subaction', true)
 	ShowElementById('choose_undo', true)
-	document.getElementById('choose_undo_btn').disabled = !can_undo
+	document.getElementById('choose_undo_btn').disabled = false
 	
 	Map.DrawActionLayer()
 }
@@ -219,11 +218,13 @@ Explore.OnCommandChooseDiscovery = function(elem)
 {
 	data.action = new Explore.ChooseDiscoveryStage()
 
+	var can_undo = IsTrue(elem.getAttribute('can_undo'))
+	
 	ShowElementById('choose_subaction', false)
 
 	ShowActionElement('choose_explore_discovery')
 	ShowElementById('choose_undo', true)
-	document.getElementById('choose_undo_btn').disabled = true
+	document.getElementById('choose_undo_btn').disabled = can_undo
 	
 	Map.DrawActionLayer()
 	Map.DrawSelectLayer()

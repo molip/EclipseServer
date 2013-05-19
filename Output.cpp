@@ -269,7 +269,7 @@ ChooseAction::ChooseAction(const Game& game) : Choose("action")
 
 	bool bCanDoAction = game.CanDoAction();
 
-	m_pRoot->SetAttribute("can_undo",		game.CanUndo());
+	m_pRoot->SetAttribute("can_undo",		game.CanRemoveCmd());
 	m_pRoot->SetAttribute("can_explore",	bCanDoAction);
 	m_pRoot->SetAttribute("can_influence",	bCanDoAction);
 	m_pRoot->SetAttribute("can_research",	false);
@@ -287,7 +287,6 @@ ChooseFinished::ChooseFinished() : Choose("finished")
 ChooseExplorePos::ChooseExplorePos(const std::vector<MapPos>& positions, bool bCanSkip) : Choose("explore_pos") 
 {
 	m_pRoot->SetAttribute("can_skip", bCanSkip);
-	m_pRoot->SetAttribute("can_undo", true);
 
 	for (auto& pos : positions)
 	{
@@ -297,12 +296,12 @@ ChooseExplorePos::ChooseExplorePos(const std::vector<MapPos>& positions, bool bC
 	}
 }
 
-ChooseExploreHex::ChooseExploreHex(int x, int y, bool bCanTake) : Choose("explore_hex") 
+ChooseExploreHex::ChooseExploreHex(int x, int y, bool bCanTake, bool bCanUndo) : Choose("explore_hex") 
 {
 	m_pRoot->SetAttribute("x", x);
 	m_pRoot->SetAttribute("y", y);
 	m_pRoot->SetAttribute("can_take", bCanTake);
-	m_pRoot->SetAttribute("can_undo", false);
+	m_pRoot->SetAttribute("can_undo", bCanUndo);
 }
 
 void ChooseExploreHex::AddHexChoice(int idHex, const std::vector<int>& rotations, bool bCanInfluence)
@@ -318,8 +317,9 @@ void ChooseExploreHex::AddHexChoice(int idHex, const std::vector<int>& rotations
 	}
 }
 
-ChooseExploreDiscovery::ChooseExploreDiscovery() : Choose("explore_discovery") 
+ChooseDiscovery::ChooseDiscovery(bool bCanUndo) : Choose("discovery") 
 {
+	m_pRoot->SetAttribute("can_undo", bCanUndo);
 }
 
 ChooseColonisePos::ChooseColonisePos(const std::vector<MapPos>& hexes) : Choose("colonise_pos") 

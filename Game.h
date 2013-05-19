@@ -13,12 +13,15 @@
 
 enum class HexRing { Inner, Middle, Outer, _Count };
 
+class CmdStack;
+
 class Game
 {
 public:
 	enum class Phase { Lobby, ChooseTeam, Main };
 
 	Game(int id, const std::string& name, Player& owner);
+	~Game();
 	
 	int GetID() const { return m_id; }
 	const std::string& GetName() const { return m_name; }
@@ -53,15 +56,15 @@ public:
 	const Map& GetMap() const { return m_map; }
 	Map& GetMap() { return m_map; }
 
-	void PushCmd(CmdPtr pCmd);
-	void PopCmd(); 
-	void FinishCmd();
-	bool CanUndo() const;
+	void StartCmd(CmdPtr pCmd);
+	void AddCmd(CmdPtr pCmd);
+	Cmd* RemoveCmd(); // Returns cmd to undo.
+	bool CanRemoveCmd() const;
 	bool CanDoAction() const;
 
 	void FinishTurn();
-	Cmd* GetCurrentCmd() { return m_pCmd.get(); }
-	const Cmd* GetCurrentCmd() const { return m_pCmd.get(); }
+	Cmd* GetCurrentCmd();
+	const Cmd* GetCurrentCmd() const;
 
 private:
 	void StartRound();
@@ -89,8 +92,7 @@ private:
 	int m_iTurn, m_iRound;
 	int m_iStartTeam, m_iStartTeamNext;
 
-	std::deque<CmdPtr> m_cmdsDone;
-	CmdPtr m_pCmd;
+	CmdStack* m_pCmdStack;
 };
 
 typedef std::unique_ptr<Game> GamePtr;

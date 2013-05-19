@@ -6,6 +6,7 @@
 #include "Player.h"
 #include "Race.h"
 #include "Team.h"
+#include "Game.h"
 
 DiscoverCmd::DiscoverCmd(Player& player, DiscoveryType discovery, CmdPtr pNext) : 
 	Cmd(player), m_discovery(discovery), m_pNext(std::move(pNext))
@@ -14,7 +15,7 @@ DiscoverCmd::DiscoverCmd(Player& player, DiscoveryType discovery, CmdPtr pNext) 
 
 void DiscoverCmd::UpdateClient(const Controller& controller) const
 {
-	Output::ChooseExploreDiscovery msg;
+	Output::ChooseDiscovery msg(GetGame().CanRemoveCmd());
 	controller.SendMessage(msg, m_player);
 }
 
