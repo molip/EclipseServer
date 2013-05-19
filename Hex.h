@@ -73,7 +73,8 @@ public:
 
 	void AddShip(ShipType type, Team* pOwner);
 	bool HasShip(const Team* pOwner) const;
-	bool HasEnemyShip(const Team* pTeam) const;
+	bool HasEnemyShip(const Team* pTeam) const; // Ancients and their allies are not enemies.
+	bool HasForeignShip(const Team* pTeam) const; // Ancients and their allies are foreign.
 
 	int GetID() const { return m_id; }
 	const MapPos& GetPos() const { return m_pos; }

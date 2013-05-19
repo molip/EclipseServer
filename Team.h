@@ -57,6 +57,8 @@ public:
 	int GetUsedColonyShips() const { return m_nColonyShipsUsed; }
 	int GetUnusedColonyShips() const { return m_nColonyShips - m_nColonyShipsUsed; }
 
+	static bool IsAncientAlliance(const Team* pTeam1, const Team* pTeam2);
+
 private:
 	Game& m_game;
 	Player& m_player;

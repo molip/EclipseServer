@@ -69,3 +69,9 @@ void Team::ReturnColonyShips(int nShips)
 {
 	m_nColonyShipsUsed = std::max(0, m_nColonyShipsUsed - nShips);
 }
+
+bool Team::IsAncientAlliance(const Team* pTeam1, const Team* pTeam2)
+{
+	AssertThrowModel("Team::IsAncientAlliance", pTeam1 != pTeam2);
+	return (!pTeam1 || !pTeam2) && Race((pTeam1 ? pTeam1 : pTeam2)->GetRace()).IsAncientsAlly();
+}

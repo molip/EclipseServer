@@ -61,7 +61,7 @@ ExploreHexCmd::ExploreHexCmd(Player& player, const MapPos& pos, std::vector<int>
 	{
 		Hex hex(nullptr, id, pos, 0);
 
-		bool bCanInfluenceHex = hex.GetShips().empty() || race.IsAncientsAlly();
+		bool bCanInfluenceHex = hex.GetShips().empty(); // Any ships must be ancients.
 		HexChoice hc(id, bCanInfluenceHex && GetTeam().GetInfluenceTrack().GetDiscCount() > 0);
 		
 		EdgeSet inner = hex.GetWormholes();

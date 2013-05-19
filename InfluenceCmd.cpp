@@ -47,16 +47,16 @@ InfluenceDstCmd::InfluenceDstCmd(Player& player, const MapPos* pSrcPos, int iPha
 	std::set<MapPos> dsts;
 
 	const bool bWormholeGen = GetTeam().HasTech(TechType::WormholeGen);
-	const bool bAncientsAlly = Race(GetTeam().GetRace()).IsAncientsAlly();
 
 	const Map& map = GetGame().GetMap();
 	const Map::HexMap& hexes = map.GetHexes();
 	for (auto& h : hexes)
 	{
-		if (h.second->GetOwner() == nullptr && h.second->HasShip(&GetTeam()))
-			dsts.insert(h.first);
+		if (h.second->GetOwner() == nullptr)
+			if (h.second->HasShip(&GetTeam()) && !h.second->HasForeignShip(&GetTeam())) // "a hex where only you have a Ship"
+				dsts.insert(h.first);
 		if (!pSrcPos || h.first != *pSrcPos) // Would break the wormhole, see FAQ.
-			if (h.second->GetOwner() == &GetTeam() || h.second->HasShip(&GetTeam()))
+			if (h.second->GetOwner() == &GetTeam() || h.second->HasShip(&GetTeam())) // "adjacent to a hex where you have a disc or a Ship"
 				map.GetInfluencableNeighbours(h.first, GetTeam(), dsts);
 	}
 

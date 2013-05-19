@@ -110,10 +110,16 @@ bool Hex::HasShip(const Team* pOwner) const
 
 bool Hex::HasEnemyShip(const Team* pTeam) const
 {
-	const bool bAncientsAlly = pTeam && Race(pTeam->GetRace()).IsAncientsAlly();
-
 	for (auto& s : m_ships)
-		if (s.GetOwner() != pTeam && !(bAncientsAlly && s.GetOwner() == nullptr))
+		if (s.GetOwner() != pTeam && !Team::IsAncientAlliance(pTeam, s.GetOwner()))
+			return true;
+	return false;
+}
+
+bool Hex::HasForeignShip(const Team* pTeam) const
+{
+	for (auto& s : m_ships)
+		if (s.GetOwner() != pTeam)
 			return true;
 	return false;
 }
