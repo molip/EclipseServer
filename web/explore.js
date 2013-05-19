@@ -224,7 +224,7 @@ Explore.OnCommandChooseDiscovery = function(elem)
 
 	ShowActionElement('choose_explore_discovery')
 	ShowElementById('choose_undo', true)
-	document.getElementById('choose_undo_btn').disabled = can_undo
+	document.getElementById('choose_undo_btn').disabled = !can_undo
 	
 	Map.DrawActionLayer()
 	Map.DrawSelectLayer()
