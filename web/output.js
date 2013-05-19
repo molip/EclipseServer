@@ -44,6 +44,8 @@ function SendCreateGame()
 
 function SendExitGame()
 {
+	ExitAction()
+	
 	var doc = CreateXMLDoc()
 	var node = CreateCommandNode(doc, "exit_game")
 	SendXMLDoc(doc)
