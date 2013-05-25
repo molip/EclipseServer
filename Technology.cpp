@@ -1,5 +1,7 @@
 #include "stdafx.h"
 #include "Technology.h"
+#include "App.h"
+#include "EnumTraits.h"
 
 Technology::Technology(TechType t) : m_type(t)
 {
@@ -28,3 +30,11 @@ int Technology::GetMinCost(int tier)
 {
 	return tier < 5 ? tier + 2 : tier + 1;
 }
+
+DEFINE_ENUM_NAMES(Technology::Class) { "Military", "Grid", "Nano", "_Count", "" };
+
+DEFINE_ENUM_NAMES(TechType) { 
+	"NeutronBomb",	"StarBase",		"PlasmaCannon", "PhaseShield",  "AdvMining",  "TachyonSource", "PlasmaMissile",    "GluonComp",
+	"GaussShield",	"ImprovedHull", "FusionSource", "PositronComp", "AdvEconomy", "TachyonDrive",  "AntimatterCannon", "QuantumGrid",
+	"NanoRobots",	"FusionDrive",  "AdvRobotics",  "Orbital",      "AdvLabs",    "Monolith",      "ArtifactKey",      "WormholeGen", "" };
+

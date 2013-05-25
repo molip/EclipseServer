@@ -2,6 +2,8 @@
 #include "Reputation.h"
 #include "Team.h"
 #include "App.h"
+#include "EnumTraits.h"
+
 #include <algorithm>
 
 ReputationTrack::ReputationTrack(const Team& team) : m_team(team)
@@ -69,3 +71,4 @@ bool ReputationTrack::OnAmbassadorAdded()
 
 }
 
+DEFINE_ENUM_NAMES(ReputationType) { "Ambassador", "Either", "Reputation" };

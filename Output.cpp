@@ -5,6 +5,8 @@
 #include "Race.h"
 #include "EnumRange.h"
 #include "Player.h"
+#include "Technology.h"
+#include "EnumTraits.h"
 
 namespace Output
 {
@@ -61,6 +63,18 @@ std::string GetSquareTypeName(SquareType type)
 	case SquareType::Science:	return "science";
 	case SquareType::Any:		return "any";
 	case SquareType::Orbital:	return "orbital";
+	};
+	assert(false);
+	return "";
+}
+
+std::string GetTechClassName(Technology::Class type)
+{
+	switch (type)
+	{
+	case Technology::Class::Grid:		return "grid";
+	case Technology::Class::Military:	return "military";
+	case Technology::Class::Nano:		return "nano";
 	};
 	assert(false);
 	return "";
@@ -185,6 +199,43 @@ UpdateInfluenceTrack::UpdateInfluenceTrack(const Team& team) : Update("influence
 {
 	m_pRoot->SetAttribute("id", team.GetPlayer().GetID());
 	m_pRoot->SetAttribute("discs", team.GetInfluenceTrack().GetDiscCount());
+}
+
+UpdateStorageTrack::UpdateStorageTrack(const Team& team) : Update("storage_track")
+{
+	m_pRoot->SetAttribute("id", team.GetPlayer().GetID());
+	for (auto r : EnumRange<Resource>())
+		m_pRoot->SetAttribute(EnumTraits<Resource>::ToString(r), team.GetStorage()[r]);
+}
+
+UpdateTechnologyTrack::UpdateTechnologyTrack(const Team& team) : Update("technology_track")
+{
+	m_pRoot->SetAttribute("id", team.GetPlayer().GetID());
+	for (auto c : EnumRange<Technology::Class>())
+	{
+		auto pClassNode = AddElement("class", *m_pRoot);
+		pClassNode->SetAttribute("name", EnumTraits<Technology::Class>::ToString(c));
+		for (auto& t : team.GetTechTrack().GetClass(c))
+		{
+			auto pTechNode = AddElement("tech", *pClassNode);
+			pTechNode->SetAttribute("name", EnumTraits<TechType>::ToString(t.GetType()));
+		}
+	}
+}
+
+UpdatePopulationTrack::UpdatePopulationTrack(const Team& team) : Update("population_track")
+{
+	m_pRoot->SetAttribute("id", team.GetPlayer().GetID());
+	for (auto r : EnumRange<Resource>())
+		m_pRoot->SetAttribute(EnumTraits<Resource>::ToString(r), team.GetPopulationTrack().GetPopulation()[r]);
+}
+
+UpdateReputationTrack::UpdateReputationTrack(const Team& team, bool bSendValues) : Update("reputation_track")
+{
+	m_pRoot->SetAttribute("id", team.GetPlayer().GetID());
+	m_pRoot->SetAttribute("tiles", team.GetReputationTrack().GetReputationTileCount());
+	m_pRoot->SetAttribute("slots", team.GetReputationTrack().GetSlotCount());
+	m_pRoot->SetAttribute("send_values", bSendValues);
 }
 
 UpdateMap::UpdateMap(const Game& game) : Update("map")

@@ -18,6 +18,8 @@ public:
 	static int GetDiscount(int tier);
 	int GetCount(Technology::Class c) const;
 
+	const std::vector<Technology>& GetClass(Technology::Class c) const { return m_class[(int)c]; }
+
 private:
 	std::vector<Technology> m_class[3];
 	std::set<TechType> m_techs;

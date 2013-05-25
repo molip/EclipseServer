@@ -86,6 +86,7 @@
     <ClInclude Include="DiscoverCmd.h" />
     <ClInclude Include="Discovery.h" />
     <ClInclude Include="EnumRange.h" />
+    <ClInclude Include="EnumTraits.h" />
     <ClInclude Include="ExploreCmd.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Hex.h" />
@@ -149,6 +150,7 @@
     <ClCompile Include="PopulationTrack.cpp" />
     <ClCompile Include="Race.cpp" />
     <ClCompile Include="Reputation.cpp" />
+    <ClCompile Include="Resources.cpp" />
     <ClCompile Include="Ship.cpp" />
     <ClCompile Include="ShipLayout.cpp" />
     <ClCompile Include="stdafx.cpp">

@@ -16,6 +16,7 @@ public:
 
 	int GetTier() const;
 	Class GetClass() const;
+	TechType GetType() const { return m_type; }
 	
 	static int GetMaxCost(int tier);
 	static int GetMinCost(int tier);
@@ -23,4 +24,3 @@ public:
 private:
 	TechType m_type;
 };
-

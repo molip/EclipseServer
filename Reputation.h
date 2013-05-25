@@ -2,7 +2,7 @@
 
 #include <vector>
 
-enum class ReputationType { Ambassador, Either, Reputation };
+enum class ReputationType { Ambassador, Either, Reputation, _Count };
 
 class ReputationSlots
 {

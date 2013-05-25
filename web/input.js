@@ -92,6 +92,14 @@ function OnCommandUpdate(elem)
 		OnCommandUpdateTeam(elem)
 	else if (param == "influence_track")
 		OnCommandUpdateInfluenceTrack(elem)
+	else if (param == "storage_track")
+		OnCommandUpdateStorageTrack(elem)
+	else if (param == "technology_track")
+		OnCommandUpdateTechnologyTrack(elem)
+	else if (param == "population_track")
+		OnCommandUpdatePopulationTrack(elem)
+	else if (param == "reputation_track")
+		OnCommandUpdateReputationTrack(elem)
 	else if (param == "map")
 		OnCommandUpdateMap(elem)
 	else
@@ -189,6 +197,10 @@ function OnCommandUpdateTeams(elem)
 	var fmt_page = '\
 					<div id="{0}">\
 						<div id="{0}_summary"></div>\
+						<div id="{0}_storage"></div>\
+						<div id="{0}_population"></div>\
+						<div id="{0}_technology"></div>\
+						<div id="{0}_reputation"></div>\
 						<div id="{0}_influence" onclick="if (data.action && data.action.OnClickInfluenceTrack) data.action.OnClickInfluenceTrack()"></div>\
 					</div>'
 	
@@ -229,6 +241,56 @@ function OnCommandUpdateInfluenceTrack(elem)
 		<b>Influence discs:</b> <xsl:value-of select="@discs"/><br/>\
 	'
 	SetDivFromCommandElem(document.getElementById(GetTeamDivIDFromName(elem.getAttribute('id'), 'influence')), elem, xsl)
+}
+
+function OnCommandUpdateStorageTrack(elem)
+{
+	var xsl = '\
+		<b>Storage:</b>\
+		Money: <xsl:value-of select="@Money"/>\
+		Science: <xsl:value-of select="@Science"/>\
+		Materials: <xsl:value-of select="@Materials"/>\
+		<br/>'
+		
+	SetDivFromCommandElem(document.getElementById(GetTeamDivIDFromName(elem.getAttribute('id'), 'storage')), elem, xsl)
+}
+
+function OnCommandUpdateTechnologyTrack(elem)
+{
+	var xsl = '\
+		<b>Technology:</b><br/>\
+		<xsl:for-each select="class">\
+			<xsl:value-of select="@name"/>:\
+			<xsl:for-each select="tech">\
+				<xsl:value-of select="@name"/>, \
+			</xsl:for-each>\
+			<br/>\
+		</xsl:for-each>'
+		
+	SetDivFromCommandElem(document.getElementById(GetTeamDivIDFromName(elem.getAttribute('id'), 'technology')), elem, xsl)
+}
+
+function OnCommandUpdatePopulationTrack(elem)
+{
+	var xsl = '\
+		<b>Population:</b>\
+		Money: <xsl:value-of select="@Money"/>\
+		Science: <xsl:value-of select="@Science"/>\
+		Materials: <xsl:value-of select="@Materials"/>\
+		<br/>'
+		
+	SetDivFromCommandElem(document.getElementById(GetTeamDivIDFromName(elem.getAttribute('id'), 'population')), elem, xsl)
+}
+
+function OnCommandUpdateReputationTrack(elem)
+{
+	var xsl = '\
+		<b>Reputation:</b>\
+		Tiles: <xsl:value-of select="@tiles"/>/<xsl:value-of select="@slots"/>\
+		send_values: <xsl:value-of select="@send_values"/>\
+		<br/>'
+		
+	SetDivFromCommandElem(document.getElementById(GetTeamDivIDFromName(elem.getAttribute('id'), 'reputation')), elem, xsl)
 }
 
 function OnCommandUpdateMap(elem)

@@ -101,6 +101,20 @@ void Controller::SendUpdateGame(const Game& game, const Player* pPlayer) const
 			AssertThrow("Controller::SendUpdateGame: Team not chosen yet: " + team.first->GetName(), !!pTeam);
 			SendMessage(Output::UpdateTeam(*pTeam), game, pPlayer);
 			SendMessage(Output::UpdateInfluenceTrack(*pTeam), game, pPlayer);
+			SendMessage(Output::UpdateTechnologyTrack(*pTeam), game, pPlayer);
+			SendMessage(Output::UpdateStorageTrack(*pTeam), game, pPlayer);
+			SendMessage(Output::UpdatePopulationTrack(*pTeam), game, pPlayer);
+
+			// Reputation tile values are secret, so only send them to the relevant player. 
+			auto SendUpdateReputationTrack = [&] (const Player& player) { 
+				SendMessage(Output::UpdateReputationTrack(*pTeam, &player == &pTeam->GetPlayer()), game, &player); };
+
+			if (pPlayer)
+				SendUpdateReputationTrack(*pPlayer);
+			else
+				for (auto& t : game.GetTeams())
+					if (t.first->GetCurrentGame() == &game)
+						SendUpdateReputationTrack(*t.first);
 		}
 		SendMessage(Output::UpdateMap(game), game, pPlayer);
 

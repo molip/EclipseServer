@@ -141,6 +141,9 @@
     <ClInclude Include="CmdStack.h">
       <Filter>Model</Filter>
     </ClInclude>
+    <ClInclude Include="EnumTraits.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -261,6 +264,9 @@
       <Filter>Model\Commands</Filter>
     </ClCompile>
     <ClCompile Include="CmdStack.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Resources.cpp">
       <Filter>Model</Filter>
     </ClCompile>
   </ItemGroup>

@@ -40,11 +40,19 @@ public:
 	bool HasTech(TechType tech) const { return m_techTrack.Has(tech); }
 	bool CanAdd(TechType tech) const { return m_techTrack.CanAdd(tech); }
 
+	Storage& GetStorage() { return m_storage; }
+	const Storage& GetStorage() const { return m_storage; }
+	
 	PopulationTrack& GetPopulationTrack() { return m_popTrack; }
 	const PopulationTrack& GetPopulationTrack() const { return m_popTrack; }
-	
+
+	ReputationTrack& GetReputationTrack() { return m_repTrack; }
+	const ReputationTrack& GetReputationTrack() const { return m_repTrack; }
+
 	InfluenceTrack& GetInfluenceTrack() { return m_infTrack; }
 	const InfluenceTrack& GetInfluenceTrack() const { return m_infTrack; }
+
+	const TechTrack& GetTechTrack() const { return m_techTrack; }
 
 	void AddShips(ShipType type, int nShips);
 	void RemoveShips(ShipType type, int nShips) { AddShips(type, -nShips); }

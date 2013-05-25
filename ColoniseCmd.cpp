@@ -109,6 +109,7 @@ CmdPtr ColoniseSquaresCmd::Process(const Input::CmdMessage& msg, const Controlle
 		}
 
 	controller.SendMessage(Output::UpdateMap(GetGame()), GetGame());
+	controller.SendMessage(Output::UpdatePopulationTrack(GetTeam()), GetGame());
 
 	return nullptr;
 }
@@ -123,4 +124,5 @@ void ColoniseSquaresCmd::Undo(const Controller& controller)
 			team.GetPopulationTrack().Add(move.second, 1);
 		}
 	controller.SendMessage(Output::UpdateMap(GetGame()), GetGame());
+	controller.SendMessage(Output::UpdatePopulationTrack(GetTeam()), GetGame());
 }
