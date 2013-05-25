@@ -298,7 +298,7 @@ void Hex::Init(Game* pGame)
 		AddSquare(299, 271, SquareType::Materials, false);
 		break;
 	case 224:
-		AddSquare(221, 111, SquareType::Money, false);
+		AddSquare(212, 112, SquareType::Money, false);
 		AddSquare(156, 192, SquareType::Science, false);
 		AddSquare( 98, 192, SquareType::Science, true);
 		AddSquare(258, 279, SquareType::Materials, true);
