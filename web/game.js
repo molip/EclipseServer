@@ -9,7 +9,7 @@ data.team_count = 0
 data.current_action_elem = null
 data.action = null
 
-Colour = { 'red': '#cd171a', 'blue': '#283583', 'green': '#3fa535', 'yellow': '#ffd500', 'white': '#fff', 'black': '#111' }
+Colour = { 'Red': '#cd171a', 'Blue': '#283583', 'Green': '#3fa535', 'Yellow': '#ffd500', 'White': '#fff', 'Black': '#111' }
 
 data.disc_imgs = {}
 for (var col in Colour)

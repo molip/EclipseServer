@@ -3,6 +3,7 @@
 #include "App.h"
 #include "Player.h"
 #include "CmdStack.h"
+#include "EnumTraits.h"
 
 #include <algorithm>
 
@@ -231,3 +232,5 @@ void Game::FinishTurn()
 	m_pCmdStack->Clear();
 	AdvanceTurn();
 }
+
+DEFINE_ENUM_NAMES(Game::Phase) { "Lobby", "ChooseTeam", "Main", "" };

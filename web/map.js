@@ -227,7 +227,7 @@ Map.DrawTeamPath = function(ctx, team)
 	ctx.fillStyle = Colour[team]
 	ctx.fill();	
 
-	ctx.strokeStyle = team == 'black' || team == 'blue' ? '#fff' : '#000'
+	ctx.strokeStyle = team == 'Black' || team == 'Blue' ? '#fff' : '#000'
 	ctx.lineWidth = 3
 	ctx.stroke()
 }

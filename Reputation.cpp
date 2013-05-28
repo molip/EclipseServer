@@ -71,4 +71,4 @@ bool ReputationTrack::OnAmbassadorAdded()
 
 }
 
-DEFINE_ENUM_NAMES(ReputationType) { "Ambassador", "Either", "Reputation" };
+DEFINE_ENUM_NAMES(ReputationType) { "Ambassador", "Either", "Reputation", "" };

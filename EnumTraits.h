@@ -2,10 +2,17 @@
 
 #include "App.h"
 
+#include <string>
+
 template<typename T>
 class EnumTraits
 {
 public:
+	static T FromString(const std::string& s)
+	{
+		return FromString(s.c_str());
+	}
+
 	static T FromString(const char* s)
 	{
 		for (int i = 0; i < *names[i] != 0; ++i)

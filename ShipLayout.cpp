@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "ShipLayout.h"
 #include "Ship.h"
+#include "EnumTraits.h"
 
 ShipLayout::ShipLayout(ShipType type) : m_type(type)
 {
@@ -17,3 +18,11 @@ ShipLayout::ShipLayout(ShipType type) : m_type(type)
 	m_slots.resize(slots);
 }
 
+DEFINE_ENUM_NAMES(ShipPart) {	"Empty", "Blocked", 
+								"IonCannon", "PlasmaCannon", "AntimatterCannon", 
+								"PlasmaMissile", 
+								"ElectronComp", "GluonComp", "PositronComp", 
+								"NuclearDrive", "TachyonDrive", "FusionDrive",
+								"NuclearSource", "TachyonSource", "FusionSource", 
+								"PhaseShield", "GaussShield", 
+								"Hull", "ImprovedHull", "" };

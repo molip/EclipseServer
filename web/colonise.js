@@ -58,10 +58,10 @@ Colonise.ChooseSquaresStage = function(num_ships, square_counts, max_cubes)
 {
 	this.num_ships = num_ships
 
-	this.max_fixed = [square_counts.money, square_counts.science, square_counts.materials]
-	this.max_cubes = [max_cubes.money, max_cubes.science, max_cubes.materials]
-	this.max_grey = square_counts.any
-	this.max_orbital = square_counts.orbital
+	this.max_fixed = [square_counts.Money, square_counts.Science, square_counts.Materials]
+	this.max_cubes = [max_cubes.Money, max_cubes.Science, max_cubes.Materials]
+	this.max_grey = square_counts.Any
+	this.max_orbital = square_counts.Orbital
 
 	document.getElementById('choose_colonise_squares_btn').disabled = true
 
@@ -177,8 +177,8 @@ Colonise.ChooseSquaresStage.prototype.Send = function()
 	var doc = CreateXMLDoc()
 	var node = CreateCommandNode(doc, 'cmd_colonise_squares')
 
-	var rows = ['fixed', 'grey', 'orbital']
-	var cols = ['money', 'science', 'materials']
+	var rows = ['Fixed', 'Grey', 'Orbital']
+	var cols = ['Money', 'Science', 'Materials']
 	for (var y = 0; y < 3; ++y)
 	{
 		var row = doc.createElement(rows[y])

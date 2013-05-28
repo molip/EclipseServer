@@ -3,6 +3,7 @@
 #include "Race.h"
 #include "Game.h"
 #include "EnumRange.h"
+#include "EnumTraits.h"
 
 Team::Team(Game& game, Player& player, RaceType race, Colour colour) : 
 	m_game(game), m_player(player), m_race(race), m_colour(colour), m_nColonyShipsUsed(0), m_repTrack(*this)
@@ -75,3 +76,6 @@ bool Team::IsAncientAlliance(const Team* pTeam1, const Team* pTeam2)
 	AssertThrowModel("Team::IsAncientAlliance", pTeam1 != pTeam2);
 	return (!pTeam1 || !pTeam2) && Race((pTeam1 ? pTeam1 : pTeam2)->GetRace()).IsAncientsAlly();
 }
+
+DEFINE_ENUM_NAMES(Colour) { "Red", "Blue", "Green", "Yellow", "White", "Black", "" };
+DEFINE_ENUM_NAMES(Buildable) { "Interceptor", "Cruiser", "Dreadnought", "Starbase", "Orbital", "Monolith", "" };

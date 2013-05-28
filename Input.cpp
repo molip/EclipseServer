@@ -9,36 +9,12 @@
 #include "InfluenceCmd.h"
 #include "ColoniseCmd.h"
 #include "Xml.h"
+#include "EnumTraits.h"
 
 #include <sstream>
 
 namespace Input 
 {
-
-RaceType GetRaceFromName(const std::string& race)
-{
-	if (race == "eridani") return RaceType::Eridani;
-	if (race == "hydran") return RaceType::Hydran;
-	if (race == "planta") return RaceType::Planta;
-	if (race == "descendants") return RaceType::Descendants;
-	if (race == "mechanema") return RaceType::Mechanema;
-	if (race == "orion") return RaceType::Orion;
-	if (race == "human") return RaceType::Human;
-
-	return RaceType::None;
-}
-
-Colour GetColourFromName(const std::string& colour)
-{
-	if (colour == "black") return Colour::Black;
-	if (colour == "blue") return Colour::Blue;
-	if (colour == "green") return Colour::Green;
-	if (colour == "red") return Colour::Red;
-	if (colour == "white") return Colour::White;
-	if (colour == "yellow") return Colour::Yellow;
-
-	return Colour::None;
-}
 
 MessagePtr CreateCommand(const Xml::Element& root)
 {
@@ -200,8 +176,8 @@ bool ChooseTeam::Process(Controller& controller, Player& player) const
 	AssertThrow("ChooseTeam: player played out of turn", &player == &pGame->GetCurrentPlayer());
 	AssertThrow("ChooseTeam: game not in choose phase: " + pGame->GetName(), pGame->GetPhase() == Game::Phase::ChooseTeam);
 
-	RaceType race = GetRaceFromName(m_race);
-	Colour colour = GetColourFromName(m_colour);
+	RaceType race = EnumTraits<RaceType>::FromString(m_race);
+	Colour colour = EnumTraits<Colour>::FromString(m_colour);
 
 	AssertThrowXML("ChooseTeam:race", race != RaceType::None);
 	AssertThrowXML("ChooseTeam:colour", colour != Colour::None);
@@ -321,14 +297,13 @@ CmdColoniseSquares::CmdColoniseSquares(const Xml::Element& node)
 	auto Read = [&] (const std::string& type, Population& pops)
 	{
 		auto el = node.FindFirstChild(type);
-		pops[Resource::Money] = el.GetAttributeInt("money");
-		pops[Resource::Science] = el.GetAttributeInt("science");
-		pops[Resource::Materials] = el.GetAttributeInt("materials");
+		for (auto r : EnumRange<Resource>())
+			pops[r] = el.GetAttributeInt(EnumTraits<Resource>::ToString(r));
 	};
 	
-	Read("fixed", m_fixed);
-	Read("grey", m_grey);
-	Read("orbital", m_orbital);
+	Read("Fixed", m_fixed);
+	Read("Grey", m_grey);
+	Read("Orbital", m_orbital);
 
 	AssertThrowXML("CmdColonise: trying to add materials to orbital", m_orbital[Resource::Materials] == 0);
 }

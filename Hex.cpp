@@ -6,6 +6,7 @@
 #include "Ship.h"
 #include "Game.h"
 #include "Technology.h"
+#include "EnumTraits.h"
 
 Edge ReverseEdge(Edge e)
 {
@@ -470,3 +471,5 @@ void Hex::Init(Game* pGame)
 	if (bDiscovery && pGame)
 		m_discovery = pGame->GetDiscoveryBag().TakeTile();
 }
+
+DEFINE_ENUM_NAMES(SquareType) { "Money", "Science", "Materials", "Any", "Orbital", "" };

@@ -11,75 +11,6 @@
 namespace Output
 {
 
-std::string GetRaceName(RaceType race)
-{
-	switch (race)
-	{
-	case RaceType::Eridani:		return "eridani";
-	case RaceType::Hydran:		return "hydran";
-	case RaceType::Planta:		return "planta";
-	case RaceType::Descendants:	return "descendants";
-	case RaceType::Mechanema:	return "mechanema";
-	case RaceType::Orion:		return "orion";
-	case RaceType::Human:		return "human";
-	};
-	assert(false);
-	return "";
-}
-
-std::string GetColourName(Colour colour)
-{
-	switch (colour)
-	{
-	case Colour::Black:		return "black";
-	case Colour::Blue:		return "blue";
-	case Colour::Green:		return "green";
-	case Colour::Red:		return "red";
-	case Colour::White:		return "white";
-	case Colour::Yellow:	return "yellow";
-	};
-	assert(false);
-	return "";
-}
-
-std::string GetResourceName(Resource type)
-{
-	switch (type)
-	{
-	case SquareType::Materials:	return "materials";
-	case SquareType::Money:		return "money";
-	case SquareType::Science:	return "science";
-	};
-	assert(false);
-	return "";
-}
-
-std::string GetSquareTypeName(SquareType type)
-{
-	switch (type)
-	{
-	case SquareType::Materials:	return "materials";
-	case SquareType::Money:		return "money";
-	case SquareType::Science:	return "science";
-	case SquareType::Any:		return "any";
-	case SquareType::Orbital:	return "orbital";
-	};
-	assert(false);
-	return "";
-}
-
-std::string GetTechClassName(Technology::Class type)
-{
-	switch (type)
-	{
-	case Technology::Class::Grid:		return "grid";
-	case Technology::Class::Military:	return "military";
-	case Technology::Class::Nano:		return "nano";
-	};
-	assert(false);
-	return "";
-}
-
 std::string Message::GetXML() const
 {
 	return m_doc.SaveToString();
@@ -155,8 +86,8 @@ UpdateChoose::UpdateChoose(const Game& game) : Update("choose_team")
 		if (game.HasTeamChosen(*i))
 		{
 			const Team& team = game.GetTeam(*i);
-			pTeamNode.SetAttribute("race", GetRaceName(team.GetRace()));
-			pTeamNode.SetAttribute("colour", GetColourName(team.GetColour()));
+			pTeamNode.SetAttribute("race", EnumTraits<RaceType>::ToString(team.GetRace()));
+			pTeamNode.SetAttribute("colour", EnumTraits<Colour>::ToString(team.GetColour()));
 		}
 	}
 }
@@ -180,8 +111,8 @@ UpdateTeam::UpdateTeam(const Team& team) : Update("team")
 {
 	m_root.SetAttribute("id", team.GetPlayer().GetID());
 	m_root.SetAttribute("name", team.GetPlayer().GetName());
-	m_root.SetAttribute("race", GetRaceName(team.GetRace()));
-	m_root.SetAttribute("colour", GetColourName(team.GetColour()));
+	m_root.SetAttribute("race", EnumTraits<RaceType>::ToString(team.GetRace()));
+	m_root.SetAttribute("colour", EnumTraits<Colour>::ToString(team.GetColour()));
 }
 
 UpdateInfluenceTrack::UpdateInfluenceTrack(const Team& team) : Update("influence_track")
@@ -245,7 +176,7 @@ UpdateMap::UpdateMap(const Game& game) : Update("map")
 
 		if (const Team* pTeam = hex.GetOwner())
 		{
-			e.SetAttribute("colour", GetColourName(pTeam->GetColour()));
+			e.SetAttribute("colour", EnumTraits<Colour>::ToString(pTeam->GetColour()));
 		
 			auto eSquares = e.AddElement("squares");
 			for (auto& square : hex.GetSquares())
@@ -286,8 +217,8 @@ ChooseTeam::ChooseTeam(const Game& game, bool bActive) : Choose("team", bActive)
 		if (!game.GetTeamFromColour(c))
 		{
 			auto e = m_root.AddElement("race");
-			e.SetAttribute("name", GetRaceName(RaceType::Human));
-			e.SetAttribute("colour", GetColourName(c));
+			e.SetAttribute("name", EnumTraits<RaceType>::ToString(RaceType::Human));
+			e.SetAttribute("colour", EnumTraits<Colour>::ToString(c));
 		}
 
 	for (auto r : EnumRange<RaceType>())
@@ -297,8 +228,8 @@ ChooseTeam::ChooseTeam(const Game& game, bool bActive) : Choose("team", bActive)
 			if (!game.GetTeamFromColour(c))
 			{
 				auto e = m_root.AddElement("race");
-				e.SetAttribute("name", GetRaceName(r));
-				e.SetAttribute("colour", GetColourName(c));
+				e.SetAttribute("name", EnumTraits<RaceType>::ToString(r));
+				e.SetAttribute("colour", EnumTraits<Colour>::ToString(c));
 			}
 		}
 }
@@ -377,17 +308,17 @@ ChooseColoniseSquares::ChooseColoniseSquares(const int squares[SquareType::_Coun
 	m_root.SetAttribute("ships", nShips);
 
 	auto eCounts = m_root.AddElement("square_counts");
-	for (int i = 0; i < (int)SquareType::_Count; ++i)
+	for (auto t : EnumRange<SquareType>())
 	{
 		auto eType = eCounts.AddElement("type");
-		eType.SetAttribute("name", GetSquareTypeName(SquareType(i)));
-		eType.SetAttribute("count", squares[i]);
+		eType.SetAttribute("name", EnumTraits<SquareType>::ToString(t));
+		eType.SetAttribute("count", squares[(int)t]);
 	}
 	auto eCubes = m_root.AddElement("max_cubes");
 	for (auto r : EnumRange<Resource>())
 	{
 		auto eType = eCubes.AddElement("type");
-		eType.SetAttribute("name", GetResourceName(r));
+		eType.SetAttribute("name", EnumTraits<Resource>::ToString(r));
 		eType.SetAttribute("count", pop[r]);
 	}
 }

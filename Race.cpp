@@ -2,6 +2,7 @@
 #include "App.h"
 #include "Ship.h"
 #include "Team.h"
+#include "EnumTraits.h"
 
 Storage Race::GetStartStorage() const
 {
@@ -271,3 +272,5 @@ Colour Race::GetColour() const
 	}
 	return Colour::None;
 }
+
+DEFINE_ENUM_NAMES(RaceType) { "Human", "Eridani", "Hydran", "Planta", "Descendants", "Mechanema", "Orion", "" };

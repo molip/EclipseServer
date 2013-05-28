@@ -31,7 +31,7 @@ int Technology::GetMinCost(int tier)
 	return tier < 5 ? tier + 2 : tier + 1;
 }
 
-DEFINE_ENUM_NAMES(Technology::Class) { "Military", "Grid", "Nano", "_Count", "" };
+DEFINE_ENUM_NAMES(Technology::Class) { "Military", "Grid", "Nano", "" };
 
 DEFINE_ENUM_NAMES(TechType) { 
 	"NeutronBomb",	"StarBase",		"PlasmaCannon", "PhaseShield",  "AdvMining",  "TachyonSource", "PlasmaMissile",    "GluonComp",
