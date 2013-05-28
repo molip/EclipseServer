@@ -118,6 +118,7 @@
     <ClInclude Include="Turn.h" />
     <ClInclude Include="Util.h" />
     <ClInclude Include="WSServer.h" />
+    <ClInclude Include="Xml.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Desktop\tinyxml\tinyxmlerror.cpp" />
@@ -164,6 +165,7 @@
     <ClCompile Include="Turn.cpp" />
     <ClCompile Include="Util.cpp" />
     <ClCompile Include="WSServer.cpp" />
+    <ClCompile Include="Xml.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

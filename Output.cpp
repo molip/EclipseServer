@@ -80,94 +80,83 @@ std::string GetTechClassName(Technology::Class type)
 	return "";
 }
 
-const std::string& Message::GetXML() const
+std::string Message::GetXML() const
 {
-	ASSERT(!m_pPrinter);
-	//Create();
-	m_pPrinter.reset(new TiXmlPrinter);
-	m_doc.Accept(m_pPrinter.get());
-	return m_pPrinter->Str();
-}
-
-TiXmlElement* Message::AddElement(const std::string& name, TiXmlNode& parent)
-{
-	TiXmlElement* pElem = new TiXmlElement(name);
-	parent.LinkEndChild(pElem);
-	return pElem;
+	return m_doc.SaveToString();
 }
 
 //--------------------------------------------
 
 Command::Command(const std::string& cmd) 
 {
-	m_pRoot = AddElement("command");
-	m_pRoot->SetAttribute("type", cmd);
+	m_root = m_doc.AddElement("command");
+	m_root.SetAttribute("type", cmd);
 }
 
 Show::Show(const std::string& panel) : Command("show")
 {
-	m_pRoot->SetAttribute("panel", panel);
+	m_root.SetAttribute("panel", panel);
 }
 
 Update::Update(const std::string& param) : Command("update")
 {
-	m_pRoot->SetAttribute("param", param);
+	m_root.SetAttribute("param", param);
 }
 
 Choose::Choose(const std::string& param, bool bActive) : Command("choose")
 {
-	m_pRoot->SetAttribute("param", param);
-	m_pRoot->SetAttribute("active", bActive);
+	m_root.SetAttribute("param", param);
+	m_root.SetAttribute("active", bActive);
 }
 
 UpdateGameList::UpdateGameList(const Model& model) : Update("game_list")
 {
 	for (auto& g : model.GetGames())
 	{
-		auto pGameNode = AddElement("game", *m_pRoot);
-		pGameNode->SetAttribute("name", g->GetName());
-		pGameNode->SetAttribute("id", g->GetID());
-		pGameNode->SetAttribute("owner", g->GetOwner().GetName());
-		pGameNode->SetAttribute("started", g->HasStarted());
+		auto gameNode = m_root.AddElement("game");
+		gameNode.SetAttribute("name", g->GetName());
+		gameNode.SetAttribute("id", g->GetID());
+		gameNode.SetAttribute("owner", g->GetOwner().GetName());
+		gameNode.SetAttribute("started", g->HasStarted());
 	
 		for (auto& i : g->GetTeams())
 			if (i.first != &g->GetOwner())
 			{
-				auto pPlayerNode = AddElement("player", *pGameNode);
-				pPlayerNode->SetAttribute("name", i.first->GetName());
+				auto playerNode = gameNode.AddElement("player");
+				playerNode.SetAttribute("name", i.first->GetName());
 			}
 	}
 }
 
 UpdateLobby::UpdateLobby(const Game& game) : Update("lobby")
 {
-	m_pRoot->SetAttribute("owner", game.GetOwner().GetName());
-	m_pRoot->SetAttribute("game", game.GetName());
+	m_root.SetAttribute("owner", game.GetOwner().GetName());
+	m_root.SetAttribute("game", game.GetName());
 	for (auto& i : game.GetTeams())
 		if (i.first != &game.GetOwner())
 		{
-			auto pPlayerNode = AddElement("player", *m_pRoot);
-			pPlayerNode->SetAttribute("name", i.first->GetName());
+			auto pPlayerNode = m_root.AddElement("player");
+			pPlayerNode.SetAttribute("name", i.first->GetName());
 		}
 }
 
 UpdateLobbyControls::UpdateLobbyControls(bool bShow) : Update("lobby_controls")
 {
-	m_pRoot->SetAttribute("show", bShow);
+	m_root.SetAttribute("show", bShow);
 }
 
 UpdateChoose::UpdateChoose(const Game& game) : Update("choose_team")
 {
-	m_pRoot->SetAttribute("game", game.GetName());
+	m_root.SetAttribute("game", game.GetName());
 	for (auto& i : game.GetTeamOrder())
 	{
-		auto pTeamNode = AddElement("team", *m_pRoot);
-		pTeamNode->SetAttribute("name", i->GetName());
+		auto pTeamNode = m_root.AddElement("team");
+		pTeamNode.SetAttribute("name", i->GetName());
 		if (game.HasTeamChosen(*i))
 		{
 			const Team& team = game.GetTeam(*i);
-			pTeamNode->SetAttribute("race", GetRaceName(team.GetRace()));
-			pTeamNode->SetAttribute("colour", GetColourName(team.GetColour()));
+			pTeamNode.SetAttribute("race", GetRaceName(team.GetRace()));
+			pTeamNode.SetAttribute("colour", GetColourName(team.GetColour()));
 		}
 	}
 }
@@ -176,66 +165,66 @@ UpdateTeams::UpdateTeams(const Game& game) : Update("teams")
 {
 	AssertThrow("UpdateTeams: Game not started yet: " + game.GetName(), game.GetPhase() == Game::Phase::Main);
 
-	m_pRoot->SetAttribute("teams", game.GetName());
+	m_root.SetAttribute("teams", game.GetName());
 	for (Player* pPlayer : game.GetTeamOrder())
 	{
 		AssertThrow("UpdateTeams: Team not chosen yet: " + pPlayer->GetName(), game.HasTeamChosen(*pPlayer));
 
-		auto pTeamNode = AddElement("team", *m_pRoot);
-		pTeamNode->SetAttribute("name", pPlayer->GetName());
-		pTeamNode->SetAttribute("id", pPlayer->GetID());
+		auto pTeamNode = m_root.AddElement("team");
+		pTeamNode.SetAttribute("name", pPlayer->GetName());
+		pTeamNode.SetAttribute("id", pPlayer->GetID());
 	}
 }
 
 UpdateTeam::UpdateTeam(const Team& team) : Update("team")
 {
-	m_pRoot->SetAttribute("id", team.GetPlayer().GetID());
-	m_pRoot->SetAttribute("name", team.GetPlayer().GetName());
-	m_pRoot->SetAttribute("race", GetRaceName(team.GetRace()));
-	m_pRoot->SetAttribute("colour", GetColourName(team.GetColour()));
+	m_root.SetAttribute("id", team.GetPlayer().GetID());
+	m_root.SetAttribute("name", team.GetPlayer().GetName());
+	m_root.SetAttribute("race", GetRaceName(team.GetRace()));
+	m_root.SetAttribute("colour", GetColourName(team.GetColour()));
 }
 
 UpdateInfluenceTrack::UpdateInfluenceTrack(const Team& team) : Update("influence_track")
 {
-	m_pRoot->SetAttribute("id", team.GetPlayer().GetID());
-	m_pRoot->SetAttribute("discs", team.GetInfluenceTrack().GetDiscCount());
+	m_root.SetAttribute("id", team.GetPlayer().GetID());
+	m_root.SetAttribute("discs", team.GetInfluenceTrack().GetDiscCount());
 }
 
 UpdateStorageTrack::UpdateStorageTrack(const Team& team) : Update("storage_track")
 {
-	m_pRoot->SetAttribute("id", team.GetPlayer().GetID());
+	m_root.SetAttribute("id", team.GetPlayer().GetID());
 	for (auto r : EnumRange<Resource>())
-		m_pRoot->SetAttribute(EnumTraits<Resource>::ToString(r), team.GetStorage()[r]);
+		m_root.SetAttribute(EnumTraits<Resource>::ToString(r), team.GetStorage()[r]);
 }
 
 UpdateTechnologyTrack::UpdateTechnologyTrack(const Team& team) : Update("technology_track")
 {
-	m_pRoot->SetAttribute("id", team.GetPlayer().GetID());
+	m_root.SetAttribute("id", team.GetPlayer().GetID());
 	for (auto c : EnumRange<Technology::Class>())
 	{
-		auto pClassNode = AddElement("class", *m_pRoot);
-		pClassNode->SetAttribute("name", EnumTraits<Technology::Class>::ToString(c));
+		auto eClass = m_root.AddElement("class");
+		eClass.SetAttribute("name", EnumTraits<Technology::Class>::ToString(c));
 		for (auto& t : team.GetTechTrack().GetClass(c))
 		{
-			auto pTechNode = AddElement("tech", *pClassNode);
-			pTechNode->SetAttribute("name", EnumTraits<TechType>::ToString(t.GetType()));
+			auto eTech = eClass.AddElement("tech");
+			eTech.SetAttribute("name", EnumTraits<TechType>::ToString(t.GetType()));
 		}
 	}
 }
 
 UpdatePopulationTrack::UpdatePopulationTrack(const Team& team) : Update("population_track")
 {
-	m_pRoot->SetAttribute("id", team.GetPlayer().GetID());
+	m_root.SetAttribute("id", team.GetPlayer().GetID());
 	for (auto r : EnumRange<Resource>())
-		m_pRoot->SetAttribute(EnumTraits<Resource>::ToString(r), team.GetPopulationTrack().GetPopulation()[r]);
+		m_root.SetAttribute(EnumTraits<Resource>::ToString(r), team.GetPopulationTrack().GetPopulation()[r]);
 }
 
 UpdateReputationTrack::UpdateReputationTrack(const Team& team, bool bSendValues) : Update("reputation_track")
 {
-	m_pRoot->SetAttribute("id", team.GetPlayer().GetID());
-	m_pRoot->SetAttribute("tiles", team.GetReputationTrack().GetReputationTileCount());
-	m_pRoot->SetAttribute("slots", team.GetReputationTrack().GetSlotCount());
-	m_pRoot->SetAttribute("send_values", bSendValues);
+	m_root.SetAttribute("id", team.GetPlayer().GetID());
+	m_root.SetAttribute("tiles", team.GetReputationTrack().GetReputationTileCount());
+	m_root.SetAttribute("slots", team.GetReputationTrack().GetSlotCount());
+	m_root.SetAttribute("send_values", bSendValues);
 }
 
 UpdateMap::UpdateMap(const Game& game) : Update("map")
@@ -248,24 +237,24 @@ UpdateMap::UpdateMap(const Game& game) : Update("map")
 		const MapPos& pos = i.first;
 		const Hex& hex = *i.second.get();
 
-		auto pNode = AddElement("hex", *m_pRoot);
-		pNode->SetAttribute("x", pos.GetX());
-		pNode->SetAttribute("y", pos.GetY());
-		pNode->SetAttribute("id", hex.GetID());
-		pNode->SetAttribute("rotation", hex.GetRotation());
+		auto e = m_root.AddElement("hex");
+		e.SetAttribute("x", pos.GetX());
+		e.SetAttribute("y", pos.GetY());
+		e.SetAttribute("id", hex.GetID());
+		e.SetAttribute("rotation", hex.GetRotation());
 
 		if (const Team* pTeam = hex.GetOwner())
 		{
-			pNode->SetAttribute("colour", GetColourName(pTeam->GetColour()));
+			e.SetAttribute("colour", GetColourName(pTeam->GetColour()));
 		
-			auto pSquaresNode = AddElement("squares", *pNode);
+			auto eSquares = e.AddElement("squares");
 			for (auto& square : hex.GetSquares())
 				if (Team* pSquareOwner = square.GetOwner())
 				{
 					AssertThrow("UpdateMap::UpdateMap", pSquareOwner == pTeam);
-					auto pSquareNode = AddElement("square", *pSquaresNode);
-					pSquareNode->SetAttribute("x", square.GetX());
-					pSquareNode->SetAttribute("y", square.GetY());
+					auto eSquare = eSquares.AddElement("square");
+					eSquare.SetAttribute("x", square.GetX());
+					eSquare.SetAttribute("y", square.GetY());
 				}
 		}
 
@@ -280,7 +269,7 @@ UpdateMap::UpdateMap(const Game& game) : Update("map")
 
 //UpdateUndo::UpdateUndo(bool bEnable) : Update("undo")
 //{
-//	m_pRoot->SetAttribute("enable", bEnable);
+//	m_root.SetAttribute("enable", bEnable);
 //}
 
 ShowGameList::ShowGameList() :	Show("game_list_panel") {}
@@ -296,9 +285,9 @@ ChooseTeam::ChooseTeam(const Game& game, bool bActive) : Choose("team", bActive)
 	for (auto c : EnumRange<Colour>())
 		if (!game.GetTeamFromColour(c))
 		{
-			auto e = AddElement("race", *m_pRoot);
-			e->SetAttribute("name", GetRaceName(RaceType::Human));
-			e->SetAttribute("colour", GetColourName(c));
+			auto e = m_root.AddElement("race");
+			e.SetAttribute("name", GetRaceName(RaceType::Human));
+			e.SetAttribute("colour", GetColourName(c));
 		}
 
 	for (auto r : EnumRange<RaceType>())
@@ -307,9 +296,9 @@ ChooseTeam::ChooseTeam(const Game& game, bool bActive) : Choose("team", bActive)
 			Colour c = Race(r).GetColour();
 			if (!game.GetTeamFromColour(c))
 			{
-				auto e = AddElement("race", *m_pRoot);
-				e->SetAttribute("name", GetRaceName(r));
-				e->SetAttribute("colour", GetColourName(c));
+				auto e = m_root.AddElement("race");
+				e.SetAttribute("name", GetRaceName(r));
+				e.SetAttribute("colour", GetColourName(c));
 			}
 		}
 }
@@ -320,15 +309,15 @@ ChooseAction::ChooseAction(const Game& game) : Choose("action")
 
 	bool bCanDoAction = game.CanDoAction();
 
-	m_pRoot->SetAttribute("can_undo",		game.CanRemoveCmd());
-	m_pRoot->SetAttribute("can_explore",	bCanDoAction);
-	m_pRoot->SetAttribute("can_influence",	bCanDoAction);
-	m_pRoot->SetAttribute("can_research",	false);
-	m_pRoot->SetAttribute("can_upgrade",	false);
-	m_pRoot->SetAttribute("can_build",		false);
-	m_pRoot->SetAttribute("can_move",		false);
-	m_pRoot->SetAttribute("can_colonise",	game.GetCurrentTeam().GetUnusedColonyShips() > 0); 
-	m_pRoot->SetAttribute("can_diplomacy",	false);
+	m_root.SetAttribute("can_undo",		game.CanRemoveCmd());
+	m_root.SetAttribute("can_explore",	bCanDoAction);
+	m_root.SetAttribute("can_influence",	bCanDoAction);
+	m_root.SetAttribute("can_research",	false);
+	m_root.SetAttribute("can_upgrade",	false);
+	m_root.SetAttribute("can_build",		false);
+	m_root.SetAttribute("can_move",		false);
+	m_root.SetAttribute("can_colonise",	game.GetCurrentTeam().GetUnusedColonyShips() > 0); 
+	m_root.SetAttribute("can_diplomacy",	false);
 }
 
 ChooseFinished::ChooseFinished() : Choose("finished") 
@@ -337,81 +326,81 @@ ChooseFinished::ChooseFinished() : Choose("finished")
 
 ChooseExplorePos::ChooseExplorePos(const std::vector<MapPos>& positions, bool bCanSkip) : Choose("explore_pos") 
 {
-	m_pRoot->SetAttribute("can_skip", bCanSkip);
+	m_root.SetAttribute("can_skip", bCanSkip);
 
 	for (auto& pos : positions)
 	{
-		auto e = AddElement("pos", *m_pRoot);
-		e->SetAttribute("x", pos.GetX());
-		e->SetAttribute("y", pos.GetY());
+		auto e = m_root.AddElement("pos");
+		e.SetAttribute("x", pos.GetX());
+		e.SetAttribute("y", pos.GetY());
 	}
 }
 
 ChooseExploreHex::ChooseExploreHex(int x, int y, bool bCanTake, bool bCanUndo) : Choose("explore_hex") 
 {
-	m_pRoot->SetAttribute("x", x);
-	m_pRoot->SetAttribute("y", y);
-	m_pRoot->SetAttribute("can_take", bCanTake);
-	m_pRoot->SetAttribute("can_undo", bCanUndo);
+	m_root.SetAttribute("x", x);
+	m_root.SetAttribute("y", y);
+	m_root.SetAttribute("can_take", bCanTake);
+	m_root.SetAttribute("can_undo", bCanUndo);
 }
 
 void ChooseExploreHex::AddHexChoice(int idHex, const std::vector<int>& rotations, bool bCanInfluence)
 {
-	auto e = AddElement("hex", *m_pRoot);
-	e->SetAttribute("id", idHex);
-	e->SetAttribute("can_influence", bCanInfluence);
+	auto eHex = m_root.AddElement("hex");
+	eHex.SetAttribute("id", idHex);
+	eHex.SetAttribute("can_influence", bCanInfluence);
 	
 	for (int r : rotations)
 	{
-		auto e2 = AddElement("rotation", *e);
-		e2->SetAttribute("steps", r);
+		auto eRot = eHex.AddElement("rotation");
+		eRot.SetAttribute("steps", r);
 	}
 }
 
 ChooseDiscovery::ChooseDiscovery(bool bCanUndo) : Choose("discovery") 
 {
-	m_pRoot->SetAttribute("can_undo", bCanUndo);
+	m_root.SetAttribute("can_undo", bCanUndo);
 }
 
 ChooseColonisePos::ChooseColonisePos(const std::vector<MapPos>& hexes) : Choose("colonise_pos") 
 {
 	for (auto& hex : hexes)
 	{
-		auto e = AddElement("pos", *m_pRoot);
-		e->SetAttribute("x", hex.GetX());
-		e->SetAttribute("y", hex.GetY());
+		auto e = m_root.AddElement("pos");
+		e.SetAttribute("x", hex.GetX());
+		e.SetAttribute("y", hex.GetY());
 	}
 }
 
 ChooseColoniseSquares::ChooseColoniseSquares(const int squares[SquareType::_Count], const Population& pop, int nShips) : Choose("colonise_squares") 
 {
-	m_pRoot->SetAttribute("ships", nShips);
+	m_root.SetAttribute("ships", nShips);
 
-	auto pEl = AddElement("square_counts", *m_pRoot);
+	auto eCounts = m_root.AddElement("square_counts");
 	for (int i = 0; i < (int)SquareType::_Count; ++i)
 	{
-		auto pElType = AddElement("type", *pEl);
-		pElType->SetAttribute("name", GetSquareTypeName(SquareType(i)));
-		pElType->SetAttribute("count", squares[i]);
+		auto eType = eCounts.AddElement("type");
+		eType.SetAttribute("name", GetSquareTypeName(SquareType(i)));
+		eType.SetAttribute("count", squares[i]);
 	}
-	pEl = AddElement("max_cubes", *m_pRoot);
+	auto eCubes = m_root.AddElement("max_cubes");
 	for (auto r : EnumRange<Resource>())
 	{
-		auto pElType = AddElement("type", *pEl);
-		pElType->SetAttribute("name", GetResourceName(r));
-		pElType->SetAttribute("count", pop[r]);
+		auto eType = eCubes.AddElement("type");
+		eType.SetAttribute("name", GetResourceName(r));
+		eType.SetAttribute("count", pop[r]);
 	}
 }
 
 ChooseInfluencePos::ChooseInfluencePos(const std::vector<MapPos>& positions, bool bEnableTrack, const std::string& param) : Choose(param) 
 {
-	m_pRoot->SetAttribute("can_select_track", bEnableTrack);
+	m_root.SetAttribute("can_select_track", bEnableTrack);
 
 	for (auto& pos : positions)
 	{
-		auto e = AddElement("pos", *m_pRoot);
-		e->SetAttribute("x", pos.GetX());
-		e->SetAttribute("y", pos.GetY());
+		auto e = m_root.AddElement("pos");
+		e.SetAttribute("x", pos.GetX());
+		e.SetAttribute("y", pos.GetY());
 	}
 }
 

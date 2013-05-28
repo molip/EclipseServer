@@ -1,12 +1,10 @@
 #pragma once
 
 #include "Resources.h"
+#include "Xml.h"
 
 #include <string>
 #include <memory>
-#include "tinyxml.h"
-
-typedef TiXmlDocument XmlDoc;
 
 class Controller;
 class Player;
@@ -32,7 +30,7 @@ MessagePtr CreateMessage(const std::string& xml);
 
 struct Register: Message 
 {
-	Register(const TiXmlElement& node);
+	Register(const Xml::Element& node);
 	int GetPlayerID() const { return m_idPlayer; }
 private:
 	int m_idPlayer;
@@ -40,7 +38,7 @@ private:
 
 struct JoinGame: Message 
 {
-	JoinGame(const TiXmlElement& node);
+	JoinGame(const Xml::Element& node);
 	virtual bool Process(Controller& controller, Player& player) const override; 
 	int m_idGame;
 };
@@ -62,14 +60,14 @@ struct StartGame : Message
 
 struct ChooseTeam : Message 
 {
-	ChooseTeam(const TiXmlElement& node);
+	ChooseTeam(const Xml::Element& node);
 	virtual bool Process(Controller& controller, Player& player) const override; 
 	std::string m_race, m_colour;
 };
 
 struct StartAction : Message 
 {
-	StartAction(const TiXmlElement& node);
+	StartAction(const Xml::Element& node);
 	virtual bool Process(Controller& controller, Player& player) const override; 
 	std::string m_action;
 };
@@ -94,13 +92,13 @@ public:
 
 struct CmdExplorePos : CmdMessage
 {
-	CmdExplorePos(const TiXmlElement& node);
+	CmdExplorePos(const Xml::Element& node);
 	int m_iPos;
 };
 
 struct CmdExploreHex : CmdMessage
 {
-	CmdExploreHex(const TiXmlElement& node);
+	CmdExploreHex(const Xml::Element& node);
 	int m_iRot;
 	int m_iHex;
 	bool m_bInfluence;
@@ -110,18 +108,18 @@ struct CmdExploreHexTake : CmdMessage {};
 
 struct CmdExploreDiscovery : CmdMessage
 {
-	CmdExploreDiscovery(const TiXmlElement& node);
+	CmdExploreDiscovery(const Xml::Element& node);
 };
 
 struct CmdColonisePos : CmdMessage
 {
-	CmdColonisePos(const TiXmlElement& node);
+	CmdColonisePos(const Xml::Element& node);
 	int m_iPos;
 };
 
 struct CmdColoniseSquares : CmdMessage
 {
-	CmdColoniseSquares(const TiXmlElement& node);
+	CmdColoniseSquares(const Xml::Element& node);
 	
 	Population m_fixed, m_grey, m_orbital;
 };
@@ -132,13 +130,13 @@ struct CmdExploreReject : CmdMessage
 
 struct CmdInfluenceSrc : CmdMessage
 {
-	CmdInfluenceSrc(const TiXmlElement& node);
+	CmdInfluenceSrc(const Xml::Element& node);
 	int m_iPos;
 };
 
 struct CmdInfluenceDst : CmdMessage
 {
-	CmdInfluenceDst(const TiXmlElement& node);
+	CmdInfluenceDst(const Xml::Element& node);
 	int m_iPos;
 };
 

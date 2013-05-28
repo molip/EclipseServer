@@ -8,6 +8,7 @@
 #include "ExploreCmd.h"
 #include "InfluenceCmd.h"
 #include "ColoniseCmd.h"
+#include "Xml.h"
 
 #include <sstream>
 
@@ -39,8 +40,10 @@ Colour GetColourFromName(const std::string& colour)
 	return Colour::None;
 }
 
-MessagePtr CreateCommand(const std::string& type, const TiXmlElement& root)
+MessagePtr CreateCommand(const Xml::Element& root)
 {
+	const std::string& type = root.GetAttributeStr("type");
+
 	if (type == "register")
 		return MessagePtr(new Register(root));
 	if (type == "join_game")
@@ -87,16 +90,11 @@ MessagePtr CreateCommand(const std::string& type, const TiXmlElement& root)
 
 MessagePtr CreateMessage(const std::string& xml)
 {
-	XmlDoc doc;
-	doc.Parse(xml.c_str());
-	if (doc.Error())
+	Xml::Document doc;
+	if (!doc.LoadFromString(xml))
 		return false;
 
-	if (TiXmlElement* pRoot = doc.RootElement())
-		if (auto pTypeStr = pRoot->Attribute("type"))
-			return CreateCommand(pTypeStr, *pRoot);
-	
-	return nullptr;
+	return CreateCommand(doc.GetRoot());
 }
 
 Game& Message::GetGameAssert(Player& player) const
@@ -110,15 +108,15 @@ Game& Message::GetGameAssert(Player& player) const
 
 //-----------------------------------------------------------------------------
 	
-Register::Register(const TiXmlElement& node) : m_idPlayer(0)
+Register::Register(const Xml::Element& node) : m_idPlayer(0)
 {
-	node.Attribute("player", &m_idPlayer);
+	node.GetAttribute("player", m_idPlayer);
 	AssertThrowXML("Register", m_idPlayer > 0);
 }
 
-JoinGame::JoinGame(const TiXmlElement& node) : m_idGame(0)
+JoinGame::JoinGame(const Xml::Element& node) : m_idGame(0)
 {
-	node.Attribute("game", &m_idGame);
+	node.GetAttribute("game", m_idGame);
 	AssertThrowXML("JoinGame", m_idGame > 0);
 }
 
@@ -189,10 +187,10 @@ bool StartGame::Process(Controller& controller, Player& player) const
 	return true;	
 }
 
-ChooseTeam::ChooseTeam(const TiXmlElement& node)
+ChooseTeam::ChooseTeam(const Xml::Element& node)
 {
-	m_race = node.Attribute("race");
-	m_colour = node.Attribute("colour");
+	m_race = node.GetAttributeStr("race");
+	m_colour = node.GetAttributeStr("colour");
 }
 
 bool ChooseTeam::Process(Controller& controller, Player& player) const 
@@ -220,9 +218,9 @@ bool ChooseTeam::Process(Controller& controller, Player& player) const
 	return true;	
 }
 
-StartAction::StartAction(const TiXmlElement& node)
+StartAction::StartAction(const Xml::Element& node)
 {
-	m_action = node.Attribute("action");
+	m_action = node.GetAttributeStr("action");
 }
 
 bool StartAction::Process(Controller& controller, Player& player) const 
@@ -297,54 +295,52 @@ bool CmdMessage::Process(Controller& controller, Player& player) const
 	return true;
 }
 
-CmdExplorePos::CmdExplorePos(const TiXmlElement& node) : m_iPos(-1)
+CmdExplorePos::CmdExplorePos(const Xml::Element& node)
 {
-	AssertThrowXML("CmdExplorePos: pos_idx", !!node.Attribute("pos_idx", &m_iPos));
+	m_iPos = node.GetAttributeInt("pos_idx");
 }
 
-CmdExploreHex::CmdExploreHex(const TiXmlElement& node) : m_iRot(0), m_iHex(0), m_bInfluence(false)
+CmdExploreHex::CmdExploreHex(const Xml::Element& node) : m_iRot(0), m_iHex(0), m_bInfluence(false)
 {
-	AssertThrowXML("CmdExploreHex: rot_idx", !!node.Attribute("rot_idx", &m_iRot));
-	AssertThrowXML("CmdExploreHex: hex_idx", !!node.Attribute("hex_idx", &m_iHex));
-	AssertThrowXML("CmdExploreHex: influence", node.QueryBoolAttribute("influence", &m_bInfluence) == TIXML_SUCCESS);
+	m_iRot = node.GetAttributeInt("rot_idx");
+	m_iHex = node.GetAttributeInt("hex_idx");
+	m_bInfluence = node.GetAttributeBool("influence");
 }
 
-CmdExploreDiscovery::CmdExploreDiscovery(const TiXmlElement& node)
+CmdExploreDiscovery::CmdExploreDiscovery(const Xml::Element& node)
 {
 }
 
-CmdColonisePos::CmdColonisePos(const TiXmlElement& node) : m_iPos(-1)
+CmdColonisePos::CmdColonisePos(const Xml::Element& node)
 {
-	AssertThrowXML("CmdColonisePos: pos_idx", !!node.Attribute("pos_idx", &m_iPos));
+	m_iPos = node.GetAttributeInt("pos_idx");
 }
 
-CmdColoniseSquares::CmdColoniseSquares(const TiXmlElement& node)
+CmdColoniseSquares::CmdColoniseSquares(const Xml::Element& node)
 {
-	auto Read = [&] (const TiXmlElement& node, const std::string& type, Population& pops)
+	auto Read = [&] (const std::string& type, Population& pops)
 	{
-		if (const TiXmlElement* pEl = node.FirstChildElement(type))
-		{
-			pEl->Attribute("money", &pops[Resource::Money]);
-			pEl->Attribute("science", &pops[Resource::Science]);
-			pEl->Attribute("materials", &pops[Resource::Materials]);
-		}
+		auto el = node.FindFirstChild(type);
+		pops[Resource::Money] = el.GetAttributeInt("money");
+		pops[Resource::Science] = el.GetAttributeInt("science");
+		pops[Resource::Materials] = el.GetAttributeInt("materials");
 	};
 	
-	Read(node, "fixed", m_fixed);
-	Read(node, "grey", m_grey);
-	Read(node, "orbital", m_orbital);
+	Read("fixed", m_fixed);
+	Read("grey", m_grey);
+	Read("orbital", m_orbital);
 
 	AssertThrowXML("CmdColonise: trying to add materials to orbital", m_orbital[Resource::Materials] == 0);
 }
 
-CmdInfluenceSrc::CmdInfluenceSrc(const TiXmlElement& node) : m_iPos(-1)
+CmdInfluenceSrc::CmdInfluenceSrc(const Xml::Element& node)
 {
-	AssertThrowXML("CmdInfluenceSrc: pos_idx", !!node.Attribute("pos_idx", &m_iPos));
+	m_iPos = node.GetAttributeInt("pos_idx");
 }
 
-CmdInfluenceDst::CmdInfluenceDst(const TiXmlElement& node) : m_iPos(-1)
+CmdInfluenceDst::CmdInfluenceDst(const Xml::Element& node)
 {
-	AssertThrowXML("CmdInfluenceDst: pos_idx", !!node.Attribute("pos_idx", &m_iPos));
+	m_iPos = node.GetAttributeInt("pos_idx");
 }
 
 } // namespace

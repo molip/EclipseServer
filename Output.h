@@ -2,15 +2,12 @@
 
 #include "MapPos.h"
 #include "Hex.h"
+#include "Xml.h"
 
 #include <string>
-#include "tinyxml.h"
-
 #include <memory>
 #include <vector>
 #include <set>
-
-typedef TiXmlDocument XmlDoc;
 
 class Model;
 class Game;
@@ -25,16 +22,11 @@ class Message
 {
 public:
 	virtual ~Message() {}
-	const std::string& GetXML() const;
+	std::string GetXML() const;
 
 protected:
-	//virtual void Create() {}
-	TiXmlElement* AddElement(const std::string& name, TiXmlNode& parent);
-	TiXmlElement* AddElement(const std::string& name) { return AddElement(name, m_doc); }
-	XmlDoc m_doc;
-
-private:
-	mutable std::unique_ptr<TiXmlPrinter> m_pPrinter;
+	Xml::Document m_doc;
+	Xml::Element m_root;
 };
 
 struct Command : Message
