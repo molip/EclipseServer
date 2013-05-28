@@ -98,10 +98,10 @@ const std::string& Element::GetAttributeStr(const std::string& name) const
 
 int Element::GetAttributeInt(const std::string& name) const
 {
-	AssertThrow("Element::GetAttributeStr: null element", !!m_pElem);
+	AssertThrow("Element::GetAttributeInt: null element", !!m_pElem);
 	int val = 0;
 	auto pStr = m_pElem->Attribute(name, &val);
-	AssertThrow("Element::GetAttributeStr: attribute not found", !!pStr);
+	AssertThrow("Element::GetAttributeInt: attribute not found", !!pStr);
 	return val;
 }
 
@@ -110,15 +110,15 @@ bool Element::GetAttributeBool(const std::string& name) const
 	AssertThrow("Element::GetAttributeBool: null element", !!m_pElem);
 	bool val = false;
 	bool bOK = m_pElem->QueryBoolAttribute(name.c_str(), &val) == TIXML_SUCCESS;
-	AssertThrow("Element::GetAttributeStr: attribute not found", bOK);
+	AssertThrow("Element::GetAttributeBool: attribute not found", bOK);
 	return val;
 }
 
 Element Element::FindFirstChild(const std::string& name) const
 {
-	AssertThrow("Element::GetChild: null element", !!m_pElem);
+	AssertThrow("Element::FindFirstChild: null element", !!m_pElem);
 	auto pEl = m_pElem->FirstChildElement(name);
-	AssertThrow("Element::GetAttributeStr: child not found", !!pEl);
+	AssertThrow("Element::FindFirstChild: child not found", !!pEl);
 	return Element(pEl);
 }
 
