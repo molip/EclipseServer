@@ -27,21 +27,23 @@ public:
 	const std::string& GetName() const { return m_name; }
 	const Player& GetOwner() const { return m_owner; }
 
-	bool AddTeam(Player& player);
-	const std::map<Player*, TeamPtr>& GetTeams() const { return m_teams; }
-	const std::vector<Player*>& GetTeamOrder() const { return m_teamOrder; }
+	void AddPlayer(Player& player);
+	const std::vector<TeamPtr>& GetTeams() const { return m_teams; }
 
 	void AssignTeam(Player& player, RaceType race, Colour colour);
 	void HaveTurn(Player& player);
 	
-	bool HasTeamChosen(Player& player) const;
-	const Team& GetTeam(const Player& player) const;
-	Team& GetTeam(Player& player);
+	bool HasTeamChosen(const Team& team) const;
+	Team* FindTeam(const Player& player);
+
+	Team& GetTeam(const Player& player);
 	const Player& GetCurrentPlayer() const;
 	Player& GetCurrentPlayer();
-	const Team& GetCurrentTeam() const;
 	Team& GetCurrentTeam();
-	const Team* GetTeamFromColour(Colour c) const;
+	const Team* FindTeam(Colour c) const;
+
+	const Team& GetTeam(const Player& player) const { return const_cast<Game*>(this)->GetTeam(player); }
+	const Team& GetCurrentTeam() const { return const_cast<Game*>(this)->GetCurrentTeam(); }
 
 	void StartChooseTeamPhase();
 	void StartMainPhase();
@@ -80,14 +82,13 @@ private:
 	Map	m_map;
 	std::multiset<TechType> m_techs;
 
-	std::map<Player*, TeamPtr> m_teams;
+	std::vector<TeamPtr> m_teams;
 	
 	ReputationBag m_repBag;
 	TechnologyBag m_techBag;
 	DiscoveryBag m_discBag;
 	HexBag m_hexBag[HexRing::_Count];
 
-	std::vector<Player*> m_teamOrder;
 	std::set<RaceType, Colour> m_availableRaces;
 	int m_iTurn, m_iRound;
 	int m_iStartTeam, m_iStartTeamNext;

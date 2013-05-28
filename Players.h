@@ -8,16 +8,13 @@
 class Players
 {
 public:
-	Players();
+	static Player& Add(const std::string& name, const std::string& password);
 
-	Player& AddPlayer(const std::string& name, const std::string& password);
-
-	Player& FindPlayer(int idPlayer);
-	const Player& FindPlayer(int idPlayer) const;
-	const Player* FindPlayer(const std::string& name) const;
+	static Player& Get(int idPlayer);
+	static Player* Find(const std::string& name);
 
 private:
-	std::map<int, PlayerPtr> m_map;
-	int m_nNextID;
+	static std::map<int, PlayerPtr> s_map;
+	static int s_nNextID;
 };
 

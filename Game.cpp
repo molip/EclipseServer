@@ -4,6 +4,7 @@
 #include "Player.h"
 #include "CmdStack.h"
 #include "EnumTraits.h"
+#include "Players.h"
 
 #include <algorithm>
 
@@ -24,10 +25,11 @@ Game::~Game()
 	delete m_pCmdStack;
 }
 
-bool Game::AddTeam(Player& player)
+void Game::AddPlayer(Player& player)
 {
 	AssertThrow("Game::AddTeam: Game already started: " + m_name, !HasStarted());
-	return m_teams.insert(std::make_pair(&player, nullptr)).second; // OK if already added.
+	if (!FindTeam(player))
+		m_teams.push_back(TeamPtr(new Team(m_id, player.GetID())));
 }
 
 void Game::StartChooseTeamPhase()
@@ -40,9 +42,7 @@ void Game::StartChooseTeamPhase()
 	m_iTurn = m_iStartTeam = m_iStartTeamNext = 0;
 
 	// Decide team order.
-	for (auto& i : m_teams)
-		m_teamOrder.push_back(i.first);
-	std::shuffle(m_teamOrder.begin(), m_teamOrder.end(), GetRandom());
+	std::shuffle(m_teams.begin(), m_teams.end(), GetRandom());
 
 	//for (int i = 0; i < FakePlayers; ++i)
 	//{
@@ -55,7 +55,7 @@ void Game::StartChooseTeamPhase()
 
 	// Initialise hex bags.
 	for (auto r : EnumRange<HexRing>())
-		m_hexBag[(int)r] = HexBag(r, m_teamOrder.size());
+		m_hexBag[(int)r] = HexBag(r, m_teams.size());
 }
 
 void Game::StartMainPhase()
@@ -66,10 +66,10 @@ void Game::StartMainPhase()
 
 	// Initialise starting hexes.
 	auto startPositions = m_map.GetTeamStartPositions();
-	assert(startPositions.size() == m_teamOrder.size());
-	for (size_t i = 0; i < m_teamOrder.size(); ++i)
+	assert(startPositions.size() == m_teams.size());
+	for (size_t i = 0; i < m_teams.size(); ++i)
 	{
-		Team& team = GetTeam(*m_teamOrder[i]);
+		Team& team = *m_teams[i];
 		Race r(team.GetRace());
 		int idHex = r.GetStartSector(team.GetColour());
 
@@ -103,65 +103,53 @@ void Game::AssertStarted() const
 	AssertThrow("Game not started yet: " + m_name, HasStarted());
 }
 
-bool Game::HasTeamChosen(Player& player) const
+bool Game::HasTeamChosen(const Team& team) const
 {
-	auto i = m_teams.find(&player);
-	AssertThrow("Game::HasTeamChosen: Team not found: " + player.GetName(), i != m_teams.end());
-	return i->second.get() != nullptr;
+	return team.GetRace() != RaceType::None;
 }
 
-const Team& Game::GetTeam(const Player& player) const
+Team* Game::FindTeam(const Player& player)
 {
-	auto i = m_teams.find(const_cast<Player*>(&player));
-	AssertThrow("Game::GetTeam: Team not found: " + player.GetName(), i != m_teams.end());
-	const Team* pTeam = i->second.get();
-	AssertThrow("Game::GetTeam: Team not chosen: " + player.GetName(), !!pTeam);
+	for (auto& t : m_teams)
+		if (t->GetPlayerID() == player.GetID())
+			return t.get();
+	return nullptr;
+}
+
+Team& Game::GetTeam(const Player& player)
+{
+	Team* pTeam = FindTeam(player);
+	AssertThrow("Game::GetTeam: player not in game: " + player.GetName(), !!pTeam);
 	return *pTeam;
-}
-
-Team& Game::GetTeam(Player& player)
-{
-	return const_cast<Team&>(const_cast<const Game*>(this)->GetTeam(player));
-}
-
-Player& Game::GetCurrentPlayer() 
-{
-	return const_cast<Player&>(const_cast<const Game*>(this)->GetCurrentPlayer());
 }
 
 const Player& Game::GetCurrentPlayer() const
 {
-	AssertStarted();
+	return Players::Get(GetCurrentTeam().GetPlayerID());
+}
 
-	return *m_teamOrder[(m_iStartTeam + m_iTurn) % m_teams.size()];
+Player& Game::GetCurrentPlayer() 
+{
+	return Players::Get(GetCurrentTeam().GetPlayerID());
 }
 
 Team& Game::GetCurrentTeam()
 {
-	return GetTeam(GetCurrentPlayer());
+	AssertStarted();
+	return *m_teams[(m_iStartTeam + m_iTurn) % m_teams.size()];
 }
 
-const Team& Game::GetCurrentTeam() const
+const Team* Game::FindTeam(Colour c) const
 {
-	return GetTeam(GetCurrentPlayer());
-}
-
-const Team* Game::GetTeamFromColour(Colour c) const
-{
-	for (auto& i : m_teams)
-		if (const Team* pTeam = i.second.get())
-			if (pTeam->GetColour() == c)
-				return pTeam;
+	for (auto& t : m_teams)
+		if (t->GetColour() == c)
+			return t.get();
 	return nullptr;
 }
 
 void Game::AssignTeam(Player& player, RaceType race, Colour colour)
 {
-	auto i = m_teams.find(&player);
-	AssertThrow("Game::AssignTeam: Team not found: " + player.GetName(), i != m_teams.end());
-	AssertThrow("Game::AssignTeam: Team already assigned: " + player.GetName(), i->second == nullptr);
-
-	i->second = TeamPtr(new Team(*this, player, race, colour));
+	GetTeam(player).Assign(race, colour);
 
 	AdvanceTurn();
 	if (m_iTurn == 0)

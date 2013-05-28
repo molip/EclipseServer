@@ -26,11 +26,13 @@ class Player;
 class Team
 {
 public:
-
-	Team(Game& game, Player& player, RaceType race, Colour colour);
+	Team(int idGame, int idPlayer);
 	~Team();
 
-	const Player& GetPlayer() const { return m_player; }
+	void Team::Assign(RaceType race, Colour colour);
+
+	const int GetPlayerID() const { return m_idPlayer; }
+	const Player& GetPlayer() const;
 	const RaceType& GetRace() const { return m_race; }
 	Colour GetColour() const { return m_colour; }
 
@@ -68,8 +70,7 @@ public:
 	static bool IsAncientAlliance(const Team* pTeam1, const Team* pTeam2);
 
 private:
-	Game& m_game;
-	Player& m_player;
+	int m_idGame, m_idPlayer;
 	RaceType m_race;
 	Colour m_colour;
 

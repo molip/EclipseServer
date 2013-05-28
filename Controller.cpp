@@ -1,22 +1,21 @@
 #include "Controller.h"
-#include "Model.h"
 #include "WSServer.h"
 #include "Output.h"
 #include "Input.h"
 #include "Player.h"
+#include "Game.h"
 
 #include "App.h"
 
 SINGLETON(Controller)
 
-Controller::Controller(Model& model) : m_model(model)
+Controller::Controller()
 {
-	model.SetController(this);
 }
 
 void Controller::SendUpdateGameList(const Player* pPlayer) const
 {
-	Output::UpdateGameList msg(m_model);
+	Output::UpdateGameList msg;
 	if (pPlayer)
 		m_pServer->SendMessage(msg, *pPlayer);
 	else
@@ -40,8 +39,8 @@ bool Controller::SendMessage(const Output::Message& msg, const Game& game, const
 	if (!pPlayer)
 	{
 		for (auto& t : game.GetTeams())
-			if (t.first->GetCurrentGame() == &game)
-				m_pServer->SendMessage(str, *t.first);
+			if (t->GetPlayer().GetCurrentGame() == &game)
+				m_pServer->SendMessage(str, t->GetPlayer());
 	}
 	else
 	{
@@ -95,10 +94,10 @@ void Controller::SendUpdateGame(const Game& game, const Player* pPlayer) const
 		SendMessage(Output::ShowGame(), game, pPlayer);
 		SendMessage(Output::UpdateTeams(game), game, pPlayer);
 	
-		for (auto& team : game.GetTeams())
+		for (auto& pTeam : game.GetTeams())
 		{
-			const Team* pTeam = team.second.get();
-			AssertThrow("Controller::SendUpdateGame: Team not chosen yet: " + team.first->GetName(), !!pTeam);
+			const Player& player = pTeam->GetPlayer();
+			AssertThrow("Controller::SendUpdateGame: Team not chosen yet: " + player.GetName(), !!pTeam);
 			SendMessage(Output::UpdateTeam(*pTeam), game, pPlayer);
 			SendMessage(Output::UpdateInfluenceTrack(*pTeam), game, pPlayer);
 			SendMessage(Output::UpdateTechnologyTrack(*pTeam), game, pPlayer);
@@ -107,14 +106,14 @@ void Controller::SendUpdateGame(const Game& game, const Player* pPlayer) const
 
 			// Reputation tile values are secret, so only send them to the relevant player. 
 			auto SendUpdateReputationTrack = [&] (const Player& player) { 
-				SendMessage(Output::UpdateReputationTrack(*pTeam, &player == &pTeam->GetPlayer()), game, &player); };
+				SendMessage(Output::UpdateReputationTrack(*pTeam, &player == &player), game, &player); };
 
 			if (pPlayer)
 				SendUpdateReputationTrack(*pPlayer);
 			else
 				for (auto& t : game.GetTeams())
-					if (t.first->GetCurrentGame() == &game)
-						SendUpdateReputationTrack(*t.first);
+					if (player.GetCurrentGame() == &game)
+						SendUpdateReputationTrack(player);
 		}
 		SendMessage(Output::UpdateMap(game), game, pPlayer);
 

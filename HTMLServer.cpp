@@ -5,7 +5,7 @@
 #include "App.h"
 #include "Game.h"
 #include "Controller.h"
-#include "Model.h"
+#include "Players.h"
 
 namespace
 {
@@ -62,7 +62,7 @@ bool HTMLServer::OnHTTPRequest(const std::string& url, const std::string& host, 
 		if (pid != queries.end())
 		{
 			const std::string& name = pid->second;
-			if (const Player* pPlayer = Controller::Get()->GetModel().FindPlayer(name))
+			if (const Player* pPlayer = Players::Find(name))
 			{
 				ASSERT(host.substr(host.size() - 5) == ":8999");
 				std::string wsURL = std::string("ws://") + host.substr(0, host.size() - 4) + "8998";

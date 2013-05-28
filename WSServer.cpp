@@ -5,7 +5,7 @@
 #include "Output.h"
 #include "Input.h"
 #include "Player.h"
-#include "Model.h"
+#include "Players.h"
 
 WSServer::WSServer(Controller& controller) : MongooseServer(8998), m_controller(controller)
 {
@@ -28,7 +28,7 @@ void WSServer::OnMessage(ClientID client, const std::string& message)
 		{
 			if (auto pRegister = dynamic_cast<const Input::Register*>(pMsg.get()))
 			{
-				RegisterPlayer(client, m_controller.GetModel().FindPlayer(pRegister->GetPlayerID()));
+				RegisterPlayer(client, Players::Get(pRegister->GetPlayerID()));
 			}
 			else
 			{

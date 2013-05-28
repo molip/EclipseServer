@@ -95,7 +95,7 @@
     <ClInclude Include="Map.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="MapPos.h" />
-    <ClInclude Include="Model.h" />
+    <ClInclude Include="Games.h" />
     <ClInclude Include="mongoose.h" />
     <ClInclude Include="MongooseServer.h" />
     <ClInclude Include="Output.h" />
@@ -141,7 +141,7 @@
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="MapPos.cpp" />
-    <ClCompile Include="Model.cpp" />
+    <ClCompile Include="Games.cpp" />
     <ClCompile Include="MongooseServer.cpp" />
     <ClCompile Include="mongoose.c" />
     <ClCompile Include="Output.cpp" />

@@ -52,7 +52,7 @@ struct Choose : Command
 	Choose(const std::string& param, bool bActive = true);
 };
 
-struct UpdateGameList : Update { UpdateGameList(const Model& model); };
+struct UpdateGameList : Update { UpdateGameList(); };
 struct UpdateLobby : Update { UpdateLobby(const Game& game); };
 struct UpdateLobbyControls : Update { UpdateLobbyControls(bool bShow); };
 struct UpdateChoose : Update { UpdateChoose(const Game& game); };

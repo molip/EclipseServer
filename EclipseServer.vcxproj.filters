@@ -36,9 +36,6 @@
     <ClInclude Include="Map.h">
       <Filter>Model</Filter>
     </ClInclude>
-    <ClInclude Include="Model.h">
-      <Filter>Model</Filter>
-    </ClInclude>
     <ClInclude Include="Team.h">
       <Filter>Model</Filter>
     </ClInclude>
@@ -147,6 +144,9 @@
     <ClInclude Include="Xml.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="Games.h">
+      <Filter>Model</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -193,9 +193,6 @@
     </ClCompile>
     <ClCompile Include="Controller.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Model.cpp">
-      <Filter>Model</Filter>
     </ClCompile>
     <ClCompile Include="tinyxml.cpp">
       <Filter>Source Files</Filter>
@@ -274,6 +271,9 @@
     </ClCompile>
     <ClCompile Include="Xml.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Games.cpp">
+      <Filter>Model</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

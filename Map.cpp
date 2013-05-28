@@ -22,7 +22,7 @@ const Hex* Map::GetHex(const MapPos& pos) const
 
 std::vector<MapPos> Map::GetTeamStartPositions() const
 {
-	const int nTeams = m_game.GetTeamOrder().size();
+	const int nTeams = m_game.GetTeams().size();
 	AssertThrowModel("Map::GetTeamStartPositions", nTeams > 0 && nTeams < 7);
 
 	std::string s;

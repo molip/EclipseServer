@@ -1,6 +1,5 @@
 #include "Input.h"
 #include "App.h"
-#include "Model.h"
 #include "Controller.h"
 #include "Output.h"
 #include "Race.h"
@@ -10,6 +9,7 @@
 #include "ColoniseCmd.h"
 #include "Xml.h"
 #include "EnumTraits.h"
+#include "Games.h"
 
 #include <sstream>
 
@@ -104,7 +104,7 @@ namespace
 		player.SetCurrentGame(&game);
 		if (!game.HasStarted())
 		{
-			game.AddTeam(player); // Might already have joined,  doesn't matter.
+			game.AddPlayer(player); // Might already have joined,  doesn't matter.
 			controller.SendMessage(Output::UpdateLobby(game), game);
 			controller.SendUpdateGameList();
 		}
@@ -114,10 +114,7 @@ namespace
 
 bool JoinGame::Process(Controller& controller, Player& player) const 
 {
-	Game* pGame = controller.GetModel().FindGame(m_idGame);
-	AssertThrow("JoinGame: game does not exist: " + FormatInt(m_idGame), !!pGame);
-
-	DoJoinGame(controller, player, *pGame);
+	DoJoinGame(controller, player, Games::Get(m_idGame));
 	return true;
 }
 
@@ -134,11 +131,9 @@ bool ExitGame::Process(Controller& controller, Player& player) const
 
 bool CreateGame::Process(Controller& controller, Player& player) const 
 {
-	Model& model = controller.GetModel();
-	
 	std::ostringstream ss;
-	ss << "Game " <<  model.GetGames().size() + 1;
-	Game& game = model.AddGame(ss.str(), player);
+	ss << "Game " <<  Games::GetGames().size() + 1;
+	Game& game = Games::Add(ss.str(), player);
 
 	DoJoinGame(controller, player, game);
 
@@ -147,8 +142,6 @@ bool CreateGame::Process(Controller& controller, Player& player) const
 
 bool StartGame::Process(Controller& controller, Player& player) const 
 {
-	Model& model = controller.GetModel();
-	
 	Game* pGame = player.GetCurrentGame();
 
 	AssertThrow("StartGame: player not registered in any game", !!pGame);
@@ -181,7 +174,7 @@ bool ChooseTeam::Process(Controller& controller, Player& player) const
 
 	AssertThrowXML("ChooseTeam:race", race != RaceType::None);
 	AssertThrowXML("ChooseTeam:colour", colour != Colour::None);
-	AssertThrowXML("ChooseTeam: colour already taken", !pGame->GetTeamFromColour(colour));
+	AssertThrowXML("ChooseTeam: colour already taken", !pGame->FindTeam(colour));
 
 	if (race != RaceType::Human)
 		AssertThrowXML("ChooseTeam: colour doesn't match race", colour == Race(race).GetColour());

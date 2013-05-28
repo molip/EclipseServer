@@ -1,12 +1,13 @@
 #include "Output.h"
 #include "App.h"
-#include "Model.h"
 #include "Team.h"
 #include "Race.h"
 #include "EnumRange.h"
 #include "Player.h"
 #include "Technology.h"
 #include "EnumTraits.h"
+#include "Game.h"
+#include "Games.h"
 
 namespace Output
 {
@@ -40,9 +41,9 @@ Choose::Choose(const std::string& param, bool bActive) : Command("choose")
 	m_root.SetAttribute("active", bActive);
 }
 
-UpdateGameList::UpdateGameList(const Model& model) : Update("game_list")
+UpdateGameList::UpdateGameList() : Update("game_list")
 {
-	for (auto& g : model.GetGames())
+	for (auto& g : Games::GetGames())
 	{
 		auto gameNode = m_root.AddElement("game");
 		gameNode.SetAttribute("name", g->GetName());
@@ -51,10 +52,10 @@ UpdateGameList::UpdateGameList(const Model& model) : Update("game_list")
 		gameNode.SetAttribute("started", g->HasStarted());
 	
 		for (auto& i : g->GetTeams())
-			if (i.first != &g->GetOwner())
+			if (i->GetPlayerID() != g->GetOwner().GetID())
 			{
 				auto playerNode = gameNode.AddElement("player");
-				playerNode.SetAttribute("name", i.first->GetName());
+				playerNode.SetAttribute("name", i->GetPlayer().GetName());
 			}
 	}
 }
@@ -63,11 +64,11 @@ UpdateLobby::UpdateLobby(const Game& game) : Update("lobby")
 {
 	m_root.SetAttribute("owner", game.GetOwner().GetName());
 	m_root.SetAttribute("game", game.GetName());
-	for (auto& i : game.GetTeams())
-		if (i.first != &game.GetOwner())
+	for (auto& t : game.GetTeams())
+		if (t->GetPlayerID() != game.GetOwner().GetID())
 		{
 			auto pPlayerNode = m_root.AddElement("player");
-			pPlayerNode.SetAttribute("name", i.first->GetName());
+			pPlayerNode.SetAttribute("name", t->GetPlayer().GetName());
 		}
 }
 
@@ -79,15 +80,14 @@ UpdateLobbyControls::UpdateLobbyControls(bool bShow) : Update("lobby_controls")
 UpdateChoose::UpdateChoose(const Game& game) : Update("choose_team")
 {
 	m_root.SetAttribute("game", game.GetName());
-	for (auto& i : game.GetTeamOrder())
+	for (auto& t : game.GetTeams())
 	{
 		auto pTeamNode = m_root.AddElement("team");
-		pTeamNode.SetAttribute("name", i->GetName());
-		if (game.HasTeamChosen(*i))
+		pTeamNode.SetAttribute("name", t->GetPlayer().GetName());
+		if (game.HasTeamChosen(*t))
 		{
-			const Team& team = game.GetTeam(*i);
-			pTeamNode.SetAttribute("race", EnumTraits<RaceType>::ToString(team.GetRace()));
-			pTeamNode.SetAttribute("colour", EnumTraits<Colour>::ToString(team.GetColour()));
+			pTeamNode.SetAttribute("race", EnumTraits<RaceType>::ToString(t->GetRace()));
+			pTeamNode.SetAttribute("colour", EnumTraits<Colour>::ToString(t->GetColour()));
 		}
 	}
 }
@@ -97,13 +97,13 @@ UpdateTeams::UpdateTeams(const Game& game) : Update("teams")
 	AssertThrow("UpdateTeams: Game not started yet: " + game.GetName(), game.GetPhase() == Game::Phase::Main);
 
 	m_root.SetAttribute("teams", game.GetName());
-	for (Player* pPlayer : game.GetTeamOrder())
+	for (auto& pTeam : game.GetTeams())
 	{
-		AssertThrow("UpdateTeams: Team not chosen yet: " + pPlayer->GetName(), game.HasTeamChosen(*pPlayer));
+		AssertThrow("UpdateTeams: Team not chosen yet: " + pTeam->GetPlayer().GetName(), game.HasTeamChosen(*pTeam));
 
 		auto pTeamNode = m_root.AddElement("team");
-		pTeamNode.SetAttribute("name", pPlayer->GetName());
-		pTeamNode.SetAttribute("id", pPlayer->GetID());
+		pTeamNode.SetAttribute("name", pTeam->GetPlayer().GetName());
+		pTeamNode.SetAttribute("id", pTeam->GetPlayerID());
 	}
 }
 
@@ -214,7 +214,7 @@ ChooseTeam::ChooseTeam(const Game& game, bool bActive) : Choose("team", bActive)
 		return;
 
 	for (auto c : EnumRange<Colour>())
-		if (!game.GetTeamFromColour(c))
+		if (!game.FindTeam(c))
 		{
 			auto e = m_root.AddElement("race");
 			e.SetAttribute("name", EnumTraits<RaceType>::ToString(RaceType::Human));
@@ -225,7 +225,7 @@ ChooseTeam::ChooseTeam(const Game& game, bool bActive) : Choose("team", bActive)
 		if (r != RaceType::Human)
 		{
 			Colour c = Race(r).GetColour();
-			if (!game.GetTeamFromColour(c))
+			if (!game.FindTeam(c))
 			{
 				auto e = m_root.AddElement("race");
 				e.SetAttribute("name", EnumTraits<RaceType>::ToString(r));

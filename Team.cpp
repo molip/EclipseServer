@@ -4,10 +4,20 @@
 #include "Game.h"
 #include "EnumRange.h"
 #include "EnumTraits.h"
+#include "Games.h"
+#include "Players.h"
 
-Team::Team(Game& game, Player& player, RaceType race, Colour colour) : 
-	m_game(game), m_player(player), m_race(race), m_colour(colour), m_nColonyShipsUsed(0), m_repTrack(*this)
+Team::Team(int idGame, int idPlayer) :
+	m_idGame(idGame), m_idPlayer(idPlayer), m_race(RaceType::None), m_colour(Colour::None), m_nColonyShipsUsed(0), m_repTrack(*this)
 {
+}
+
+void Team::Assign(RaceType race, Colour colour)
+{
+	AssertThrowModel("Team::Assign", m_race == RaceType::None);
+	m_race = race;
+	m_colour = colour;
+
 	Race r(race);
 	m_storage = r.GetStartStorage();
 	m_nColonyShips = r.GetStartColonyShips();
@@ -21,7 +31,7 @@ Team::Team(Game& game, Player& player, RaceType race, Colour colour) :
 	m_repTrack.SetSlots(r.GetReputationSlots());
 
 	for (int i = 0; i < r.GetStartReputationTiles(); ++i)
-		m_repTrack.AddReputationTile(m_game.GetReputationBag().TakeTile());
+		m_repTrack.AddReputationTile(Games::Get(m_idGame).GetReputationBag().TakeTile());
 	
 	for (auto i : EnumRange<ShipType>())
 		m_blueprints[(int)i] = r.GetBlueprint(i);
@@ -37,6 +47,11 @@ Team::Team(Game& game, Player& player, RaceType race, Colour colour) :
 
 Team::~Team()
 {
+}
+
+const Player& Team::GetPlayer() const
+{
+	return Players::Get(m_idPlayer);
 }
 
 void Team::AddShips(ShipType type, int nShips)
