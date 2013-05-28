@@ -16,15 +16,14 @@ public:
 	const std::string& GetName() const { return m_name; }
 	const std::string& GetPassword() const { return m_password; }
 
-	const Game* GetCurrentGame() const { return m_pCurrentGame; }
-	Game* GetCurrentGame() { return m_pCurrentGame; }
+	Game* GetCurrentGame() const;
 	void SetCurrentGame(Game* pGame);
 
 	Team* GetCurrentTeam();
 
 private:
-	Game* m_pCurrentGame;
 	int m_id;
+	int m_idCurrentGame;
 	std::string m_name, m_password;
 };
 
