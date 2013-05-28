@@ -14,7 +14,7 @@ namespace
 }
 
 Game::Game(int id, const std::string& name, Player& owner) : 
-	m_id(id), m_name(name), m_owner(owner), m_phase(Phase::Lobby), m_iTurn(-1), m_iRound(-1), m_iStartTeam(-1), m_iStartTeamNext(-1),
+	m_id(id), m_name(name), m_idOwner(owner.GetID()), m_phase(Phase::Lobby), m_iTurn(-1), m_iRound(-1), m_iStartTeam(-1), m_iStartTeamNext(-1),
 	m_map(*this)
 {
 	m_pCmdStack = new CmdStack;
@@ -23,6 +23,11 @@ Game::Game(int id, const std::string& name, Player& owner) :
 Game::~Game()
 {
 	delete m_pCmdStack;
+}
+
+const Player& Game::GetOwner() const
+{
+	return Players::Get(m_idOwner);
 }
 
 void Game::AddPlayer(Player& player)

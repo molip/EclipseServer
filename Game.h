@@ -25,7 +25,7 @@ public:
 	
 	int GetID() const { return m_id; }
 	const std::string& GetName() const { return m_name; }
-	const Player& GetOwner() const { return m_owner; }
+	const Player& GetOwner() const;
 
 	void AddPlayer(Player& player);
 	const std::vector<TeamPtr>& GetTeams() const { return m_teams; }
@@ -77,7 +77,7 @@ private:
 	
 	int m_id; 
 	std::string m_name;
-	Player& m_owner;
+	int m_idOwner;
 	Phase m_phase;
 
 	Map	m_map;
