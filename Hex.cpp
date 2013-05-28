@@ -47,7 +47,7 @@ std::vector<Edge> EdgeSet::GetEdges() const
 
 //-----------------------------------------------------------------------------
 
-Square::Square(int x, int y, SquareType type, bool bAdvanced) : m_x(x), m_y(y), m_type(type), m_bAdvanced(bAdvanced), m_pOwner(nullptr)
+Square::Square(int x, int y, SquareType type, bool bAdvanced) : m_x(x), m_y(y), m_type(type), m_bAdvanced(bAdvanced), m_bOccupied(false)
 {
 }
 
@@ -63,17 +63,17 @@ TechType Square::GetRequiredTech() const
 	return TechType::None;
 }
 
-void Square::SetOwner(Team* pOwner)
+//-----------------------------------------------------------------------------
+const Team* Ship::GetOwner(const Game& game) const
 {
-	AssertThrowModel("Square::SetOwner", !m_pOwner || !pOwner);
-	m_pOwner = pOwner;
+	return m_colour == Colour::None ? nullptr : &game.GetTeam(m_colour);
 }
 
 //-----------------------------------------------------------------------------
 
 Hex::Hex(Game* pGame, int id, const MapPos& pos, int nRotation) : 
 	m_id(id), m_pos(pos), m_nRotation(nRotation), m_discovery(DiscoveryType::None), 
-	m_nVictory(0), m_bArtifact(false), m_pOwner(nullptr)
+	m_nVictory(0), m_bArtifact(false), m_colour(Colour::None)
 {
 	AssertThrow("Hex::Hex: Invalid rotation", nRotation >= 0 && nRotation < 6);
 	Init(pGame);
@@ -84,51 +84,69 @@ bool Hex::HasWormhole(Edge e) const
 	return m_wormholes[RotateEdge(e, -m_nRotation)];
 }
 
-std::vector<Square*> Hex::GetAvailableSquares() 
+std::vector<Square*> Hex::GetAvailableSquares(const Team& team) 
 {
-	AssertThrow("Hex::GetAvailableSquares", !!m_pOwner);
+	AssertThrow("Hex::GetAvailableSquares", m_colour == team.GetColour());
 	
 	std::vector<Square*> squares;
 
 	for (Square& s : m_squares)
-		if (!s.GetOwner() && m_pOwner->HasTech(s.GetRequiredTech()))
+		if (!s.IsOccupied() && team.HasTech(s.GetRequiredTech()))
 			squares.push_back(&s);
 	return squares;
 }
 
-void Hex::AddShip(ShipType type, Team* pOwner)
+void Hex::AddShip(ShipType type, Colour owner)
 {
-	m_ships.push_back(Ship(type, pOwner));
+	m_ships.push_back(Ship(type, owner));
 }
 
-bool Hex::HasShip(const Team* pOwner) const
+bool Hex::HasShip(const Team* pTeam) const
 {
+	Colour c = pTeam ? pTeam->GetColour() : Colour::None;
 	for (auto& s : m_ships)
-		if (s.GetOwner() == pOwner)
+		if (s.GetColour() == c)
 			return true;
 	return false;
 }
 
-bool Hex::HasEnemyShip(const Team* pTeam) const
+bool Hex::HasEnemyShip(const Game& game, const Team* pTeam) const
 {
+	Colour c = pTeam ? pTeam->GetColour() : Colour::None;
 	for (auto& s : m_ships)
-		if (s.GetOwner() != pTeam && !Team::IsAncientAlliance(pTeam, s.GetOwner()))
+	{
+		auto pShipOwner = s.GetOwner(game);
+		if (s.GetColour() != c && !Team::IsAncientAlliance(pTeam, pShipOwner))
 			return true;
+	}
 	return false;
 }
 
-bool Hex::HasForeignShip(const Team* pTeam) const
+bool Hex::HasForeignShip(const Game& game, const Team* pTeam) const
 {
 	for (auto& s : m_ships)
-		if (s.GetOwner() != pTeam)
+	{
+		auto pShipOwner = s.GetOwner(game);
+		if (pShipOwner != pTeam)
 			return true;
+	}
 	return false;
 }
 
-void Hex::SetOwner(Team* pOwner)
+void Hex::SetColour(Colour c)
 {
-	AssertThrowModel("Hex::SetOwner", (pOwner == nullptr) != (m_pOwner == nullptr));
-	m_pOwner = pOwner;
+	AssertThrowModel("Hex::SetOwner", (c == Colour::None) != (m_colour == Colour::None));
+	m_colour = c;
+}
+
+bool Hex::IsOwned() const
+{
+	return m_colour != Colour::None;
+}
+
+bool Hex::IsOwnedBy(const Team& team) const
+{
+	return m_colour == team.GetColour();
 }
 
 void Hex::RemoveDiscoveryTile()
@@ -156,7 +174,7 @@ void Hex::Init(Game* pGame)
 		AddSquare(270, 328, SquareType::Any, false);
 		SetWormholes("111111");
 		m_nVictory = 4, m_bArtifact = true;
-		AddShip(ShipType::GCDS, nullptr);
+		AddShip(ShipType::GCDS, Colour::None);
 		break;
 	case 101:
 		AddSquare(310, 113, SquareType::Money, false);
@@ -464,7 +482,7 @@ void Hex::Init(Game* pGame)
 	}
 
 	for (int i = 0; i < nAncients; ++i)
-		AddShip(ShipType::Ancient, nullptr);
+		AddShip(ShipType::Ancient, Colour::None);
 
 	bDiscovery |= nAncients > 0;
 

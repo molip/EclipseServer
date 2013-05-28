@@ -69,16 +69,16 @@ void Map::GetInfluencableNeighbours(const MapPos& pos, const Team& team, std::se
 
 	const Hex* pHex = GetHex(pos);
 	AssertThrow("Map::GetInfluencableNeighbours: invalid position", !!pHex);
-	AssertThrow("Map::GetInfluencableNeighbours: wrong owner", pHex->GetOwner() == nullptr || pHex->GetOwner() == &team);
+	AssertThrow("Map::GetInfluencableNeighbours: wrong owner", !pHex->IsOwned() || pHex->IsOwnedBy(team));
 
 	for (auto e : EnumRange<Edge>())
 		if (int nWormholes = pHex->HasWormhole(e) + bWormholeGen)
 		{
 			MapPos pos2 = pos.GetNeighbour(e);
 			if (const Hex* pHex2 = GetHex(pos2))
-				if (pHex2->GetOwner() == nullptr) // "a hex that does not contain an Influence Disc..."
+				if (!pHex2->IsOwned()) // "a hex that does not contain an Influence Disc..."
 					if (nWormholes + pHex2->HasWormhole(ReverseEdge(e)) >= 2)
-						if (!pHex2->HasForeignShip(&team)) // "...or an enemy Ship"
+						if (!pHex2->HasForeignShip(team.GetGame(), &team)) // "...or an enemy Ship"
 							neighbours.insert(pos2);
 		}
 }
@@ -105,7 +105,7 @@ std::vector<const Hex*> Map::GetSurroundingHexes(const MapPos& pos, const Team& 
 
 	for (auto e : EnumRange<Edge>())
 		if (const Hex* pHex = GetHex(pos.GetNeighbour(e)))
-			if (pHex->GetOwner() == &team) // TODO: Check ships.
+			if (pHex->IsOwnedBy(team)) // TODO: Check ships.
 				hexes[(int)e] = pHex;
 
 	return hexes;		

@@ -54,6 +54,11 @@ const Player& Team::GetPlayer() const
 	return Players::Get(m_idPlayer);
 }
 
+const Game& Team::GetGame() const
+{
+	return Games::Get(m_idGame);
+}
+
 void Team::AddShips(ShipType type, int nShips)
 {
 	m_nShips[(int)type] += nShips;
@@ -61,15 +66,15 @@ void Team::AddShips(ShipType type, int nShips)
 
 void Team::PopulateStartHex(Hex& hex)
 {
-	hex.SetOwner(this);
-	for (Square* pSquare : hex.GetAvailableSquares())
+	hex.SetColour(m_colour);
+	for (Square* pSquare : hex.GetAvailableSquares(*this))
 	{
 		m_popTrack.Remove(SquareTypeToResource(pSquare->GetType()), 1);
-		pSquare->SetOwner(this);
+		pSquare->SetOccupied(true);
 	}
  
 	ShipType ship = Race(m_race).GetStartShip();
-	hex.AddShip(ship, this);
+	hex.AddShip(ship, m_colour);
 	RemoveShips(ship, 1);
 
 	m_infTrack.RemoveDiscs(1);

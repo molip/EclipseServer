@@ -12,6 +12,7 @@ enum class ShipType;
 enum class DiscoveryType;
 enum class TechType;
 enum class Edge;
+enum class Colour;
 class Team;
 class Game;
 
@@ -35,8 +36,8 @@ class Square
 public:
 	Square(int x = 0, int y = 0, SquareType type = SquareType::Any, bool bAdvanced = false);
 	TechType GetRequiredTech() const;
-	Team* GetOwner() const { return m_pOwner; }
-	void SetOwner(Team* pOwner);
+	bool IsOccupied() const { return m_bOccupied; }
+	void SetOccupied(bool b) { m_bOccupied = b; }
 	SquareType GetType() const { return m_type; }
 
 	int GetX() const { return m_x; }
@@ -46,19 +47,20 @@ private:
 	int m_x, m_y; // Centre (pixels from TL of hex image).
 	SquareType m_type;
 	bool m_bAdvanced;
-	Team* m_pOwner;
+	bool m_bOccupied;
 };
 
 class Ship
 {
 public:
-	Ship(ShipType type, Team* pOwner = nullptr) : m_type(type), m_pOwner(pOwner) {}
+	Ship(ShipType type, Colour owner) : m_type(type), m_colour(owner) {}
 	ShipType GetType() const { return m_type; }
-	Team* GetOwner() const { return m_pOwner; }
+	Colour GetColour() const { return m_colour; }
+	const Team* GetOwner(const Game& game) const;
 
 private:
 	ShipType m_type;
-	Team* m_pOwner;
+	Colour m_colour;
 };
 
 class Hex
@@ -67,14 +69,16 @@ public:
 	Hex(Game* pGame, int id, const MapPos& pos, int nRotation);
 	bool HasWormhole(Edge e) const;
 
-	std::vector<Square*> GetAvailableSquares();
-	Team* GetOwner() const { return m_pOwner; }
-	void SetOwner(Team* pOwner);
+	std::vector<Square*> GetAvailableSquares(const Team& team);
+	Colour GetColour() const { return m_colour; }
+	void SetColour(Colour c);
+	bool IsOwned() const;
+	bool IsOwnedBy(const Team& team) const;
 
-	void AddShip(ShipType type, Team* pOwner);
-	bool HasShip(const Team* pOwner) const;
-	bool HasEnemyShip(const Team* pTeam) const; // Ancients and their allies are not enemies.
-	bool HasForeignShip(const Team* pTeam) const; // Ancients and their allies are foreign.
+	void AddShip(ShipType type, Colour owner);
+	bool HasShip(const Team* pTeam) const;
+	bool HasEnemyShip(const Game& game, const Team* pTeam) const; // Ancients and their allies are not enemies.
+	bool HasForeignShip(const Game& game, const Team* pTeam) const; // Ancients and their allies are foreign.
 
 	int GetID() const { return m_id; }
 	const MapPos& GetPos() const { return m_pos; }
@@ -100,7 +104,7 @@ private:
 	EdgeSet m_wormholes;
 	int m_nVictory;
 	bool m_bArtifact;
-	Team* m_pOwner;
+	Colour m_colour;
 	//structures
 };
 

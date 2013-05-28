@@ -11,8 +11,8 @@
 ColoniseCmd::ColoniseCmd(Player& player) : Cmd(player)
 {
 	for (auto& h : GetGame().GetMap().GetHexes())
-		if (h.second->GetOwner() == &GetTeam())
-			if (!h.second->GetAvailableSquares().empty()) // TODO: Check pop cubes
+		if (h.second->IsOwnedBy(GetTeam()))
+			if (!h.second->GetAvailableSquares(GetTeam()).empty()) // TODO: Check pop cubes
 				m_positions.push_back(h.first);
 }
 
@@ -41,9 +41,8 @@ void ColoniseSquaresCmd::Init(const MapPos& pos)
 	Hex* pHex = GetGame().GetMap().GetHex(pos);
 	AssertThrow("ColoniseSquaresCmd: invalid hex", !!pHex);
 	
-	auto squares = pHex->GetAvailableSquares();
+	auto squares = pHex->GetAvailableSquares(GetTeam());
 	AssertThrow("ColoniseSquaresCmd: no squares available", !squares.empty());
-	AssertThrow("ColoniseSquaresCmd: hex not owned", pHex->GetOwner() == &GetTeam());
 
 	for (int i = 0; i < (int)SquareType::_Count; ++i)
 		m_squareCounts[i] = 0;
@@ -104,7 +103,7 @@ CmdPtr ColoniseSquaresCmd::Process(const Input::CmdMessage& msg, const Controlle
 	for (auto& move : m_moves)
 		if (move.second != Resource::None)
 		{
-			move.first->SetOwner(&team);
+			move.first->SetOccupied(true);
 			team.GetPopulationTrack().Remove(move.second, 1);
 		}
 
@@ -120,7 +119,7 @@ void ColoniseSquaresCmd::Undo(const Controller& controller)
 	for (auto& move : m_moves)
 		if (move.second != Resource::None)
 		{
-			move.first->SetOwner(nullptr);
+			move.first->SetOccupied(false);
 			team.GetPopulationTrack().Add(move.second, 1);
 		}
 	controller.SendMessage(Output::UpdateMap(GetGame()), GetGame());

@@ -147,6 +147,13 @@ const Team* Game::FindTeam(Colour c) const
 	return nullptr;
 }
 
+const Team& Game::GetTeam(Colour c) const
+{
+	const Team* pTeam = FindTeam(c);
+	AssertThrow("Game::GetTeam: colour not in game: ", !!pTeam);
+	return *pTeam;
+}
+
 void Game::AssignTeam(Player& player, RaceType race, Colour colour)
 {
 	GetTeam(player).Assign(race, colour);

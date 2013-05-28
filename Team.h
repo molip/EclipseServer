@@ -33,6 +33,8 @@ public:
 
 	const int GetPlayerID() const { return m_idPlayer; }
 	const Player& GetPlayer() const;
+	const Game& GetGame() const;
+
 	const RaceType& GetRace() const { return m_race; }
 	Colour GetColour() const { return m_colour; }
 

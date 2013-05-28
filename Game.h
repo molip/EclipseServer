@@ -41,6 +41,7 @@ public:
 	Player& GetCurrentPlayer();
 	Team& GetCurrentTeam();
 	const Team* FindTeam(Colour c) const;
+	const Team& GetTeam(Colour c) const;
 
 	const Team& GetTeam(const Player& player) const { return const_cast<Game*>(this)->GetTeam(player); }
 	const Team& GetCurrentTeam() const { return const_cast<Game*>(this)->GetCurrentTeam(); }

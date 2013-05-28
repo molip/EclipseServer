@@ -14,7 +14,7 @@ ExploreCmd::ExploreCmd(Player& player, int iPhase) : Cmd(player), m_idHex(-1), m
 	std::set<MapPos> positions;
 	const Map::HexMap& hexes = GetGame().GetMap().GetHexes();
 	for (auto& h : hexes)
-		if (h.second->GetOwner() == &GetTeam()) // TODO: Check ships.
+		if (h.second->IsOwnedBy(GetTeam())) // TODO: Check ships.
 			GetGame().GetMap().GetEmptyNeighbours(h.first, GetTeam().HasTech(TechType::WormholeGen), positions);
 
 	m_positions.insert(m_positions.begin(), positions.begin(), positions.end());
@@ -139,7 +139,7 @@ CmdPtr ExploreHexCmd::Process(const Input::CmdMessage& msg, const Controller& co
 		if (m_bInfluence = m.m_bInfluence)
 		{
 			GetTeam().GetInfluenceTrack().RemoveDiscs(1);
-			hex.SetOwner(&GetTeam());
+			hex.SetColour(GetTeam().GetColour());
 			controller.SendMessage(Output::UpdateInfluenceTrack(GetTeam()), game);
 			
 			m_discovery = hex.GetDiscoveryTile();

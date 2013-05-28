@@ -14,7 +14,7 @@ InfluenceCmd::InfluenceCmd(Player& player, int iPhase) : Cmd(player), m_iPhase(i
 	const Map& map = GetGame().GetMap();
 	const Map::HexMap& hexes = map.GetHexes();
 	for (auto& h : hexes)
-		if (h.second->GetOwner() == &GetTeam())
+		if (h.second->IsOwnedBy(GetTeam()))
 			m_srcs.push_back(h.first);
 }
 
@@ -52,11 +52,11 @@ InfluenceDstCmd::InfluenceDstCmd(Player& player, const MapPos* pSrcPos, int iPha
 	const Map::HexMap& hexes = map.GetHexes();
 	for (auto& h : hexes)
 	{
-		if (h.second->GetOwner() == nullptr)
-			if (h.second->HasShip(&GetTeam()) && !h.second->HasForeignShip(&GetTeam())) // "a hex where only you have a Ship"
+		if (!h.second->IsOwned())
+			if (h.second->HasShip(&GetTeam()) && !h.second->HasForeignShip(GetGame(), &GetTeam())) // "a hex where only you have a Ship"
 				dsts.insert(h.first);
 		if (!pSrcPos || h.first != *pSrcPos) // Would break the wormhole, see FAQ.
-			if (h.second->GetOwner() == &GetTeam() || h.second->HasShip(&GetTeam())) // "adjacent to a hex where you have a disc or a Ship"
+			if (h.second->IsOwnedBy(GetTeam()) || h.second->HasShip(&GetTeam())) // "adjacent to a hex where you have a disc or a Ship"
 				map.GetInfluencableNeighbours(h.first, GetTeam(), dsts);
 	}
 
@@ -105,8 +105,8 @@ Hex* InfluenceDstCmd::TransferDisc(const MapPos* pSrcPos, const MapPos* pDstPos,
 	{
 		Hex* pHex = GetGame().GetMap().GetHex(*pSrcPos);
 		AssertThrowModel("InfluenceCmd::TransferDisc: Invalid src", !!pHex);
-		AssertThrowModel("InfluenceCmd::TransferDisc: Src not owned", pHex->GetOwner() == &GetTeam());
-		pHex->SetOwner(nullptr);
+		AssertThrowModel("InfluenceCmd::TransferDisc: Src not owned", pHex->IsOwnedBy(GetTeam()));
+		pHex->SetColour(Colour::None);
 	}
 	else
 		GetTeam().GetInfluenceTrack().RemoveDiscs(1);
@@ -116,8 +116,8 @@ Hex* InfluenceDstCmd::TransferDisc(const MapPos* pSrcPos, const MapPos* pDstPos,
 	{
 		pDstHex = GetGame().GetMap().GetHex(*pDstPos);
 		AssertThrowModel("InfluenceCmd::TransferDisc: Invalid dst", !!pDstHex);
-		AssertThrowModel("InfluenceCmd::TransferDisc: Dst already owned", pDstHex->GetOwner() == nullptr);
-		pDstHex->SetOwner(&GetTeam());
+		AssertThrowModel("InfluenceCmd::TransferDisc: Dst already owned", !pDstHex->IsOwned());
+		pDstHex->SetColour(GetTeam().GetColour());
 	}
 	else
 		GetTeam().GetInfluenceTrack().AddDiscs(1);

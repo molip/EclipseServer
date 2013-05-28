@@ -174,15 +174,15 @@ UpdateMap::UpdateMap(const Game& game) : Update("map")
 		e.SetAttribute("id", hex.GetID());
 		e.SetAttribute("rotation", hex.GetRotation());
 
-		if (const Team* pTeam = hex.GetOwner())
+		if (hex.IsOwned())
 		{
-			e.SetAttribute("colour", EnumTraits<Colour>::ToString(pTeam->GetColour()));
+			const Team& team = game.GetTeam(hex.GetColour());
+			e.SetAttribute("colour", EnumTraits<Colour>::ToString(team.GetColour()));
 		
 			auto eSquares = e.AddElement("squares");
 			for (auto& square : hex.GetSquares())
-				if (Team* pSquareOwner = square.GetOwner())
+				if (square.IsOccupied())
 				{
-					AssertThrow("UpdateMap::UpdateMap", pSquareOwner == pTeam);
 					auto eSquare = eSquares.AddElement("square");
 					eSquare.SetAttribute("x", square.GetX());
 					eSquare.SetAttribute("y", square.GetY());
