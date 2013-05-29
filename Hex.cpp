@@ -155,6 +155,14 @@ void Hex::RemoveDiscoveryTile()
 	m_discovery = DiscoveryType::None;
 }
 
+Square* Hex::FindSquare(SquareType type, bool bOccupied)
+{
+	for (auto& s : m_squares)
+		if (s.GetType() == type && s.IsOccupied() == bOccupied)
+			return &s;
+	return nullptr;
+}
+
 void Hex::Init(Game* pGame)
 {
 	auto AddSquare = [&] (int x, int y, SquareType type, bool bAdvanced) { m_squares.push_back(Square(x, y, type, bAdvanced)); };

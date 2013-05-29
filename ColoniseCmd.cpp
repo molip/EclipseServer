@@ -31,7 +31,7 @@ CmdPtr ColoniseCmd::Process(const Input::CmdMessage& msg, const Controller& cont
 
 //-----------------------------------------------------------------------------
 
-ColoniseSquaresCmd::ColoniseSquaresCmd(Player& player, const MapPos& pos) : Cmd(player)
+ColoniseSquaresCmd::ColoniseSquaresCmd(Player& player, const MapPos& pos) : Cmd(player), m_pos(pos)
 {
 	Init(pos);
 }
@@ -50,7 +50,7 @@ void ColoniseSquaresCmd::Init(const MapPos& pos)
 	for (auto& pSquare : squares)
 	{
 		++m_squareCounts[(int)pSquare->GetType()];
-		m_moves.push_back(std::make_pair(pSquare, Resource::None));
+		m_moves.push_back(std::make_pair(pSquare->GetType(), Resource::None));
 	}
 }
 
@@ -66,14 +66,14 @@ CmdPtr ColoniseSquaresCmd::Process(const Input::CmdMessage& msg, const Controlle
 	auto& m = CastThrow<const Input::CmdColoniseSquares>(msg);
 
 	Population fixed = m.m_fixed, grey = m.m_grey, orbital = m.m_orbital;
-	Population moved;
 
 	AssertThrow("ColoniseSquaresCmd::Process: no cubes specified", !fixed.IsEmpty() || !grey.IsEmpty() || !orbital.IsEmpty());
 
+	// Allocate population cubes to squares.
 	for (auto& move : m_moves)
 	{
 		move.second  = Resource::None;
-		SquareType type = move.first->GetType();
+		SquareType type = move.first;
 		switch (type)
 		{
 			case SquareType::Money: 
@@ -99,11 +99,16 @@ CmdPtr ColoniseSquaresCmd::Process(const Input::CmdMessage& msg, const Controlle
 
 	AssertThrow("ColoniseSquaresCmd::Process: not enough squares", fixed.IsEmpty() || grey.IsEmpty() || orbital.IsEmpty());
 
+	Hex* pHex = GetGame().GetMap().GetHex(m_pos);
+	AssertThrow("ColoniseSquaresCmd::Process: hex not found", !!pHex);
+
 	Team& team = GetTeam();
 	for (auto& move : m_moves)
 		if (move.second != Resource::None)
 		{
-			move.first->SetOccupied(true);
+			Square* pSquare = pHex->FindSquare(move.first, false);
+			AssertThrow("ColoniseSquaresCmd::Process: square not found", !!pSquare);
+			pSquare->SetOccupied(true);
 			team.GetPopulationTrack().Remove(move.second, 1);
 		}
 
@@ -115,11 +120,16 @@ CmdPtr ColoniseSquaresCmd::Process(const Input::CmdMessage& msg, const Controlle
 
 void ColoniseSquaresCmd::Undo(const Controller& controller)
 {
+	Hex* pHex = GetGame().GetMap().GetHex(m_pos);
+	AssertThrow("ColoniseSquaresCmd::Undo: hex not found", !!pHex);
+
 	Team& team = GetTeam();
 	for (auto& move : m_moves)
 		if (move.second != Resource::None)
 		{
-			move.first->SetOccupied(false);
+			Square* pSquare = pHex->FindSquare(move.first, true);
+			AssertThrow("ColoniseSquaresCmd::Undo: square not found", !!pSquare);
+			pSquare->SetOccupied(false);
 			team.GetPopulationTrack().Add(move.second, 1);
 		}
 	controller.SendMessage(Output::UpdateMap(GetGame()), GetGame());

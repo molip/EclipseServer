@@ -91,6 +91,8 @@ public:
 	bool HasArtifact() const { return m_bArtifact; }
 
 	void RemoveDiscoveryTile();
+	
+	Square* FindSquare(SquareType type, bool bOccupied);
 
 private:
 	void Init(Game* pGame);
