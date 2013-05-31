@@ -15,75 +15,18 @@ namespace
 }
 
 Game::Game(int id, const std::string& name, Player& owner) : 
-	m_id(id), m_name(name), m_idOwner(owner.GetID()), m_phase(Phase::Lobby), m_iTurn(-1), m_iRound(-1), m_iStartTeam(-1), m_iStartTeamNext(-1),
+	m_id(id), m_name(name), m_idOwner(owner.GetID()), m_iTurn(-1), m_iRound(-1), m_iStartTeam(-1), m_iStartTeamNext(-1),
 	m_map(*this)
 {
-	m_pCmdStack = new CmdStack;
 }
 
 Game::~Game()
 {
-	delete m_pCmdStack;
 }
 
 const Player& Game::GetOwner() const
 {
 	return Players::Get(m_idOwner);
-}
-
-void Game::AddPlayer(Player& player)
-{
-	AssertThrow("Game::AddTeam: Game already started: " + m_name, !HasStarted());
-	if (!FindTeam(player))
-		m_teams.push_back(TeamPtr(new Team(m_id, player.GetID())));
-}
-
-void Game::StartChooseTeamPhase()
-{
-	AssertThrow("Game::Start: Game already started: " + m_name, !HasStarted());
-	AssertThrow("Game::Start: Game has no players: " + m_name, !m_teams.empty());
-	
-	m_phase = Phase::ChooseTeam;
-
-	m_iTurn = m_iStartTeam = m_iStartTeamNext = 0;
-
-	// Decide team order.
-	std::shuffle(m_teams.begin(), m_teams.end(), GetRandom());
-
-	//for (int i = 0; i < FakePlayers; ++i)
-	//{
-	//	std::ostringstream ss;
-	//	ss << "Fake " << i;
-	//	m_teams.insert(std::make_pair(ss.str(), nullptr));
-	//	m_teamOrder.insert(m_teamOrder.begin() + i, ss.str());
-	//	AssignTeam(ss.str(), RaceType::Human, Colour(i + 1));
-	//}
-
-	// Initialise hex bags.
-	for (auto r : EnumRange<HexRing>())
-		m_hexBag[(int)r] = HexBag(r, m_teams.size());
-}
-
-void Game::StartMainPhase()
-{
-	AssertThrowModel("Game::StartMainPhase", m_phase == Phase::ChooseTeam && m_iTurn == 0);
-
-	m_phase = Phase::Main;
-
-	// Initialise starting hexes.
-	auto startPositions = m_map.GetTeamStartPositions();
-	assert(startPositions.size() == m_teams.size());
-	for (size_t i = 0; i < m_teams.size(); ++i)
-	{
-		Team& team = *m_teams[i];
-		Race r(team.GetRace());
-		int idHex = r.GetStartSector(team.GetColour());
-
-		Hex& hex = m_map.AddHex(startPositions[i], idHex, 0);
-
-		team.PopulateStartHex(hex);
-	}
-	StartRound();
 }
 
 void Game::StartRound()
@@ -102,16 +45,6 @@ void Game::StartRound()
 	int nTech = (m_iRound == 0 ? startTech : roundTech)[m_teams.size() - 1];
 	for (int i = 0; i < nTech && !m_techBag.IsEmpty(); ++i)
 		m_techs.insert(m_techBag.TakeTile());
-}
-
-void Game::AssertStarted() const
-{
-	AssertThrow("Game not started yet: " + m_name, HasStarted());
-}
-
-bool Game::HasTeamChosen(const Team& team) const
-{
-	return team.GetRace() != RaceType::None;
 }
 
 Team* Game::FindTeam(const Player& player)
@@ -141,7 +74,6 @@ Player& Game::GetCurrentPlayer()
 
 Team& Game::GetCurrentTeam()
 {
-	AssertStarted();
 	return *m_teams[(m_iStartTeam + m_iTurn) % m_teams.size()];
 }
 
@@ -160,15 +92,6 @@ Team& Game::GetTeam(Colour c)
 	return *pTeam;
 }
 
-void Game::AssignTeam(Player& player, RaceType race, Colour colour)
-{
-	GetTeam(player).Assign(race, colour);
-
-	AdvanceTurn();
-	if (m_iTurn == 0)
-		StartMainPhase();
-}
-
 void Game::HaveTurn(Player& player)
 {
 	AdvanceTurn();
@@ -179,72 +102,7 @@ void Game::AdvanceTurn()
 	m_iTurn = (m_iTurn + 1) % m_teams.size();
 }
 
-void Game::AddCmd(CmdPtr pCmd)
-{
-	m_pCmdStack->AddCmd(pCmd);
-}
-
-void Game::StartCmd(CmdPtr pCmd)
-{
-	m_pCmdStack->StartCmd(pCmd);
-	
-	if (GetCurrentCmd()->IsAction())
-		GetCurrentTeam().GetInfluenceTrack().RemoveDiscs(1); // TODO: return these at end of round
-}
-
-Cmd* Game::RemoveCmd()
-{
-	const Cmd* pCmd = GetCurrentCmd();
-	bool bAction = pCmd && pCmd->IsAction();
-
-	Cmd* pUndo = m_pCmdStack->RemoveCmd();
-
-	if (bAction)
-		GetCurrentTeam().GetInfluenceTrack().AddDiscs(1);
-
-	return pUndo;
-}
-
-bool Game::CanDoAction() const
-{
-	if (GetCurrentTeam().GetInfluenceTrack().GetDiscCount() == 0)
-		return false;
-	
-	return !m_pCmdStack->HasAction(); // Only one action per turn.
-}
-
-bool Game::CanRemoveCmd() const
-{
-	return m_pCmdStack->CanRemoveCmd();
-}
-
-Cmd* Game::GetCurrentCmd()
-{
-	return m_pCmdStack->GetCurrentCmd();
-}
-
-const Cmd* Game::GetCurrentCmd() const
-{
-	return m_pCmdStack->GetCurrentCmd();
-}
-
 void Game::FinishTurn()
 {
-	m_pCmdStack->Clear();
 	AdvanceTurn();
 }
-
-void Game::PushRecord(std::unique_ptr<Record>& pRec)
-{
-	m_records.push_back(std::move(pRec));
-}
-
-RecordPtr Game::PopRecord()
-{
-	AssertThrow("Game::PopRecord", !m_records.empty());
-	RecordPtr pRec = std::move(m_records.back());
-	m_records.pop_back();
-	return pRec;
-}
-
-DEFINE_ENUM_NAMES(Game::Phase) { "Lobby", "ChooseTeam", "Main", "" };

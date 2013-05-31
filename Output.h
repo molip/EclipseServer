@@ -11,6 +11,7 @@
 
 class Model;
 class Game;
+class LiveGame;
 class Team;
 class Player;
 class Hex;
@@ -55,7 +56,7 @@ struct Choose : Command
 struct UpdateGameList : Update { UpdateGameList(); };
 struct UpdateLobby : Update { UpdateLobby(const Game& game); };
 struct UpdateLobbyControls : Update { UpdateLobbyControls(bool bShow); };
-struct UpdateChoose : Update { UpdateChoose(const Game& game); };
+struct UpdateChoose : Update { UpdateChoose(const LiveGame& game); };
 struct UpdateTeams : Update { UpdateTeams(const Game& game); };
 struct UpdateTeam : Update { UpdateTeam(const Team& team); };
 struct UpdateInfluenceTrack : Update { UpdateInfluenceTrack(const Team& team); };
@@ -67,7 +68,7 @@ struct UpdateMap : Update { UpdateMap(const Game& game); };
 //struct UpdateUndo : Update { UpdateUndo(bool bEnable); };
 
 struct ChooseTeam : Choose { ChooseTeam(const Game& game, bool bActive); };
-struct ChooseAction : Choose { ChooseAction(const Game& game); };
+struct ChooseAction : Choose { ChooseAction(const LiveGame& game); };
 struct ChooseFinished : Choose { ChooseFinished(); };
 
 struct ChooseExplorePos : Choose { ChooseExplorePos(const std::vector<MapPos>& positions, bool bCanSkip); };

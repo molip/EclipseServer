@@ -5,7 +5,7 @@
 #include "Controller.h"
 #include "Player.h"
 #include "Race.h"
-#include "Game.h"
+#include "LiveGame.h"
 #include "Map.h"
 #include "Record.h"
 

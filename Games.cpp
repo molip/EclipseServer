@@ -1,23 +1,29 @@
 #include "Games.h"
+#include "LiveGame.h"
 
 int Games::s_nNextGameID = 1;
-std::vector<GamePtr> Games::s_games;
+std::vector<LiveGamePtr> Games::s_liveGames;
 
-Game& Games::Add(const std::string& name, Player& owner)
+LiveGame& Games::Add(const std::string& name, Player& owner)
 {
-	s_games.push_back(GamePtr(new Game(s_nNextGameID++, name, owner)));
-	return *s_games.back().get();
+	s_liveGames.push_back(LiveGamePtr(new LiveGame(s_nNextGameID++, name, owner)));
+	return *s_liveGames.back().get();
 }
 
-Game& Games::Get(int idGame)
+LiveGame& Games::GetLive(int idGame)
 {
-	Game* pGame = nullptr;
-	for (auto& g : s_games)
+	LiveGame* pGame = nullptr;
+	for (auto& g : s_liveGames)
 		if (g->GetID() == idGame)
 		{
 			pGame = g.get();
 			break;
 		}
-	AssertThrow("Games::Find", !!pGame);
+	AssertThrow("Games::GetLive", !!pGame);
 	return *pGame;
+}
+
+Game& Games::Get(int idGame)
+{
+	return GetLive(idGame);
 }

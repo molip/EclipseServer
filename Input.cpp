@@ -10,6 +10,7 @@
 #include "Xml.h"
 #include "EnumTraits.h"
 #include "Games.h"
+#include "LiveGame.h"
 
 #include <sstream>
 
@@ -73,12 +74,12 @@ MessagePtr CreateMessage(const std::string& xml)
 	return CreateCommand(doc.GetRoot());
 }
 
-Game& Message::GetGameAssert(Player& player) const
+LiveGame& Message::GetLiveGame(Player& player) const
 {
-	Game* pGame = player.GetCurrentGame();
+	LiveGame* pGame = player.GetCurrentLiveGame();
 	AssertThrow("ChooseMessage: player not registered in any game", !!pGame);
 	AssertThrow("ChooseMessage: player played out of turn", &player == &pGame->GetCurrentPlayer());
-	AssertThrow("ChooseMessage: game not in main phase: " + pGame->GetName(), pGame->GetPhase() == Game::Phase::Main);
+	AssertThrow("ChooseMessage: game not in main phase: " + pGame->GetName(), pGame->GetPhase() == LiveGame::Phase::Main);
 	return *pGame;
 }
 
@@ -98,7 +99,7 @@ JoinGame::JoinGame(const Xml::Element& node) : m_idGame(0)
 
 namespace 
 {
-	void DoJoinGame(Controller& controller, Player& player, Game& game)
+	void DoJoinGame(Controller& controller, Player& player, LiveGame& game)
 	{
 		AssertThrow("DoJoinGame: Player already in a game: " + player.GetName(), !player.GetCurrentGame());
 		player.SetCurrentGame(&game);
@@ -114,7 +115,7 @@ namespace
 
 bool JoinGame::Process(Controller& controller, Player& player) const 
 {
-	DoJoinGame(controller, player, Games::Get(m_idGame));
+	DoJoinGame(controller, player, Games::GetLive(m_idGame));
 	return true;
 }
 
@@ -132,8 +133,8 @@ bool ExitGame::Process(Controller& controller, Player& player) const
 bool CreateGame::Process(Controller& controller, Player& player) const 
 {
 	std::ostringstream ss;
-	ss << "Game " <<  Games::GetGames().size() + 1;
-	Game& game = Games::Add(ss.str(), player);
+	ss << "Game " <<  Games::GetLiveGames().size() + 1;
+	LiveGame& game = Games::Add(ss.str(), player);
 
 	DoJoinGame(controller, player, game);
 
@@ -142,7 +143,7 @@ bool CreateGame::Process(Controller& controller, Player& player) const
 
 bool StartGame::Process(Controller& controller, Player& player) const 
 {
-	Game* pGame = player.GetCurrentGame();
+	LiveGame* pGame = player.GetCurrentLiveGame();
 
 	AssertThrow("StartGame: player not registered in any game", !!pGame);
 	AssertThrow("StartGame: player isn't the owner of game: " + pGame->GetName(), &player == &pGame->GetOwner());
@@ -164,10 +165,10 @@ ChooseTeam::ChooseTeam(const Xml::Element& node)
 
 bool ChooseTeam::Process(Controller& controller, Player& player) const 
 {
-	Game* pGame = player.GetCurrentGame();
+	LiveGame* pGame = player.GetCurrentLiveGame();
 	AssertThrow("ChooseTeam: player not registered in any game", !!pGame);
 	AssertThrow("ChooseTeam: player played out of turn", &player == &pGame->GetCurrentPlayer());
-	AssertThrow("ChooseTeam: game not in choose phase: " + pGame->GetName(), pGame->GetPhase() == Game::Phase::ChooseTeam);
+	AssertThrow("ChooseTeam: game not in choose phase: " + pGame->GetName(), pGame->GetPhase() == LiveGame::Phase::ChooseTeam);
 
 	RaceType race = EnumTraits<RaceType>::FromString(m_race);
 	Colour colour = EnumTraits<Colour>::FromString(m_colour);
@@ -194,7 +195,7 @@ StartAction::StartAction(const Xml::Element& node)
 
 bool StartAction::Process(Controller& controller, Player& player) const 
 {
-	Game& game = GetGameAssert(player);
+	LiveGame& game = GetLiveGame(player);
 
 	if (m_action == "explore") 
 		game.StartCmd(CmdPtr(new ExploreCmd(player)));
@@ -215,7 +216,7 @@ bool StartAction::Process(Controller& controller, Player& player) const
 
 bool Undo::Process(Controller& controller, Player& player) const 
 {
-	Game& game = GetGameAssert(player);
+	LiveGame& game = GetLiveGame(player);
 
 	const Cmd* pCmd = game.GetCurrentCmd();
 	bool bAction = pCmd && pCmd->IsAction();
@@ -236,7 +237,7 @@ bool Undo::Process(Controller& controller, Player& player) const
 
 bool Commit::Process(Controller& controller, Player& player) const 
 {
-	Game& game = GetGameAssert(player);
+	LiveGame& game = GetLiveGame(player);
 
 	game.FinishTurn();
 
@@ -249,7 +250,7 @@ bool Commit::Process(Controller& controller, Player& player) const
 
 bool CmdMessage::Process(Controller& controller, Player& player) const
 {
-	Game& game = GetGameAssert(player);
+	LiveGame& game = GetLiveGame(player);
 	Cmd* pCmd = game.GetCurrentCmd();
 	AssertThrow("CmdMessage::Process: No current command", !!pCmd);
 

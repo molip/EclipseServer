@@ -9,6 +9,7 @@
 class Controller;
 class Player;
 class Game;
+class LiveGame; 
 
 namespace Input 
 {
@@ -20,7 +21,7 @@ public:
 	virtual bool Process(Controller& controller, Player& player) const { return true; }
 
 protected:
-	Game& GetGameAssert(Player& player) const;
+	LiveGame& GetLiveGame(Player& player) const;
 };
 
 typedef std::unique_ptr<Message> MessagePtr;

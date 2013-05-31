@@ -6,7 +6,7 @@
 #include "Player.h"
 #include "Technology.h"
 #include "EnumTraits.h"
-#include "Game.h"
+#include "LiveGame.h"
 #include "Games.h"
 
 namespace Output
@@ -43,7 +43,7 @@ Choose::Choose(const std::string& param, bool bActive) : Command("choose")
 
 UpdateGameList::UpdateGameList() : Update("game_list")
 {
-	for (auto& g : Games::GetGames())
+	for (auto& g : Games::GetLiveGames())
 	{
 		auto gameNode = m_root.AddElement("game");
 		gameNode.SetAttribute("name", g->GetName());
@@ -77,14 +77,14 @@ UpdateLobbyControls::UpdateLobbyControls(bool bShow) : Update("lobby_controls")
 	m_root.SetAttribute("show", bShow);
 }
 
-UpdateChoose::UpdateChoose(const Game& game) : Update("choose_team")
+UpdateChoose::UpdateChoose(const LiveGame& game) : Update("choose_team")
 {
 	m_root.SetAttribute("game", game.GetName());
 	for (auto& t : game.GetTeams())
 	{
 		auto pTeamNode = m_root.AddElement("team");
 		pTeamNode.SetAttribute("name", t->GetPlayer().GetName());
-		if (game.HasTeamChosen(*t))
+		if (t->GetRace() != RaceType::None)
 		{
 			pTeamNode.SetAttribute("race", EnumTraits<RaceType>::ToString(t->GetRace()));
 			pTeamNode.SetAttribute("colour", EnumTraits<Colour>::ToString(t->GetColour()));
@@ -94,12 +94,12 @@ UpdateChoose::UpdateChoose(const Game& game) : Update("choose_team")
 
 UpdateTeams::UpdateTeams(const Game& game) : Update("teams")
 {
-	AssertThrow("UpdateTeams: Game not started yet: " + game.GetName(), game.GetPhase() == Game::Phase::Main);
+	AssertThrow("UpdateTeams: Game not started yet: " + game.GetName(), game.HasStarted());
 
 	m_root.SetAttribute("teams", game.GetName());
 	for (auto& pTeam : game.GetTeams())
 	{
-		AssertThrow("UpdateTeams: Team not chosen yet: " + pTeam->GetPlayer().GetName(), game.HasTeamChosen(*pTeam));
+		AssertThrow("UpdateTeams: Team not chosen yet: " + pTeam->GetPlayer().GetName(), pTeam->GetRace() != RaceType::None);
 
 		auto pTeamNode = m_root.AddElement("team");
 		pTeamNode.SetAttribute("name", pTeam->GetPlayer().GetName());
@@ -234,7 +234,7 @@ ChooseTeam::ChooseTeam(const Game& game, bool bActive) : Choose("team", bActive)
 		}
 }
 
-ChooseAction::ChooseAction(const Game& game) : Choose("action") 
+ChooseAction::ChooseAction(const LiveGame& game) : Choose("action") 
 {
 	AssertThrow("ChooseAction::ChooseAction", !game.GetCurrentCmd());
 

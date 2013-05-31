@@ -6,7 +6,7 @@
 #include "Player.h"
 #include "Race.h"
 #include "Team.h"
-#include "Game.h"
+#include "LiveGame.h"
 
 DiscoverCmd::DiscoverCmd(Player& player, DiscoveryType discovery, CmdPtr pNext) : 
 	Cmd(player), m_discovery(discovery), m_pNext(std::move(pNext))

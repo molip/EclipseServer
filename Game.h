@@ -20,22 +20,17 @@ class Record;
 class Game
 {
 public:
-	enum class Phase { Lobby, ChooseTeam, Main };
-
 	Game(int id, const std::string& name, Player& owner);
-	~Game();
+	virtual ~Game();
 	
 	int GetID() const { return m_id; }
 	const std::string& GetName() const { return m_name; }
 	const Player& GetOwner() const;
 
-	void AddPlayer(Player& player);
 	const std::vector<TeamPtr>& GetTeams() const { return m_teams; }
 
-	void AssignTeam(Player& player, RaceType race, Colour colour);
 	void HaveTurn(Player& player);
 	
-	bool HasTeamChosen(const Team& team) const;
 	Team* FindTeam(const Player& player);
 
 	const Player& GetCurrentPlayer() const;
@@ -51,10 +46,7 @@ public:
 	const Team& GetTeam(const Player& player) const	{ return const_cast<Game*>(this)->GetTeam(player); }
 	const Team& GetCurrentTeam() const				{ return const_cast<Game*>(this)->GetCurrentTeam(); }
 
-	void StartChooseTeamPhase();
-	void StartMainPhase();
-	bool HasStarted() const { return m_phase != Phase::Lobby; }
-	Phase GetPhase() const { return m_phase; }
+	virtual bool HasStarted() const = 0;
 
 	ReputationBag& GetReputationBag() { return m_repBag; }
 	TechnologyBag& GetTechnologyBag() { return m_techBag; }
@@ -64,29 +56,16 @@ public:
 	const Map& GetMap() const { return m_map; }
 	Map& GetMap() { return m_map; }
 
-	void StartCmd(CmdPtr pCmd);
-	void AddCmd(CmdPtr pCmd);
-	Cmd* RemoveCmd(); // Returns cmd to undo.
-	bool CanRemoveCmd() const;
-	bool CanDoAction() const;
+	virtual void FinishTurn();
 
-	void FinishTurn();
-	Cmd* GetCurrentCmd();
-	const Cmd* GetCurrentCmd() const;
-
-	void PushRecord(std::unique_ptr<Record>& pRec);
-	std::unique_ptr<Record> PopRecord();
-
-private:
+protected:
 	void StartRound();
 
-	void AssertStarted() const;
 	void AdvanceTurn();
 	
 	int m_id; 
 	std::string m_name;
 	int m_idOwner;
-	Phase m_phase;
 
 	Map	m_map;
 	std::multiset<TechType> m_techs;
@@ -100,9 +79,6 @@ private:
 
 	int m_iTurn, m_iRound;
 	int m_iStartTeam, m_iStartTeamNext;
-
-	CmdStack* m_pCmdStack;
-	std::list<std::unique_ptr<Record>> m_records;
 };
 
 typedef std::unique_ptr<Game> GamePtr;

@@ -3,7 +3,7 @@
 #include "Output.h"
 #include "Input.h"
 #include "Player.h"
-#include "Game.h"
+#include "LiveGame.h"
 
 #include "App.h"
 
@@ -69,58 +69,63 @@ void Controller::OnPlayerDisconnected(Player& player)
 // Called from: Connect, join game, start game, choose team.
 void Controller::SendUpdateGame(const Game& game, const Player* pPlayer) const
 {
-	bool bSendToCurrentPlayer = game.HasStarted() && (!pPlayer || pPlayer == &game.GetCurrentPlayer());
-
-	if (game.GetPhase() == Game::Phase::Lobby)
-	{
-		SendMessage(Output::UpdateLobby(game), game, pPlayer);
-
-		if (pPlayer)
-		{
-			SendMessage(Output::ShowLobby(), *pPlayer);
-			SendMessage(Output::UpdateLobbyControls(pPlayer == &game.GetOwner()), *pPlayer);
-		}
-	}
-	else if (game.GetPhase() == Game::Phase::ChooseTeam)
-	{
-		SendMessage(Output::ShowChoose(), game, pPlayer);
-		SendMessage(Output::UpdateChoose(game), game, pPlayer);
-
-		if (bSendToCurrentPlayer)
-			SendMessage(Output::ChooseTeam(game, true), game.GetCurrentPlayer());
-	}
-	else if(game.GetPhase() == Game::Phase::Main)
-	{
-		SendMessage(Output::ShowGame(), game, pPlayer);
-		SendMessage(Output::UpdateTeams(game), game, pPlayer);
+	auto pLive = dynamic_cast<const LiveGame*>(&game);
 	
-		for (auto& pTeam : game.GetTeams())
-		{
-			const Player& player = pTeam->GetPlayer();
-			AssertThrow("Controller::SendUpdateGame: Team not chosen yet: " + player.GetName(), !!pTeam);
-			SendMessage(Output::UpdateTeam(*pTeam), game, pPlayer);
-			SendMessage(Output::UpdateInfluenceTrack(*pTeam), game, pPlayer);
-			SendMessage(Output::UpdateTechnologyTrack(*pTeam), game, pPlayer);
-			SendMessage(Output::UpdateStorageTrack(*pTeam), game, pPlayer);
-			SendMessage(Output::UpdatePopulationTrack(*pTeam), game, pPlayer);
+	bool bSendToCurrentPlayer = pLive && pLive->HasStarted() && (!pPlayer || pPlayer == &game.GetCurrentPlayer());
 
-			// Reputation tile values are secret, so only send them to the relevant player. 
-			auto SendUpdateReputationTrack = [&] (const Player& player) { 
-				SendMessage(Output::UpdateReputationTrack(*pTeam, &player == &player), game, &player); };
+	if (pLive)
+	{
+		if (pLive->GetPhase() == LiveGame::Phase::Lobby)
+		{
+			SendMessage(Output::UpdateLobby(game), game, pPlayer);
 
 			if (pPlayer)
-				SendUpdateReputationTrack(*pPlayer);
-			else
-				for (auto& t : game.GetTeams())
-					if (player.GetCurrentGame() == &game)
-						SendUpdateReputationTrack(player);
+			{
+				SendMessage(Output::ShowLobby(), *pPlayer);
+				SendMessage(Output::UpdateLobbyControls(pPlayer == &game.GetOwner()), *pPlayer);
+			}
+			return;
 		}
-		SendMessage(Output::UpdateMap(game), game, pPlayer);
+		if (pLive->GetPhase() == LiveGame::Phase::ChooseTeam)
+		{
+			SendMessage(Output::ShowChoose(), game, pPlayer);
+			SendMessage(Output::UpdateChoose(*pLive), game, pPlayer);
 
-		if (bSendToCurrentPlayer) 
-			if (const Cmd* pCmd = game.GetCurrentCmd())
-				pCmd->UpdateClient(*this);
-			else
-				SendMessage(Output::ChooseAction(game), game.GetCurrentPlayer());
+			if (bSendToCurrentPlayer)
+				SendMessage(Output::ChooseTeam(game, true), game.GetCurrentPlayer());
+			return;
+		}
 	}
+
+	SendMessage(Output::ShowGame(), game, pPlayer);
+	SendMessage(Output::UpdateTeams(game), game, pPlayer);
+	
+	for (auto& pTeam : game.GetTeams())
+	{
+		const Player& player = pTeam->GetPlayer();
+		AssertThrow("Controller::SendUpdateGame: Team not chosen yet: " + player.GetName(), !!pTeam);
+		SendMessage(Output::UpdateTeam(*pTeam), game, pPlayer);
+		SendMessage(Output::UpdateInfluenceTrack(*pTeam), game, pPlayer);
+		SendMessage(Output::UpdateTechnologyTrack(*pTeam), game, pPlayer);
+		SendMessage(Output::UpdateStorageTrack(*pTeam), game, pPlayer);
+		SendMessage(Output::UpdatePopulationTrack(*pTeam), game, pPlayer);
+
+		// Reputation tile values are secret, so only send them to the relevant player. 
+		auto SendUpdateReputationTrack = [&] (const Player& player) { 
+			SendMessage(Output::UpdateReputationTrack(*pTeam, &player == &player), game, &player); };
+
+		if (pPlayer)
+			SendUpdateReputationTrack(*pPlayer);
+		else
+			for (auto& t : game.GetTeams())
+				if (player.GetCurrentGame() == &game)
+					SendUpdateReputationTrack(player);
+	}
+	SendMessage(Output::UpdateMap(game), game, pPlayer);
+
+	if (bSendToCurrentPlayer) 
+		if (const Cmd* pCmd = pLive->GetCurrentCmd())
+			pCmd->UpdateClient(*this);
+		else
+			SendMessage(Output::ChooseAction(*pLive), game.GetCurrentPlayer());
 }

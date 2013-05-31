@@ -4,6 +4,7 @@
 #include <memory>
 
 class Game;
+class LiveGame;
 class Team;
 
 class Player
@@ -16,6 +17,7 @@ public:
 	const std::string& GetName() const { return m_name; }
 	const std::string& GetPassword() const { return m_password; }
 
+	LiveGame* GetCurrentLiveGame() const;
 	Game* GetCurrentGame() const;
 	void SetCurrentGame(Game* pGame);
 

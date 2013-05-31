@@ -5,7 +5,7 @@
 class Controller;
 class Player;
 class Team;
-class Game;
+class LiveGame;
 
 namespace Input { class CmdMessage; }
 
@@ -28,12 +28,12 @@ public:
 protected:
 	Team& GetTeam() { return *m_pTeam; }
 	const Team& GetTeam() const { return *m_pTeam; }
-	Game& GetGame() { return *m_pGame; }
-	const Game& GetGame() const { return *m_pGame; }
+	LiveGame& GetGame() { return *m_pGame; }
+	const LiveGame& GetGame() const { return *m_pGame; }
 
 	Player& m_player;
 
 private:
 	Team* m_pTeam;
-	Game* m_pGame;
+	LiveGame* m_pGame;
 };
