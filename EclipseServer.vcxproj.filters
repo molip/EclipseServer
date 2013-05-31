@@ -147,6 +147,9 @@
     <ClInclude Include="Games.h">
       <Filter>Model</Filter>
     </ClInclude>
+    <ClInclude Include="Record.h">
+      <Filter>Model</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -273,6 +276,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Games.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Record.cpp">
       <Filter>Model</Filter>
     </ClCompile>
   </ItemGroup>

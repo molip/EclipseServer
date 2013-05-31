@@ -39,7 +39,5 @@ private:
 	std::vector<MapPos> m_dsts;
 	DiscoveryType m_discovery;
 
-	Hex* TransferDisc(const MapPos* pSrcPos, const MapPos* pDstPos, const Controller& controller);
-
 	int m_iPhase;
 };

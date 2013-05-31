@@ -35,6 +35,6 @@ private:
 	void Init(const MapPos& pos);
 
 	MapPos m_pos;
-	std::vector<std::pair<SquareType, Resource>> m_moves;
+	std::vector<SquareType> m_squares;
 	int m_squareCounts[SquareType::_Count];
 };

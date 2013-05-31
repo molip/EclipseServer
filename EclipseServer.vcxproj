@@ -104,6 +104,7 @@
     <ClInclude Include="Players.h" />
     <ClInclude Include="PopulationTrack.h" />
     <ClInclude Include="Race.h" />
+    <ClInclude Include="Record.h" />
     <ClInclude Include="Reputation.h" />
     <ClInclude Include="Resources.h" />
     <ClInclude Include="Ship.h" />
@@ -150,6 +151,7 @@
     <ClCompile Include="Players.cpp" />
     <ClCompile Include="PopulationTrack.cpp" />
     <ClCompile Include="Race.cpp" />
+    <ClCompile Include="Record.cpp" />
     <ClCompile Include="Reputation.cpp" />
     <ClCompile Include="Resources.cpp" />
     <ClCompile Include="Ship.cpp" />

@@ -91,6 +91,7 @@ public:
 	bool HasArtifact() const { return m_bArtifact; }
 
 	void RemoveDiscoveryTile();
+	void SetDiscoveryTile(DiscoveryType type);
 	
 	Square* FindSquare(SquareType type, bool bOccupied);
 

@@ -8,6 +8,7 @@
 #include "Game.h"
 #include "Map.h"
 #include "DiscoverCmd.h"
+#include "Record.h"
 
 InfluenceCmd::InfluenceCmd(Player& player, int iPhase) : Cmd(player), m_iPhase(iPhase)
 {
@@ -35,6 +36,81 @@ CmdPtr InfluenceCmd::Process(const Input::CmdMessage& msg, const Controller& con
 
 	return CmdPtr(new InfluenceDstCmd(m_player, m.m_iPos < 0 ? nullptr : &m_srcs[m.m_iPos], m_iPhase));
 }
+
+//-----------------------------------------------------------------------------
+
+class InfluenceRecord : public Record
+{
+public:
+	InfluenceRecord(Colour colour, const MapPos* pSrcPos, const MapPos* pDstPos) : 
+		m_colour(colour), m_discovery(DiscoveryType::None) 
+	{
+		m_pSrcPos.reset(pSrcPos ? new MapPos(*pSrcPos) : nullptr);
+		m_pDstPos.reset(pDstPos ? new MapPos(*pDstPos) : nullptr);
+	}
+
+	DiscoveryType GetDiscovery() const { return m_discovery; }
+
+	virtual void Do(Game& game, const Controller& controller) override
+	{
+		Hex* pDstHex = TransferDisc(m_pSrcPos, m_pDstPos, game, controller);
+
+		if (pDstHex && pDstHex->GetDiscoveryTile() != DiscoveryType::None)
+		{
+			m_discovery = pDstHex->GetDiscoveryTile();
+			pDstHex->RemoveDiscoveryTile();
+		}
+		controller.SendMessage(Output::UpdateMap(game), game);
+	}
+
+	virtual void Undo(Game& game, const Controller& controller) override
+	{
+		if (m_discovery != DiscoveryType::None)
+		{
+			Hex* pHex = game.GetMap().GetHex(*m_pDstPos);
+			pHex->SetDiscoveryTile(m_discovery);
+		}
+		TransferDisc(m_pDstPos, m_pSrcPos, game, controller);
+		controller.SendMessage(Output::UpdateMap(game), game);
+	}
+
+private:
+	Hex* TransferDisc(const MapPosPtr& pSrcPos, const MapPosPtr& pDstPos, Game& game, const Controller& controller)
+	{
+		AssertThrowModel("InfluenceRecord::TransferDisc: no op", pSrcPos != pDstPos && !(pSrcPos && pDstPos && *pSrcPos == *pDstPos));
+		Team& team = game.GetTeam(m_colour);
+
+		if (pSrcPos)
+		{
+			Hex* pHex = game.GetMap().GetHex(*pSrcPos);
+			AssertThrowModel("InfluenceCmd::TransferDisc: Invalid src", !!pHex);
+			AssertThrowModel("InfluenceCmd::TransferDisc: Src not owned", pHex->IsOwnedBy(team));
+			pHex->SetColour(Colour::None);
+		}
+		else
+			team.GetInfluenceTrack().RemoveDiscs(1);
+
+		Hex* pDstHex = nullptr;
+		if (pDstPos)
+		{
+			pDstHex = game.GetMap().GetHex(*pDstPos);
+			AssertThrowModel("InfluenceCmd::TransferDisc: Invalid dst", !!pDstHex);
+			AssertThrowModel("InfluenceCmd::TransferDisc: Dst already owned", !pDstHex->IsOwned());
+			pDstHex->SetColour(m_colour);
+		}
+		else
+			team.GetInfluenceTrack().AddDiscs(1);
+	
+		if (!pSrcPos || !pDstPos)
+			controller.SendMessage(Output::UpdateInfluenceTrack(team), game);
+
+		return pDstHex;
+	}
+
+	Colour m_colour;
+	MapPosPtr m_pSrcPos, m_pDstPos;
+	DiscoveryType m_discovery;
+};
 
 //-----------------------------------------------------------------------------
 
@@ -73,57 +149,23 @@ CmdPtr InfluenceDstCmd::Process(const Input::CmdMessage& msg, const Controller& 
 	auto& m = CastThrow<const Input::CmdInfluenceDst>(msg);
 	AssertThrow("InfluenceDstCmd::Process: invalid pos index", m.m_iPos == -1 || InRange(m_dsts, m.m_iPos));
 	
-	m_pDstPos = m.m_iPos >= 0 ? &m_dsts[m.m_iPos] : nullptr;
+	const MapPos* pDstPos = m.m_iPos >= 0 ? &m_dsts[m.m_iPos] : nullptr;
 	
-	Hex* pDstHex = TransferDisc(m_pSrcPos.get(), m_pDstPos, controller);
+	InfluenceRecord* pRec = new InfluenceRecord(GetTeam().GetColour(), m_pSrcPos.get(), pDstPos);
+	pRec->Do(GetGame(), controller);
+	m_discovery = pRec->GetDiscovery();
+	GetGame().PushRecord(RecordPtr(pRec));
 
 	Cmd* pNext = m_iPhase == 0 ? new InfluenceCmd(m_player, 1) : nullptr;
 
-	if (pDstHex && pDstHex->GetDiscoveryTile() != DiscoveryType::None)
-	{
-		m_discovery = pDstHex->GetDiscoveryTile();
+	if (m_discovery != DiscoveryType::None)
 		pNext = new DiscoverCmd(m_player, m_discovery, CmdPtr(pNext));
-		pDstHex->RemoveDiscoveryTile();
-	}
-
-	controller.SendMessage(Output::UpdateMap(GetGame()), GetGame());
 
 	return CmdPtr(pNext);
 }
 
 void InfluenceDstCmd::Undo(const Controller& controller)
 {
-	TransferDisc(m_pDstPos, m_pSrcPos.get(), controller);
-	controller.SendMessage(Output::UpdateMap(GetGame()), GetGame());
-}
-
-Hex* InfluenceDstCmd::TransferDisc(const MapPos* pSrcPos, const MapPos* pDstPos, const Controller& controller)
-{
-	AssertThrowModel("InfluenceCmd::TransferDisc: no op", pSrcPos != pDstPos);
-
-	if (pSrcPos)
-	{
-		Hex* pHex = GetGame().GetMap().GetHex(*pSrcPos);
-		AssertThrowModel("InfluenceCmd::TransferDisc: Invalid src", !!pHex);
-		AssertThrowModel("InfluenceCmd::TransferDisc: Src not owned", pHex->IsOwnedBy(GetTeam()));
-		pHex->SetColour(Colour::None);
-	}
-	else
-		GetTeam().GetInfluenceTrack().RemoveDiscs(1);
-
-	Hex* pDstHex = nullptr;
-	if (pDstPos)
-	{
-		pDstHex = GetGame().GetMap().GetHex(*pDstPos);
-		AssertThrowModel("InfluenceCmd::TransferDisc: Invalid dst", !!pDstHex);
-		AssertThrowModel("InfluenceCmd::TransferDisc: Dst already owned", !pDstHex->IsOwned());
-		pDstHex->SetColour(GetTeam().GetColour());
-	}
-	else
-		GetTeam().GetInfluenceTrack().AddDiscs(1);
-	
-	if (!pSrcPos || !pDstPos)
-		controller.SendMessage(Output::UpdateInfluenceTrack(GetTeam()), GetGame());
-
-	return pDstHex;
+	RecordPtr pRec = GetGame().PopRecord();
+	pRec->Undo(GetGame(), controller);
 }

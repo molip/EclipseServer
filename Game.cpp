@@ -5,6 +5,7 @@
 #include "CmdStack.h"
 #include "EnumTraits.h"
 #include "Players.h"
+#include "Record.h"
 
 #include <algorithm>
 
@@ -144,7 +145,7 @@ Team& Game::GetCurrentTeam()
 	return *m_teams[(m_iStartTeam + m_iTurn) % m_teams.size()];
 }
 
-const Team* Game::FindTeam(Colour c) const
+Team* Game::FindTeam(Colour c) 
 {
 	for (auto& t : m_teams)
 		if (t->GetColour() == c)
@@ -152,9 +153,9 @@ const Team* Game::FindTeam(Colour c) const
 	return nullptr;
 }
 
-const Team& Game::GetTeam(Colour c) const
+Team& Game::GetTeam(Colour c) 
 {
-	const Team* pTeam = FindTeam(c);
+	Team* pTeam = FindTeam(c);
 	AssertThrow("Game::GetTeam: colour not in game: ", !!pTeam);
 	return *pTeam;
 }
@@ -231,6 +232,19 @@ void Game::FinishTurn()
 {
 	m_pCmdStack->Clear();
 	AdvanceTurn();
+}
+
+void Game::PushRecord(std::unique_ptr<Record>& pRec)
+{
+	m_records.push_back(std::move(pRec));
+}
+
+RecordPtr Game::PopRecord()
+{
+	AssertThrow("Game::PopRecord", !m_records.empty());
+	RecordPtr pRec = std::move(m_records.back());
+	m_records.pop_back();
+	return pRec;
 }
 
 DEFINE_ENUM_NAMES(Game::Phase) { "Lobby", "ChooseTeam", "Main", "" };

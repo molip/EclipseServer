@@ -10,10 +10,12 @@
 #include <map>
 #include <string>
 #include <deque>
+#include <list>
 
 enum class HexRing { Inner, Middle, Outer, _Count };
 
 class CmdStack;
+class Record;
 
 class Game
 {
@@ -36,15 +38,18 @@ public:
 	bool HasTeamChosen(const Team& team) const;
 	Team* FindTeam(const Player& player);
 
-	Team& GetTeam(const Player& player);
 	const Player& GetCurrentPlayer() const;
 	Player& GetCurrentPlayer();
-	Team& GetCurrentTeam();
-	const Team* FindTeam(Colour c) const;
-	const Team& GetTeam(Colour c) const;
 
-	const Team& GetTeam(const Player& player) const { return const_cast<Game*>(this)->GetTeam(player); }
-	const Team& GetCurrentTeam() const { return const_cast<Game*>(this)->GetCurrentTeam(); }
+	Team* FindTeam(Colour c);
+	Team& GetTeam(Colour c);
+	Team& GetTeam(const Player& player);
+	Team& GetCurrentTeam();
+
+	const Team* FindTeam(Colour c) const			{ return const_cast<Game*>(this)->FindTeam(c); }
+	const Team& GetTeam(Colour c) const				{ return const_cast<Game*>(this)->GetTeam(c); }
+	const Team& GetTeam(const Player& player) const	{ return const_cast<Game*>(this)->GetTeam(player); }
+	const Team& GetCurrentTeam() const				{ return const_cast<Game*>(this)->GetCurrentTeam(); }
 
 	void StartChooseTeamPhase();
 	void StartMainPhase();
@@ -68,6 +73,9 @@ public:
 	void FinishTurn();
 	Cmd* GetCurrentCmd();
 	const Cmd* GetCurrentCmd() const;
+
+	void PushRecord(std::unique_ptr<Record>& pRec);
+	std::unique_ptr<Record> PopRecord();
 
 private:
 	void StartRound();
@@ -95,6 +103,7 @@ private:
 	int m_iStartTeam, m_iStartTeamNext;
 
 	CmdStack* m_pCmdStack;
+	std::list<std::unique_ptr<Record>> m_records;
 };
 
 typedef std::unique_ptr<Game> GamePtr;

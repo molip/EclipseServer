@@ -8,6 +8,7 @@
 #include "Game.h"
 #include "Map.h"
 #include "DiscoverCmd.h"
+#include "Record.h"
 
 ExploreCmd::ExploreCmd(Player& player, int iPhase) : Cmd(player), m_idHex(-1), m_iPos(-1), m_iPhase(iPhase)
 {
@@ -42,6 +43,59 @@ CmdPtr ExploreCmd::Process(const Input::CmdMessage& msg, const Controller& contr
 	hexIDs.push_back(m_idHex);
 	return CmdPtr(new ExploreHexCmd(m_player, pos, hexIDs, m_iPhase));
 }
+
+//-----------------------------------------------------------------------------
+
+class ExploreRecord : public Record
+{
+public:
+	ExploreRecord(Colour colour, const MapPos& pos, int idHex, int iRot, bool bInfluence) : 
+		m_colour(colour), m_pos(pos), m_idHex(idHex), m_iRot(iRot), m_bInfluence(bInfluence), m_discovery(DiscoveryType::None) {}
+
+	DiscoveryType GetDiscovery() const { return m_discovery; }
+
+	virtual void Do(Game& game, const Controller& controller) override
+	{
+		Hex& hex = game.GetMap().AddHex(m_pos, m_idHex, m_iRot);
+				
+		if (m_bInfluence)
+		{
+			hex.SetColour(m_colour);
+
+			Team& team = game.GetTeam(m_colour);
+			team.GetInfluenceTrack().RemoveDiscs(1);
+			controller.SendMessage(Output::UpdateInfluenceTrack(team), game);
+			
+			m_discovery = hex.GetDiscoveryTile();
+			if (m_discovery != DiscoveryType::None)
+				hex.RemoveDiscoveryTile();
+
+		}					
+		controller.SendMessage(Output::UpdateMap(game), game);
+	}
+
+	virtual void Undo(Game& game, const Controller& controller) override
+	{
+		if (m_bInfluence)
+		{
+			Team& team = game.GetTeam(m_colour);
+			team.GetInfluenceTrack().AddDiscs(1);
+			controller.SendMessage(Output::UpdateInfluenceTrack(team), game);
+
+			if (m_discovery != DiscoveryType::None)
+				game.GetDiscoveryBag().ReturnTile(m_discovery);
+		}					
+		game.GetMap().DeleteHex(m_pos);
+		controller.SendMessage(Output::UpdateMap(game), game);
+	}
+
+private:
+	Colour m_colour;
+	MapPos m_pos;
+	int m_idHex, m_iRot;
+	bool m_bInfluence;
+	DiscoveryType m_discovery;
+};
 
 //-----------------------------------------------------------------------------
 
@@ -107,6 +161,8 @@ CmdPtr ExploreHexCmd::Process(const Input::CmdMessage& msg, const Controller& co
 {
 	Game& game = GetGame();
 
+	m_discovery = DiscoveryType::None;
+
 	if (dynamic_cast<const Input::CmdExploreHexTake*>(&msg))
 	{
 		m_idTaken = GetGame().GetHexBag(m_pos.GetRing()).TakeTile(); 
@@ -133,19 +189,10 @@ CmdPtr ExploreHexCmd::Process(const Input::CmdMessage& msg, const Controller& co
 		AssertThrowXML("ExploreHexCmd: rotation index", InRange(hc.m_rotations, m.m_iRot));
 		m_iRot = m.m_iRot;
 
-		// TODO: exception safety
-		Hex& hex = game.GetMap().AddHex(m_pos, m_hexChoices[m_iHex].m_idHex, hc.m_rotations[m_iRot]);
-				
-		if (m_bInfluence = m.m_bInfluence)
-		{
-			GetTeam().GetInfluenceTrack().RemoveDiscs(1);
-			hex.SetColour(GetTeam().GetColour());
-			controller.SendMessage(Output::UpdateInfluenceTrack(GetTeam()), game);
-			
-			m_discovery = hex.GetDiscoveryTile();
-			if (m_discovery != DiscoveryType::None)
-				hex.RemoveDiscoveryTile();
-		}					
+		ExploreRecord* pRec = new ExploreRecord(GetTeam().GetColour(), m_pos, m_hexChoices[m_iHex].m_idHex, hc.m_rotations[m_iRot], m.m_bInfluence);
+		pRec->Do(GetGame(), controller);
+		m_discovery = pRec->GetDiscovery();
+		GetGame().PushRecord(RecordPtr(pRec));
 	}
 
 	bool bFinished = m_iPhase + 1 == Race(GetTeam().GetRace()).GetExploreRate();
@@ -153,9 +200,6 @@ CmdPtr ExploreHexCmd::Process(const Input::CmdMessage& msg, const Controller& co
 	
 	if (m_discovery != DiscoveryType::None)
 		pNext = new DiscoverCmd(m_player, m_discovery, CmdPtr(pNext));
-
-	if (!bReject)
-		controller.SendMessage(Output::UpdateMap(game), game);
 
 	return CmdPtr(pNext);
 }
@@ -165,13 +209,6 @@ void ExploreHexCmd::Undo(const Controller& controller)
 	if (m_iHex < 0) // Rejected
 		return;
 
-	controller.SendMessage(Output::UpdateMap(GetGame()), GetGame());
-	GetGame().GetMap().DeleteHex(m_pos);
-
-	if (m_bInfluence)
-	{
-		GetTeam().GetInfluenceTrack().AddDiscs(1);
-		controller.SendMessage(Output::UpdateInfluenceTrack(GetTeam()), GetGame());
-	}					
+	RecordPtr pRec = GetGame().PopRecord();
+	pRec->Undo(GetGame(), controller);
 }
-

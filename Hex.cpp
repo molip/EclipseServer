@@ -155,6 +155,12 @@ void Hex::RemoveDiscoveryTile()
 	m_discovery = DiscoveryType::None;
 }
 
+void Hex::SetDiscoveryTile(DiscoveryType type)
+{
+	AssertThrowModel("Hex::SetDiscoveryTile", m_discovery == DiscoveryType::None);
+	m_discovery = type;
+}
+
 Square* Hex::FindSquare(SquareType type, bool bOccupied)
 {
 	for (auto& s : m_squares)

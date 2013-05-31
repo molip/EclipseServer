@@ -1,5 +1,7 @@
 #pragma once
 
+#include"App.h"
+
 class Game;
 enum class HexRing;
 
@@ -28,3 +30,5 @@ private:
 	int m_x; // Increasing SE
 	int m_y; // Increasing S
 };
+
+DEFINE_UNIQUE_PTR(MapPos)

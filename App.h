@@ -84,3 +84,5 @@ extern Resource SquareTypeToResource(SquareType t);
 extern SquareType ResourceToSquareType(Resource t);
 
 extern std::default_random_engine& GetRandom();
+
+#define DEFINE_UNIQUE_PTR(T) typedef std::unique_ptr<T> T##Ptr;

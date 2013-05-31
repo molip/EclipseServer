@@ -17,6 +17,11 @@ public:
 		pop_back();
 		return t;
 	}
+
+	void ReturnTile(T t)
+	{
+		push_back(t);
+	}
 };
 
 class DiscoveryBag : public Bag<DiscoveryType>
