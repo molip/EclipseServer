@@ -98,7 +98,6 @@ private:
 	DiscoveryBag m_discBag;
 	HexBag m_hexBag[HexRing::_Count];
 
-	std::set<RaceType, Colour> m_availableRaces;
 	int m_iTurn, m_iRound;
 	int m_iStartTeam, m_iStartTeamNext;
 
