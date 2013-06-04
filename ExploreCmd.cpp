@@ -83,7 +83,7 @@ public:
 			controller.SendMessage(Output::UpdateInfluenceTrack(team), game);
 
 			if (m_discovery != DiscoveryType::None)
-				game.GetDiscoveryBag().ReturnTile(m_discovery);
+				game.GetMap().GetHex(m_pos).SetDiscoveryTile(m_discovery);
 		}					
 		game.GetMap().DeleteHex(m_pos);
 		controller.SendMessage(Output::UpdateMap(game), game);
@@ -113,7 +113,7 @@ ExploreHexCmd::ExploreHexCmd(Player& player, const MapPos& pos, std::vector<int>
 	
 	for (int id : hexIDs)
 	{
-		Hex hex(nullptr, id, pos, 0);
+		Hex hex(id, pos, 0);
 
 		bool bCanInfluenceHex = hex.GetShips().empty(); // Any ships must be ancients.
 		HexChoice hc(id, bCanInfluenceHex && GetTeam().GetInfluenceTrack().GetDiscCount() > 0);
@@ -206,7 +206,7 @@ CmdPtr ExploreHexCmd::Process(const Input::CmdMessage& msg, const Controller& co
 
 void ExploreHexCmd::Undo(const Controller& controller)
 {
-	if (m_iHex < 0) // Rejected
+	if (!HasRecord()) // Rejected
 		return;
 
 	RecordPtr pRec = GetGame().PopRecord();

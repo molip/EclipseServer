@@ -26,6 +26,7 @@ class ReputationTrack
 {
 public:
 	ReputationTrack(const Team& team);
+	ReputationTrack(const ReputationTrack& rhs, const Team& team);
 
 	void SetSlots(const ReputationSlots& slots) { m_slots = slots; }
 

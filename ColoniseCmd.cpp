@@ -41,14 +41,13 @@ public:
 private:
 	virtual void Apply(bool bDo, Game& game, const Controller& controller) override
 	{
-		Hex* pHex = game.GetMap().GetHex(m_pos);
-		AssertThrow("ColoniseRecord::Apply: hex not found", !!pHex);
+		Hex& hex = game.GetMap().GetHex(m_pos);
 
 		Team& team = game.GetTeam(m_colour);
 		for (auto& move : m_moves)
 			if (move.second != Resource::None)
 			{
-				Square* pSquare = pHex->FindSquare(move.first, !bDo);
+				Square* pSquare = hex.FindSquare(move.first, !bDo);
 				AssertThrow("ColoniseRecord::Apply: square not found", !!pSquare);
 				pSquare->SetOccupied(bDo);
 				team.GetPopulationTrack().Add(move.second, bDo ? -1 : 1);
@@ -71,10 +70,9 @@ ColoniseSquaresCmd::ColoniseSquaresCmd(Player& player, const MapPos& pos) : Cmd(
 
 void ColoniseSquaresCmd::Init(const MapPos& pos)
 {
-	Hex* pHex = GetGame().GetMap().GetHex(pos);
-	AssertThrow("ColoniseSquaresCmd: invalid hex", !!pHex);
+	Hex& hex = GetGame().GetMap().GetHex(pos);
 	
-	auto squares = pHex->GetAvailableSquares(GetTeam());
+	auto squares = hex.GetAvailableSquares(GetTeam());
 	AssertThrow("ColoniseSquaresCmd: no squares available", !squares.empty());
 
 	for (int i = 0; i < (int)SquareType::_Count; ++i)

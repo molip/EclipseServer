@@ -153,6 +153,9 @@
     <ClInclude Include="LiveGame.h">
       <Filter>Model</Filter>
     </ClInclude>
+    <ClInclude Include="ReviewGame.h">
+      <Filter>Model</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -285,6 +288,9 @@
       <Filter>Model</Filter>
     </ClCompile>
     <ClCompile Include="LiveGame.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="ReviewGame.cpp">
       <Filter>Model</Filter>
     </ClCompile>
   </ItemGroup>

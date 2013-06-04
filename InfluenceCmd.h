@@ -32,6 +32,7 @@ public:
 	virtual CmdPtr Process(const Input::CmdMessage& msg, const Controller& controller) override;
 	virtual void Undo(const Controller& controller) override;
 	virtual bool CanUndo() const override { return m_discovery == DiscoveryType::None; }
+	virtual bool HasRecord() const { return true; } 
 
 private:
 	std::unique_ptr<MapPos> m_pSrcPos;

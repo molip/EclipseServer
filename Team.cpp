@@ -10,6 +10,17 @@
 Team::Team(int idGame, int idPlayer) :
 	m_idGame(idGame), m_idPlayer(idPlayer), m_race(RaceType::None), m_colour(Colour::None), m_nColonyShipsUsed(0), m_repTrack(*this)
 {
+	for (int i = 0; i < 4; ++i)
+		m_nShips[i] = 0;
+}
+
+Team::Team(const Team& rhs, int idGame) : 
+	m_idGame(idGame), m_idPlayer(rhs.m_idPlayer), m_race(rhs.m_race), m_colour(rhs.m_colour), m_allies(rhs.m_allies),
+	m_popTrack(rhs.m_popTrack), m_infTrack(rhs.m_infTrack), m_repTrack(rhs.m_repTrack), m_techTrack(rhs.m_techTrack), 
+	m_storage(rhs.m_storage), m_nColonyShips(rhs.m_nColonyShips), m_nColonyShipsUsed(rhs.m_nColonyShipsUsed)
+{	
+	for (int i = 0; i < 4; ++i)
+		m_nShips[i] = rhs.m_nShips[i];
 }
 
 void Team::Assign(RaceType race, Colour colour)
@@ -33,8 +44,8 @@ void Team::Assign(RaceType race, Colour colour)
 	for (int i = 0; i < r.GetStartReputationTiles(); ++i)
 		m_repTrack.AddReputationTile(Games::Get(m_idGame).GetReputationBag().TakeTile());
 	
-	for (auto i : EnumRange<ShipType>())
-		m_blueprints[(int)i] = r.GetBlueprint(i);
+	//for (auto i : EnumRange<ShipType>())
+	//	m_blueprints[(int)i] = r.GetBlueprint(i);
 
 	AddShips(ShipType::Interceptor, 8);
 	AddShips(ShipType::Cruiser, 4);

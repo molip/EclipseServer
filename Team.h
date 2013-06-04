@@ -27,6 +27,7 @@ class Team
 {
 public:
 	Team(int idGame, int idPlayer);
+	Team(const Team& rhs, int idGame);
 	~Team();
 
 	void Team::Assign(RaceType race, Colour colour);
@@ -38,7 +39,7 @@ public:
 	const RaceType& GetRace() const { return m_race; }
 	Colour GetColour() const { return m_colour; }
 
-	const std::set<Team*> GetAllies() const { return m_allies; }
+	const std::set<Colour> GetAllies() const { return m_allies; }
 
 	void AddTech(TechType tech) { m_techTrack.Add(tech); }
 	bool HasTech(TechType tech) const { return m_techTrack.Has(tech); }
@@ -76,7 +77,7 @@ private:
 	RaceType m_race;
 	Colour m_colour;
 
-	std::set<Team*> m_allies;
+	std::set<Colour> m_allies;
 
 	PopulationTrack m_popTrack;
 	InfluenceTrack m_infTrack;
@@ -84,7 +85,7 @@ private:
 	TechTrack m_techTrack;
 	Storage m_storage;
 	
-	BlueprintPtr m_blueprints[4];
+	//BlueprintPtr m_blueprints[4];
 	int m_nShips[4];
 
 	int m_nColonyShips, m_nColonyShipsUsed;

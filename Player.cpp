@@ -27,6 +27,11 @@ LiveGame* Player::GetCurrentLiveGame() const
 	return m_idCurrentGame ? &Games::GetLive(m_idCurrentGame) : nullptr;
 }
 
+ReviewGame* Player::GetCurrentReviewGame() const
+{
+	return m_idCurrentGame ? &Games::GetReview(m_idCurrentGame) : nullptr;
+}
+
 Team* Player::GetCurrentTeam()
 {
 	return m_idCurrentGame ? &GetCurrentGame()->GetTeam(*this) : nullptr;

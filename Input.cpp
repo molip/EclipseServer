@@ -11,6 +11,7 @@
 #include "EnumTraits.h"
 #include "Games.h"
 #include "LiveGame.h"
+#include "ReviewGame.h"
 
 #include <sstream>
 
@@ -27,6 +28,14 @@ MessagePtr CreateCommand(const Xml::Element& root)
 		return MessagePtr(new JoinGame(root));
 	if (type == "exit_game")
 		return MessagePtr(new ExitGame);
+	if (type == "start_review")
+		return MessagePtr(new StartReview);
+	if (type == "exit_review")
+		return MessagePtr(new ExitReview);
+	if (type == "advance_review")
+		return MessagePtr(new AdvanceReview);
+	if (type == "retreat_review")
+		return MessagePtr(new RetreatReview);
 	if (type == "create_game")
 		return MessagePtr(new CreateGame);
 	if (type == "start_game")
@@ -130,6 +139,52 @@ bool ExitGame::Process(Controller& controller, Player& player) const
 	return true;
 }
 
+bool StartReview::Process(Controller& controller, Player& player) const 
+{
+	LiveGame* pLive = player.GetCurrentLiveGame();
+	AssertThrow("ExitGame: Player not in live game: " + player.GetName(), !!pLive);
+
+	ReviewGame& review = Games::AddReview(player, *pLive);
+	
+	player.SetCurrentGame(&review);
+	controller.SendUpdateGame(review, &player);
+	return true;
+}
+
+bool ExitReview::Process(Controller& controller, Player& player) const 
+{
+	ReviewGame* pReview = player.GetCurrentReviewGame();
+	AssertThrow("ExitGame: Player not in review game: " + player.GetName(), !!pReview);
+
+	LiveGame& live = Games::GetLive(pReview->GetLiveGameID());
+	player.SetCurrentGame(&live);
+
+	Games::DeleteReview(pReview->GetID());
+	
+	controller.SendUpdateGame(live, &player);
+	return true;
+}
+
+bool AdvanceReview::Process(Controller& controller, Player& player) const 
+{
+	ReviewGame* pReview = player.GetCurrentReviewGame();
+	AssertThrow("AdvanceReview: Player not in review game: " + player.GetName(), !!pReview);
+	pReview->Advance(controller);
+
+	controller.SendMessage(Output::UpdateReviewUI(*pReview), player);
+	return true;
+}
+
+bool RetreatReview::Process(Controller& controller, Player& player) const 
+{
+	ReviewGame* pReview = player.GetCurrentReviewGame();
+	AssertThrow("RetreatReview: Player not in review game: " + player.GetName(), !!pReview);
+	pReview->Retreat(controller);
+	
+	controller.SendMessage(Output::UpdateReviewUI(*pReview), player);
+	return true;
+}
+
 bool CreateGame::Process(Controller& controller, Player& player) const 
 {
 	std::ostringstream ss;
@@ -222,8 +277,21 @@ bool Undo::Process(Controller& controller, Player& player) const
 	bool bAction = pCmd && pCmd->IsAction();
 
 	if (Cmd* pUndo = game.RemoveCmd())
+	{
+		bool bRecord = pUndo->HasRecord();
+		if (bRecord) // Update review games before record gets popped. 
+			for (auto& g : Games::GetReviewGames())
+				if (g->GetLiveGameID() == game.GetID())
+					g->OnPreRecordPop(controller);
+
 		pUndo->Undo(controller);
-	
+
+		if (bRecord) 
+			for (auto& g : Games::GetReviewGames())
+				if (g->GetLiveGameID() == game.GetID())
+					controller.SendMessage(Output::UpdateReviewUI(*g), *g);
+	}
+
 	if (Cmd* pCmd2 = game.GetCurrentCmd())
 		pCmd2->UpdateClient(controller);
 	else
@@ -261,6 +329,11 @@ bool CmdMessage::Process(Controller& controller, Player& player) const
 		pNewCmd->UpdateClient(controller);
 	else
 		controller.SendMessage(Output::ChooseAction(game), game.GetCurrentPlayer());
+
+	if (pCmd->HasRecord()) 
+		for (auto& g : Games::GetReviewGames())
+			if (g->GetLiveGameID() == game.GetID())
+				controller.SendMessage(Output::UpdateReviewUI(*g), *g);
 
 	return true;
 }

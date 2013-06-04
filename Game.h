@@ -20,7 +20,8 @@ class Record;
 class Game
 {
 public:
-	Game(int id, const std::string& name, Player& owner);
+	Game(int id, const std::string& name, const Player& owner);
+	Game(int id, const std::string& name, const Player& owner, const Game& rhs);
 	virtual ~Game();
 	
 	int GetID() const { return m_id; }
@@ -47,6 +48,7 @@ public:
 	const Team& GetCurrentTeam() const				{ return const_cast<Game*>(this)->GetCurrentTeam(); }
 
 	virtual bool HasStarted() const = 0;
+	virtual bool IsLive() const { return false; }
 
 	ReputationBag& GetReputationBag() { return m_repBag; }
 	TechnologyBag& GetTechnologyBag() { return m_techBag; }

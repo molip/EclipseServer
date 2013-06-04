@@ -71,12 +71,19 @@ const Team* Ship::GetOwner(const Game& game) const
 
 //-----------------------------------------------------------------------------
 
-Hex::Hex(Game* pGame, int id, const MapPos& pos, int nRotation) : 
+Hex::Hex(int id, const MapPos& pos, int nRotation) : 
 	m_id(id), m_pos(pos), m_nRotation(nRotation), m_discovery(DiscoveryType::None), 
-	m_nVictory(0), m_bArtifact(false), m_colour(Colour::None)
+	m_nVictory(0), m_bArtifact(false), m_bDiscovery(false), m_colour(Colour::None)
 {
 	AssertThrow("Hex::Hex: Invalid rotation", nRotation >= 0 && nRotation < 6);
-	Init(pGame);
+	Init();
+}
+
+Hex::Hex(const Hex& rhs) : 
+	m_id(rhs.m_id), m_pos(rhs.m_pos), m_nRotation(rhs.m_nRotation), m_squares(rhs.m_squares), m_ships(rhs.m_ships), 
+	m_discovery(rhs.m_discovery), m_wormholes(rhs.m_wormholes), m_nVictory(rhs.m_nVictory), m_bArtifact(rhs.m_bArtifact), 
+	m_bDiscovery(rhs.m_bDiscovery), m_colour(rhs.m_colour)
+{
 }
 
 bool Hex::HasWormhole(Edge e) const
@@ -169,12 +176,11 @@ Square* Hex::FindSquare(SquareType type, bool bOccupied)
 	return nullptr;
 }
 
-void Hex::Init(Game* pGame)
+void Hex::Init()
 {
 	auto AddSquare = [&] (int x, int y, SquareType type, bool bAdvanced) { m_squares.push_back(Square(x, y, type, bAdvanced)); };
 	auto SetWormholes = [&] (std::string s) { m_wormholes = EdgeSet(s); };
 
-	bool bDiscovery = false;
 	int nAncients = 0;
 
 	switch(m_id)
@@ -280,15 +286,15 @@ void Hex::Init(Game* pGame)
 	case 206:
 		AddSquare(167, 116, SquareType::Materials, false);
 		SetWormholes("011101");
-		m_nVictory = 1, bDiscovery = true;
+		m_nVictory = 1, m_bDiscovery = true;
 		break;
 	case 207:
 		SetWormholes("110100");
-		m_nVictory = 1, bDiscovery = true;
+		m_nVictory = 1, m_bDiscovery = true;
 		break;
 	case 208:
 		SetWormholes("101101");
-		m_nVictory = 1, bDiscovery = true;
+		m_nVictory = 1, m_bDiscovery = true;
 		break;
 	case 209:
 		AddSquare(270, 108, SquareType::Money, true);
@@ -450,30 +456,30 @@ void Hex::Init(Game* pGame)
 	case 311:
 		AddSquare(288, 274, SquareType::Materials, false);
 		SetWormholes("101100");
-		m_nVictory = 1, bDiscovery = true;
+		m_nVictory = 1, m_bDiscovery = true;
 		break;
 	case 312:
 		AddSquare(251, 97, SquareType::Materials, false);
 		SetWormholes("110100");
-		m_nVictory = 1, bDiscovery = true;
+		m_nVictory = 1, m_bDiscovery = true;
 		break;
 	case 313:
 		AddSquare(263, 101, SquareType::Any, false);
 		SetWormholes("100100");
-		m_nVictory = 1, bDiscovery = true;
+		m_nVictory = 1, m_bDiscovery = true;
 		break;
 	case 314:
 		AddSquare(101, 244, SquareType::Any, false);
 		SetWormholes("001110");
-		m_nVictory = 1, bDiscovery = true;
+		m_nVictory = 1, m_bDiscovery = true;
 		break;
 	case 315:
 		SetWormholes("100101");
-		m_nVictory = 1, bDiscovery = true;
+		m_nVictory = 1, m_bDiscovery = true;
 		break;
 	case 316:
 		SetWormholes("110100");
-		m_nVictory = 1, bDiscovery = true;
+		m_nVictory = 1, m_bDiscovery = true;
 		break;
 	case 317:
 		AddSquare(167, 265, SquareType::Money, false);
@@ -498,10 +504,7 @@ void Hex::Init(Game* pGame)
 	for (int i = 0; i < nAncients; ++i)
 		AddShip(ShipType::Ancient, Colour::None);
 
-	bDiscovery |= nAncients > 0;
-
-	if (bDiscovery && pGame)
-		m_discovery = pGame->GetDiscoveryBag().TakeTile();
+	m_bDiscovery |= nAncients > 0;
 }
 
 DEFINE_ENUM_NAMES(SquareType) { "Money", "Science", "Materials", "Any", "Orbital", "" };

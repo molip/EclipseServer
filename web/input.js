@@ -102,6 +102,8 @@ function OnCommandUpdate(elem)
 		OnCommandUpdateReputationTrack(elem)
 	else if (param == "map")
 		OnCommandUpdateMap(elem)
+	else if (param == "review_ui")
+		OnCommandReviewUI(elem)
 	else
         writeToScreen('OnCommandUpdate: unknown param: ' + param)
 }
@@ -222,6 +224,10 @@ function OnCommandUpdateTeams(elem)
 	document.getElementById('game_pages').innerHTML = html_pages
 	
 	ShowTeamPage(data.playerID)
+
+	var game_type = elem.getAttribute('game_type')
+	ShowElementById('live_ui', game_type == "live")
+	ShowElementById('review_ui', game_type == "review")
 }
 
 function OnCommandUpdateTeam(elem)
@@ -321,6 +327,12 @@ function OnCommandUpdateMap(elem)
 		Map.AddHex(id, new Point(x, y), rotation, team, squares)
 	}
 	Map.Draw()
+}
+
+function OnCommandReviewUI(elem)
+{
+	document.getElementById('retreat_review').disabled = !IsTrue(elem.getAttribute('can_retreat'))
+	document.getElementById('advance_review').disabled = !IsTrue(elem.getAttribute('can_advance'))
 }
 
 function OnCommandChooseTeam(elem, active)

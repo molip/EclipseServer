@@ -7,6 +7,7 @@
 #include "Technology.h"
 #include "EnumTraits.h"
 #include "LiveGame.h"
+#include "ReviewGame.h"
 #include "Games.h"
 
 namespace Output
@@ -96,7 +97,9 @@ UpdateTeams::UpdateTeams(const Game& game) : Update("teams")
 {
 	AssertThrow("UpdateTeams: Game not started yet: " + game.GetName(), game.HasStarted());
 
-	m_root.SetAttribute("teams", game.GetName());
+	m_root.SetAttribute("game_type", game.IsLive() ? "live" : "review");
+
+	//m_root.SetAttribute("teams", game.GetName());
 	for (auto& pTeam : game.GetTeams())
 	{
 		AssertThrow("UpdateTeams: Team not chosen yet: " + pTeam->GetPlayer().GetName(), pTeam->GetRace() != RaceType::None);
@@ -198,6 +201,12 @@ UpdateMap::UpdateMap(const Game& game) : Update("map")
 	}
 }
 
+UpdateReviewUI::UpdateReviewUI(const ReviewGame& game) : Update("review_ui")
+{
+	m_root.SetAttribute("can_advance", game.CanAdvance());
+	m_root.SetAttribute("can_retreat", game.CanRetreat());
+}
+
 //UpdateUndo::UpdateUndo(bool bEnable) : Update("undo")
 //{
 //	m_root.SetAttribute("enable", bEnable);
@@ -205,8 +214,8 @@ UpdateMap::UpdateMap(const Game& game) : Update("map")
 
 ShowGameList::ShowGameList() :	Show("game_list_panel") {}
 ShowChoose::ShowChoose() :		Show("choose_panel") {}
-ShowGame::ShowGame() :			Show("game_panel") {}
 ShowLobby::ShowLobby() :		Show("lobby_panel") {}
+ShowGame::ShowGame() :			Show("game_panel") {}
 
 ChooseTeam::ChooseTeam(const Game& game, bool bActive) : Choose("team", bActive)
 {

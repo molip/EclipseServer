@@ -108,6 +108,7 @@
     <ClInclude Include="Record.h" />
     <ClInclude Include="Reputation.h" />
     <ClInclude Include="Resources.h" />
+    <ClInclude Include="ReviewGame.h" />
     <ClInclude Include="Ship.h" />
     <ClInclude Include="ShipLayout.h" />
     <ClInclude Include="Singleton.h" />
@@ -156,6 +157,7 @@
     <ClCompile Include="Record.cpp" />
     <ClCompile Include="Reputation.cpp" />
     <ClCompile Include="Resources.cpp" />
+    <ClCompile Include="ReviewGame.cpp" />
     <ClCompile Include="Ship.cpp" />
     <ClCompile Include="ShipLayout.cpp" />
     <ClCompile Include="stdafx.cpp">

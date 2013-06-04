@@ -66,7 +66,8 @@ private:
 class Hex
 {
 public:
-	Hex(Game* pGame, int id, const MapPos& pos, int nRotation);
+	Hex(int id, const MapPos& pos, int nRotation);
+	Hex(const Hex& rhs);
 	bool HasWormhole(Edge e) const;
 
 	std::vector<Square*> GetAvailableSquares(const Team& team);
@@ -89,14 +90,14 @@ public:
 	EdgeSet GetWormholes() const { return m_wormholes; } // Non-rotated.
 	int GetVictoryPoints() const { return m_nVictory; }
 	bool HasArtifact() const { return m_bArtifact; }
-
+	bool HasDiscovery() const { return m_bDiscovery; }
 	void RemoveDiscoveryTile();
 	void SetDiscoveryTile(DiscoveryType type);
 	
 	Square* FindSquare(SquareType type, bool bOccupied);
 
 private:
-	void Init(Game* pGame);
+	void Init();
 
 	int m_id;
 	const MapPos m_pos;
@@ -107,6 +108,7 @@ private:
 	EdgeSet m_wormholes;
 	int m_nVictory;
 	bool m_bArtifact;
+	bool m_bDiscovery;
 	Colour m_colour;
 	//structures
 };

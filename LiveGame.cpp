@@ -9,7 +9,7 @@
 
 #include <algorithm>
 
-LiveGame::LiveGame(int id, const std::string& name, Player& owner) : 
+LiveGame::LiveGame(int id, const std::string& name, const Player& owner) : 
 	Game(id, name, owner), m_phase(Phase::Lobby)
 {
 	m_pCmdStack = new CmdStack;

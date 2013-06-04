@@ -10,6 +10,12 @@ ReputationTrack::ReputationTrack(const Team& team) : m_team(team)
 {
 }
 
+ReputationTrack::ReputationTrack(const ReputationTrack& rhs, const Team& team) : 
+	m_team(team), m_slots(rhs.m_slots), m_repTiles(rhs.m_repTiles)
+
+{
+}
+
 int ReputationTrack::GetSlotCount() const
 {
 	return m_slots.GetCount(ReputationType::Ambassador) + m_slots.GetCount(ReputationType::Either) + m_slots.GetCount(ReputationType::Reputation);

@@ -37,6 +37,7 @@ public:
 	virtual CmdPtr Process(const Input::CmdMessage& msg, const Controller& controller) override;
 	virtual void Undo(const Controller& controller) override;
 	virtual bool CanUndo() const override { return m_idTaken < 0 && m_discovery == DiscoveryType::None; }
+	virtual bool HasRecord() const { return m_iHex >= 0; } 
 
 private:
 	struct HexChoice

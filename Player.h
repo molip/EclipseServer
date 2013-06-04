@@ -5,6 +5,7 @@
 
 class Game;
 class LiveGame;
+class ReviewGame;
 class Team;
 
 class Player
@@ -18,6 +19,7 @@ public:
 	const std::string& GetPassword() const { return m_password; }
 
 	LiveGame* GetCurrentLiveGame() const;
+	ReviewGame* GetCurrentReviewGame() const;
 	Game* GetCurrentGame() const;
 	void SetCurrentGame(Game* pGame);
 

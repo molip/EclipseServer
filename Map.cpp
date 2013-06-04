@@ -9,15 +9,23 @@ Map::Map(Game& game) : m_game(game)
 	AddHex(MapPos(0, 0), 001, 0);
 }
 
-Hex* Map::GetHex(const MapPos& pos)
+Map::Map(const Map& rhs, Game& game) : m_game(game)
 {
-	return const_cast<Hex*>(const_cast<const Map*>(this)->GetHex(pos));
+	for (auto& h : rhs.m_hexes)
+		m_hexes.insert(std::make_pair(h.first, HexPtr(new Hex(*h.second))));
 }
 
-const Hex* Map::GetHex(const MapPos& pos) const
+Hex* Map::FindHex(const MapPos& pos)
 {
 	auto h = m_hexes.find(pos);
 	return h == m_hexes.end() ? nullptr : h->second.get();
+}
+
+Hex& Map::GetHex(const MapPos& pos)
+{
+	Hex* pHex = FindHex(pos);
+	AssertThrowModel("Map::GetHex", !!pHex);
+	return *pHex;
 }
 
 std::vector<MapPos> Map::GetTeamStartPositions() const
@@ -50,32 +58,43 @@ std::vector<MapPos> Map::GetTeamStartPositions() const
 
 Hex& Map::AddHex(const MapPos& pos, int id, int rotation)
 {
-	AssertThrowModel("Map::AddHex: hex already occupied", GetHex(pos) == nullptr);
+	AssertThrowModel("Map::AddHex: hex already occupied", FindHex(pos) == nullptr);
 	AssertThrowModel("Map::AddHex: invalid rotation", rotation >= 0 && rotation < 6);
-	Hex* p = new Hex(&m_game, id, pos, rotation);
+	Hex* p = new Hex(id, pos, rotation);
 	m_hexes.insert(std::make_pair(pos, HexPtr(p)));
+	
+	if (p->HasDiscovery())
+		p->SetDiscoveryTile(m_game.GetDiscoveryBag().TakeTile());
+
 	return *p;
 }
 
 void Map::DeleteHex(const MapPos& pos)
 {
-	bool bOK = m_hexes.erase(pos) == 1;
-	AssertThrowModel("Map::DeleteHex", bOK);
+	auto i = m_hexes.find(pos);
+	AssertThrowModel("Map::DeleteHex: hex not found", i != m_hexes.end());
+
+	if (i->second->HasDiscovery())
+	{
+		DiscoveryType d = i->second->GetDiscoveryTile();
+		AssertThrowModel("Map::DeleteHex: discovery tile has gone", d != DiscoveryType::None);
+		m_game.GetDiscoveryBag().ReturnTile(d);
+	}
+	m_hexes.erase(i);
 }
 
 void Map::GetInfluencableNeighbours(const MapPos& pos, const Team& team, std::set<MapPos>& neighbours) const
 {
 	const bool bWormholeGen = team.HasTech(TechType::WormholeGen);
 
-	const Hex* pHex = GetHex(pos);
-	AssertThrow("Map::GetInfluencableNeighbours: invalid position", !!pHex);
-	AssertThrow("Map::GetInfluencableNeighbours: wrong owner", !pHex->IsOwned() || pHex->IsOwnedBy(team));
+	const Hex& hex= GetHex(pos);
+	AssertThrow("Map::GetInfluencableNeighbours: wrong owner", !hex.IsOwned() || hex.IsOwnedBy(team));
 
 	for (auto e : EnumRange<Edge>())
-		if (int nWormholes = pHex->HasWormhole(e) + bWormholeGen)
+		if (int nWormholes = hex.HasWormhole(e) + bWormholeGen)
 		{
 			MapPos pos2 = pos.GetNeighbour(e);
-			if (const Hex* pHex2 = GetHex(pos2))
+			if (const Hex* pHex2 = FindHex(pos2))
 				if (!pHex2->IsOwned()) // "a hex that does not contain an Influence Disc..."
 					if (nWormholes + pHex2->HasWormhole(ReverseEdge(e)) >= 2)
 						if (!pHex2->HasForeignShip(team.GetGame(), &team)) // "...or an enemy Ship"
@@ -85,14 +104,13 @@ void Map::GetInfluencableNeighbours(const MapPos& pos, const Team& team, std::se
 
 void Map::GetEmptyNeighbours(const MapPos& pos, bool bWormholeGen, std::set<MapPos>& neighbours) const
 {
-	const Hex* pHex = GetHex(pos);
-	AssertThrow("Map::GetEmptyNeighbours: invalid position", !!pHex);
+	const Hex& hex = GetHex(pos);
 
 	for (auto e : EnumRange<Edge>())
-		if (bWormholeGen || pHex->HasWormhole(e))
+		if (bWormholeGen || hex.HasWormhole(e))
 		{
 			MapPos pos2 = pos.GetNeighbour(e);
-			if (GetHex(pos2) == nullptr)
+			if (FindHex(pos2) == nullptr)
 				if (!m_game.GetHexBag(pos2.GetRing()).IsEmpty())
 					neighbours.insert(pos2);
 		}
@@ -104,7 +122,7 @@ std::vector<const Hex*> Map::GetSurroundingHexes(const MapPos& pos, const Team& 
 	hexes.resize(6);
 
 	for (auto e : EnumRange<Edge>())
-		if (const Hex* pHex = GetHex(pos.GetNeighbour(e)))
+		if (const Hex* pHex = FindHex(pos.GetNeighbour(e)))
 			if (pHex->IsOwnedBy(team)) // TODO: Check ships.
 				hexes[(int)e] = pHex;
 

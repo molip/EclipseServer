@@ -14,10 +14,22 @@ namespace
 	const int FakePlayers = 3;
 }
 
-Game::Game(int id, const std::string& name, Player& owner) : 
+Game::Game(int id, const std::string& name, const Player& owner) : 
 	m_id(id), m_name(name), m_idOwner(owner.GetID()), m_iTurn(-1), m_iRound(-1), m_iStartTeam(-1), m_iStartTeamNext(-1),
 	m_map(*this)
 {
+}
+
+Game::Game(int id, const std::string& name, const Player& owner, const Game& rhs) :
+	m_id(id), m_name(name), m_idOwner(owner.GetID()), 
+	m_iTurn(rhs.m_iTurn), m_iRound(rhs.m_iRound), m_iStartTeam(rhs.m_iRound), m_iStartTeamNext(rhs.m_iStartTeamNext),
+	m_map(rhs.m_map, *this), m_techs(rhs.m_techs), m_repBag(rhs.m_repBag), m_techBag(rhs.m_techBag), m_discBag(rhs.m_discBag)
+{
+	for (auto& t : rhs.m_teams)
+		m_teams.push_back(TeamPtr(new Team(*t, id)));
+
+	for (int i = 0; i < (int)HexRing::_Count; ++i)
+		m_hexBag[i] = rhs.m_hexBag[i];
 }
 
 Game::~Game()

@@ -66,10 +66,8 @@ public:
 	virtual void Undo(Game& game, const Controller& controller) override
 	{
 		if (m_discovery != DiscoveryType::None)
-		{
-			Hex* pHex = game.GetMap().GetHex(*m_pDstPos);
-			pHex->SetDiscoveryTile(m_discovery);
-		}
+			game.GetMap().GetHex(*m_pDstPos).SetDiscoveryTile(m_discovery);
+
 		TransferDisc(m_pDstPos, m_pSrcPos, game, controller);
 		controller.SendMessage(Output::UpdateMap(game), game);
 	}
@@ -82,10 +80,9 @@ private:
 
 		if (pSrcPos)
 		{
-			Hex* pHex = game.GetMap().GetHex(*pSrcPos);
-			AssertThrowModel("InfluenceCmd::TransferDisc: Invalid src", !!pHex);
-			AssertThrowModel("InfluenceCmd::TransferDisc: Src not owned", pHex->IsOwnedBy(team));
-			pHex->SetColour(Colour::None);
+			Hex& hex = game.GetMap().GetHex(*pSrcPos);
+			AssertThrowModel("InfluenceCmd::TransferDisc: Src not owned", hex.IsOwnedBy(team));
+			hex.SetColour(Colour::None);
 		}
 		else
 			team.GetInfluenceTrack().RemoveDiscs(1);
@@ -93,8 +90,7 @@ private:
 		Hex* pDstHex = nullptr;
 		if (pDstPos)
 		{
-			pDstHex = game.GetMap().GetHex(*pDstPos);
-			AssertThrowModel("InfluenceCmd::TransferDisc: Invalid dst", !!pDstHex);
+			pDstHex = &game.GetMap().GetHex(*pDstPos);
 			AssertThrowModel("InfluenceCmd::TransferDisc: Dst already owned", !pDstHex->IsOwned());
 			pDstHex->SetColour(m_colour);
 		}

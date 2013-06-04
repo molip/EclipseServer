@@ -11,6 +11,13 @@ function CreateCommandNode(doc, type)
 	return root
 }
 
+function CreateCommandDoc(type)
+{
+	var doc = CreateXMLDoc()
+	var node = CreateCommandNode(doc, type)
+	return doc
+}
+
 function AddTextElem(doc, parent, name, text)
 {
 	var elem = doc.createElement(name)
@@ -37,25 +44,41 @@ function SendJoinGame(id)
 
 function SendCreateGame()
 {
-	var doc = CreateXMLDoc()
-	var node = CreateCommandNode(doc, "create_game")
-	SendXMLDoc(doc)
+	SendXMLDoc(CreateCommandDoc("create_game"))
 }
 
 function SendExitGame()
 {
 	ExitAction()
 	
-	var doc = CreateXMLDoc()
-	var node = CreateCommandNode(doc, "exit_game")
-	SendXMLDoc(doc)
+	SendXMLDoc(CreateCommandDoc("exit_game"))
+}
+
+function SendStartReview()
+{
+	ExitAction()
+
+	SendXMLDoc(CreateCommandDoc("start_review"))
+}
+
+function SendExitReview()
+{
+	SendXMLDoc(CreateCommandDoc("exit_review"))
+}
+
+function SendAdvanceReview()
+{
+	SendXMLDoc(CreateCommandDoc("advance_review"))
+}
+
+function SendRetreatReview()
+{
+	SendXMLDoc(CreateCommandDoc("retreat_review"))
 }
 
 function SendStartGame()
 {
-	var doc = CreateXMLDoc()
-	var node = CreateCommandNode(doc, "start_game")
-	SendXMLDoc(doc)
+	SendXMLDoc(CreateCommandDoc("start_game"))
 }
 
 function SendChooseTeam()
@@ -82,18 +105,14 @@ function SendChooseAction(action)
 
 function SendChooseCommit()
 {
-	var doc = CreateXMLDoc()
-	var node = CreateCommandNode(doc, "commit")
-	SendXMLDoc(doc)
+	SendXMLDoc(CreateCommandDoc("commit"))
 }
 
 function SendChooseUndo()
 {
 	ExitAction()
 
-	var doc = CreateXMLDoc()
-	var node = CreateCommandNode(doc, "undo")
-	SendXMLDoc(doc)
+	SendXMLDoc(CreateCommandDoc("undo"))
 }
 
 function SendRegister()

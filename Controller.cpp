@@ -4,6 +4,7 @@
 #include "Input.h"
 #include "Player.h"
 #include "LiveGame.h"
+#include "ReviewGame.h"
 
 #include "App.h"
 
@@ -99,6 +100,9 @@ void Controller::SendUpdateGame(const Game& game, const Player* pPlayer) const
 
 	SendMessage(Output::ShowGame(), game, pPlayer);
 	SendMessage(Output::UpdateTeams(game), game, pPlayer);
+	
+	if (auto pReview = dynamic_cast<const ReviewGame*>(&game))
+		SendMessage(Output::UpdateReviewUI(*pReview), game, pPlayer);
 	
 	for (auto& pTeam : game.GetTeams())
 	{

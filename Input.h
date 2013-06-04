@@ -49,6 +49,26 @@ struct ExitGame : Message // Returns player to game list - they're still in the 
 	virtual bool Process(Controller& controller, Player& player) const override; 
 };
 
+struct StartReview : Message 
+{
+	virtual bool Process(Controller& controller, Player& player) const override; 
+};
+
+struct ExitReview : Message 
+{
+	virtual bool Process(Controller& controller, Player& player) const override; 
+};
+
+struct AdvanceReview : Message 
+{
+	virtual bool Process(Controller& controller, Player& player) const override; 
+};
+
+struct RetreatReview : Message 
+{
+	virtual bool Process(Controller& controller, Player& player) const override; 
+};
+
 struct CreateGame : Message 
 {
 	virtual bool Process(Controller& controller, Player& player) const override; 
