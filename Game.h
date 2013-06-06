@@ -69,7 +69,6 @@ protected:
 	std::string m_name;
 	int m_idOwner;
 
-	Map	m_map;
 	std::multiset<TechType> m_techs;
 
 	std::vector<TeamPtr> m_teams;
@@ -78,6 +77,8 @@ protected:
 	TechnologyBag m_techBag;
 	DiscoveryBag m_discBag;
 	HexBag m_hexBag[HexRing::_Count];
+
+	Map	m_map; // After m_discBag
 
 	int m_iTurn, m_iRound;
 	int m_iStartTeam, m_iStartTeamNext;

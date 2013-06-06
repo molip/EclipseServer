@@ -85,11 +85,13 @@
     <ClInclude Include="Controller.h" />
     <ClInclude Include="DiscoverCmd.h" />
     <ClInclude Include="Discovery.h" />
+    <ClInclude Include="EdgeSet.h" />
     <ClInclude Include="EnumRange.h" />
     <ClInclude Include="EnumTraits.h" />
     <ClInclude Include="ExploreCmd.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Hex.h" />
+    <ClInclude Include="HexDefs.h" />
     <ClInclude Include="InfluenceCmd.h" />
     <ClInclude Include="InfluenceTrack.h" />
     <ClInclude Include="Map.h" />
@@ -135,9 +137,11 @@
     <ClCompile Include="Controller.cpp" />
     <ClCompile Include="DiscoverCmd.cpp" />
     <ClCompile Include="Discovery.cpp" />
+    <ClCompile Include="EdgeSet.cpp" />
     <ClCompile Include="ExploreCmd.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Hex.cpp" />
+    <ClCompile Include="HexDefs.cpp" />
     <ClCompile Include="InfluenceCmd.cpp" />
     <ClCompile Include="InfluenceTrack.cpp" />
     <ClCompile Include="main.cpp" />

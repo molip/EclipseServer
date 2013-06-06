@@ -3,6 +3,7 @@
 #include "Hex.h"
 #include "Game.h"
 #include "App.h"
+#include "EdgeSet.h"
 
 Map::Map(Game& game) : m_game(game)
 {

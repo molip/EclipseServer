@@ -9,6 +9,7 @@
 #include "Map.h"
 #include "DiscoverCmd.h"
 #include "Record.h"
+#include "EdgeSet.h"
 
 ExploreCmd::ExploreCmd(Player& player, int iPhase) : Cmd(player), m_idHex(-1), m_iPos(-1), m_iPhase(iPhase)
 {

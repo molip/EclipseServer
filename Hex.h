@@ -15,39 +15,33 @@ enum class Edge;
 enum class Colour;
 class Team;
 class Game;
+class HexDef;
 
 extern Edge ReverseEdge(Edge e);
 extern Edge RotateEdge(Edge e, int n);
 
-class EdgeSet : public std::bitset<6>
-{
-public:
-	EdgeSet() {}
-	EdgeSet(std::string s);
-	bool operator[](Edge e) const;
-	EdgeSet::reference operator[](Edge e);
-	std::vector<Edge> GetEdges() const;
-};
-
+class EdgeSet;
+class SquareDef;
+class Hex;
 enum class SquareType { Money, Science, Materials, Any, Orbital, _Count };
 
+// Proxy class - defers to Hex and SquareDef
 class Square
 {
 public:
-	Square(int x = 0, int y = 0, SquareType type = SquareType::Any, bool bAdvanced = false);
+	Square(Hex& hex, int index);
 	TechType GetRequiredTech() const;
-	bool IsOccupied() const { return m_bOccupied; }
-	void SetOccupied(bool b) { m_bOccupied = b; }
-	SquareType GetType() const { return m_type; }
+	bool IsOccupied() const;
+	void SetOccupied(bool b);
+	SquareType GetType() const;
 
-	int GetX() const { return m_x; }
-	int GetY() const { return m_y; }
+	int GetX() const;
+	int GetY() const;
 
 private:
-	int m_x, m_y; // Centre (pixels from TL of hex image).
-	SquareType m_type;
-	bool m_bAdvanced;
-	bool m_bOccupied;
+	Hex& m_hex;
+	int m_index;
+	const SquareDef& GetDef() const;
 };
 
 class Ship
@@ -65,6 +59,7 @@ private:
 
 class Hex
 {
+	friend class Square;
 public:
 	Hex(int id, const MapPos& pos, int nRotation);
 	Hex(const Hex& rhs);
@@ -87,17 +82,22 @@ public:
 	const std::vector<Square>& GetSquares() const { return m_squares; }
 	const std::vector<Ship>& GetShips() const { return m_ships; }
 	DiscoveryType GetDiscoveryTile() const { return m_discovery; }
-	EdgeSet GetWormholes() const { return m_wormholes; } // Non-rotated.
-	int GetVictoryPoints() const { return m_nVictory; }
-	bool HasArtifact() const { return m_bArtifact; }
-	bool HasDiscovery() const { return m_bDiscovery; }
+	const EdgeSet& GetWormholes() const; // Non-rotated.
+	int GetVictoryPoints() const;
+	bool HasArtifact() const;
+	bool HasDiscovery() const;
 	void RemoveDiscoveryTile();
 	void SetDiscoveryTile(DiscoveryType type);
 	
 	Square* FindSquare(SquareType type, bool bOccupied);
 
 private:
+	const HexDef& GetDef() const;
+
 	void Init();
+
+	void SetSquareOccupied(int i, bool b) { m_occupied[i] = b; }
+	bool IsSquareOccupied(int i) const { return m_occupied[i]; }
 
 	int m_id;
 	const MapPos m_pos;
@@ -105,11 +105,8 @@ private:
 	std::vector<Square> m_squares;
 	std::vector<Ship> m_ships;
 	DiscoveryType m_discovery;
-	EdgeSet m_wormholes;
-	int m_nVictory;
-	bool m_bArtifact;
-	bool m_bDiscovery;
 	Colour m_colour;
+	std::vector<bool> m_occupied;
 	//structures
 };
 
