@@ -44,8 +44,8 @@ void Team::Assign(RaceType race, Colour colour)
 	for (int i = 0; i < r.GetStartReputationTiles(); ++i)
 		m_repTrack.AddReputationTile(Games::Get(m_idGame).GetReputationBag().TakeTile());
 	
-	//for (auto i : EnumRange<ShipType>())
-	//	m_blueprints[(int)i] = r.GetBlueprint(i);
+	for (auto i : EnumRange<ShipType>())
+		m_blueprints[(int)i].reset(new Blueprint(race, i));
 
 	AddShips(ShipType::Interceptor, 8);
 	AddShips(ShipType::Cruiser, 4);

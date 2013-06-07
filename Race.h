@@ -2,7 +2,7 @@
 
 #include "Resources.h"
 #include "Reputation.h"
-#include "Blueprint.h"
+#include "App.h"
 
 enum class RaceType { None = -1, Human, Eridani, Hydran, Planta, Descendants, Mechanema, Orion, _Count };
 enum class Resource;
@@ -11,6 +11,9 @@ enum class Colour;
 enum class ReputationType;
 enum class Buildable;
 enum class TechType;
+
+class BlueprintDef;
+DEFINE_UNIQUE_PTR(BlueprintDef)
 
 class Race
 {
@@ -27,7 +30,7 @@ public:
 	int GetStartSector(Colour colour) const;
 	int GetMoves() const;
 	ReputationSlots GetReputationSlots() const;
-	BlueprintPtr GetBlueprint(ShipType type) const;
+	BlueprintDefPtr GetBlueprintDef(ShipType type) const;
 	int GetBuildCost(Buildable b) const;
 	std::vector<TechType> GetStartTechnologies() const;
 	int GetTradeRate() const;

@@ -79,6 +79,7 @@
     <ClInclude Include="App.h" />
     <ClInclude Include="Bag.h" />
     <ClInclude Include="Blueprint.h" />
+    <ClInclude Include="BlueprintDefs.h" />
     <ClInclude Include="Cmd.h" />
     <ClInclude Include="CmdStack.h" />
     <ClInclude Include="ColoniseCmd.h" />
@@ -131,6 +132,7 @@
     <ClCompile Include="App.cpp" />
     <ClCompile Include="Bag.cpp" />
     <ClCompile Include="Blueprint.cpp" />
+    <ClCompile Include="BlueprintDefs.cpp" />
     <ClCompile Include="Cmd.cpp" />
     <ClCompile Include="CmdStack.cpp" />
     <ClCompile Include="ColoniseCmd.cpp" />

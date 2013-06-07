@@ -85,7 +85,7 @@ private:
 	TechTrack m_techTrack;
 	Storage m_storage;
 	
-	//BlueprintPtr m_blueprints[4];
+	BlueprintPtr m_blueprints[4];
 	int m_nShips[4];
 
 	int m_nColonyShips, m_nColonyShipsUsed;

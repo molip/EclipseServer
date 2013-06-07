@@ -162,6 +162,9 @@
     <ClInclude Include="EdgeSet.h">
       <Filter>Model</Filter>
     </ClInclude>
+    <ClInclude Include="BlueprintDefs.h">
+      <Filter>Model</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -303,6 +306,9 @@
       <Filter>Model</Filter>
     </ClCompile>
     <ClCompile Include="EdgeSet.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="BlueprintDefs.cpp">
       <Filter>Model</Filter>
     </ClCompile>
   </ItemGroup>

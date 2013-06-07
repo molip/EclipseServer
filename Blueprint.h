@@ -4,25 +4,29 @@
 
 #include <memory>
 
+class BlueprintDef;
+
+enum class RaceType;
+
 class Blueprint
 {
 public:
-	Blueprint(const ShipLayout& layout, int fixedInitiative, int fixedPower, int fixedComputer);
+	Blueprint(RaceType r, ShipType s);
+	Blueprint(const BlueprintDef& def);
 
-	ShipType GetType() const { return m_base.GetType(); }
-	const ShipLayout& GetBaseLayout() const { return m_base; }
+	ShipType GetType() const;
+	const ShipLayout& GetBaseLayout() const;
 	
-	int GetFixedInitiative() const { return m_fixedInitiative; }
-	int GetFixedPower() const { return m_fixedPower; }
-	int GetFixedComputer() const { return m_fixedComputer; }
+	int GetFixedInitiative() const;
+	int GetFixedPower() const;
+	int GetFixedComputer() const;
 
 	static const Blueprint& GetAncientShip();
 	static const Blueprint& GCDS();
 
 private:
-	const ShipLayout m_base;
+	const BlueprintDef* m_pDef;
 	ShipLayout m_overlay;
-	const int m_fixedInitiative, m_fixedPower, m_fixedComputer;
 };
 
 typedef std::unique_ptr<Blueprint> BlueprintPtr;

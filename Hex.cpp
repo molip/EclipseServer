@@ -34,7 +34,7 @@ const Team* Ship::GetOwner(const Game& game) const
 //-----------------------------------------------------------------------------
 
 Hex::Hex(int id, const MapPos& pos, int nRotation) : 
-	m_id(id), m_pos(pos), m_nRotation(nRotation), m_discovery(DiscoveryType::None), m_colour(Colour::None)
+	m_id(id), m_pos(pos), m_nRotation(nRotation), m_discovery(DiscoveryType::None), m_colour(Colour::None), m_pDef(&HexDefs::Get(id))
 {
 	AssertThrow("Hex::Hex: Invalid rotation", nRotation >= 0 && nRotation < 6);
 
@@ -46,7 +46,7 @@ Hex::Hex(int id, const MapPos& pos, int nRotation) :
 
 Hex::Hex(const Hex& rhs) : 
 	m_id(rhs.m_id), m_pos(rhs.m_pos), m_nRotation(rhs.m_nRotation), m_squares(rhs.m_squares), m_ships(rhs.m_ships), 
-	m_discovery(rhs.m_discovery), m_colour(rhs.m_colour), m_occupied(rhs.m_occupied)
+	m_discovery(rhs.m_discovery), m_colour(rhs.m_colour), m_occupied(rhs.m_occupied), m_pDef(rhs.m_pDef)
 {
 	Init();
 }
@@ -57,11 +57,6 @@ void Hex::Init()
 
 	for (int i = 0; i < GetDef().GetSquareCount(); ++i)
 		m_squares.push_back(Square(*this, i));
-}
-
-const HexDef& Hex::GetDef() const
-{
-	return HexDefs::Get(m_id);
 }
 
 bool Hex::HasWormhole(Edge e) const

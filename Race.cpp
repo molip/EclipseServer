@@ -3,6 +3,7 @@
 #include "Ship.h"
 #include "Team.h"
 #include "EnumTraits.h"
+#include "BlueprintDefs.h"
 
 Storage Race::GetStartStorage() const
 {
@@ -85,7 +86,7 @@ ReputationSlots Race::GetReputationSlots() const
 	return ReputationSlots(a, e, r);
 }
 
-BlueprintPtr Race::GetBlueprint(ShipType type) const
+BlueprintDefPtr Race::GetBlueprintDef(ShipType type) const
 {
 	ShipLayout layout(type);
 	int fixedInitiative = 0, fixedPower = 0, fixedComputer = 0;
@@ -178,7 +179,7 @@ BlueprintPtr Race::GetBlueprint(ShipType type) const
 		break;
 	}
 
-	return BlueprintPtr(new Blueprint(layout, fixedInitiative, fixedPower, fixedComputer));
+	return BlueprintDefPtr(new BlueprintDef(layout, fixedInitiative, fixedPower, fixedComputer));
 }
 
 int Race::GetBuildCost(Buildable b) const

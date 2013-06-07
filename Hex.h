@@ -92,13 +92,14 @@ public:
 	Square* FindSquare(SquareType type, bool bOccupied);
 
 private:
-	const HexDef& GetDef() const;
+	const HexDef& GetDef() const { return *m_pDef; }
 
 	void Init();
 
 	void SetSquareOccupied(int i, bool b) { m_occupied[i] = b; }
 	bool IsSquareOccupied(int i) const { return m_occupied[i]; }
 
+	const HexDef* m_pDef; 
 	int m_id;
 	const MapPos m_pos;
 	int m_nRotation; // [0, 5]
