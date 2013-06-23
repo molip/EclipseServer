@@ -17,6 +17,10 @@ public:
 
 	static int GetIncome(int nPop);
 
+	void Save(Serial::SaveNode& node) const;
+	void Load(const Serial::LoadNode& node);
+
+
 private:
 	Population m_pop;
 };

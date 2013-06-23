@@ -86,6 +86,7 @@
     <ClInclude Include="Controller.h" />
     <ClInclude Include="DiscoverCmd.h" />
     <ClInclude Include="Discovery.h" />
+    <ClInclude Include="Dynamic.h" />
     <ClInclude Include="EdgeSet.h" />
     <ClInclude Include="EnumRange.h" />
     <ClInclude Include="EnumTraits.h" />
@@ -102,6 +103,7 @@
     <ClInclude Include="mongoose.h" />
     <ClInclude Include="MongooseServer.h" />
     <ClInclude Include="LiveGame.h" />
+    <ClInclude Include="OS.h" />
     <ClInclude Include="Output.h" />
     <ClInclude Include="HTMLServer.h" />
     <ClInclude Include="Player.h" />
@@ -112,6 +114,7 @@
     <ClInclude Include="Reputation.h" />
     <ClInclude Include="Resources.h" />
     <ClInclude Include="ReviewGame.h" />
+    <ClInclude Include="Serial.h" />
     <ClInclude Include="Ship.h" />
     <ClInclude Include="ShipLayout.h" />
     <ClInclude Include="Singleton.h" />
@@ -139,6 +142,7 @@
     <ClCompile Include="Controller.cpp" />
     <ClCompile Include="DiscoverCmd.cpp" />
     <ClCompile Include="Discovery.cpp" />
+    <ClCompile Include="Dynamic.cpp" />
     <ClCompile Include="EdgeSet.cpp" />
     <ClCompile Include="ExploreCmd.cpp" />
     <ClCompile Include="Game.cpp" />
@@ -154,6 +158,7 @@
     <ClCompile Include="MongooseServer.cpp" />
     <ClCompile Include="mongoose.c" />
     <ClCompile Include="LiveGame.cpp" />
+    <ClCompile Include="OS.cpp" />
     <ClCompile Include="Output.cpp" />
     <ClCompile Include="HTMLServer.cpp" />
     <ClCompile Include="Player.cpp" />
@@ -164,6 +169,7 @@
     <ClCompile Include="Reputation.cpp" />
     <ClCompile Include="Resources.cpp" />
     <ClCompile Include="ReviewGame.cpp" />
+    <ClCompile Include="Serial.cpp" />
     <ClCompile Include="Ship.cpp" />
     <ClCompile Include="ShipLayout.cpp" />
     <ClCompile Include="stdafx.cpp">

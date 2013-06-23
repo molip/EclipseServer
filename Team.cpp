@@ -6,6 +6,13 @@
 #include "EnumTraits.h"
 #include "Games.h"
 #include "Players.h"
+#include "Serial.h"
+
+Team::Team() : m_idGame(0), m_idPlayer(0), m_race(RaceType::None), m_colour(Colour::None), m_nColonyShipsUsed(0), m_repTrack(*this)
+{
+	for (int i = 0; i < 4; ++i)
+		m_nShips[i] = 0;
+}
 
 Team::Team(int idGame, int idPlayer) :
 	m_idGame(idGame), m_idPlayer(idPlayer), m_race(RaceType::None), m_colour(Colour::None), m_nColonyShipsUsed(0), m_repTrack(*this)
@@ -38,8 +45,6 @@ void Team::Assign(RaceType race, Colour colour)
 	std::vector<TechType> techs = r.GetStartTechnologies();
 	for (TechType t : techs)
 		m_techTrack.Add(t);
-
-	m_repTrack.SetSlots(r.GetReputationSlots());
 
 	for (int i = 0; i < r.GetStartReputationTiles(); ++i)
 		m_repTrack.AddReputationTile(Games::Get(m_idGame).GetReputationBag().TakeTile());
@@ -108,5 +113,47 @@ bool Team::IsAncientAlliance(const Team* pTeam1, const Team* pTeam2)
 	return (!pTeam1 || !pTeam2) && Race((pTeam1 ? pTeam1 : pTeam2)->GetRace()).IsAncientsAlly();
 }
 
-DEFINE_ENUM_NAMES(Colour) { "Red", "Blue", "Green", "Yellow", "White", "Black", "" };
+void Team::Save(Serial::SaveNode& node) const
+{
+	node.SaveType("player", m_idPlayer);
+	node.SaveEnum("race", m_race);
+	node.SaveEnum("colour", m_colour);
+	node.SaveCntr("allies", m_allies, Serial::EnumSaver());
+
+	node.SaveClass("pop_track", m_popTrack);
+	node.SaveClass("inf_track", m_infTrack);
+	node.SaveClass("rep_track", m_repTrack);
+	node.SaveClass("storage", m_storage);
+
+	node.SaveArray("blueprints", m_blueprints, Serial::ClassPtrSaver());
+	node.SaveArray("ships", m_nShips, Serial::TypeSaver());
+
+	node.SaveType("colony_ships", m_nColonyShips);
+	node.SaveType("colony_ships_used", m_nColonyShipsUsed);
+}
+
+void Team::Load(const Serial::LoadNode& node)
+{
+	node.LoadType("player", m_idPlayer);
+	node.LoadEnum("race", m_race);
+	node.LoadEnum("colour", m_colour);
+	node.LoadCntr("allies", m_allies, Serial::EnumLoader());
+
+	node.LoadClass("pop_track", m_popTrack);
+	node.LoadClass("inf_track", m_infTrack);
+	node.LoadClass("rep_track", m_repTrack);
+	node.LoadClass("storage", m_storage);
+
+	node.LoadArray("blueprints", m_blueprints, Serial::ClassPtrLoader());
+	node.LoadArray("ships", m_nShips, Serial::TypeLoader());
+
+	node.LoadType("colony_ships", m_nColonyShips);
+	node.LoadType("colony_ships_used", m_nColonyShipsUsed);
+
+	if (m_race != RaceType::None)
+		for (auto s : EnumRange<ShipType>())
+			m_blueprints[(int)s]->Init(m_race, s);
+}
+
+DEFINE_ENUM_NAMES2(Colour, -1) { "None", "Red", "Blue", "Green", "Yellow", "White", "Black", "" };
 DEFINE_ENUM_NAMES(Buildable) { "Interceptor", "Cruiser", "Dreadnought", "Starbase", "Orbital", "Monolith", "" };

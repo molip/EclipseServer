@@ -8,11 +8,16 @@ class BlueprintDef;
 
 enum class RaceType;
 
+namespace Serial { class SaveNode; class LoadNode; }
+
 class Blueprint
 {
 public:
+	Blueprint();
 	Blueprint(RaceType r, ShipType s);
 	Blueprint(const BlueprintDef& def);
+
+	void Init(RaceType r, ShipType s);
 
 	ShipType GetType() const;
 	const ShipLayout& GetBaseLayout() const;
@@ -23,6 +28,9 @@ public:
 
 	static const Blueprint& GetAncientShip();
 	static const Blueprint& GCDS();
+
+	void Save(Serial::SaveNode& node) const;
+	void Load(const Serial::LoadNode& node);
 
 private:
 	const BlueprintDef* m_pDef;

@@ -19,6 +19,8 @@ enum class Buildable { Interceptor, Cruiser, Dreadnought, Starbase, Orbital, Mon
 
 enum class RaceType;
 
+namespace Serial { class SaveNode; class LoadNode; }
+
 class Game;
 class Hex;
 class Player;
@@ -26,15 +28,18 @@ class Player;
 class Team
 {
 public:
+	Team();
 	Team(int idGame, int idPlayer);
 	Team(const Team& rhs, int idGame);
 	~Team();
 
-	void Team::Assign(RaceType race, Colour colour);
+	void Assign(RaceType race, Colour colour);
 
 	const int GetPlayerID() const { return m_idPlayer; }
 	const Player& GetPlayer() const;
 	const Game& GetGame() const;
+
+	void SetGameID(int id) { m_idGame = id; }
 
 	const RaceType& GetRace() const { return m_race; }
 	Colour GetColour() const { return m_colour; }
@@ -71,6 +76,9 @@ public:
 	int GetUnusedColonyShips() const { return m_nColonyShips - m_nColonyShipsUsed; }
 
 	static bool IsAncientAlliance(const Team* pTeam1, const Team* pTeam2);
+
+	void Save(Serial::SaveNode& node) const;
+	void Load(const Serial::LoadNode& node);
 
 private:
 	int m_idGame, m_idPlayer;

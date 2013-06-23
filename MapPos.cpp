@@ -54,3 +54,15 @@ HexRing MapPos::GetRing() const
 
 	return HexRing::Outer;
 }
+
+std::ostream& operator <<(std::ostream &lhs, const MapPos& rhs)
+{
+	lhs << rhs.m_x << " " << rhs.m_y;
+	return lhs;
+}
+
+std::istream& operator >>(std::istream &lhs, MapPos& rhs)
+{
+	lhs >> rhs.m_x >> rhs.m_y;
+	return lhs;
+}

@@ -8,6 +8,7 @@
 #include "Technology.h"
 #include "HexDefs.h"
 #include "EnumTraits.h"
+#include "Serial.h"
 
 Square::Square(Hex& hex, int index) : m_hex(hex), m_index(index)
 {
@@ -26,12 +27,33 @@ int Square::GetX() const { return GetDef().GetX(); }
 int Square::GetY() const { return GetDef().GetY(); }
 
 //-----------------------------------------------------------------------------
+
+Ship::Ship() : m_type(ShipType::None), m_colour(Colour::None) 
+{
+}
+
 const Team* Ship::GetOwner(const Game& game) const
 {
 	return m_colour == Colour::None ? nullptr : &game.GetTeam(m_colour);
 }
 
+void Ship::Save(Serial::SaveNode& node) const
+{
+	node.SaveEnum("type", m_type);
+	node.SaveEnum("colour", m_colour);
+}
+
+void Ship::Load(const Serial::LoadNode& node)
+{
+	node.LoadEnum("type", m_type);
+	node.LoadEnum("colour", m_colour);
+}
+
 //-----------------------------------------------------------------------------
+
+Hex::Hex() : m_id(0), m_nRotation(0), m_discovery(DiscoveryType::None), m_colour(Colour::None), m_pDef(nullptr)
+{
+}
 
 Hex::Hex(int id, const MapPos& pos, int nRotation) : 
 	m_id(id), m_pos(pos), m_nRotation(nRotation), m_discovery(DiscoveryType::None), m_colour(Colour::None), m_pDef(&HexDefs::Get(id))
@@ -54,7 +76,11 @@ Hex::Hex(const Hex& rhs) :
 void Hex::Init()
 {
 	m_occupied.resize(GetDef().GetSquareCount());
+	InitSquares();
+}
 
+void Hex::InitSquares()
+{
 	for (int i = 0; i < GetDef().GetSquareCount(); ++i)
 		m_squares.push_back(Square(*this, i));
 }
@@ -153,5 +179,28 @@ const EdgeSet& Hex::GetWormholes() const { return GetDef().GetWormholes(); }
 int Hex::GetVictoryPoints() const { return GetDef().GetVictoryPoints(); }
 bool Hex::HasArtifact() const { return GetDef().HasArtifact(); }
 bool Hex::HasDiscovery() const { return GetDef().HasDiscovery(); }
+
+void Hex::Save(Serial::SaveNode& node) const
+{
+	node.SaveType("id", m_id);
+	node.SaveType("rotation", m_nRotation);
+	node.SaveCntr("ships", m_ships, Serial::ClassSaver());
+	node.SaveEnum("discovery", m_discovery);
+	node.SaveEnum("colour", m_colour);
+	node.SaveCntr("occupied", m_occupied, Serial::TypeSaver());
+}
+
+void Hex::Load(const Serial::LoadNode& node)
+{
+	node.LoadType("id", m_id);
+	node.LoadType("rotation", m_nRotation);
+	node.LoadCntr("ships", m_ships, Serial::ClassLoader());
+	node.LoadEnum("discovery", m_discovery);
+	node.LoadEnum("colour", m_colour);
+	node.LoadCntr("occupied", m_occupied, Serial::TypeLoader());
+
+	m_pDef = &HexDefs::Get(m_id);
+	InitSquares();
+}
 
 DEFINE_ENUM_NAMES(SquareType) { "Money", "Science", "Materials", "Any", "Orbital", "" };

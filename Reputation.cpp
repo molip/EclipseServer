@@ -3,29 +3,47 @@
 #include "Team.h"
 #include "App.h"
 #include "EnumTraits.h"
+#include "Serial.h"
+#include "Race.h"
 
 #include <algorithm>
+
+ReputationSlots::ReputationSlots(int a, int e, int r)
+{
+	m_types[(int)ReputationType::Ambassador] = a;
+	m_types[(int)ReputationType::Either] = e;
+	m_types[(int)ReputationType::Reputation] = r;
+}
+
+//-----------------------------------------------------------------------------
 
 ReputationTrack::ReputationTrack(const Team& team) : m_team(team)
 {
 }
 
 ReputationTrack::ReputationTrack(const ReputationTrack& rhs, const Team& team) : 
-	m_team(team), m_slots(rhs.m_slots), m_repTiles(rhs.m_repTiles)
+	m_team(team), m_repTiles(rhs.m_repTiles)
 
 {
+}
+
+ReputationSlots ReputationTrack::GetSlots() const
+{
+	return Race(m_team.GetRace()).GetReputationSlots();
 }
 
 int ReputationTrack::GetSlotCount() const
 {
-	return m_slots.GetCount(ReputationType::Ambassador) + m_slots.GetCount(ReputationType::Either) + m_slots.GetCount(ReputationType::Reputation);
+	ReputationSlots slots = GetSlots();
+	return slots.GetCount(ReputationType::Ambassador) + slots.GetCount(ReputationType::Either) + slots.GetCount(ReputationType::Reputation);
 }
 
 ReputationType ReputationTrack::GetSlotType(int iSlot) const
 {
+	ReputationSlots slots = GetSlots();
 	for (int i = 0; i < 3; ++i)
 	{
-		iSlot -= m_slots.GetCount(ReputationType(i));
+		iSlot -= slots.GetCount(ReputationType(i));
 		if (iSlot < 0)
 			return ReputationType(i);
 	}
@@ -35,8 +53,10 @@ ReputationType ReputationTrack::GetSlotType(int iSlot) const
 
 int ReputationTrack::GetFirstReputationTileSlot() const
 {
-	int nAmbassadorSlots = m_slots.GetCount(ReputationType::Ambassador);
-	int nEitherSlotsUsed = std::max(0, (int)m_team.GetAllies().size() - m_slots.GetCount(ReputationType::Ambassador));
+	ReputationSlots slots = GetSlots();
+
+	int nAmbassadorSlots = slots.GetCount(ReputationType::Ambassador);
+	int nEitherSlotsUsed = std::max(0, (int)m_team.GetAllies().size() - slots.GetCount(ReputationType::Ambassador));
 	return nAmbassadorSlots + nEitherSlotsUsed;
 }
 
@@ -61,7 +81,8 @@ bool ReputationTrack::AddReputationTile(int val)
 
 bool ReputationTrack::CanAddAmbassador() const
 {
-	return (int)m_team.GetAllies().size() < m_slots.GetCount(ReputationType::Ambassador) + m_slots.GetCount(ReputationType::Either);
+	ReputationSlots slots = GetSlots();
+	return (int)m_team.GetAllies().size() < slots.GetCount(ReputationType::Ambassador) + slots.GetCount(ReputationType::Either);
 }
 
 bool ReputationTrack::OnAmbassadorAdded()
@@ -75,6 +96,16 @@ bool ReputationTrack::OnAmbassadorAdded()
 	ASSERT(nEmptyRepTileSlots >= 0);
 	return false;
 
+}
+
+void ReputationTrack::Save(Serial::SaveNode& node) const
+{
+	node.SaveCntr("tiles", m_repTiles, Serial::TypeSaver());
+}
+
+void ReputationTrack::Load(const Serial::LoadNode& node)
+{
+	node.LoadCntr("tiles", m_repTiles, Serial::TypeLoader());
 }
 
 DEFINE_ENUM_NAMES(ReputationType) { "Ambassador", "Either", "Reputation", "" };

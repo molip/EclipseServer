@@ -42,6 +42,12 @@ void AssertThrowModel(const std::string& msg, bool b)
 		throw ModelException(msg);
 }
 
+void AssertThrowSerial(const std::string& msg, bool b)
+{
+	if (!ASSERT(b))
+		throw SerialException(msg);
+}
+
 Resource SquareTypeToResource(SquareType t)
 {
 	switch (t)

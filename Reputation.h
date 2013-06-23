@@ -4,20 +4,17 @@
 
 enum class ReputationType { Ambassador, Either, Reputation, _Count };
 
+namespace Serial { class SaveNode; class LoadNode; }
+
 class ReputationSlots
 {
 public:
-	ReputationSlots() {}
-	ReputationSlots(int a, int e, int r)
-	{
-		m_slots[(int)ReputationType::Ambassador] = a;
-		m_slots[(int)ReputationType::Either] = e;
-		m_slots[(int)ReputationType::Reputation] = r;
-	}
-	int GetCount(ReputationType t) const { return m_slots[(int)t]; }
+	ReputationSlots(int a, int e, int r);
+
+	int GetCount(ReputationType t) const { return m_types[(int)t]; }
 
 private:
-	int m_slots[3];
+	int m_types[3];
 };
 
 class Team;
@@ -27,8 +24,6 @@ class ReputationTrack
 public:
 	ReputationTrack(const Team& team);
 	ReputationTrack(const ReputationTrack& rhs, const Team& team);
-
-	void SetSlots(const ReputationSlots& slots) { m_slots = slots; }
 
 	int GetSlotCount() const;
 	ReputationType GetSlotType(int iSlot) const;
@@ -41,8 +36,12 @@ public:
 	bool CanAddAmbassador() const;
 	bool OnAmbassadorAdded();
 
+	void Save(Serial::SaveNode& node) const;
+	void Load(const Serial::LoadNode& node);
+
 private:
-	ReputationSlots m_slots;
+	ReputationSlots GetSlots() const;
+
 	std::vector<int> m_repTiles;
 	const Team& m_team;
 };

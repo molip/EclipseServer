@@ -12,8 +12,8 @@ DiscoveryClass Discovery::GetClass(DiscoveryType d)
 	return int(d) < int(DiscoveryType::AxiomComputer) ? DiscoveryClass::Resource : DiscoveryClass::ShipPart;
 }
 
-DEFINE_ENUM_NAMES(DiscoveryType) {	
+DEFINE_ENUM_NAMES2(DiscoveryType, -1) {	
 	"None", "Money", "Science", "Materials", "AncientTech", "AncientCruiser", 
 	"AxiomComputer", "HypergridSource", "ShardHull", "IonTurret", "ConformalDrive", "FluxShield", "" };
 
-DEFINE_ENUM_NAMES(DiscoveryClass) { "None", "Resource", "Tech", "Ship", "ShipPart", "" };
+DEFINE_ENUM_NAMES2(DiscoveryClass, -1) { "None", "Resource", "Tech", "Ship", "ShipPart", "" };

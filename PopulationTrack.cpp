@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "PopulationTrack.h"
 #include "App.h"
+#include "Serial.h"
 
 #include <algorithm>
 
@@ -25,4 +26,14 @@ int PopulationTrack::GetIncome(int nPop)
 	static const int vals[] = { 28, 24, 21, 18, 15, 12, 10, 8, 6, 4, 3, 2 };
 	AssertThrowModel("PopulationTrack::GetIncome", nPop >= 0 && nPop < _countof(vals));
 	return vals[nPop];
+}
+
+void PopulationTrack::Save(Serial::SaveNode& node) const
+{
+	node.SaveClass("pop", m_pop);
+}
+
+void PopulationTrack::Load(const Serial::LoadNode& node)
+{
+	node.LoadClass("pop", m_pop);
 }

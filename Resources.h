@@ -3,6 +3,8 @@
 #include <vector>
 #include "EnumRange.h"
 
+namespace Serial { class SaveNode; class LoadNode; }
+
 enum class Resource { None = -1, Money, Science, Materials, _Count };
 
 class Resources : private std::vector<int>
@@ -13,6 +15,9 @@ public:
 
 	int GetTotal() const { int n = 0; for (auto& r : *this) n += r; return n; }
 	bool IsEmpty() const { for (auto& r : *this) if (r) return false; return true; }
+
+	void Save(Serial::SaveNode& node) const;
+	void Load(const Serial::LoadNode& node);
 
 protected:
 	Resources(int money = 0, int sci = 0, int mat = 0) 

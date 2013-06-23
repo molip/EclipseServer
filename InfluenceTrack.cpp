@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "InfluenceTrack.h"
 #include "App.h"
+#include "Serial.h"
 
 #include <algorithm>
 
@@ -22,4 +23,14 @@ int InfluenceTrack::GetUpkeep(int nDiscs)
 
 	AssertThrowModel("InfluenceTrack::GetUpkeep", nDiscs >= 0 && nDiscs < _countof(vals));
 	return vals[nDiscs];
+}
+
+void InfluenceTrack::Save(Serial::SaveNode& node) const
+{
+	node.SaveType("discs", m_nDiscs);
+}
+
+void InfluenceTrack::Load(const Serial::LoadNode& node)
+{
+	node.LoadType("discs", m_nDiscs);
 }

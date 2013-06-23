@@ -25,6 +25,8 @@ class SquareDef;
 class Hex;
 enum class SquareType { Money, Science, Materials, Any, Orbital, _Count };
 
+namespace Serial { class SaveNode; class LoadNode; }
+
 // Proxy class - defers to Hex and SquareDef
 class Square
 {
@@ -47,10 +49,14 @@ private:
 class Ship
 {
 public:
+	Ship();
 	Ship(ShipType type, Colour owner) : m_type(type), m_colour(owner) {}
 	ShipType GetType() const { return m_type; }
 	Colour GetColour() const { return m_colour; }
 	const Team* GetOwner(const Game& game) const;
+
+	void Save(Serial::SaveNode& node) const;
+	void Load(const Serial::LoadNode& node);
 
 private:
 	ShipType m_type;
@@ -61,6 +67,7 @@ class Hex
 {
 	friend class Square;
 public:
+	Hex();
 	Hex(int id, const MapPos& pos, int nRotation);
 	Hex(const Hex& rhs);
 	bool HasWormhole(Edge e) const;
@@ -78,6 +85,7 @@ public:
 
 	int GetID() const { return m_id; }
 	const MapPos& GetPos() const { return m_pos; }
+	void SetPos(const MapPos& pos) { m_pos = pos; }
 	int GetRotation() const { return m_nRotation; }
 	const std::vector<Square>& GetSquares() const { return m_squares; }
 	const std::vector<Ship>& GetShips() const { return m_ships; }
@@ -91,17 +99,21 @@ public:
 	
 	Square* FindSquare(SquareType type, bool bOccupied);
 
+	void Save(Serial::SaveNode& node) const;
+	void Load(const Serial::LoadNode& node);
+
 private:
 	const HexDef& GetDef() const { return *m_pDef; }
 
 	void Init();
+	void InitSquares();
 
 	void SetSquareOccupied(int i, bool b) { m_occupied[i] = b; }
 	bool IsSquareOccupied(int i) const { return m_occupied[i]; }
 
 	const HexDef* m_pDef; 
 	int m_id;
-	const MapPos m_pos;
+	MapPos m_pos;
 	int m_nRotation; // [0, 5]
 	std::vector<Square> m_squares;
 	std::vector<Ship> m_ships;

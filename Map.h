@@ -11,6 +11,8 @@
 class Game;
 class MapPos;
 
+namespace Serial { class SaveNode; class LoadNode; }
+
 class Map
 {
 public:
@@ -35,6 +37,9 @@ public:
 	void GetInfluencableNeighbours(const MapPos& pos, const Team& team, std::set<MapPos>& neighbours) const;
 	void GetEmptyNeighbours(const MapPos& pos, bool bHasWormholeGen, std::set<MapPos>& neighbours) const;
 	std::vector<const Hex*> GetSurroundingHexes(const MapPos& pos, const Team& team) const; // Returns empty hexes too.
+
+	void Save(Serial::SaveNode& node) const;
+	void Load(const Serial::LoadNode& node);
 
 private:
 	HexMap m_hexes;

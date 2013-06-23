@@ -33,6 +33,7 @@ extern void AssertThrow(bool b = false);
 extern void AssertThrow(const std::string& msg, bool b = false);
 extern void AssertThrowXML(const std::string& msg, bool b = false);
 extern void AssertThrowModel(const std::string& msg, bool b = false);
+extern void AssertThrowSerial(const std::string& msg, bool b = false);
 
 class Exception : public std::runtime_error
 {
@@ -60,6 +61,13 @@ class ModelException : public Exception
 public:
 	ModelException(const std::string& msg) : Exception(msg) {}
 	virtual std::string GetType() const override { return "Model"; }
+};
+
+class SerialException : public Exception
+{
+public:
+	SerialException(const std::string& msg) : Exception(msg) {}
+	virtual std::string GetType() const override { return "Serial"; }
 };
 
 template <typename T2, typename T1>

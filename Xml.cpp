@@ -25,6 +25,16 @@ bool Document::LoadFromString(const std::string str) const
 	return !m_pDoc->Error();
 }
 
+bool Document::LoadFromFile(const std::string& path)
+{
+	return m_pDoc->LoadFile(path);
+}
+
+bool Document::SaveToFile(const std::string& path) const
+{
+	return m_pDoc->SaveFile(path);
+}
+
 Element Document::AddElement(const std::string& name)
 {
 	TiXmlElement* pElem = new TiXmlElement(name);
@@ -43,6 +53,12 @@ Element Document::GetRoot()
 
 Element::Element(TiXmlElement* pElem) : m_pElem(pElem)
 {
+}
+
+const std::string& Element::GetName() const
+{
+	AssertThrow("Element::GetName", !!m_pElem);
+	return m_pElem->ValueStr();
 }
 
 Element Element::AddElement(const std::string& name)
@@ -114,12 +130,17 @@ bool Element::GetAttributeBool(const std::string& name) const
 	return val;
 }
 
-Element Element::FindFirstChild(const std::string& name) const
+Element Element::GetFirstChild(const std::string& name) const
 {
-	AssertThrow("Element::FindFirstChild: null element", !!m_pElem);
+	AssertThrow("Element::GetFirstChild: null element", !!m_pElem);
 	auto pEl = m_pElem->FirstChildElement(name);
-	AssertThrow("Element::FindFirstChild: child not found", !!pEl);
 	return Element(pEl);
+}
+
+Element Element::GetNextSibling(const std::string& name) const
+{
+	AssertThrow("Element::GetNext: null element", !!m_pElem);
+	return Element(m_pElem->NextSiblingElement(name));
 }
 
 }

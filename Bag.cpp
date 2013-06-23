@@ -3,38 +3,38 @@
 #include "App.h"
 #include "Game.h"
 
-DiscoveryBag::DiscoveryBag()
+void DiscoveryBag::Init()
 {
 	for (int i = 0; i < 3; ++i)
 	{
-		push_back(DiscoveryType::Money);
-		push_back(DiscoveryType::Science);
-		push_back(DiscoveryType::Materials);
-		push_back(DiscoveryType::AncientTech);
-		push_back(DiscoveryType::AncientCruiser);
+		m_vec.push_back(DiscoveryType::Money);
+		m_vec.push_back(DiscoveryType::Science);
+		m_vec.push_back(DiscoveryType::Materials);
+		m_vec.push_back(DiscoveryType::AncientTech);
+		m_vec.push_back(DiscoveryType::AncientCruiser);
 	}
-	push_back(DiscoveryType::AxiomComputer);
-	push_back(DiscoveryType::HypergridSource);
-	push_back(DiscoveryType::ShardHull);
-	push_back(DiscoveryType::IonTurret);
-	push_back(DiscoveryType::ConformalDrive);
-	push_back(DiscoveryType::FluxShield);
+	m_vec.push_back(DiscoveryType::AxiomComputer);
+	m_vec.push_back(DiscoveryType::HypergridSource);
+	m_vec.push_back(DiscoveryType::ShardHull);
+	m_vec.push_back(DiscoveryType::IonTurret);
+	m_vec.push_back(DiscoveryType::ConformalDrive);
+	m_vec.push_back(DiscoveryType::FluxShield);
 
-	std::shuffle(begin(), end(), GetRandom());
+	std::shuffle(m_vec.begin(), m_vec.end(), GetRandom());
 }
 
-ReputationBag::ReputationBag()
+void ReputationBag::Init()
 {
 	const int num[] = { 12, 9, 7, 4 };
 
 	for (int val = 1; val <= 4; ++val)
 		for (int i = 0; i < num[val - 1]; ++i)
-			push_back(val);
+			m_vec.push_back(val);
 
-	std::shuffle(begin(), end(), GetRandom());
+	std::shuffle(m_vec.begin(), m_vec.end(), GetRandom());
 }
 
-TechnologyBag::TechnologyBag()
+void TechnologyBag::Init()
 {
 	
 	TechType fives[] = {	TechType::NeutronBomb,		TechType::StarBase,			TechType::PlasmaCannon, 
@@ -48,17 +48,17 @@ TechnologyBag::TechnologyBag()
 
 	for (int i = 0; i < 5; ++i)
 		for (int j = 0; j < _countof(fives); ++j)
-			push_back(fives[j]);
+			m_vec.push_back(fives[j]);
 
 	for (int i = 0; i < 4; ++i)
 		for (int j = 0; j < _countof(fours); ++j)
-			push_back(fours[j]);
+			m_vec.push_back(fours[j]);
 
 	for (int i = 0; i < 3; ++i)
 		for (int j = 0; j < _countof(threes); ++j)
-			push_back(threes[j]);
+			m_vec.push_back(threes[j]);
 
-	std::shuffle(begin(), end(), GetRandom());
+	std::shuffle(m_vec.begin(), m_vec.end(), GetRandom());
 }
 
 HexBag::HexBag(HexRing r, int nPlayers)
@@ -74,13 +74,13 @@ HexBag::HexBag(HexRing r, int nPlayers)
 	}
 
 	for (int i = start; i < start + count; ++i)
-		push_back(i);
+		m_vec.push_back(i);
 
-	std::shuffle(begin(), end(), GetRandom());
+	std::shuffle(m_vec.begin(), m_vec.end(), GetRandom());
 
 	if (r == HexRing::Outer)
 	{
 		const int outers[] = { 5, 5, 10, 14, 16, 18 };
-		resize(outers[nPlayers - 1]);
+		m_vec.resize(outers[nPlayers - 1]);
 	}
 }

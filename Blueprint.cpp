@@ -3,13 +3,25 @@
 #include "BlueprintDefs.h"
 #include "ShipLayout.h"
 #include "Ship.h"
+#include "Serial.h"
 
-Blueprint::Blueprint(RaceType r, ShipType s) : m_pDef(&BlueprintDefs::Get(r, s)), m_overlay(m_pDef->GetBaseLayout().GetType())
+Blueprint::Blueprint() : m_pDef(nullptr)
 {
+}
+
+Blueprint::Blueprint(RaceType r, ShipType s) : m_pDef(nullptr)
+{
+	Init(r, s);
 }
 
 Blueprint::Blueprint(const BlueprintDef& def) : m_pDef(&def), m_overlay(m_pDef->GetBaseLayout().GetType())
 {
+}
+
+void Blueprint::Init(RaceType r, ShipType s) 
+{
+	m_pDef = &BlueprintDefs::Get(r, s);
+	m_overlay.SetType(s);
 }
 
 ShipType Blueprint::GetType() const { return m_pDef->GetBaseLayout().GetType(); }
@@ -29,4 +41,14 @@ const Blueprint& Blueprint::GCDS()
 {
 	static Blueprint blueprint(BlueprintDefs::GCDS());
 	return blueprint;
+}
+
+void Blueprint::Save(Serial::SaveNode& node) const
+{
+	node.SaveClass("overlay", m_overlay);
+}
+
+void Blueprint::Load(const Serial::LoadNode& node)
+{
+	node.LoadClass("overlay", m_overlay);
 }

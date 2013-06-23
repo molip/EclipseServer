@@ -3,47 +3,79 @@
 #include "Technology.h"
 #include "Discovery.h"
 #include "App.h"
+#include "Serial.h"
 
 template <typename T> 
-class Bag : protected std::vector<T>
+class Bag 
 {
 public:
-	bool IsEmpty() const { return empty(); }
+	bool IsEmpty() const { return m_vec.empty(); }
 	
 	T TakeTile()
 	{
-		AssertThrowModel("Bag::GetTile", !empty());
-		T t = back();
-		pop_back();
+		AssertThrowModel("Bag::GetTile", !m_vec.empty());
+		T t = m_vec.back();
+		m_vec.pop_back();
 		return t;
 	}
 
 	void ReturnTile(T t)
 	{
-		push_back(t);
+		m_vec.push_back(t);
+	}
+protected:
+	std::vector<T> m_vec;
+};
+
+template <typename T> 
+class EnumBag : public Bag<T>
+{
+public:
+	void Save(Serial::SaveNode& node) const
+	{
+		node.SaveCntr("tiles", m_vec, Serial::EnumSaver());
+	}
+
+	void Load(const Serial::LoadNode& node)
+	{
+		node.LoadCntr("tiles", m_vec, Serial::EnumLoader());
 	}
 };
 
-class DiscoveryBag : public Bag<DiscoveryType>
+class IntBag : public Bag<int>
 {
 public:
-	DiscoveryBag();
+	void Save(Serial::SaveNode& node) const
+	{
+		node.SaveCntr("tiles", m_vec, Serial::TypeSaver());
+	}
+
+	void Load(const Serial::LoadNode& node)
+	{
+		node.LoadCntr("tiles", m_vec, Serial::TypeLoader());
+	}
 };
 
-class ReputationBag : public Bag<int>
+class DiscoveryBag : public EnumBag<DiscoveryType>
 {
 public:
-	ReputationBag();
+	void Init();
 };
 
-class TechnologyBag : public Bag<TechType>
+class ReputationBag : public IntBag
 {
 public:
-	TechnologyBag();
+	void Init();
+};
+
+class TechnologyBag : public EnumBag<TechType>
+{
+public:
+	void Init();
 };
 
 enum class HexRing; 
-class HexBag : public Bag<int>
+class HexBag : public IntBag
 {
 public:
 	HexBag() {}

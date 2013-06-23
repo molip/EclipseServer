@@ -9,6 +9,7 @@ class LiveGame : public Game
 public:
 	enum class Phase { Lobby, ChooseTeam, Main };
 
+	LiveGame();
 	LiveGame(int id, const std::string& name, const Player& owner);
 	virtual ~LiveGame();
 
@@ -36,7 +37,12 @@ public:
 	
 	virtual void FinishTurn() override;
 
+	virtual void Save(Serial::SaveNode& node) const override;
+	virtual void Load(const Serial::LoadNode& node) override;
+
 private:
+	virtual void Save() const override;
+
 	CmdStack* m_pCmdStack;
 	std::vector<RecordPtr> m_records;
 	Phase m_phase;

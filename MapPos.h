@@ -9,6 +9,9 @@ enum class Edge { T, TR, BR, B, BL, TL, _Count };
 
 class MapPos
 {
+	friend std::ostream & operator<< (std::ostream &lhs, const MapPos& rhs);
+	friend std::istream& operator >>(std::istream &lhs, MapPos& rhs);
+
 public:
 	MapPos() : m_x(0), m_y(0) {}
 	MapPos(int x, int y) : m_x(x), m_y(y) {}

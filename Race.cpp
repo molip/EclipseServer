@@ -274,4 +274,4 @@ Colour Race::GetColour() const
 	return Colour::None;
 }
 
-DEFINE_ENUM_NAMES(RaceType) { "Human", "Eridani", "Hydran", "Planta", "Descendants", "Mechanema", "Orion", "" };
+DEFINE_ENUM_NAMES2(RaceType, -1) { "None", "Human", "Eridani", "Hydran", "Planta", "Descendants", "Mechanema", "Orion", "" };

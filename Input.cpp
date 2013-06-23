@@ -363,7 +363,8 @@ CmdColoniseSquares::CmdColoniseSquares(const Xml::Element& node)
 {
 	auto Read = [&] (const std::string& type, Population& pops)
 	{
-		auto el = node.FindFirstChild(type);
+		auto el = node.GetFirstChild(type);
+		AssertThrowXML("CmdColoniseSquares: child not found", !el.IsNull());
 		for (auto r : EnumRange<Resource>())
 			pops[r] = el.GetAttributeInt(EnumTraits<Resource>::ToString(r));
 	};

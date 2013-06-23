@@ -17,9 +17,12 @@ enum class HexRing { Inner, Middle, Outer, _Count };
 class CmdStack;
 class Record;
 
+namespace Serial { class SaveNode; class LoadNode; }
+
 class Game
 {
 public:
+	Game();
 	Game(int id, const std::string& name, const Player& owner);
 	Game(int id, const std::string& name, const Player& owner, const Game& rhs);
 	virtual ~Game();
@@ -30,8 +33,6 @@ public:
 
 	const std::vector<TeamPtr>& GetTeams() const { return m_teams; }
 
-	void HaveTurn(Player& player);
-	
 	Team* FindTeam(const Player& player);
 
 	const Player& GetCurrentPlayer() const;
@@ -60,7 +61,12 @@ public:
 
 	virtual void FinishTurn();
 
+	virtual void Save(Serial::SaveNode& node) const;
+	virtual void Load(const Serial::LoadNode& node);
+
 protected:
+	virtual void Save() const {}
+
 	void StartRound();
 
 	void AdvanceTurn();

@@ -165,6 +165,15 @@
     <ClInclude Include="BlueprintDefs.h">
       <Filter>Model</Filter>
     </ClInclude>
+    <ClInclude Include="Dynamic.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Serial.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OS.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -310,6 +319,15 @@
     </ClCompile>
     <ClCompile Include="BlueprintDefs.cpp">
       <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Dynamic.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Serial.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OS.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

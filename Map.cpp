@@ -4,10 +4,10 @@
 #include "Game.h"
 #include "App.h"
 #include "EdgeSet.h"
+#include "Serial.h"
 
 Map::Map(Game& game) : m_game(game)
 {
-	AddHex(MapPos(0, 0), 001, 0);
 }
 
 Map::Map(const Map& rhs, Game& game) : m_game(game)
@@ -128,4 +128,17 @@ std::vector<const Hex*> Map::GetSurroundingHexes(const MapPos& pos, const Team& 
 				hexes[(int)e] = pHex;
 
 	return hexes;		
+}
+
+void Map::Save(Serial::SaveNode& node) const
+{
+	node.SaveMap("hexes", m_hexes, Serial::TypeSaver(), Serial::ClassPtrSaver());
+}
+
+void Map::Load(const Serial::LoadNode& node)
+{
+	node.LoadMap("hexes", m_hexes, Serial::TypeLoader(), Serial::ClassPtrLoader());
+
+	for (auto& kv : m_hexes)
+		kv.second->SetPos(kv.first);
 }
