@@ -67,7 +67,7 @@ Hex::Hex(int id, const MapPos& pos, int nRotation) :
 }
 
 Hex::Hex(const Hex& rhs) : 
-	m_id(rhs.m_id), m_pos(rhs.m_pos), m_nRotation(rhs.m_nRotation), m_squares(rhs.m_squares), m_ships(rhs.m_ships), 
+	m_id(rhs.m_id), m_pos(rhs.m_pos), m_nRotation(rhs.m_nRotation), m_ships(rhs.m_ships), 
 	m_discovery(rhs.m_discovery), m_colour(rhs.m_colour), m_occupied(rhs.m_occupied), m_pDef(rhs.m_pDef)
 {
 	Init();
@@ -81,6 +81,7 @@ void Hex::Init()
 
 void Hex::InitSquares()
 {
+	ASSERT(m_squares.empty());
 	for (int i = 0; i < GetDef().GetSquareCount(); ++i)
 		m_squares.push_back(Square(*this, i));
 }
