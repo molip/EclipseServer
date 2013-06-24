@@ -42,6 +42,8 @@ CmdPtr InfluenceCmd::Process(const Input::CmdMessage& msg, const Controller& con
 class InfluenceRecord : public Record
 {
 public:
+	InfluenceRecord() : m_colour(Colour::None), m_discovery(DiscoveryType::None) {}
+
 	InfluenceRecord(Colour colour, const MapPos* pSrcPos, const MapPos* pDstPos) : 
 		m_colour(colour), m_discovery(DiscoveryType::None) 
 	{
@@ -70,6 +72,22 @@ public:
 
 		TransferDisc(m_pDstPos, m_pSrcPos, game, controller);
 		controller.SendMessage(Output::UpdateMap(game), game);
+	}
+
+	virtual void Save(Serial::SaveNode& node) const override 
+	{
+		node.SaveEnum("colour", m_colour);
+		node.SaveEnum("discovery", m_discovery);
+		node.SaveTypePtr("src_pos", m_pSrcPos);
+		node.SaveTypePtr("dst_pos", m_pDstPos);
+	}
+	
+	virtual void Load(const Serial::LoadNode& node) override 
+	{
+		node.LoadEnum("colour", m_colour);
+		node.LoadEnum("discovery", m_discovery);
+		node.LoadTypePtr("src_pos", m_pSrcPos);
+		node.LoadTypePtr("dst_pos", m_pDstPos);
 	}
 
 private:
@@ -107,6 +125,8 @@ private:
 	MapPosPtr m_pSrcPos, m_pDstPos;
 	DiscoveryType m_discovery;
 };
+
+REGISTER_DYNAMIC(InfluenceRecord)
 
 //-----------------------------------------------------------------------------
 

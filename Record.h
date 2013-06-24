@@ -1,13 +1,14 @@
 #pragma once
 
 #include "App.h"
+#include "Dynamic.h"
 
 #include <memory>
 
 class Game;
 class Controller;
 
-class Record
+class Record : public Dynamic
 {
 public:
 	virtual ~Record();

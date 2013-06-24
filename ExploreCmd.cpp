@@ -50,6 +50,8 @@ CmdPtr ExploreCmd::Process(const Input::CmdMessage& msg, const Controller& contr
 class ExploreRecord : public Record
 {
 public:
+	ExploreRecord() : m_colour(Colour::None), m_idHex(-1), m_iRot(-1), m_bInfluence(false), m_discovery(DiscoveryType::None) {}
+
 	ExploreRecord(Colour colour, const MapPos& pos, int idHex, int iRot, bool bInfluence) : 
 		m_colour(colour), m_pos(pos), m_idHex(idHex), m_iRot(iRot), m_bInfluence(bInfluence), m_discovery(DiscoveryType::None) {}
 
@@ -90,6 +92,26 @@ public:
 		controller.SendMessage(Output::UpdateMap(game), game);
 	}
 
+	virtual void Save(Serial::SaveNode& node) const override 
+	{
+		node.SaveEnum("colour", m_colour);
+		node.SaveEnum("discovery", m_discovery);
+		node.SaveType("pos", m_pos);
+		node.SaveType("hex_id", m_idHex);
+		node.SaveType("rotation", m_iRot);
+		node.SaveType("influence", m_bInfluence);
+	}
+	
+	virtual void Load(const Serial::LoadNode& node) override 
+	{
+		node.LoadEnum("colour", m_colour);
+		node.LoadEnum("discovery", m_discovery);
+		node.LoadType("pos", m_pos);
+		node.LoadType("hex_id", m_idHex);
+		node.LoadType("rotation", m_iRot);
+		node.LoadType("influence", m_bInfluence);
+	}
+
 private:
 	Colour m_colour;
 	MapPos m_pos;
@@ -97,6 +119,8 @@ private:
 	bool m_bInfluence;
 	DiscoveryType m_discovery;
 };
+
+REGISTER_DYNAMIC(ExploreRecord)
 
 //-----------------------------------------------------------------------------
 

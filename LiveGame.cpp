@@ -189,14 +189,15 @@ void LiveGame::Save(Serial::SaveNode& node) const
 {
 	__super::Save(node);
 	//CmdStack* m_pCmdStack;
-	//std::vector<RecordPtr> m_records;
 	node.SaveEnum("phase", m_phase);
+	node.SaveCntr("records", m_records, Serial::ObjectSaver());
 }
 
 void LiveGame::Load(const Serial::LoadNode& node)
 {
 	__super::Load(node);
 	node.LoadEnum("phase", m_phase);
+	node.LoadCntr("records", m_records, Serial::ObjectLoader());
 }
 
 DEFINE_ENUM_NAMES(LiveGame::Phase) { "Lobby", "ChooseTeam", "Main", "" };

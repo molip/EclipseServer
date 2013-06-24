@@ -35,8 +35,23 @@ CmdPtr ColoniseCmd::Process(const Input::CmdMessage& msg, const Controller& cont
 class ColoniseRecord : public Record
 {
 public:
+	ColoniseRecord() : m_colour(Colour::None) {}
 	ColoniseRecord(Colour colour, const MapPos& pos) : m_colour(colour), m_pos(pos) {}
 	void AddMove(SquareType st, Resource r) { m_moves.push_back(std::make_pair(st, r)); }
+
+	virtual void Save(Serial::SaveNode& node) const override 
+	{
+		node.SaveEnum("colour", m_colour);
+		node.SaveType("pos", m_pos);
+		node.SavePairs("moves", m_moves, Serial::EnumSaver(), Serial::EnumSaver());
+	}
+	
+	virtual void Load(const Serial::LoadNode& node) override 
+	{
+		node.LoadEnum("colour", m_colour);
+		node.LoadType("pos", m_pos);
+		node.LoadPairs("moves", m_moves, Serial::EnumLoader(), Serial::EnumLoader());
+	}
 
 private:
 	virtual void Apply(bool bDo, Game& game, const Controller& controller) override
@@ -60,6 +75,8 @@ private:
 	MapPos m_pos;
 	std::vector<std::pair<SquareType, Resource>> m_moves;
 };
+
+REGISTER_DYNAMIC(ColoniseRecord)
 
 //-----------------------------------------------------------------------------
 
