@@ -130,6 +130,16 @@ REGISTER_DYNAMIC(InfluenceRecord)
 
 //-----------------------------------------------------------------------------
 
+class DiscoverAndInfluenceCmd : public DiscoverCmd
+{
+public:
+	DiscoverAndInfluenceCmd(Player& player, DiscoveryType discovery) : DiscoverCmd(player, discovery){}
+private:
+	virtual CmdPtr GetNextCmd() const override { return CmdPtr(new InfluenceCmd(m_player, 1)); }
+};
+
+//-----------------------------------------------------------------------------
+
 InfluenceDstCmd::InfluenceDstCmd(Player& player, const MapPos* pSrcPos, int iPhase) : Cmd(player), m_iPhase(iPhase),
 	m_pDstPos(nullptr), m_discovery(DiscoveryType::None)
 {
@@ -172,12 +182,12 @@ CmdPtr InfluenceDstCmd::Process(const Input::CmdMessage& msg, const Controller& 
 	m_discovery = pRec->GetDiscovery();
 	GetGame().PushRecord(RecordPtr(pRec));
 
-	Cmd* pNext = m_iPhase == 0 ? new InfluenceCmd(m_player, 1) : nullptr;
+	const bool bFinish = m_iPhase == 1;
 
 	if (m_discovery != DiscoveryType::None)
-		pNext = new DiscoverCmd(m_player, m_discovery, CmdPtr(pNext));
+		return CmdPtr(bFinish ? new DiscoverCmd(m_player, m_discovery) : new DiscoverAndInfluenceCmd(m_player, m_discovery));
 
-	return CmdPtr(pNext);
+	return CmdPtr(bFinish ? nullptr : new InfluenceCmd(m_player, 1));
 }
 
 void InfluenceDstCmd::Undo(const Controller& controller)

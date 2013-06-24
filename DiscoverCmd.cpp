@@ -8,8 +8,8 @@
 #include "Team.h"
 #include "LiveGame.h"
 
-DiscoverCmd::DiscoverCmd(Player& player, DiscoveryType discovery, CmdPtr pNext) : 
-	Cmd(player), m_discovery(discovery), m_pNext(std::move(pNext))
+DiscoverCmd::DiscoverCmd(Player& player, DiscoveryType discovery) : 
+	Cmd(player), m_discovery(discovery)
 {
 }
 
@@ -23,7 +23,7 @@ CmdPtr DiscoverCmd::Process(const Input::CmdMessage& msg, const Controller& cont
 {
 	auto& m = CastThrow<const Input::CmdExploreDiscovery>(msg);
 
-	return std::move(m_pNext);
+	return GetNextCmd();
 }
 
 void DiscoverCmd::Undo(const Controller& controller)

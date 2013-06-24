@@ -124,6 +124,16 @@ REGISTER_DYNAMIC(ExploreRecord)
 
 //-----------------------------------------------------------------------------
 
+class DiscoverAndExploreCmd : public DiscoverCmd
+{
+public:
+	DiscoverAndExploreCmd(Player& player, DiscoveryType discovery) : DiscoverCmd(player, discovery){}
+private:
+	virtual CmdPtr GetNextCmd() const override { return CmdPtr(new ExploreCmd(m_player, 1)); }
+};
+
+//-----------------------------------------------------------------------------
+
 ExploreHexCmd::ExploreHexCmd(Player& player, const MapPos& pos, std::vector<int> hexIDs, int iPhase) : 
 	Cmd(player), m_pos(pos), m_iPhase(iPhase), m_hexIDs(hexIDs), m_iRot(-1), m_iHex(-1), m_bInfluence(false), 
 	m_idTaken(-1), m_discovery(DiscoveryType::None)
@@ -220,13 +230,12 @@ CmdPtr ExploreHexCmd::Process(const Input::CmdMessage& msg, const Controller& co
 		GetGame().PushRecord(RecordPtr(pRec));
 	}
 
-	bool bFinished = m_iPhase + 1 == Race(GetTeam().GetRace()).GetExploreRate();
-	Cmd* pNext = bFinished ? nullptr : new ExploreCmd(m_player, m_iPhase + 1);
-	
-	if (m_discovery != DiscoveryType::None)
-		pNext = new DiscoverCmd(m_player, m_discovery, CmdPtr(pNext));
+	const bool bFinish = m_iPhase + 1 == Race(GetTeam().GetRace()).GetExploreRate();
 
-	return CmdPtr(pNext);
+	if (m_discovery != DiscoveryType::None)
+		return CmdPtr(bFinish ? new DiscoverCmd(m_player, m_discovery) : new DiscoverAndExploreCmd(m_player, m_discovery));
+
+	return CmdPtr(bFinish ? nullptr : new ExploreCmd(m_player, 1));
 }
 
 void ExploreHexCmd::Undo(const Controller& controller)
