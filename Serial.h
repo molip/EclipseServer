@@ -89,13 +89,8 @@ struct ObjectSaver
 {
 	template <typename T> void operator ()(Xml::Element& e, const T& pObj) 
 	{
-		if (pObj)
-		{
-			e.SetAttribute("_class", typeid(*pObj).name());
-			pObj->Save(SaveNode(e));
-		}
-		else
-			e.SetAttribute("_null", true);
+		e.SetAttribute("_class", typeid(*pObj).name());
+		pObj->Save(SaveNode(e));
 	}		
 };
 
@@ -298,6 +293,10 @@ struct ObjectLoader
 {
 	template <typename T> bool operator ()(const Xml::Element& e, T*& pObj) 
 	{ 
+		std::string id;
+		if (!e.GetAttribute("_class", id))
+			AssertThrow("ObjectLoader", false);
+
 		delete pObj;
 		pObj = nullptr;
 
@@ -305,10 +304,6 @@ struct ObjectLoader
 		e.GetAttribute("_null", bNull);
 		if (bNull)
 			return true;
-
-		std::string id;
-		if (!e.GetAttribute("_class", id))
-			AssertThrow("ObjectLoader", false);
 
 		if (pObj = Dynamic::CreateObject<T>(id))
 		{
