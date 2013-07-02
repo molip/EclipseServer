@@ -10,21 +10,21 @@
 #include "DiscoverCmd.h"
 #include "Record.h"
 
-InfluenceCmd::InfluenceCmd(Player& player, int iPhase) : Cmd(player), m_iPhase(iPhase)
+InfluenceCmd::InfluenceCmd(Colour colour, LiveGame& game, int iPhase) : Cmd(colour), m_iPhase(iPhase)
 {
-	const Map& map = GetGame().GetMap();
+	const Map& map = game.GetMap();
 	const Map::HexMap& hexes = map.GetHexes();
 	for (auto& h : hexes)
-		if (h.second->IsOwnedBy(GetTeam()))
+		if (h.second->IsOwnedBy(GetTeam(game)))
 			m_srcs.push_back(h.first);
 }
 
-void InfluenceCmd::UpdateClient(const Controller& controller) const
+void InfluenceCmd::UpdateClient(const Controller& controller, const LiveGame& game) const
 {
-	controller.SendMessage(Output::ChooseInfluenceSrc(m_srcs, GetTeam().GetInfluenceTrack().GetDiscCount() > 0), m_player);
+	controller.SendMessage(Output::ChooseInfluenceSrc(m_srcs, GetTeam(game).GetInfluenceTrack().GetDiscCount() > 0), GetPlayer(game));
 }
 
-CmdPtr InfluenceCmd::Process(const Input::CmdMessage& msg, const Controller& controller)
+CmdPtr InfluenceCmd::Process(const Input::CmdMessage& msg, const Controller& controller, LiveGame& game)
 {
 	// TODO: Flip colony ships.
 
@@ -34,8 +34,24 @@ CmdPtr InfluenceCmd::Process(const Input::CmdMessage& msg, const Controller& con
 	auto& m = CastThrow<const Input::CmdInfluenceSrc>(msg);
 	AssertThrow("InfluenceCmd::Process: invalid pos index", m.m_iPos == -1 || InRange(m_srcs, m.m_iPos));
 
-	return CmdPtr(new InfluenceDstCmd(m_player, m.m_iPos < 0 ? nullptr : &m_srcs[m.m_iPos], m_iPhase));
+	return CmdPtr(new InfluenceDstCmd(m_colour, game, m.m_iPos < 0 ? nullptr : &m_srcs[m.m_iPos], m_iPhase));
 }
+
+void InfluenceCmd::Save(Serial::SaveNode& node) const 
+{
+	__super::Save(node);
+	node.SaveCntr("srcs", m_srcs, Serial::TypeSaver());
+	node.SaveType("phase", m_iPhase);
+}
+
+void InfluenceCmd::Load(const Serial::LoadNode& node) 
+{
+	__super::Load(node);
+	node.LoadCntr("srcs", m_srcs, Serial::TypeLoader());
+	node.LoadType("phase", m_iPhase);
+}
+
+REGISTER_DYNAMIC(InfluenceCmd)
 
 //-----------------------------------------------------------------------------
 
@@ -133,65 +149,88 @@ REGISTER_DYNAMIC(InfluenceRecord)
 class DiscoverAndInfluenceCmd : public DiscoverCmd
 {
 public:
-	DiscoverAndInfluenceCmd(Player& player, DiscoveryType discovery) : DiscoverCmd(player, discovery){}
+	DiscoverAndInfluenceCmd() {}
+	DiscoverAndInfluenceCmd(Colour colour, LiveGame& game, DiscoveryType discovery) : DiscoverCmd(colour, game, discovery){}
 private:
-	virtual CmdPtr GetNextCmd() const override { return CmdPtr(new InfluenceCmd(m_player, 1)); }
+	virtual CmdPtr GetNextCmd(LiveGame& game) const override { return CmdPtr(new InfluenceCmd(m_colour, game, 1)); }
 };
+
+REGISTER_DYNAMIC(DiscoverAndInfluenceCmd)
 
 //-----------------------------------------------------------------------------
 
-InfluenceDstCmd::InfluenceDstCmd(Player& player, const MapPos* pSrcPos, int iPhase) : Cmd(player), m_iPhase(iPhase),
-	m_pDstPos(nullptr), m_discovery(DiscoveryType::None)
+InfluenceDstCmd::InfluenceDstCmd(Colour colour, LiveGame& game, const MapPos* pSrcPos, int iPhase) : Cmd(colour), m_iPhase(iPhase),
+	m_discovery(DiscoveryType::None)
 {
+	auto& team = GetTeam(game);
+
 	if (pSrcPos)
 		m_pSrcPos.reset(new MapPos(*pSrcPos));
 
 	std::set<MapPos> dsts;
 
-	const bool bWormholeGen = GetTeam().HasTech(TechType::WormholeGen);
+	const bool bWormholeGen = team.HasTech(TechType::WormholeGen);
 
-	const Map& map = GetGame().GetMap();
+	const Map& map = game.GetMap();
 	const Map::HexMap& hexes = map.GetHexes();
 	for (auto& h : hexes)
 	{
 		if (!h.second->IsOwned())
-			if (h.second->HasShip(&GetTeam()) && !h.second->HasForeignShip(GetGame(), &GetTeam())) // "a hex where only you have a Ship"
+			if (h.second->HasShip(&team) && !h.second->HasForeignShip(game, &team)) // "a hex where only you have a Ship"
 				dsts.insert(h.first);
 		if (!pSrcPos || h.first != *pSrcPos) // Would break the wormhole, see FAQ.
-			if (h.second->IsOwnedBy(GetTeam()) || h.second->HasShip(&GetTeam())) // "adjacent to a hex where you have a disc or a Ship"
-				map.GetInfluencableNeighbours(h.first, GetTeam(), dsts);
+			if (h.second->IsOwnedBy(team) || h.second->HasShip(&team)) // "adjacent to a hex where you have a disc or a Ship"
+				map.GetInfluencableNeighbours(h.first, team, dsts);
 	}
 
 	m_dsts.insert(m_dsts.begin(), dsts.begin(), dsts.end());
 }
 
-void InfluenceDstCmd::UpdateClient(const Controller& controller) const
+void InfluenceDstCmd::UpdateClient(const Controller& controller, const LiveGame& game) const
 {
-	controller.SendMessage(Output::ChooseInfluenceDst(m_dsts, !!m_pSrcPos), m_player);
+	controller.SendMessage(Output::ChooseInfluenceDst(m_dsts, !!m_pSrcPos), GetPlayer(game));
 }
 
-CmdPtr InfluenceDstCmd::Process(const Input::CmdMessage& msg, const Controller& controller)
+CmdPtr InfluenceDstCmd::Process(const Input::CmdMessage& msg, const Controller& controller, LiveGame& game)
 {
 	auto& m = CastThrow<const Input::CmdInfluenceDst>(msg);
 	AssertThrow("InfluenceDstCmd::Process: invalid pos index", m.m_iPos == -1 || InRange(m_dsts, m.m_iPos));
 	
 	const MapPos* pDstPos = m.m_iPos >= 0 ? &m_dsts[m.m_iPos] : nullptr;
 	
-	InfluenceRecord* pRec = new InfluenceRecord(GetTeam().GetColour(), m_pSrcPos.get(), pDstPos);
-	pRec->Do(GetGame(), controller);
+	InfluenceRecord* pRec = new InfluenceRecord(m_colour, m_pSrcPos.get(), pDstPos);
+	pRec->Do(game, controller);
 	m_discovery = pRec->GetDiscovery();
-	GetGame().PushRecord(RecordPtr(pRec));
+	game.PushRecord(RecordPtr(pRec));
 
 	const bool bFinish = m_iPhase == 1;
 
 	if (m_discovery != DiscoveryType::None)
-		return CmdPtr(bFinish ? new DiscoverCmd(m_player, m_discovery) : new DiscoverAndInfluenceCmd(m_player, m_discovery));
+		return CmdPtr(bFinish ? new DiscoverCmd(m_colour, game, m_discovery) : new DiscoverAndInfluenceCmd(m_colour, game, m_discovery));
 
-	return CmdPtr(bFinish ? nullptr : new InfluenceCmd(m_player, 1));
+	return CmdPtr(bFinish ? nullptr : new InfluenceCmd(m_colour, game, 1));
 }
 
-void InfluenceDstCmd::Undo(const Controller& controller)
+void InfluenceDstCmd::Undo(const Controller& controller, LiveGame& game)
 {
-	RecordPtr pRec = GetGame().PopRecord();
-	pRec->Undo(GetGame(), controller);
+	RecordPtr pRec = game.PopRecord();
+	pRec->Undo(game, controller);
 }
+
+void InfluenceDstCmd::Save(Serial::SaveNode& node) const 
+{
+	__super::Save(node);
+	node.SaveTypePtr("src", m_pSrcPos);
+	node.SaveCntr("dsts", m_dsts, Serial::TypeSaver());
+	node.SaveEnum("discovery", m_discovery);
+}
+
+void InfluenceDstCmd::Load(const Serial::LoadNode& node) 
+{
+	__super::Load(node);
+	node.LoadTypePtr("src", m_pSrcPos);
+	node.LoadCntr("dsts", m_dsts, Serial::TypeLoader());
+	node.LoadEnum("discovery", m_discovery);
+}
+
+REGISTER_DYNAMIC(InfluenceDstCmd)

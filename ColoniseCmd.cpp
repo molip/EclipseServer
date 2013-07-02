@@ -9,26 +9,41 @@
 #include "Map.h"
 #include "Record.h"
 
-ColoniseCmd::ColoniseCmd(Player& player) : Cmd(player)
+ColoniseCmd::ColoniseCmd(Colour colour, LiveGame& game) : Cmd(colour)
 {
-	for (auto& h : GetGame().GetMap().GetHexes())
-		if (h.second->IsOwnedBy(GetTeam()))
-			if (!h.second->GetAvailableSquares(GetTeam()).empty()) // TODO: Check pop cubes
+	Team& team = GetTeam(game);
+	for (auto& h : game.GetMap().GetHexes())
+		if (h.second->IsOwnedBy(team))
+			if (!h.second->GetAvailableSquares(team).empty()) // TODO: Check pop cubes
 				m_positions.push_back(h.first);
 }
 
-void ColoniseCmd::UpdateClient(const Controller& controller) const
+void ColoniseCmd::UpdateClient(const Controller& controller, const LiveGame& game) const
 {
-	controller.SendMessage(Output::ChooseColonisePos(m_positions), m_player);
+	controller.SendMessage(Output::ChooseColonisePos(m_positions), GetPlayer(game));
 }
 
-CmdPtr ColoniseCmd::Process(const Input::CmdMessage& msg, const Controller& controller)
+CmdPtr ColoniseCmd::Process(const Input::CmdMessage& msg, const Controller& controller, LiveGame& game)
 {
 	auto& m = CastThrow<const Input::CmdColonisePos>(msg);
 	AssertThrow("ColoniseCmd::Process: invalid pos index", m.m_iPos == -1 || InRange(m_positions, m.m_iPos));
 	
-	return CmdPtr(new ColoniseSquaresCmd(m_player, m_positions[m.m_iPos]));
+	return CmdPtr(new ColoniseSquaresCmd(m_colour, game, m_positions[m.m_iPos]));
 }
+
+void ColoniseCmd::Save(Serial::SaveNode& node) const 
+{
+	__super::Save(node);
+	node.SaveCntr("positions", m_positions, Serial::TypeSaver());
+}
+
+void ColoniseCmd::Load(const Serial::LoadNode& node) 
+{
+	__super::Load(node);
+	node.LoadCntr("positions", m_positions, Serial::TypeLoader());
+}
+
+REGISTER_DYNAMIC(ColoniseCmd)
 
 //-----------------------------------------------------------------------------
 
@@ -80,16 +95,11 @@ REGISTER_DYNAMIC(ColoniseRecord)
 
 //-----------------------------------------------------------------------------
 
-ColoniseSquaresCmd::ColoniseSquaresCmd(Player& player, const MapPos& pos) : Cmd(player), m_pos(pos)
+ColoniseSquaresCmd::ColoniseSquaresCmd(Colour colour, LiveGame& game, const MapPos& pos) : Cmd(colour), m_pos(pos)
 {
-	Init(pos);
-}
-
-void ColoniseSquaresCmd::Init(const MapPos& pos)
-{
-	Hex& hex = GetGame().GetMap().GetHex(pos);
+	Hex& hex = game.GetMap().GetHex(pos);
 	
-	auto squares = hex.GetAvailableSquares(GetTeam());
+	auto squares = hex.GetAvailableSquares(GetTeam(game));
 	AssertThrow("ColoniseSquaresCmd: no squares available", !squares.empty());
 
 	for (int i = 0; i < (int)SquareType::_Count; ++i)
@@ -102,14 +112,15 @@ void ColoniseSquaresCmd::Init(const MapPos& pos)
 	}
 }
 
-void ColoniseSquaresCmd::UpdateClient(const Controller& controller) const
+void ColoniseSquaresCmd::UpdateClient(const Controller& controller, const LiveGame& game) const
 {
-	const Population& pop = GetTeam().GetPopulationTrack().GetPopulation();
-	int nShips = GetTeam().GetUnusedColonyShips();
-	controller.SendMessage(Output::ChooseColoniseSquares(m_squareCounts, pop, nShips), m_player);
+	auto& team = GetTeam(game);
+	const Population& pop = team.GetPopulationTrack().GetPopulation();
+	int nShips = team.GetUnusedColonyShips();
+	controller.SendMessage(Output::ChooseColoniseSquares(m_squareCounts, pop, nShips), GetPlayer(game));
 }
 
-CmdPtr ColoniseSquaresCmd::Process(const Input::CmdMessage& msg, const Controller& controller)
+CmdPtr ColoniseSquaresCmd::Process(const Input::CmdMessage& msg, const Controller& controller, LiveGame& game)
 {
 	auto& m = CastThrow<const Input::CmdColoniseSquares>(msg);
 
@@ -117,7 +128,7 @@ CmdPtr ColoniseSquaresCmd::Process(const Input::CmdMessage& msg, const Controlle
 
 	AssertThrow("ColoniseSquaresCmd::Process: no cubes specified", !fixed.IsEmpty() || !grey.IsEmpty() || !orbital.IsEmpty());
 
-	ColoniseRecord* pRec = new ColoniseRecord(GetTeam().GetColour(), m_pos);
+	ColoniseRecord* pRec = new ColoniseRecord(m_colour, m_pos);
 
 	// Allocate population cubes to squares.
 	for (auto& s : m_squares)
@@ -150,14 +161,33 @@ CmdPtr ColoniseSquaresCmd::Process(const Input::CmdMessage& msg, const Controlle
 
 	AssertThrow("ColoniseSquaresCmd::Process: not enough squares", fixed.IsEmpty() || grey.IsEmpty() || orbital.IsEmpty());
 
-	pRec->Do(GetGame(), controller);
-	GetGame().PushRecord(RecordPtr(pRec));
+	pRec->Do(game, controller);
+	game.PushRecord(RecordPtr(pRec));
 
 	return nullptr;
 }
 
-void ColoniseSquaresCmd::Undo(const Controller& controller)
+void ColoniseSquaresCmd::Undo(const Controller& controller, LiveGame& game)
 {
-	RecordPtr pRec = GetGame().PopRecord();
-	pRec->Undo(GetGame(), controller);
+	RecordPtr pRec = game.PopRecord();
+	pRec->Undo(game, controller);
 }
+
+void ColoniseSquaresCmd::Save(Serial::SaveNode& node) const 
+{
+	__super::Save(node);
+	node.SaveCntr("squares", m_squares, Serial::EnumSaver());
+	node.SaveType("pos", m_pos);
+	node.SaveArray("square_counts", m_squareCounts, Serial::TypeSaver());
+}
+
+void ColoniseSquaresCmd::Load(const Serial::LoadNode& node) 
+{
+	__super::Load(node);
+
+	node.LoadCntr("squares", m_squares, Serial::EnumLoader());
+	node.LoadType("pos", m_pos);
+	node.LoadArray("square_counts", m_squareCounts, Serial::TypeLoader());
+}
+
+REGISTER_DYNAMIC(ColoniseSquaresCmd)

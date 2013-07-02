@@ -5,6 +5,8 @@
 #include <deque>
 #include <vector>
 
+namespace Serial { class SaveNode; class LoadNode; }
+
 class CmdStack
 {
 public:
@@ -22,18 +24,28 @@ public:
 
 	void AssertValid() const;
 
+	bool Purge();
+
+	void Save(Serial::SaveNode& node) const;
+	void Load(const Serial::LoadNode& node);
+
 private:
 	class Chain;
 	typedef std::unique_ptr<Chain> ChainPtr;
 	struct Node
 	{
+		Node() {}
 		Node(CmdPtr& _pCmd) : pCmd(std::move(_pCmd)) {}
+
+		void Save(Serial::SaveNode& node) const;
+		void Load(const Serial::LoadNode& node);
+
 		CmdPtr pCmd;
 		std::vector<ChainPtr> subchains;
 	};
 
 	typedef std::unique_ptr<Node> NodePtr;
-	class Chain : protected std::vector<NodePtr>
+	class Chain : public std::vector<NodePtr>
 	{
 	friend class CmdStack;
 	public:
@@ -47,6 +59,11 @@ private:
 		bool HasAction() const;
 	
 		void AssertValid() const;
+
+		bool Purge();
+
+		void Save(Serial::SaveNode& node) const;
+		void Load(const Serial::LoadNode& node);
 
 	private:
 		Chain* GetOpenChild();

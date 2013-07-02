@@ -89,8 +89,13 @@ struct ObjectSaver
 {
 	template <typename T> void operator ()(Xml::Element& e, const T& pObj) 
 	{
-		e.SetAttribute("_class", typeid(*pObj).name());
-		pObj->Save(SaveNode(e));
+		if (pObj)
+		{
+			e.SetAttribute("_class", typeid(*pObj).name());
+			pObj->Save(SaveNode(e));
+		}
+		else
+			e.SetAttribute("_null", true);
 	}		
 };
 
@@ -293,10 +298,6 @@ struct ObjectLoader
 {
 	template <typename T> bool operator ()(const Xml::Element& e, T*& pObj) 
 	{ 
-		std::string id;
-		if (!e.GetAttribute("_class", id))
-			AssertThrow("ObjectLoader", false);
-
 		delete pObj;
 		pObj = nullptr;
 
@@ -304,6 +305,10 @@ struct ObjectLoader
 		e.GetAttribute("_null", bNull);
 		if (bNull)
 			return true;
+
+		std::string id;
+		if (!e.GetAttribute("_class", id))
+			AssertThrow("ObjectLoader", false);
 
 		if (pObj = Dynamic::CreateObject<T>(id))
 		{
@@ -396,6 +401,14 @@ template <typename T> bool LoadNode::LoadObject(const std::string& name, T& pObj
 		return false;
 
 	return ObjectLoader()(e, pObj);
+}
+
+template <typename T> bool LoadNode::LoadObject(const std::string& name, std::unique_ptr<T>& pObj) const
+{
+	T* p = nullptr;
+	bool bOK = LoadObject(name, p);
+	pObj.reset(p);
+	return bOK;
 }
 
 template <typename T, typename L> bool LoadNode::LoadCntr(const std::string& name, T& cntr, L loader) const

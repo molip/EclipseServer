@@ -12,11 +12,15 @@ class Hex;
 class InfluenceCmd : public Cmd
 {
 public:
-	InfluenceCmd(Player& player, int iPhase = 0);
+	InfluenceCmd() : m_iPhase(-1) {}
+	InfluenceCmd(Colour colour, LiveGame& game, int iPhase = 0);
 
-	virtual void UpdateClient(const Controller& controller) const override;
-	virtual CmdPtr Process(const Input::CmdMessage& msg, const Controller& controller) override;
+	virtual void UpdateClient(const Controller& controller, const LiveGame& game) const override;
+	virtual CmdPtr Process(const Input::CmdMessage& msg, const Controller& controller, LiveGame& game) override;
 	virtual bool IsAction() const override { return true; } 
+
+	virtual void Save(Serial::SaveNode& node) const override;
+	virtual void Load(const Serial::LoadNode& node) override;
 
 private:
 	std::vector<MapPos> m_srcs;
@@ -26,17 +30,20 @@ private:
 class InfluenceDstCmd : public Cmd
 {
 public:
-	InfluenceDstCmd(Player& player, const MapPos* pSrcPos, int iPhase = 0);
+	InfluenceDstCmd() : m_iPhase(-1), m_discovery(DiscoveryType::None) {}
+	InfluenceDstCmd(Colour colour, LiveGame& game, const MapPos* pSrcPos, int iPhase = 0);
 
-	virtual void UpdateClient(const Controller& controller) const override;
-	virtual CmdPtr Process(const Input::CmdMessage& msg, const Controller& controller) override;
-	virtual void Undo(const Controller& controller) override;
+	virtual void UpdateClient(const Controller& controller, const LiveGame& game) const override;
+	virtual CmdPtr Process(const Input::CmdMessage& msg, const Controller& controller, LiveGame& game) override;
+	virtual void Undo(const Controller& controller, LiveGame& game) override;
 	virtual bool CanUndo() const override { return m_discovery == DiscoveryType::None; }
 	virtual bool HasRecord() const { return true; } 
 
+	virtual void Save(Serial::SaveNode& node) const override;
+	virtual void Load(const Serial::LoadNode& node) override;
+
 private:
 	std::unique_ptr<MapPos> m_pSrcPos;
-	MapPos* m_pDstPos;
 	std::vector<MapPos> m_dsts;
 	DiscoveryType m_discovery;
 

@@ -11,23 +11,24 @@
 #include "Record.h"
 #include "EdgeSet.h"
 
-ExploreCmd::ExploreCmd(Player& player, int iPhase) : Cmd(player), m_idHex(-1), m_iPos(-1), m_iPhase(iPhase)
+ExploreCmd::ExploreCmd(Colour colour, LiveGame& game, int iPhase) : Cmd(colour), m_idHex(-1), m_iPos(-1), m_iPhase(iPhase)
 {
+	auto& team = GetTeam(game);
 	std::set<MapPos> positions;
-	const Map::HexMap& hexes = GetGame().GetMap().GetHexes();
+	const Map::HexMap& hexes = game.GetMap().GetHexes();
 	for (auto& h : hexes)
-		if (h.second->IsOwnedBy(GetTeam())) // TODO: Check ships.
-			GetGame().GetMap().GetEmptyNeighbours(h.first, GetTeam().HasTech(TechType::WormholeGen), positions);
+		if (h.second->IsOwnedBy(team)) // TODO: Check ships.
+			game.GetMap().GetEmptyNeighbours(h.first, team.HasTech(TechType::WormholeGen), positions);
 
 	m_positions.insert(m_positions.begin(), positions.begin(), positions.end());
 }
 
-void ExploreCmd::UpdateClient(const Controller& controller) const
+void ExploreCmd::UpdateClient(const Controller& controller, const LiveGame& game) const
 {
-	controller.SendMessage(Output::ChooseExplorePos(m_positions, m_iPhase > 1), m_player);
+	controller.SendMessage(Output::ChooseExplorePos(m_positions, m_iPhase > 1), GetPlayer(game));
 }
 
-CmdPtr ExploreCmd::Process(const Input::CmdMessage& msg, const Controller& controller)
+CmdPtr ExploreCmd::Process(const Input::CmdMessage& msg, const Controller& controller, LiveGame& game)
 {
 	if (dynamic_cast<const Input::CmdExploreReject*>(&msg))
 		return nullptr;
@@ -38,12 +39,32 @@ CmdPtr ExploreCmd::Process(const Input::CmdMessage& msg, const Controller& contr
 
 	const MapPos& pos = m_positions[m_iPos];
 
-	m_idHex = GetGame().GetHexBag(pos.GetRing()).TakeTile();
+	m_idHex = game.GetHexBag(pos.GetRing()).TakeTile();
 	
 	std::vector<int> hexIDs;
 	hexIDs.push_back(m_idHex);
-	return CmdPtr(new ExploreHexCmd(m_player, pos, hexIDs, m_iPhase));
+	return CmdPtr(new ExploreHexCmd(m_colour, game, pos, hexIDs, m_iPhase));
 }
+
+void ExploreCmd::Save(Serial::SaveNode& node) const 
+{
+	__super::Save(node);
+	node.SaveCntr("positions", m_positions, Serial::TypeSaver());
+	node.SaveType("hex_index", m_idHex);
+	node.SaveType("pos_index", m_iPos);
+	node.SaveType("phase", m_iPhase);
+}
+
+void ExploreCmd::Load(const Serial::LoadNode& node) 
+{
+	__super::Load(node);
+	node.LoadCntr("positions", m_positions, Serial::TypeLoader());
+	node.LoadType("hex_index", m_idHex);
+	node.LoadType("pos_index", m_iPos);
+	node.LoadType("phase", m_iPhase);
+}
+
+REGISTER_DYNAMIC(ExploreCmd)
 
 //-----------------------------------------------------------------------------
 
@@ -127,22 +148,27 @@ REGISTER_DYNAMIC(ExploreRecord)
 class DiscoverAndExploreCmd : public DiscoverCmd
 {
 public:
-	DiscoverAndExploreCmd(Player& player, DiscoveryType discovery) : DiscoverCmd(player, discovery){}
+	DiscoverAndExploreCmd() {}
+	DiscoverAndExploreCmd(Colour colour, LiveGame& game, DiscoveryType discovery) : DiscoverCmd(colour, game, discovery){}
 private:
-	virtual CmdPtr GetNextCmd() const override { return CmdPtr(new ExploreCmd(m_player, 1)); }
+	virtual CmdPtr GetNextCmd(LiveGame& game) const override { return CmdPtr(new ExploreCmd(m_colour, game, 1)); }
 };
+
+REGISTER_DYNAMIC(DiscoverAndExploreCmd)
 
 //-----------------------------------------------------------------------------
 
-ExploreHexCmd::ExploreHexCmd(Player& player, const MapPos& pos, std::vector<int> hexIDs, int iPhase) : 
-	Cmd(player), m_pos(pos), m_iPhase(iPhase), m_hexIDs(hexIDs), m_iRot(-1), m_iHex(-1), m_bInfluence(false), 
+ExploreHexCmd::ExploreHexCmd(Colour colour, LiveGame& game, const MapPos& pos, std::vector<int> hexIDs, int iPhase) : 
+	Cmd(colour), m_pos(pos), m_iPhase(iPhase), m_hexIDs(hexIDs), m_iRot(-1), m_iHex(-1), m_bInfluence(false), 
 	m_idTaken(-1), m_discovery(DiscoveryType::None)
 {
-	bool bWormholeGen = GetTeam().HasTech(TechType::WormholeGen);
+	auto& team = GetTeam(game);
 
-	std::vector<const Hex*> hexes = GetGame().GetMap().GetSurroundingHexes(m_pos, GetTeam());
+	bool bWormholeGen = team.HasTech(TechType::WormholeGen);
 
-	Race race(GetTeam().GetRace());
+	std::vector<const Hex*> hexes = game.GetMap().GetSurroundingHexes(m_pos, team);
+
+	Race race(team.GetRace());
 
 	m_hexChoices.clear();
 	
@@ -151,7 +177,7 @@ ExploreHexCmd::ExploreHexCmd(Player& player, const MapPos& pos, std::vector<int>
 		Hex hex(id, pos, 0);
 
 		bool bCanInfluenceHex = hex.GetShips().empty(); // Any ships must be ancients.
-		HexChoice hc(id, bCanInfluenceHex && GetTeam().GetInfluenceTrack().GetDiscCount() > 0);
+		HexChoice hc(id, bCanInfluenceHex && team.GetInfluenceTrack().GetDiscCount() > 0);
 		
 		EdgeSet inner = hex.GetWormholes();
 
@@ -180,31 +206,29 @@ ExploreHexCmd::ExploreHexCmd(Player& player, const MapPos& pos, std::vector<int>
 	}
 }
 
-void ExploreHexCmd::UpdateClient(const Controller& controller) const
+void ExploreHexCmd::UpdateClient(const Controller& controller, const LiveGame& game) const
 {
-	bool bCanTake = Race(GetTeam().GetRace()).GetExploreChoices() > (int)m_hexChoices.size();
+	bool bCanTake = Race(GetTeam(game).GetRace()).GetExploreChoices() > (int)m_hexChoices.size();
 
-	Output::ChooseExploreHex msg(m_pos.GetX(), m_pos.GetY(), bCanTake, GetGame().CanRemoveCmd());
+	Output::ChooseExploreHex msg(m_pos.GetX(), m_pos.GetY(), bCanTake, game.CanRemoveCmd());
 	for (auto& hc : m_hexChoices)
 		msg.AddHexChoice(hc.m_idHex, hc.m_rotations, hc.m_bCanInfluence);
 
-	controller.SendMessage(msg, m_player);
+	controller.SendMessage(msg, GetPlayer(game));
 }
 
 
-CmdPtr ExploreHexCmd::Process(const Input::CmdMessage& msg, const Controller& controller)
+CmdPtr ExploreHexCmd::Process(const Input::CmdMessage& msg, const Controller& controller, LiveGame& game)
 {
-	Game& game = GetGame();
-
 	m_discovery = DiscoveryType::None;
 
 	if (dynamic_cast<const Input::CmdExploreHexTake*>(&msg))
 	{
-		m_idTaken = GetGame().GetHexBag(m_pos.GetRing()).TakeTile(); 
+		m_idTaken = game.GetHexBag(m_pos.GetRing()).TakeTile(); 
 		std::vector<int> hexIDs = m_hexIDs;
 		hexIDs.insert(hexIDs.begin(), m_idTaken); // At front so it appears first.
 		m_idTaken = true;
-		return CmdPtr(new ExploreHexCmd(m_player, m_pos, hexIDs, m_iPhase));
+		return CmdPtr(new ExploreHexCmd(m_colour, game, m_pos, hexIDs, m_iPhase));
 	}
 
 	bool bReject = !!dynamic_cast<const Input::CmdExploreReject*>(&msg);
@@ -224,25 +248,72 @@ CmdPtr ExploreHexCmd::Process(const Input::CmdMessage& msg, const Controller& co
 		AssertThrowXML("ExploreHexCmd: rotation index", InRange(hc.m_rotations, m.m_iRot));
 		m_iRot = m.m_iRot;
 
-		ExploreRecord* pRec = new ExploreRecord(GetTeam().GetColour(), m_pos, m_hexChoices[m_iHex].m_idHex, hc.m_rotations[m_iRot], m.m_bInfluence);
-		pRec->Do(GetGame(), controller);
+		ExploreRecord* pRec = new ExploreRecord(m_colour, m_pos, m_hexChoices[m_iHex].m_idHex, hc.m_rotations[m_iRot], m.m_bInfluence);
+		pRec->Do(game, controller);
 		m_discovery = pRec->GetDiscovery();
-		GetGame().PushRecord(RecordPtr(pRec));
+		game.PushRecord(RecordPtr(pRec));
 	}
 
-	const bool bFinish = m_iPhase + 1 == Race(GetTeam().GetRace()).GetExploreRate();
+	const bool bFinish = m_iPhase + 1 == Race(GetTeam(game).GetRace()).GetExploreRate();
 
 	if (m_discovery != DiscoveryType::None)
-		return CmdPtr(bFinish ? new DiscoverCmd(m_player, m_discovery) : new DiscoverAndExploreCmd(m_player, m_discovery));
+		return CmdPtr(bFinish ? new DiscoverCmd(m_colour, game, m_discovery) : new DiscoverAndExploreCmd(m_colour, game, m_discovery));
 
-	return CmdPtr(bFinish ? nullptr : new ExploreCmd(m_player, 1));
+	return CmdPtr(bFinish ? nullptr : new ExploreCmd(m_colour, game, 1));
 }
 
-void ExploreHexCmd::Undo(const Controller& controller)
+void ExploreHexCmd::Undo(const Controller& controller, LiveGame& game)
 {
 	if (!HasRecord()) // Rejected
 		return;
 
-	RecordPtr pRec = GetGame().PopRecord();
-	pRec->Undo(GetGame(), controller);
+	RecordPtr pRec = game.PopRecord();
+	pRec->Undo(game, controller);
 }
+
+void ExploreHexCmd::Save(Serial::SaveNode& node) const 
+{
+	__super::Save(node);
+	node.SaveCntr("hex_ids", m_hexIDs, Serial::TypeSaver());
+	node.SaveCntr("hex_choices", m_hexChoices, Serial::ClassSaver());
+	node.SaveType("rot_index", m_iRot);
+	node.SaveType("hex_index", m_iHex);
+	node.SaveType("influence", m_bInfluence);
+	node.SaveType("pos", m_pos);
+	node.SaveType("phase", m_iPhase);
+	node.SaveType("taken_id", m_idTaken);
+	node.SaveEnum("discovery", m_discovery);
+}
+
+void ExploreHexCmd::Load(const Serial::LoadNode& node) 
+{
+	__super::Load(node);
+	node.LoadCntr("hex_ids", m_hexIDs, Serial::TypeLoader());
+	node.LoadCntr("hex_choices", m_hexChoices, Serial::ClassLoader());
+	node.LoadType("rot_index", m_iRot);
+	node.LoadType("hex_index", m_iHex);
+	node.LoadType("influence", m_bInfluence);
+	node.LoadType("pos", m_pos);
+	node.LoadType("phase", m_iPhase);
+	node.LoadType("taken_id", m_idTaken);
+	node.LoadEnum("discovery", m_discovery);
+}
+
+REGISTER_DYNAMIC(ExploreHexCmd)
+
+//-----------------------------------------------------------------------------
+
+void ExploreHexCmd::HexChoice::Save(Serial::SaveNode& node) const
+{
+	node.SaveType("hex_id", m_idHex);
+	node.SaveType("can_influence", m_bCanInfluence);
+	node.SaveCntr("rotations", m_rotations, Serial::TypeSaver());
+}
+
+void ExploreHexCmd::HexChoice::Load(const Serial::LoadNode& node)
+{
+	node.LoadType("hex_id", m_idHex);
+	node.LoadType("can_influence", m_bCanInfluence);
+	node.LoadCntr("rotations", m_rotations, Serial::TypeLoader());
+}
+

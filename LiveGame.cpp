@@ -59,6 +59,8 @@ void LiveGame::StartChooseTeamPhase()
 	for (auto r : EnumRange<HexRing>())
 		m_hexBag[(int)r] = HexBag(r, m_teams.size());
 
+	m_hexBag[1].ReturnTile(206); // Discovery, no ancients, 1 materials square.
+
 	m_repBag.Init();
 	m_techBag.Init();
 	m_discBag.Init();
@@ -128,8 +130,8 @@ Cmd* LiveGame::RemoveCmd()
 	if (bAction)
 		GetCurrentTeam().GetInfluenceTrack().AddDiscs(1);
 
-	return pUndo;
 	Save();
+	return pUndo;
 }
 
 bool LiveGame::CanDoAction() const
@@ -155,6 +157,11 @@ const Cmd* LiveGame::GetCurrentCmd() const
 	return m_pCmdStack->GetCurrentCmd();
 }
 
+bool LiveGame::PurgeCmds()
+{
+	return m_pCmdStack->Purge();
+}
+
 void LiveGame::FinishTurn()
 {
 	m_pCmdStack->Clear();
@@ -173,8 +180,8 @@ RecordPtr LiveGame::PopRecord()
 	AssertThrow("LiveGame::PopRecord", !m_records.empty());
 	RecordPtr pRec = std::move(m_records.back());
 	m_records.pop_back();
-	return pRec;
 	Save();
+	return pRec;
 }
 
 void LiveGame::Save() const
@@ -191,6 +198,7 @@ void LiveGame::Save(Serial::SaveNode& node) const
 	//CmdStack* m_pCmdStack;
 	node.SaveEnum("phase", m_phase);
 	node.SaveCntr("records", m_records, Serial::ObjectSaver());
+	node.SaveClass("commands", *m_pCmdStack);
 }
 
 void LiveGame::Load(const Serial::LoadNode& node)
@@ -198,6 +206,7 @@ void LiveGame::Load(const Serial::LoadNode& node)
 	__super::Load(node);
 	node.LoadEnum("phase", m_phase);
 	node.LoadCntr("records", m_records, Serial::ObjectLoader());
+	node.LoadClass("commands", *m_pCmdStack);
 }
 
 DEFINE_ENUM_NAMES(LiveGame::Phase) { "Lobby", "ChooseTeam", "Main", "" };

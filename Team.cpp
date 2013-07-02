@@ -70,6 +70,11 @@ const Player& Team::GetPlayer() const
 	return Players::Get(m_idPlayer);
 }
 
+Player& Team::GetPlayer() 
+{
+	return Players::Get(m_idPlayer);
+}
+
 const Game& Team::GetGame() const
 {
 	return Games::Get(m_idGame);

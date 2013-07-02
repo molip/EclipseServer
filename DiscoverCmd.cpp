@@ -8,24 +8,38 @@
 #include "Team.h"
 #include "LiveGame.h"
 
-DiscoverCmd::DiscoverCmd(Player& player, DiscoveryType discovery) : 
-	Cmd(player), m_discovery(discovery)
+DiscoverCmd::DiscoverCmd(Colour colour, LiveGame& game, DiscoveryType discovery) : 
+	Cmd(colour), m_discovery(discovery)
 {
 }
 
-void DiscoverCmd::UpdateClient(const Controller& controller) const
+void DiscoverCmd::UpdateClient(const Controller& controller, const LiveGame& game) const
 {
-	Output::ChooseDiscovery msg(GetGame().CanRemoveCmd());
-	controller.SendMessage(msg, m_player);
+	Output::ChooseDiscovery msg(game.CanRemoveCmd());
+	controller.SendMessage(msg, GetPlayer(game));
 }
 
-CmdPtr DiscoverCmd::Process(const Input::CmdMessage& msg, const Controller& controller)
+CmdPtr DiscoverCmd::Process(const Input::CmdMessage& msg, const Controller& controller, LiveGame& game)
 {
 	auto& m = CastThrow<const Input::CmdExploreDiscovery>(msg);
 
-	return GetNextCmd();
+	return GetNextCmd(game);
 }
 
-void DiscoverCmd::Undo(const Controller& controller)
+void DiscoverCmd::Undo(const Controller& controller, LiveGame& game)
 {
 }
+
+void DiscoverCmd::Save(Serial::SaveNode& node) const 
+{
+	__super::Save(node);
+	node.SaveEnum("discovery", m_discovery);
+}
+
+void DiscoverCmd::Load(const Serial::LoadNode& node) 
+{
+	__super::Load(node);
+	node.LoadEnum("discovery", m_discovery);
+}
+
+REGISTER_DYNAMIC(DiscoverCmd)

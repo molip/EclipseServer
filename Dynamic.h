@@ -9,7 +9,7 @@ namespace Serial { class SaveNode; class LoadNode; }
 class Dynamic
 {
 	typedef std::function<Dynamic*()> Func;
-	typedef std::map<std::string, Func> Map;
+	typedef std::map<std::string, Func> ClassMap;
 public:
 	virtual ~Dynamic();
 
@@ -20,7 +20,7 @@ public:
 
 	template <typename T> static T* CreateObject(const std::string& id)
 	{
-		auto it = GetMap().find(id);
+		auto it = GetClassMap().find(id);
 		T* pObj = dynamic_cast<T*>(it->second());
 		if (pObj == nullptr)
 			throw 1;
@@ -29,7 +29,7 @@ public:
 
 private:
 
-	static Map& GetMap();
+	static ClassMap& GetClassMap();
 };
 
 #define REGISTER_DYNAMIC(T) \

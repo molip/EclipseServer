@@ -2,13 +2,13 @@
 
 Dynamic::~Dynamic() {}
 
-Dynamic::Map& Dynamic::GetMap()
+Dynamic::ClassMap& Dynamic::GetClassMap()
 {
-	static Map map;
+	static ClassMap map;
 	return map;
 }
 
 void Dynamic::RegisterObject(const std::string& id, std::function<Dynamic*()> fn)
 {
-	GetMap().insert(std::make_pair(id, fn));
+	GetClassMap().insert(std::make_pair(id, fn));
 }

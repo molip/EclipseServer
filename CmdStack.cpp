@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "CmdStack.h"
 #include "App.h"
+#include "Serial.h"
 
 bool CmdStack::Chain::IsOpen() const
 {
@@ -123,6 +124,28 @@ void CmdStack::Chain::AssertValid() const
 	}
 }
 
+bool CmdStack::Chain::Purge() 
+{
+	for (auto n = rbegin(); n != rend(); ++n)
+		if ((*n)->pCmd && !(*n)->pCmd->CanUndo())
+		{
+			erase(begin(), (n+1).base());
+			return true;
+		}
+	return false;
+}
+
+void CmdStack::Chain::Save(Serial::SaveNode& node) const
+{
+	if (!empty())
+		node.SaveCntr("nodes", *this, Serial::ClassPtrSaver());
+}
+
+void CmdStack::Chain::Load(const Serial::LoadNode& node)
+{
+	node.LoadCntr("nodes", *this, Serial::ClassPtrLoader());
+}
+
 //-----------------------------------------------------------------------------
 
 CmdStack::CmdStack()
@@ -198,3 +221,41 @@ void CmdStack::AssertValid() const
 	for (auto& chain : m_chains)
 		chain->AssertValid();
 }
+
+bool CmdStack::Purge() 
+{
+	for (auto c = m_chains.rbegin(); c != m_chains.rend(); ++c)
+		if ((*c)->Purge())
+		{
+			m_chains.erase(m_chains.begin(), (c+1).base());
+			return true;
+		}
+	return false;
+}
+
+void CmdStack::Save(Serial::SaveNode& node) const
+{
+	if (!m_chains.empty())
+		node.SaveCntr("chains", m_chains, Serial::ClassPtrSaver());
+}
+
+void CmdStack::Load(const Serial::LoadNode& node)
+{
+	node.LoadCntr("chains", m_chains, Serial::ClassPtrLoader());
+}
+
+//-----------------------------------------------------------------------------
+
+void CmdStack::Node::Save(Serial::SaveNode& node) const
+{
+	node.SaveObject("cmd", pCmd);
+	if (!subchains.empty())
+		node.SaveCntr("subchains", subchains, Serial::ClassPtrSaver());
+}
+
+void CmdStack::Node::Load(const Serial::LoadNode& node)
+{
+	node.LoadObject("cmd", pCmd);
+	node.LoadCntr("subchains", subchains, Serial::ClassPtrLoader());
+}
+

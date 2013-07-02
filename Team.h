@@ -37,6 +37,7 @@ public:
 
 	const int GetPlayerID() const { return m_idPlayer; }
 	const Player& GetPlayer() const;
+	Player& GetPlayer();
 	const Game& GetGame() const;
 
 	void SetGameID(int id) { m_idGame = id; }

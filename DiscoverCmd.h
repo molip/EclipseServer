@@ -9,15 +9,19 @@
 class DiscoverCmd : public Cmd
 {
 public:
-	DiscoverCmd(Player& player, DiscoveryType discovery);
+	DiscoverCmd() : m_discovery(DiscoveryType::None) {}
+	DiscoverCmd(Colour colour, LiveGame& game, DiscoveryType discovery);
 
-	virtual void UpdateClient(const Controller& controller) const override;
-	virtual CmdPtr Process(const Input::CmdMessage& msg, const Controller& controller) override;
-	virtual void Undo(const Controller& controller) override;
+	virtual void UpdateClient(const Controller& controller, const LiveGame& game) const override;
+	virtual CmdPtr Process(const Input::CmdMessage& msg, const Controller& controller, LiveGame& game) override;
+	virtual void Undo(const Controller& controller, LiveGame& game) override;
 	virtual bool HasRecord() const { return true; } 
 
+	virtual void Save(Serial::SaveNode& node) const override;
+	virtual void Load(const Serial::LoadNode& node) override;
+
 private:
-	virtual CmdPtr GetNextCmd() const { return nullptr; }
+	virtual CmdPtr GetNextCmd(LiveGame& game) const { return nullptr; }
 
 	DiscoveryType m_discovery;
 		//std::unique_ptr<DiscoveryChoice> m_pDiscoveryChoice;

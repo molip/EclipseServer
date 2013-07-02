@@ -25,6 +25,7 @@ public:
 	void StartCmd(CmdPtr pCmd);
 	void AddCmd(CmdPtr pCmd);
 	Cmd* RemoveCmd(); // Returns cmd to undo.
+	bool PurgeCmds();
 	bool CanRemoveCmd() const;
 	bool CanDoAction() const;
 
