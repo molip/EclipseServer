@@ -7,6 +7,8 @@
 #include "Players.h"
 #include "Record.h"
 #include "Serial.h"
+#include "Controller.h"
+#include "Output.h"
 
 #include <algorithm>
 
@@ -62,7 +64,9 @@ void Game::StartRound()
 
 	int nTech = (m_iRound == 0 ? startTech : roundTech)[m_teams.size() - 1];
 	for (int i = 0; i < nTech && !m_techBag.IsEmpty(); ++i)
-		m_techs.insert(m_techBag.TakeTile());
+		++m_techs[m_techBag.TakeTile()];
+
+	Controller::Get()->SendMessage(Output::UpdateTechnologies(*this), *this);
 }
 
 Team* Game::FindTeam(const Player& player)
@@ -130,7 +134,7 @@ void Game::Save(Serial::SaveNode& node) const
 	node.SaveType("round", m_iRound);
 	node.SaveType("start_team", m_iStartTeam);
 	node.SaveType("start_team_next", m_iStartTeamNext);
-	node.SaveCntr("techs", m_techs, Serial::EnumSaver());
+	node.SaveMap("techs", m_techs, Serial::EnumSaver(), Serial::TypeSaver());
 	node.SaveCntr("teams", m_teams, Serial::ClassPtrSaver());
 	node.SaveClass("rep_bag", m_repBag);
 	node.SaveClass("tech_bag", m_techBag);
@@ -148,7 +152,7 @@ void Game::Load(const Serial::LoadNode& node)
 	node.LoadType("round", m_iRound);
 	node.LoadType("start_team", m_iStartTeam);
 	node.LoadType("start_team_next", m_iStartTeamNext);
-	node.LoadCntr("techs", m_techs, Serial::EnumLoader());
+	node.LoadMap("techs", m_techs, Serial::EnumLoader(), Serial::TypeLoader());
 	node.LoadCntr("teams", m_teams, Serial::ClassPtrLoader());
 	node.LoadClass("rep_bag", m_repBag);
 	node.LoadClass("tech_bag", m_techBag);
@@ -159,3 +163,5 @@ void Game::Load(const Serial::LoadNode& node)
 	for (auto& t : m_teams)
 		t->SetGameID(m_id);
 }
+
+DEFINE_ENUM_NAMES(HexRing) { "Inner", "Middle", "Outer", "" };

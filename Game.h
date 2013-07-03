@@ -59,6 +59,8 @@ public:
 	const Map& GetMap() const { return m_map; }
 	Map& GetMap() { return m_map; }
 
+	const std::map<TechType, int>& GetTechnologies() const { return m_techs; }
+
 	virtual void FinishTurn();
 
 	virtual void Save(Serial::SaveNode& node) const;
@@ -75,7 +77,7 @@ protected:
 	std::string m_name;
 	int m_idOwner;
 
-	std::multiset<TechType> m_techs;
+	std::map<TechType, int> m_techs;
 
 	std::vector<TeamPtr> m_teams;
 	

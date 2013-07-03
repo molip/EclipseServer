@@ -103,7 +103,9 @@ function OnCommandUpdate(elem)
 	else if (param == "map")
 		OnCommandUpdateMap(elem)
 	else if (param == "review_ui")
-		OnCommandReviewUI(elem)
+		OnCommandUpdateReviewUI(elem)
+	else if (param == "technologies")
+		OnCommandUpdateTechnologies(elem)
 	else
         writeToScreen('OnCommandUpdate: unknown param: ' + param)
 }
@@ -220,6 +222,8 @@ function OnCommandUpdateTeams(elem)
 		data.team_pages[id] = data.team_count++
 	}
 
+	html_tabs += '<button type="button" onclick="ShowSupplyPage()">Supply</button>'
+	
 	document.getElementById('game_tabs').innerHTML = html_tabs
 	document.getElementById('game_pages').innerHTML = html_pages
 	
@@ -329,10 +333,21 @@ function OnCommandUpdateMap(elem)
 	Map.Draw()
 }
 
-function OnCommandReviewUI(elem)
+function OnCommandUpdateReviewUI(elem)
 {
 	document.getElementById('retreat_review').disabled = !IsTrue(elem.getAttribute('can_retreat'))
 	document.getElementById('advance_review').disabled = !IsTrue(elem.getAttribute('can_advance'))
+}
+
+function OnCommandUpdateTechnologies(elem)
+{
+	var div = document.getElementById('supply_technologies')
+	var xsl = '\
+		<xsl:for-each select="tech">\
+			<xsl:value-of select="@type"/> (<xsl:value-of select="@count"/>)<br/>\
+		</xsl:for-each>'
+
+	SetDivFromCommandElem(div, elem, xsl) 
 }
 
 function OnCommandChooseTeam(elem, active)

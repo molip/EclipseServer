@@ -207,6 +207,17 @@ UpdateReviewUI::UpdateReviewUI(const ReviewGame& game) : Update("review_ui")
 	m_root.SetAttribute("can_retreat", game.CanRetreat());
 }
 
+UpdateTechnologies::UpdateTechnologies(const Game& game) : Update("technologies")
+{
+	auto& techs = game.GetTechnologies();
+	for (auto t : techs)
+	{
+		auto e = m_root.AddElement("tech");
+		e.SetAttribute("type", EnumTraits<TechType>::ToString(t.first));
+		e.SetAttribute("count", t.second);
+	}
+}
+
 //UpdateUndo::UpdateUndo(bool bEnable) : Update("undo")
 //{
 //	m_root.SetAttribute("enable", bEnable);

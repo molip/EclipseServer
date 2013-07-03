@@ -126,6 +126,7 @@ void Controller::SendUpdateGame(const Game& game, const Player* pPlayer) const
 					SendUpdateReputationTrack(player);
 	}
 	SendMessage(Output::UpdateMap(game), game, pPlayer);
+	SendMessage(Output::UpdateTechnologies(game), game, pPlayer);
 
 	if (bSendToCurrentPlayer) 
 		if (const Cmd* pCmd = pLive->GetCurrentCmd())

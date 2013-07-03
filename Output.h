@@ -67,6 +67,7 @@ struct UpdatePopulationTrack : Update { UpdatePopulationTrack(const Team& team);
 struct UpdateReputationTrack : Update { UpdateReputationTrack(const Team& team, bool bSendValues); };
 struct UpdateMap : Update { UpdateMap(const Game& game); };
 struct UpdateReviewUI : Update { UpdateReviewUI(const ReviewGame& game); };
+struct UpdateTechnologies : Update { UpdateTechnologies(const Game& game); };
 //struct UpdateUndo : Update { UpdateUndo(bool bEnable); };
 
 struct ChooseTeam : Choose { ChooseTeam(const Game& game, bool bActive); };

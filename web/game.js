@@ -187,4 +187,13 @@ function ShowTeamPage(player_id)
 	var page = data.team_pages[player_id]
     for (var i = 0; i < data.team_count; ++i)
 		ShowElementById(GetTeamPageIDFromIndex(i), page == i)
+
+	ShowElementById('game_pages', true)
+	ShowElementById('supply_page', false)
+}
+
+function ShowSupplyPage()
+{
+	ShowElementById('game_pages', false)
+	ShowElementById('supply_page', true)
 }
