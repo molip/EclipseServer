@@ -128,6 +128,7 @@ void Team::Save(Serial::SaveNode& node) const
 	node.SaveClass("pop_track", m_popTrack);
 	node.SaveClass("inf_track", m_infTrack);
 	node.SaveClass("rep_track", m_repTrack);
+	node.SaveClass("tech_track", m_techTrack);
 	node.SaveClass("storage", m_storage);
 
 	node.SaveArray("blueprints", m_blueprints, Serial::ClassPtrSaver());
@@ -147,6 +148,7 @@ void Team::Load(const Serial::LoadNode& node)
 	node.LoadClass("pop_track", m_popTrack);
 	node.LoadClass("inf_track", m_infTrack);
 	node.LoadClass("rep_track", m_repTrack);
+	node.LoadClass("tech_track", m_techTrack);
 	node.LoadClass("storage", m_storage);
 
 	node.LoadArray("blueprints", m_blueprints, Serial::ClassPtrLoader());

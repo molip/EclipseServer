@@ -5,6 +5,8 @@
 #include <vector>
 #include <set>
 
+namespace Serial { class SaveNode; class LoadNode; }
+
 class TechTrack
 {
 public:
@@ -18,9 +20,11 @@ public:
 	static int GetDiscount(int tier);
 	int GetCount(Technology::Class c) const;
 
-	const std::vector<Technology>& GetClass(Technology::Class c) const { return m_class[(int)c]; }
+	const std::vector<TechType>& GetClass(Technology::Class c) const { return m_class[(int)c]; }
+
+	void Save(Serial::SaveNode& node) const;
+	void Load(const Serial::LoadNode& node);
 
 private:
-	std::vector<Technology> m_class[3];
-	std::set<TechType> m_techs;
+	std::vector<TechType> m_class[3];
 };

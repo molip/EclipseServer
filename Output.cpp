@@ -141,7 +141,7 @@ UpdateTechnologyTrack::UpdateTechnologyTrack(const Team& team) : Update("technol
 		for (auto& t : team.GetTechTrack().GetClass(c))
 		{
 			auto eTech = eClass.AddElement("tech");
-			eTech.SetAttribute("name", EnumTraits<TechType>::ToString(t.GetType()));
+			eTech.SetAttribute("name", EnumTraits<TechType>::ToString(t));
 		}
 	}
 }

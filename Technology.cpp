@@ -3,22 +3,14 @@
 #include "App.h"
 #include "EnumTraits.h"
 
-Technology::Technology(TechType t) : m_type(t)
+int Technology::GetTier(TechType t) 
 {
+	return int(t) % 8;
 }
 
-Technology::~Technology()
+Technology::Class Technology::GetClass(TechType t) 
 {
-}
-
-int Technology::GetTier() const
-{
-	return int(m_type) % 8;
-}
-
-Technology::Class Technology::GetClass() const
-{
-	return Technology::Class((int)m_type / 8);
+	return Technology::Class((int)t / 8);
 }
 
 int Technology::GetMaxCost(int tier) 

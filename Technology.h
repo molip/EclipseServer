@@ -6,17 +6,13 @@ enum class TechType {
 	GaussShield, ImprovedHull, FusionSource, PositronComp, AdvEconomy, TachyonDrive,  AntimatterCannon, QuantumGrid,
 	NanoRobots,	 FusionDrive,  AdvRobotics,  Orbital,      AdvLabs,    Monolith,      ArtifactKey,      WormholeGen  };
 
-	class Technology
+class Technology
 {
 public:
 	enum class Class { Military, Grid, Nano, _Count };
 
-	Technology(TechType t);
-	~Technology();
-
-	int GetTier() const;
-	Class GetClass() const;
-	TechType GetType() const { return m_type; }
+	static int GetTier(TechType t);
+	static Class GetClass(TechType t);
 	
 	static int GetMaxCost(int tier);
 	static int GetMinCost(int tier);
