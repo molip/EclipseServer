@@ -344,7 +344,7 @@ function OnCommandUpdateTechnologies(elem)
 	var div = document.getElementById('supply_technologies')
 	var xsl = '\
 		<xsl:for-each select="tech">\
-			<xsl:value-of select="@type"/> (<xsl:value-of select="@count"/>)<br/>\
+			<xsl:value-of select="@count"/> x <xsl:value-of select="@type"/> (<xsl:value-of select="@max_cost"/>/<xsl:value-of select="@min_cost"/>)<br/>\
 		</xsl:for-each>'
 
 	SetDivFromCommandElem(div, elem, xsl) 

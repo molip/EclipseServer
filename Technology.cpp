@@ -13,13 +13,14 @@ Technology::Class Technology::GetClass(TechType t)
 	return Technology::Class((int)t / 8);
 }
 
-int Technology::GetMaxCost(int tier) 
+int Technology::GetMaxCost(TechType t) 
 {
-	return (tier + 1) * 2;
+	return (GetTier(t) + 1) * 2;
 }
 
-int Technology::GetMinCost(int tier) 
+int Technology::GetMinCost(TechType t) 
 {
+	int tier = GetTier(t);
 	return tier < 5 ? tier + 2 : tier + 1;
 }
 

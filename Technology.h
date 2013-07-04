@@ -14,8 +14,8 @@ public:
 	static int GetTier(TechType t);
 	static Class GetClass(TechType t);
 	
-	static int GetMaxCost(int tier);
-	static int GetMinCost(int tier);
+	static int GetMaxCost(TechType t);
+	static int GetMinCost(TechType t);
 
 private:
 	TechType m_type;

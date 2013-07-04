@@ -215,6 +215,8 @@ UpdateTechnologies::UpdateTechnologies(const Game& game) : Update("technologies"
 		auto e = m_root.AddElement("tech");
 		e.SetAttribute("type", EnumTraits<TechType>::ToString(t.first));
 		e.SetAttribute("count", t.second);
+		e.SetAttribute("max_cost", Technology::GetMaxCost(t.first));
+		e.SetAttribute("min_cost", Technology::GetMinCost(t.first));
 	}
 }
 
