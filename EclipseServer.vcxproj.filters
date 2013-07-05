@@ -174,6 +174,24 @@
     <ClInclude Include="OS.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="ResearchCmd.h">
+      <Filter>Model\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="BuildCmd.h">
+      <Filter>Model\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="MoveCmd.h">
+      <Filter>Model\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="UpgradeCmd.h">
+      <Filter>Model\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="DiplomacyCmd.h">
+      <Filter>Model\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="TradeCmd.h">
+      <Filter>Model\Commands</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -328,6 +346,24 @@
     </ClCompile>
     <ClCompile Include="OS.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ResearchCmd.cpp">
+      <Filter>Model\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="BuildCmd.cpp">
+      <Filter>Model\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="MoveCmd.cpp">
+      <Filter>Model\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="UpgradeCmd.cpp">
+      <Filter>Model\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="DiplomacyCmd.cpp">
+      <Filter>Model\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="TradeCmd.cpp">
+      <Filter>Model\Commands</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -7,6 +7,12 @@
 #include "ExploreCmd.h"
 #include "InfluenceCmd.h"
 #include "ColoniseCmd.h"
+#include "ResearchCmd.h"
+#include "MoveCmd.h"
+#include "BuildCmd.h"
+#include "DiplomacyCmd.h"
+#include "UpgradeCmd.h"
+#include "TradeCmd.h"
 #include "Xml.h"
 #include "EnumTraits.h"
 #include "Games.h"
@@ -259,6 +265,18 @@ bool StartAction::Process(Controller& controller, Player& player) const
 		game.StartCmd(CmdPtr(new InfluenceCmd(colour, game)));
 	else if (m_action == "colonise") 
 		game.StartCmd(CmdPtr(new ColoniseCmd(colour, game)));
+	else if (m_action == "research") 
+		game.StartCmd(CmdPtr(new ResearchCmd(colour, game)));
+	else if (m_action == "move") 
+		game.StartCmd(CmdPtr(new MoveCmd(colour, game)));
+	else if (m_action == "build") 
+		game.StartCmd(CmdPtr(new BuildCmd(colour, game)));
+	else if (m_action == "diplomacy") 
+		game.StartCmd(CmdPtr(new DiplomacyCmd(colour, game)));
+	else if (m_action == "upgrade") 
+		game.StartCmd(CmdPtr(new UpgradeCmd(colour, game)));
+	else if (m_action == "trade") 
+		game.StartCmd(CmdPtr(new TradeCmd(colour, game)));
 
 	Cmd* pCmd = game.GetCurrentCmd();
 	AssertThrow("StartAction::Process: No command created", !!pCmd);
@@ -386,6 +404,30 @@ CmdInfluenceSrc::CmdInfluenceSrc(const Xml::Element& node)
 CmdInfluenceDst::CmdInfluenceDst(const Xml::Element& node)
 {
 	m_iPos = node.GetAttributeInt("pos_idx");
+}
+
+CmdResearch::CmdResearch(const Xml::Element& node)
+{
+}
+
+CmdMove::CmdMove(const Xml::Element& node)
+{
+}
+
+CmdBuild::CmdBuild(const Xml::Element& node)
+{
+}
+
+CmdDiplomacy::CmdDiplomacy(const Xml::Element& node)
+{
+}
+
+CmdUpgrade::CmdUpgrade(const Xml::Element& node)
+{
+}
+
+CmdTrade::CmdTrade(const Xml::Element& node)
+{
 }
 
 } // namespace

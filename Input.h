@@ -161,4 +161,34 @@ struct CmdInfluenceDst : CmdMessage
 	int m_iPos;
 };
 
+struct CmdResearch : CmdMessage
+{
+	CmdResearch(const Xml::Element& node);
+};
+
+struct CmdMove : CmdMessage
+{
+	CmdMove(const Xml::Element& node);
+};
+
+struct CmdBuild : CmdMessage
+{
+	CmdBuild(const Xml::Element& node);
+};
+
+struct CmdDiplomacy : CmdMessage
+{
+	CmdDiplomacy(const Xml::Element& node);
+};
+
+struct CmdUpgrade : CmdMessage
+{
+	CmdUpgrade(const Xml::Element& node);
+};
+
+struct CmdTrade : CmdMessage
+{
+	CmdTrade(const Xml::Element& node);
+};
+
 }

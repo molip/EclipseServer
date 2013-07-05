@@ -262,15 +262,16 @@ ChooseAction::ChooseAction(const LiveGame& game) : Choose("action")
 
 	bool bCanDoAction = game.CanDoAction();
 
-	m_root.SetAttribute("can_undo",		game.CanRemoveCmd());
-	m_root.SetAttribute("can_explore",	bCanDoAction);
+	m_root.SetAttribute("can_undo",			game.CanRemoveCmd());
+	m_root.SetAttribute("can_explore",		bCanDoAction);
 	m_root.SetAttribute("can_influence",	bCanDoAction);
-	m_root.SetAttribute("can_research",	false);
-	m_root.SetAttribute("can_upgrade",	false);
-	m_root.SetAttribute("can_build",		false);
-	m_root.SetAttribute("can_move",		false);
-	m_root.SetAttribute("can_colonise",	game.GetCurrentTeam().GetUnusedColonyShips() > 0); 
-	m_root.SetAttribute("can_diplomacy",	false);
+	m_root.SetAttribute("can_research",		bCanDoAction);
+	m_root.SetAttribute("can_upgrade",		bCanDoAction);
+	m_root.SetAttribute("can_build",		bCanDoAction);
+	m_root.SetAttribute("can_move",			bCanDoAction);
+	m_root.SetAttribute("can_colonise",		game.GetCurrentTeam().GetUnusedColonyShips() > 0); 
+	m_root.SetAttribute("can_diplomacy",	true);
+	m_root.SetAttribute("can_trade",		true);
 }
 
 ChooseFinished::ChooseFinished() : Choose("finished") 
@@ -364,6 +365,30 @@ ChooseInfluenceSrc::ChooseInfluenceSrc(const std::vector<MapPos>& positions, boo
 
 ChooseInfluenceDst::ChooseInfluenceDst(const std::vector<MapPos>& positions, bool bEnableTrack) : 
 	ChooseInfluencePos(positions, bEnableTrack, "influence_dst") {}
+
+ChooseResearch::ChooseResearch() : Choose("research")
+{
+}
+
+ChooseBuild::ChooseBuild() : Choose("build")
+{
+}
+
+ChooseDiplomacy::ChooseDiplomacy() : Choose("diplomacy")
+{
+}
+
+ChooseMove::ChooseMove() : Choose("move")
+{
+}
+
+ChooseUpgrade::ChooseUpgrade() : Choose("upgrade")
+{
+}
+
+ChooseTrade::ChooseTrade() : Choose("trade")
+{
+}
 
 } // namespace
 

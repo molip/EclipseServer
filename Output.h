@@ -88,6 +88,13 @@ struct ChooseInfluencePos : Choose { ChooseInfluencePos(const std::vector<MapPos
 struct ChooseInfluenceSrc : ChooseInfluencePos { ChooseInfluenceSrc(const std::vector<MapPos>& positions, bool bEnableTrack); };
 struct ChooseInfluenceDst : ChooseInfluencePos { ChooseInfluenceDst(const std::vector<MapPos>& positions, bool bEnableTrack); };
 
+struct ChooseResearch : Choose { ChooseResearch(); };
+struct ChooseBuild : Choose { ChooseBuild(); };
+struct ChooseDiplomacy : Choose { ChooseDiplomacy(); };
+struct ChooseMove : Choose { ChooseMove(); };
+struct ChooseUpgrade : Choose { ChooseUpgrade(); };
+struct ChooseTrade : Choose { ChooseTrade(); };
+
 struct ShowGameList : Show { ShowGameList(); };
 struct ShowLobby : Show { ShowLobby(); };
 struct ShowChoose : Show { ShowChoose(); };

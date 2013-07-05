@@ -80,10 +80,12 @@
     <ClInclude Include="Bag.h" />
     <ClInclude Include="Blueprint.h" />
     <ClInclude Include="BlueprintDefs.h" />
+    <ClInclude Include="BuildCmd.h" />
     <ClInclude Include="Cmd.h" />
     <ClInclude Include="CmdStack.h" />
     <ClInclude Include="ColoniseCmd.h" />
     <ClInclude Include="Controller.h" />
+    <ClInclude Include="DiplomacyCmd.h" />
     <ClInclude Include="DiscoverCmd.h" />
     <ClInclude Include="Discovery.h" />
     <ClInclude Include="Dynamic.h" />
@@ -103,6 +105,7 @@
     <ClInclude Include="mongoose.h" />
     <ClInclude Include="MongooseServer.h" />
     <ClInclude Include="LiveGame.h" />
+    <ClInclude Include="MoveCmd.h" />
     <ClInclude Include="OS.h" />
     <ClInclude Include="Output.h" />
     <ClInclude Include="HTMLServer.h" />
@@ -112,6 +115,7 @@
     <ClInclude Include="Race.h" />
     <ClInclude Include="Record.h" />
     <ClInclude Include="Reputation.h" />
+    <ClInclude Include="ResearchCmd.h" />
     <ClInclude Include="Resources.h" />
     <ClInclude Include="ReviewGame.h" />
     <ClInclude Include="Serial.h" />
@@ -124,7 +128,9 @@
     <ClInclude Include="Technology.h" />
     <ClInclude Include="TechTrack.h" />
     <ClInclude Include="tinyxml.h" />
+    <ClInclude Include="TradeCmd.h" />
     <ClInclude Include="Turn.h" />
+    <ClInclude Include="UpgradeCmd.h" />
     <ClInclude Include="Util.h" />
     <ClInclude Include="WSServer.h" />
     <ClInclude Include="Xml.h" />
@@ -136,10 +142,12 @@
     <ClCompile Include="Bag.cpp" />
     <ClCompile Include="Blueprint.cpp" />
     <ClCompile Include="BlueprintDefs.cpp" />
+    <ClCompile Include="BuildCmd.cpp" />
     <ClCompile Include="Cmd.cpp" />
     <ClCompile Include="CmdStack.cpp" />
     <ClCompile Include="ColoniseCmd.cpp" />
     <ClCompile Include="Controller.cpp" />
+    <ClCompile Include="DiplomacyCmd.cpp" />
     <ClCompile Include="DiscoverCmd.cpp" />
     <ClCompile Include="Discovery.cpp" />
     <ClCompile Include="Dynamic.cpp" />
@@ -158,6 +166,7 @@
     <ClCompile Include="MongooseServer.cpp" />
     <ClCompile Include="mongoose.c" />
     <ClCompile Include="LiveGame.cpp" />
+    <ClCompile Include="MoveCmd.cpp" />
     <ClCompile Include="OS.cpp" />
     <ClCompile Include="Output.cpp" />
     <ClCompile Include="HTMLServer.cpp" />
@@ -167,6 +176,7 @@
     <ClCompile Include="Race.cpp" />
     <ClCompile Include="Record.cpp" />
     <ClCompile Include="Reputation.cpp" />
+    <ClCompile Include="ResearchCmd.cpp" />
     <ClCompile Include="Resources.cpp" />
     <ClCompile Include="ReviewGame.cpp" />
     <ClCompile Include="Serial.cpp" />
@@ -180,7 +190,9 @@
     <ClCompile Include="Technology.cpp" />
     <ClCompile Include="TechTrack.cpp" />
     <ClCompile Include="tinyxml.cpp" />
+    <ClCompile Include="TradeCmd.cpp" />
     <ClCompile Include="Turn.cpp" />
+    <ClCompile Include="UpgradeCmd.cpp" />
     <ClCompile Include="Util.cpp" />
     <ClCompile Include="WSServer.cpp" />
     <ClCompile Include="Xml.cpp" />
