@@ -75,6 +75,18 @@ MessagePtr CreateCommand(const Xml::Element& root)
 		return MessagePtr(new CmdColonisePos(root));
 	if (type == "cmd_colonise_squares")
 		return MessagePtr(new CmdColoniseSquares(root));
+	if (type == "cmd_research")
+		return MessagePtr(new CmdResearch(root));
+	if (type == "cmd_move")
+		return MessagePtr(new CmdMove(root));
+	if (type == "cmd_build")
+		return MessagePtr(new CmdBuild(root));
+	if (type == "cmd_upgrade")
+		return MessagePtr(new CmdUpgrade(root));
+	if (type == "cmd_diplomacy")
+		return MessagePtr(new CmdDiplomacy(root));
+	if (type == "cmd_trade")
+		return MessagePtr(new CmdTrade(root));
 	
 	AssertThrow("Input command not recognised: " + type);
 	return nullptr;
