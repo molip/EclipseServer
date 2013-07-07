@@ -33,8 +33,7 @@ void TechTrack::Remove(TechType tech)
 
 bool TechTrack::Has(TechType tech) const
 {
-	if (tech == TechType::None)
-		return false;
+	AssertThrowModel("TechTrack::Has", tech != TechType::None);
 	
 	auto& c = m_class[(int)Technology::GetClass(tech)];
 	return std::find(c.begin(), c.end(), tech) != c.end();

@@ -98,7 +98,7 @@ std::vector<Square*> Hex::GetAvailableSquares(const Team& team)
 	std::vector<Square*> squares;
 
 	for (Square& s : m_squares)
-		if (!s.IsOccupied() && team.HasTech(s.GetRequiredTech()))
+		if (!s.IsOccupied() && (s.GetRequiredTech() == TechType::None || team.HasTech(s.GetRequiredTech())))
 			squares.push_back(&s);
 	return squares;
 }
