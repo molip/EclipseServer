@@ -63,7 +63,7 @@ Hex::Hex(int id, const MapPos& pos, int nRotation) :
 	for (int i = 0; i < GetDef().GetAncients(); ++i)
 		AddShip(ShipType::Ancient, Colour::None);
 
-	Init();
+	InitSquares();
 }
 
 Hex::Hex(const Hex& rhs) : 

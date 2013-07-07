@@ -31,5 +31,5 @@ Diplomacy.Stage.prototype.CleanUp = function()
 Diplomacy.OnCommand = function(elem)
 {
 	ShowActionElement('choose_diplomacy')
-	data.action = new Research.Stage()
+	data.action = new Diplomacy.Stage()
 }
