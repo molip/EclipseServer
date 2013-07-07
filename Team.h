@@ -64,6 +64,7 @@ public:
 	const InfluenceTrack& GetInfluenceTrack() const { return m_infTrack; }
 
 	const TechTrack& GetTechTrack() const { return m_techTrack; }
+	TechTrack& GetTechTrack() { return m_techTrack; }
 
 	void AddShips(ShipType type, int nShips);
 	void RemoveShips(ShipType type, int nShips) { AddShips(type, -nShips); }

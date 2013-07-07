@@ -420,6 +420,7 @@ CmdInfluenceDst::CmdInfluenceDst(const Xml::Element& node)
 
 CmdResearch::CmdResearch(const Xml::Element& node)
 {
+	m_iTech = node.GetAttributeInt("tech_idx");
 }
 
 CmdMove::CmdMove(const Xml::Element& node)

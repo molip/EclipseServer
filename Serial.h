@@ -89,8 +89,9 @@ struct ObjectSaver
 {
 	template <typename T> void operator ()(Xml::Element& e, const T& pObj) 
 	{
-		e.SetAttribute("_class", typeid(*pObj).name());
-		pObj->Save(SaveNode(e));
+		e.SetAttribute("_class", pObj ? typeid(*pObj).name() : "_null");
+		if (pObj)
+			pObj->Save(SaveNode(e));
 	}		
 };
 

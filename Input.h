@@ -164,6 +164,7 @@ struct CmdInfluenceDst : CmdMessage
 struct CmdResearch : CmdMessage
 {
 	CmdResearch(const Xml::Element& node);
+	int m_iTech;
 };
 
 struct CmdMove : CmdMessage

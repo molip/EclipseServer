@@ -366,8 +366,14 @@ ChooseInfluenceSrc::ChooseInfluenceSrc(const std::vector<MapPos>& positions, boo
 ChooseInfluenceDst::ChooseInfluenceDst(const std::vector<MapPos>& positions, bool bEnableTrack) : 
 	ChooseInfluencePos(positions, bEnableTrack, "influence_dst") {}
 
-ChooseResearch::ChooseResearch() : Choose("research")
+ChooseResearch::ChooseResearch(const std::vector<std::pair<TechType, int>>& techs) : Choose("research")
 {
+	for (auto& it : techs)
+	{
+		auto e = m_root.AddElement("tech");
+		e.SetAttribute("type", EnumTraits<TechType>::ToString(it.first));
+		e.SetAttribute("cost", it.second);
+	}
 }
 
 ChooseBuild::ChooseBuild() : Choose("build")

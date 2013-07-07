@@ -23,6 +23,14 @@ void TechTrack::Add(TechType tech)
 	m_class[(int)Technology::GetClass(tech)].push_back(tech);
 }
 
+void TechTrack::Remove(TechType tech)
+{
+	AssertThrowModel("TechTrack::Remove", Has(tech));
+
+	auto& c = m_class[(int)Technology::GetClass(tech)];
+	c.erase(std::remove(c.begin(), c.end(), tech), c.end());
+}
+
 bool TechTrack::Has(TechType tech) const
 {
 	if (tech == TechType::None)
@@ -45,6 +53,12 @@ int TechTrack::GetNextDiscount(Technology::Class c) const
 int TechTrack::GetDiscount(int tier)
 {
 	return tier < 5 ? tier : 6 + (tier - 5) * 2;
+}
+
+int TechTrack::GetCost(TechType t) const
+{
+	Technology::Class c = Technology::GetClass(t);
+	return std::max(Technology::GetMinCost(t), Technology::GetMaxCost(t) - GetNextDiscount(c));
 }
 
 void TechTrack::Save(Serial::SaveNode& node) const

@@ -60,6 +60,7 @@ public:
 	Map& GetMap() { return m_map; }
 
 	const std::map<TechType, int>& GetTechnologies() const { return m_techs; }
+	std::map<TechType, int>& GetTechnologies() { return m_techs; }
 
 	virtual void FinishTurn();
 
