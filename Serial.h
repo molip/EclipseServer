@@ -301,9 +301,7 @@ struct ObjectLoader
 		delete pObj;
 		pObj = nullptr;
 
-		bool bNull = false;
-		e.GetAttribute("_null", bNull);
-		if (bNull)
+		if (id == "_null")
 			return true;
 
 		if (pObj = Dynamic::CreateObject<T>(id))
