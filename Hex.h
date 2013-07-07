@@ -105,11 +105,10 @@ public:
 private:
 	const HexDef& GetDef() const { return *m_pDef; }
 
-	void Init();
 	void InitSquares();
 
-	void SetSquareOccupied(int i, bool b) { m_occupied[i] = b; }
-	bool IsSquareOccupied(int i) const { return m_occupied[i]; }
+	void SetSquareOccupied(int i, bool b);
+	bool IsSquareOccupied(int i) const;
 
 	const HexDef* m_pDef; 
 	int m_id;
@@ -119,7 +118,7 @@ private:
 	std::vector<Ship> m_ships;
 	DiscoveryType m_discovery;
 	Colour m_colour;
-	std::vector<bool> m_occupied;
+	std::set<int> m_occupied;
 	//structures
 };
 

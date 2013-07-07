@@ -70,20 +70,29 @@ Hex::Hex(const Hex& rhs) :
 	m_id(rhs.m_id), m_pos(rhs.m_pos), m_nRotation(rhs.m_nRotation), m_ships(rhs.m_ships), 
 	m_discovery(rhs.m_discovery), m_colour(rhs.m_colour), m_occupied(rhs.m_occupied), m_pDef(rhs.m_pDef)
 {
-	Init();
-}
-
-void Hex::Init()
-{
-	m_occupied.resize(GetDef().GetSquareCount());
 	InitSquares();
 }
 
 void Hex::InitSquares()
 {
-	ASSERT(m_squares.empty());
+	AssertThrow(m_squares.empty());
 	for (int i = 0; i < GetDef().GetSquareCount(); ++i)
 		m_squares.push_back(Square(*this, i));
+}
+
+void Hex::SetSquareOccupied(int i, bool b) 
+{
+	AssertThrow("Hex::SetSquareOccupied", InRange(m_squares, i));
+	if (b)
+		m_occupied.insert(i);
+	else
+		m_occupied.erase(i);
+}
+
+bool Hex::IsSquareOccupied(int i) const 
+{
+	AssertThrow("Hex::IsSquareOccupied", InRange(m_squares, i));
+	return m_occupied.find(i) != m_occupied.end(); 
 }
 
 bool Hex::HasWormhole(Edge e) const
