@@ -167,6 +167,12 @@ struct CmdResearch : CmdMessage
 	int m_iTech;
 };
 
+struct CmdResearchArtifact : CmdMessage
+{
+	CmdResearchArtifact(const Xml::Element& node);
+	Storage m_artifacts;
+};
+
 struct CmdMove : CmdMessage
 {
 	CmdMove(const Xml::Element& node);

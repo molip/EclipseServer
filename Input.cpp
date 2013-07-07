@@ -77,6 +77,8 @@ MessagePtr CreateCommand(const Xml::Element& root)
 		return MessagePtr(new CmdColoniseSquares(root));
 	if (type == "cmd_research")
 		return MessagePtr(new CmdResearch(root));
+	if (type == "cmd_research_artifact")
+		return MessagePtr(new CmdResearchArtifact(root));
 	if (type == "cmd_move")
 		return MessagePtr(new CmdMove(root));
 	if (type == "cmd_build")
@@ -421,6 +423,12 @@ CmdInfluenceDst::CmdInfluenceDst(const Xml::Element& node)
 CmdResearch::CmdResearch(const Xml::Element& node)
 {
 	m_iTech = node.GetAttributeInt("tech_idx");
+}
+
+CmdResearchArtifact::CmdResearchArtifact(const Xml::Element& node)
+{
+	for (auto r : EnumRange<Resource>())
+		m_artifacts[r] = node.GetAttributeInt(EnumTraits<Resource>::ToString(r));
 }
 
 CmdMove::CmdMove(const Xml::Element& node)

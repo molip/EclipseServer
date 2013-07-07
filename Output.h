@@ -89,6 +89,8 @@ struct ChooseInfluenceSrc : ChooseInfluencePos { ChooseInfluenceSrc(const std::v
 struct ChooseInfluenceDst : ChooseInfluencePos { ChooseInfluenceDst(const std::vector<MapPos>& positions, bool bEnableTrack); };
 
 struct ChooseResearch : Choose { ChooseResearch(const std::vector<std::pair<TechType, int>>& techs); };
+struct ChooseResearchArtifact : Choose { ChooseResearchArtifact(int nArtifacts); };
+
 struct ChooseBuild : Choose { ChooseBuild(); };
 struct ChooseDiplomacy : Choose { ChooseDiplomacy(); };
 struct ChooseMove : Choose { ChooseMove(); };

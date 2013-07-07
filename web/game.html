@@ -149,6 +149,21 @@
 			<select id="select_tech"></select>
 			<button id="choose_research_btn" type="button" onclick="data.action.Send()">Next</button>
 		</div>
+		<div id="choose_research_artifact" style="display:none">
+			Choose artifact distribution (<span id="choose_research_artifactkey_count"></span> remaining):<br>
+			<input id="choose_research_artifact_text0" type="text" value="0" size="1" disabled> 
+			<button id="choose_research_artifact_minus0" type="button" onclick="data.action.OnButton(this, 0, -1)">-</button>
+			<button id="choose_research_artifact_plus0" type="button" onclick="data.action.OnButton(this, 0, 1)">+</button>
+
+			<input id="choose_research_artifact_text1" type="text" value="0" size="1" disabled> 
+			<button id="choose_research_artifact_minus1" type="button" onclick="data.action.OnButton(this, 1, -1)">-</button>
+			<button id="choose_research_artifact_plus1" type="button" onclick="data.action.OnButton(this, 1, 1)">+</button>
+
+			<input id="choose_research_artifact_text2" type="text" value="0" size="1" disabled> 
+			<button id="choose_research_artifact_minus2" type="button" onclick="data.action.OnButton(this, 2, -1)">-</button>
+			<button id="choose_research_artifact_plus2" type="button" onclick="data.action.OnButton(this, 2, 1)">+</button>
+			<button id="choose_research_artifact_next" type="button" onclick="data.action.Send()">Next</button>
+		</div>
 		<div id="choose_build" style="display:none">
 			Build
 		</div>

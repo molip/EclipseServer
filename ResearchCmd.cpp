@@ -80,7 +80,7 @@ REGISTER_DYNAMIC(ResearchRecord)
 
 //-----------------------------------------------------------------------------
 
-ResearchCmd::ResearchCmd(Colour colour, LiveGame& game) : Cmd(colour)
+ResearchCmd::ResearchCmd(Colour colour, LiveGame& game, int iPhase) : PhaseCmd(colour, iPhase)
 {
 }
 
@@ -115,7 +115,10 @@ CmdPtr ResearchCmd::Process(const Input::CmdMessage& msg, const Controller& cont
 	game.PushRecord(RecordPtr(pRec));
 
 	if (m_techs[m.m_iTech].first == TechType::ArtifactKey)
-		AssertThrow("ResearchCmd::Process: ArtifactKey NYI", false); // TODO:
+		return CmdPtr(new ResearchArtifactCmd(m_colour, game, m_iPhase));
+
+	if (m_iPhase + 1 < Race(GetTeam(game).GetRace()).GetResearchRate())
+		return CmdPtr(new ResearchCmd(m_colour, game, m_iPhase + 1));
 
 	return nullptr;
 }
@@ -137,3 +140,89 @@ void ResearchCmd::Load(const Serial::LoadNode& node)
 }
 
 REGISTER_DYNAMIC(ResearchCmd)
+
+//-----------------------------------------------------------------------------
+
+class ResearchArtifactRecord : public Record
+{
+public:
+	ResearchArtifactRecord() : m_colour(Colour::None) {}
+	ResearchArtifactRecord(Colour colour, const Storage& artifacts) : m_colour(colour), m_artifacts(artifacts) {}
+
+	virtual void Save(Serial::SaveNode& node) const override 
+	{
+		node.SaveEnum("colour", m_colour);
+		node.SaveClass("artifacts", m_artifacts);
+	}
+	
+	virtual void Load(const Serial::LoadNode& node) override 
+	{
+		node.LoadEnum("colour", m_colour);
+		node.LoadClass("artifacts", m_artifacts);
+	}
+
+private:
+	virtual void Apply(bool bDo, Game& game, const Controller& controller) override
+	{
+		Team& team = game.GetTeam(m_colour);
+
+		for (auto r : EnumRange<Resource>())
+			team.GetStorage()[r] += m_artifacts[r] * (bDo ? 5 : -5);
+
+		controller.SendMessage(Output::UpdateStorageTrack(team), game);
+	}
+
+	Colour m_colour;
+	Storage m_artifacts;
+};
+
+REGISTER_DYNAMIC(ResearchArtifactRecord)
+
+//-----------------------------------------------------------------------------
+
+ResearchArtifactCmd::ResearchArtifactCmd(Colour colour, LiveGame& game, int iPhase) : PhaseCmd(colour, iPhase), m_nArtifacts(0)
+{
+}
+
+void ResearchArtifactCmd::UpdateClient(const Controller& controller, const LiveGame& game) const
+{
+	m_nArtifacts = 0;
+
+	for (auto& h : game.GetMap().GetHexes())
+		if (h.second->IsOwnedBy(GetTeam(game)))
+			m_nArtifacts += h.second->HasArtifact();
+
+	controller.SendMessage(Output::ChooseResearchArtifact(m_nArtifacts), GetPlayer(game));
+}
+
+CmdPtr ResearchArtifactCmd::Process(const Input::CmdMessage& msg, const Controller& controller, LiveGame& game)
+{
+	auto& m = CastThrow<const Input::CmdResearchArtifact>(msg);
+
+	ResearchArtifactRecord* pRec = new ResearchArtifactRecord(m_colour, m.m_artifacts);
+	pRec->Do(game, controller);
+	game.PushRecord(RecordPtr(pRec));
+
+	if (m_iPhase + 1 < Race(GetTeam(game).GetRace()).GetResearchRate())
+		return CmdPtr(new ResearchCmd(m_colour, game, m_iPhase + 1));
+
+	return nullptr;
+}
+
+void ResearchArtifactCmd::Undo(const Controller& controller, LiveGame& game)
+{
+	RecordPtr pRec = game.PopRecord();
+	pRec->Undo(game, controller);
+}
+
+void ResearchArtifactCmd::Save(Serial::SaveNode& node) const 
+{
+	__super::Save(node);
+}
+
+void ResearchArtifactCmd::Load(const Serial::LoadNode& node) 
+{
+	__super::Load(node);
+}
+
+REGISTER_DYNAMIC(ResearchArtifactCmd)

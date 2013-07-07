@@ -376,6 +376,11 @@ ChooseResearch::ChooseResearch(const std::vector<std::pair<TechType, int>>& tech
 	}
 }
 
+ChooseResearchArtifact::ChooseResearchArtifact(int nArtifacts) : Choose("research_artifact")
+{
+	m_root.SetAttribute("count", nArtifacts);
+}
+
 ChooseBuild::ChooseBuild() : Choose("build")
 {
 }
