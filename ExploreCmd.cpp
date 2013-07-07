@@ -11,7 +11,7 @@
 #include "Record.h"
 #include "EdgeSet.h"
 
-ExploreCmd::ExploreCmd(Colour colour, LiveGame& game, int iPhase) : Cmd(colour), m_idHex(-1), m_iPos(-1), m_iPhase(iPhase)
+ExploreCmd::ExploreCmd(Colour colour, LiveGame& game, int iPhase) : PhaseCmd(colour, iPhase), m_idHex(-1), m_iPos(-1)
 {
 	auto& team = GetTeam(game);
 	std::set<MapPos> positions;
@@ -52,7 +52,6 @@ void ExploreCmd::Save(Serial::SaveNode& node) const
 	node.SaveCntr("positions", m_positions, Serial::TypeSaver());
 	node.SaveType("hex_index", m_idHex);
 	node.SaveType("pos_index", m_iPos);
-	node.SaveType("phase", m_iPhase);
 }
 
 void ExploreCmd::Load(const Serial::LoadNode& node) 
@@ -61,7 +60,6 @@ void ExploreCmd::Load(const Serial::LoadNode& node)
 	node.LoadCntr("positions", m_positions, Serial::TypeLoader());
 	node.LoadType("hex_index", m_idHex);
 	node.LoadType("pos_index", m_iPos);
-	node.LoadType("phase", m_iPhase);
 }
 
 REGISTER_DYNAMIC(ExploreCmd)
@@ -159,7 +157,7 @@ REGISTER_DYNAMIC(DiscoverAndExploreCmd)
 //-----------------------------------------------------------------------------
 
 ExploreHexCmd::ExploreHexCmd(Colour colour, LiveGame& game, const MapPos& pos, std::vector<int> hexIDs, int iPhase) : 
-	Cmd(colour), m_pos(pos), m_iPhase(iPhase), m_hexIDs(hexIDs), m_iRot(-1), m_iHex(-1), m_bInfluence(false), 
+	PhaseCmd(colour, iPhase), m_pos(pos), m_hexIDs(hexIDs), m_iRot(-1), m_iHex(-1), m_bInfluence(false), 
 	m_idTaken(-1), m_discovery(DiscoveryType::None)
 {
 	auto& team = GetTeam(game);
@@ -280,7 +278,6 @@ void ExploreHexCmd::Save(Serial::SaveNode& node) const
 	node.SaveType("hex_index", m_iHex);
 	node.SaveType("influence", m_bInfluence);
 	node.SaveType("pos", m_pos);
-	node.SaveType("phase", m_iPhase);
 	node.SaveType("taken_id", m_idTaken);
 	node.SaveEnum("discovery", m_discovery);
 }
@@ -294,7 +291,6 @@ void ExploreHexCmd::Load(const Serial::LoadNode& node)
 	node.LoadType("hex_index", m_iHex);
 	node.LoadType("influence", m_bInfluence);
 	node.LoadType("pos", m_pos);
-	node.LoadType("phase", m_iPhase);
 	node.LoadType("taken_id", m_idTaken);
 	node.LoadEnum("discovery", m_discovery);
 }

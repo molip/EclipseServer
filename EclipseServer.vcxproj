@@ -109,6 +109,7 @@
     <ClInclude Include="OS.h" />
     <ClInclude Include="Output.h" />
     <ClInclude Include="HTMLServer.h" />
+    <ClInclude Include="PhaseCmd.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Players.h" />
     <ClInclude Include="PopulationTrack.h" />
@@ -170,6 +171,7 @@
     <ClCompile Include="OS.cpp" />
     <ClCompile Include="Output.cpp" />
     <ClCompile Include="HTMLServer.cpp" />
+    <ClCompile Include="PhaseCmd.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Players.cpp" />
     <ClCompile Include="PopulationTrack.cpp" />

@@ -192,6 +192,9 @@
     <ClInclude Include="TradeCmd.h">
       <Filter>Model\Commands</Filter>
     </ClInclude>
+    <ClInclude Include="PhaseCmd.h">
+      <Filter>Model\Commands</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -363,6 +366,9 @@
       <Filter>Model\Commands</Filter>
     </ClCompile>
     <ClCompile Include="TradeCmd.cpp">
+      <Filter>Model\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="PhaseCmd.cpp">
       <Filter>Model\Commands</Filter>
     </ClCompile>
   </ItemGroup>

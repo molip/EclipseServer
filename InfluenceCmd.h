@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Cmd.h"
+#include "PhaseCmd.h"
 #include "MapPos.h"
 #include "Discovery.h"
 
@@ -9,10 +9,10 @@
 
 class Hex;
 
-class InfluenceCmd : public Cmd
+class InfluenceCmd : public PhaseCmd
 {
 public:
-	InfluenceCmd() : m_iPhase(-1) {}
+	InfluenceCmd() {}
 	InfluenceCmd(Colour colour, LiveGame& game, int iPhase = 0);
 
 	virtual void UpdateClient(const Controller& controller, const LiveGame& game) const override;
@@ -24,13 +24,12 @@ public:
 
 private:
 	std::vector<MapPos> m_srcs;
-	int m_iPhase;
 };
 
-class InfluenceDstCmd : public Cmd
+class InfluenceDstCmd : public PhaseCmd
 {
 public:
-	InfluenceDstCmd() : m_iPhase(-1), m_discovery(DiscoveryType::None) {}
+	InfluenceDstCmd() : m_discovery(DiscoveryType::None) {}
 	InfluenceDstCmd(Colour colour, LiveGame& game, const MapPos* pSrcPos, int iPhase = 0);
 
 	virtual void UpdateClient(const Controller& controller, const LiveGame& game) const override;
@@ -46,6 +45,4 @@ private:
 	std::unique_ptr<MapPos> m_pSrcPos;
 	std::vector<MapPos> m_dsts;
 	DiscoveryType m_discovery;
-
-	int m_iPhase;
 };

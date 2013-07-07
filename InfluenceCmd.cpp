@@ -10,7 +10,7 @@
 #include "DiscoverCmd.h"
 #include "Record.h"
 
-InfluenceCmd::InfluenceCmd(Colour colour, LiveGame& game, int iPhase) : Cmd(colour), m_iPhase(iPhase)
+InfluenceCmd::InfluenceCmd(Colour colour, LiveGame& game, int iPhase) : PhaseCmd(colour, iPhase)
 {
 	const Map& map = game.GetMap();
 	const Map::HexMap& hexes = map.GetHexes();
@@ -41,14 +41,12 @@ void InfluenceCmd::Save(Serial::SaveNode& node) const
 {
 	__super::Save(node);
 	node.SaveCntr("srcs", m_srcs, Serial::TypeSaver());
-	node.SaveType("phase", m_iPhase);
 }
 
 void InfluenceCmd::Load(const Serial::LoadNode& node) 
 {
 	__super::Load(node);
 	node.LoadCntr("srcs", m_srcs, Serial::TypeLoader());
-	node.LoadType("phase", m_iPhase);
 }
 
 REGISTER_DYNAMIC(InfluenceCmd)
@@ -159,7 +157,7 @@ REGISTER_DYNAMIC(DiscoverAndInfluenceCmd)
 
 //-----------------------------------------------------------------------------
 
-InfluenceDstCmd::InfluenceDstCmd(Colour colour, LiveGame& game, const MapPos* pSrcPos, int iPhase) : Cmd(colour), m_iPhase(iPhase),
+InfluenceDstCmd::InfluenceDstCmd(Colour colour, LiveGame& game, const MapPos* pSrcPos, int iPhase) : PhaseCmd(colour, iPhase),
 	m_discovery(DiscoveryType::None)
 {
 	auto& team = GetTeam(game);
