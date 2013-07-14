@@ -117,7 +117,7 @@
 			<button type="button" onclick="data.action.Rotate(1)">-></button>
 			<button id="choose_explore_hex_switch_btn" type="button" onclick="data.action.Switch()">Switch Hex</button>
 			<button id="choose_explore_hex_take_btn" type="button" onclick="data.action.SendTake()">Take another</button>
-			<input type = "checkbox" id="choose_explore_hex_influence_check">Influence
+			<input type = "checkbox" id="choose_explore_hex_influence_check">Influence</input>
 			<button type="button" onclick="data.action.SendHex()">Next</button>
 			<button type="button" onclick="Explore.SendReject()">Reject</button>
 		</div>
@@ -184,6 +184,11 @@
 		<a href="Back to game" onclick="SendExitReview();return false;">Back to game</a>
 		<button id="retreat_review" type="button" onclick="SendRetreatReview()"><<</button>
 		<button id="advance_review" type="button" onclick="SendAdvanceReview()">>></button>
+	</div>
+	<br>
+	<div id="hex_info" class="panel" style="display:none">
+		<b>Hex information</b>
+		<div id="hex_info_content"></div>
 	</div>
 </div>
 <br>

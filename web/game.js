@@ -18,6 +18,12 @@ for (var col in Colour)
 	data.disc_imgs[col].src = "/images/discs/" + col + ".png"
 }
 
+data.ancient_img = new Image() 
+data.ancient_img.src = "/images/ships/ancient ship.png"
+
+data.gcds_img = new Image() 
+data.gcds_img.src = "/images/ships/gcds_ship.png"
+
 function ExitAction()
 {
 	if (data.action && data.action.CleanUp)
@@ -29,7 +35,7 @@ function LoadImage(path, onload)
 {
 	var img = new Image()
 	img.src = path
-	if (!img.completed)
+	if (!img.complete)
 		img.onload = onload
 	return img
 }

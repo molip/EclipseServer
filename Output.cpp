@@ -192,12 +192,16 @@ UpdateMap::UpdateMap(const Game& game) : Update("map")
 				}
 		}
 
+		auto eShips = e.AddElement("ships");
+		for (auto& ship : hex.GetShips())
+		{
+			auto eShip = eShips.AddElement("ship");
+			eShip.SetAttribute("colour", EnumTraits<Colour>::ToString(ship.GetColour()));
+			eShip.SetAttribute("type", EnumTraits<ShipType>::ToString(ship.GetType()));
+		}
 
-		//const std::vector<Square> GetSquares() const { return m_squares; }
-		//std::vector<Ship> GetShips() const { return m_ships; }
 		//DiscoveryType GetDiscoveryTile() const { return m_discovery; }
 		//int GetVictoryPoints() const { return m_nVictory; }
-		//bool HasArtifact() const { return m_bArtifact; }
 	}
 }
 

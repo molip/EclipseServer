@@ -64,7 +64,7 @@ Explore.ChooseHexStage.prototype.AddHex = function(id, rotations, can_influence)
 Explore.ChooseHexStage.prototype.UpdateHex = function()
 {
 	var choice = this.choices[this.choice_idx]
-	this.hex = new Map.Hex(choice.id, this.selected, choice.rotations[choice.rot_idx], null, null, Map.DrawActionLayer)
+	this.hex = new Map.Hex(choice.id, this.selected, choice.rotations[choice.rot_idx], null, null, null, Map.DrawActionLayer)
 	Map.DrawActionLayer()
 }
 
