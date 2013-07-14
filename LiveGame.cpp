@@ -85,7 +85,9 @@ void LiveGame::StartMainPhase()
 
 	m_phase = Phase::Main;
 
-	m_map.AddHex(MapPos(0, 0), 001, 0);
+	Hex& centre = m_map.AddHex(MapPos(0, 0), 001, 0);
+	centre.AddShip(ShipType::GCDS, Colour::None);
+
 
 	// Initialise starting hexes.
 	auto startPositions = m_map.GetTeamStartPositions();
