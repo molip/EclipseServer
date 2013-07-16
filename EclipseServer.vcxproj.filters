@@ -1,21 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
     <Filter Include="Model">
       <UniqueIdentifier>{59d16326-07e6-4af2-a4cf-d48abe6b018f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Model\Commands">
+    <Filter Include="Commands">
       <UniqueIdentifier>{9f1259fb-1431-47dd-a352-5268bbd87bf9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Input/output">
-      <UniqueIdentifier>{62f2865a-a474-4663-be92-e43ac887d91a}</UniqueIdentifier>
     </Filter>
     <Filter Include="External">
       <UniqueIdentifier>{2b0197bf-ac21-4c73-b63b-b50d4125c5f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Input/output">
+      <UniqueIdentifier>{62f2865a-a474-4663-be92-e43ac887d91a}</UniqueIdentifier>
     </Filter>
     <Filter Include="General">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
@@ -100,22 +96,22 @@
       <Filter>General</Filter>
     </ClInclude>
     <ClInclude Include="Cmd.h">
-      <Filter>Model\Commands</Filter>
+      <Filter>Commands</Filter>
     </ClInclude>
     <ClInclude Include="ExploreCmd.h">
-      <Filter>Model\Commands</Filter>
+      <Filter>Commands</Filter>
     </ClInclude>
     <ClInclude Include="MapPos.h">
       <Filter>Model</Filter>
     </ClInclude>
     <ClInclude Include="InfluenceCmd.h">
-      <Filter>Model\Commands</Filter>
+      <Filter>Commands</Filter>
     </ClInclude>
     <ClInclude Include="DiscoverCmd.h">
-      <Filter>Model\Commands</Filter>
+      <Filter>Commands</Filter>
     </ClInclude>
     <ClInclude Include="ColoniseCmd.h">
-      <Filter>Model\Commands</Filter>
+      <Filter>Commands</Filter>
     </ClInclude>
     <ClInclude Include="CmdStack.h">
       <Filter>Model</Filter>
@@ -157,25 +153,25 @@
       <Filter>General</Filter>
     </ClInclude>
     <ClInclude Include="ResearchCmd.h">
-      <Filter>Model\Commands</Filter>
+      <Filter>Commands</Filter>
     </ClInclude>
     <ClInclude Include="BuildCmd.h">
-      <Filter>Model\Commands</Filter>
+      <Filter>Commands</Filter>
     </ClInclude>
     <ClInclude Include="MoveCmd.h">
-      <Filter>Model\Commands</Filter>
+      <Filter>Commands</Filter>
     </ClInclude>
     <ClInclude Include="UpgradeCmd.h">
-      <Filter>Model\Commands</Filter>
+      <Filter>Commands</Filter>
     </ClInclude>
     <ClInclude Include="DiplomacyCmd.h">
-      <Filter>Model\Commands</Filter>
+      <Filter>Commands</Filter>
     </ClInclude>
     <ClInclude Include="TradeCmd.h">
-      <Filter>Model\Commands</Filter>
+      <Filter>Commands</Filter>
     </ClInclude>
     <ClInclude Include="PhaseCmd.h">
-      <Filter>Model\Commands</Filter>
+      <Filter>Commands</Filter>
     </ClInclude>
     <ClInclude Include="Controller.h">
       <Filter>Input/output</Filter>
@@ -267,10 +263,10 @@
       <Filter>General</Filter>
     </ClCompile>
     <ClCompile Include="Cmd.cpp">
-      <Filter>Model\Commands</Filter>
+      <Filter>Commands</Filter>
     </ClCompile>
     <ClCompile Include="ExploreCmd.cpp">
-      <Filter>Model\Commands</Filter>
+      <Filter>Commands</Filter>
     </ClCompile>
     <ClCompile Include="MapPos.cpp">
       <Filter>Model</Filter>
@@ -279,13 +275,13 @@
       <Filter>Model</Filter>
     </ClCompile>
     <ClCompile Include="InfluenceCmd.cpp">
-      <Filter>Model\Commands</Filter>
+      <Filter>Commands</Filter>
     </ClCompile>
     <ClCompile Include="DiscoverCmd.cpp">
-      <Filter>Model\Commands</Filter>
+      <Filter>Commands</Filter>
     </ClCompile>
     <ClCompile Include="ColoniseCmd.cpp">
-      <Filter>Model\Commands</Filter>
+      <Filter>Commands</Filter>
     </ClCompile>
     <ClCompile Include="CmdStack.cpp">
       <Filter>Model</Filter>
@@ -327,25 +323,25 @@
       <Filter>General</Filter>
     </ClCompile>
     <ClCompile Include="ResearchCmd.cpp">
-      <Filter>Model\Commands</Filter>
+      <Filter>Commands</Filter>
     </ClCompile>
     <ClCompile Include="BuildCmd.cpp">
-      <Filter>Model\Commands</Filter>
+      <Filter>Commands</Filter>
     </ClCompile>
     <ClCompile Include="MoveCmd.cpp">
-      <Filter>Model\Commands</Filter>
+      <Filter>Commands</Filter>
     </ClCompile>
     <ClCompile Include="UpgradeCmd.cpp">
-      <Filter>Model\Commands</Filter>
+      <Filter>Commands</Filter>
     </ClCompile>
     <ClCompile Include="DiplomacyCmd.cpp">
-      <Filter>Model\Commands</Filter>
+      <Filter>Commands</Filter>
     </ClCompile>
     <ClCompile Include="TradeCmd.cpp">
-      <Filter>Model\Commands</Filter>
+      <Filter>Commands</Filter>
     </ClCompile>
     <ClCompile Include="PhaseCmd.cpp">
-      <Filter>Model\Commands</Filter>
+      <Filter>Commands</Filter>
     </ClCompile>
     <ClCompile Include="Controller.cpp">
       <Filter>Input/output</Filter>
