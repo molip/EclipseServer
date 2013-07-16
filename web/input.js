@@ -342,7 +342,21 @@ function OnCommandUpdateMap(elem)
 				squares.push(new Point(x2, y2))
 			}
 		}
-		Map.AddHex(id, new Point(x, y), rotation, team, squares)
+
+		var ships = []
+		var ships_elem = GetFirstChildElement(hexes[i], 'ships')
+		if (ships_elem)
+		{
+			var ship_elems = GetChildElements(ships_elem, 'ship')
+			for (var j = 0; j < ship_elems.length; ++j)
+			{
+				var colour = ship_elems[j].getAttribute('colour')
+				var type = ship_elems[j].getAttribute('type')
+				ships.push({ colour:colour, type:type })
+			}
+		}
+
+		Map.AddHex(id, new Point(x, y), rotation, team, squares, ships)
 	}
 	Map.Draw()
 }

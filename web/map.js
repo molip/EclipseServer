@@ -20,7 +20,7 @@ Map.img_explore.src = "/images/explore.png"
 
 Map._hexes = []
 
-Map.Hex = function(id, pos, rotation, team, squares, onload) 
+Map.Hex = function(id, pos, rotation, team, squares, ships, onload) 
 {
 	var self = this
 	
@@ -29,7 +29,63 @@ Map.Hex = function(id, pos, rotation, team, squares, onload)
 	this.rotation = rotation
 	this.team = team
 	this.squares = squares ? squares : []
-	this.img = LoadImage("/images/hexes/" + id + ".png", function() { onload(self) })
+	this.ships = ships ? ships : []
+	this.onLoad = function() { onload(self) }
+
+	this.img = LoadImage("/images/hexes/" + id + ".png", this.onLoad)
+}
+
+Map.Hex.prototype.GetDescription = function()
+{
+	var teams = {}
+	var ancients = 0
+	var gcds = 0
+	for (var i = 0; i < this.ships.length; ++i)
+	{
+		var ship = this.ships[i]
+		if (ship.type == "Ancient")
+			++ancients
+		else if (ship.type == "GCDS")
+			++gcds
+		else if (ship.colour != "None")
+		{
+			if (!teams[ship.colour])
+				teams[ship.colour] = {}
+			if (!teams[ship.colour][ship.type])
+				teams[ship.colour][ship.type] = 0;
+			++teams[ship.colour][ship.type]
+		}
+	}
+	
+	var types = [ 'Interceptor', 'Cruiser', 'Dreadnought', 'Starbase' ]
+
+	var desc = ''
+	
+	if (ancients)
+		desc = 'Ancients x ' + ancients + '<br>'
+
+	if (gcds)
+		desc = 'GCDS x ' + gcds + '<br>'
+		
+	for (t in teams)
+	{
+		desc += t + ': '
+
+		var line = ''
+		for (var i = 0; i < types.length; ++i)
+		{
+			var n = teams[t][types[i]]
+			if (n)
+			{
+				if (line.length)
+					line += ', '
+				line += types[i] + ' x ' + n
+			}
+		}
+		desc += line + '<br>' 
+	}
+	
+	return desc
 }
 
 Map.Init = function()
@@ -121,6 +177,14 @@ Map.HitTestHex = function(pt) // logical pixels
 	return new Point(hitX, hitY)
 }
 
+Map.GetHex = function(coords)
+{
+	for (var i = 0; i < Map._hexes.length; ++i)
+		if (CompareObjects(Map._hexes[i].pos, coords))
+			return Map._hexes[i]
+	return null;
+}
+
 Map.RelMouseCoords = function(event, el)
 {
     var totalOffsetX = 0;
@@ -138,23 +202,25 @@ Map.RelMouseCoords = function(event, el)
 
 Map.OnMouseMove = function(evt)
 { 
-	if (!Map.selecting)
-		return
+	//if (!Map.selecting)
+	//	return
 		
 	var pt = Map.RelMouseCoords(evt, Map.canvas)
 	
 	pt.x = (pt.x - 300) / Map.scale + Map.pan_x
 	pt.y = (pt.y - 300) / Map.scale + Map.pan_y
 
-	//alert(pt.y)
+	coords = Map.HitTestHex(pt)
 	
-	hex = Map.HitTestHex(pt)
-	
-	if (CompareObjects(Map.hot, hex))
+	if (CompareObjects(Map.hot, coords))
 		return
 	
-	Map.hot = hex ? hex.Clone() : null
+	Map.hot = coords ? coords.Clone() : null
 	Map.DrawHotLayer()
+	
+	var hex = Map.GetHex(coords)
+	ShowElement(document.getElementById('hex_info'), hex != null)
+	document.getElementById('hex_info_content').innerHTML = hex ? hex.GetDescription() : ''
 }
 
 Map.OnMouseOut = function()
@@ -175,7 +241,7 @@ Map.OnMouseDown = function()
 			Map.DrawSelectLayer()
 }
 
-Map.DrawCentred = function(ctx, img, pos, rotation, offset)
+Map.DrawCentred = function(ctx, img, pos, rotation, offset, scale)
 {	
 	var pt = Map.GetHexCentre(pos)
 
@@ -188,6 +254,10 @@ Map.DrawCentred = function(ctx, img, pos, rotation, offset)
 	ctx.translate(pt.x, pt.y)
 	if (rotation != null)
 		ctx.rotate(rotation * Math.PI / 3)
+
+	if (scale != null)
+		ctx.scale(scale, scale)
+	
 	ctx.drawImage(img, -img.width / 2, -img.height / 2);
 	ctx.restore()
 }
@@ -195,13 +265,23 @@ Map.DrawCentred = function(ctx, img, pos, rotation, offset)
 Map.DrawHex = function(ctx, hex)
 {
 	var size_x = Map.hex_width, size_y = Map.hex_height
+
+	var ancients = false, gcds = false, players = false
+	
+	for (var i = 0; i < hex.ships.length; ++i)
+	{
+		var ship = hex.ships[i]
+		ancients |= ship.type == 'Ancient'
+		gcds |= ship.type == 'GCDS'
+		players |= ship.colour != 'None'
+	}
 	
 	Map.DrawCentred(ctx, hex.img, hex.pos, hex.rotation);
 	
 	if (hex.team != null)
-	{
 		Map.DrawCentred(ctx, data.disc_imgs[hex.team], hex.pos, 0, new Point(7, -7))
-	}
+	else if (ancients || gcds)
+		Map.DrawCentred(ctx, gcds ? data.gcds_img : data.ancient_img, hex.pos, hex.rotation)
 	
 	var size = 26
 	var pt = Map.GetHexCentre(hex.pos)
@@ -219,6 +299,15 @@ Map.DrawHex = function(ctx, hex)
 		ctx.closePath()
 		Map.DrawTeamPath(ctx, hex.team)
 	}
+	
+	if (players)
+	{
+		var shipImg = LoadImage("/images/ships/ship_dreadnaught.png", this.onLoad)
+		ctx.translate(100, 200)
+		ctx.scale(3, 3)
+		ctx.drawImage(shipImg, -shipImg.width / 2, -shipImg.height / 2);
+	}
+
 	ctx.restore()
 }
 
@@ -237,9 +326,9 @@ Map.Clear = function()
 	Map._hexes = []
 }
 
-Map.AddHex = function(id, pos, rotation, team, squares)
+Map.AddHex = function(id, pos, rotation, team, squares, ships)
 {
-	Map._hexes.push(new Map.Hex(id, pos.Clone(), rotation, team, squares, Map.DrawHexLayerSingle))
+	Map._hexes.push(new Map.Hex(id, pos.Clone(), rotation, team, squares, ships, Map.DrawHexLayerSingle))
 }
 
 Map.Draw = function()
