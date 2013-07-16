@@ -1,11 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>
-      </Extensions>
-    </Filter>
     <Filter Include="Resource Files">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
@@ -16,19 +11,24 @@
     <Filter Include="Model\Commands">
       <UniqueIdentifier>{9f1259fb-1431-47dd-a352-5268bbd87bf9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Input/output">
+      <UniqueIdentifier>{62f2865a-a474-4663-be92-e43ac887d91a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External">
+      <UniqueIdentifier>{2b0197bf-ac21-4c73-b63b-b50d4125c5f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="General">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>
+      </Extensions>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="mongoose.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MongooseServer.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="stdafx.h">
-      <Filter>Source Files</Filter>
+      <Filter>General</Filter>
     </ClInclude>
     <ClInclude Include="targetver.h">
-      <Filter>Source Files</Filter>
+      <Filter>General</Filter>
     </ClInclude>
     <ClInclude Include="Game.h">
       <Filter>Model</Filter>
@@ -52,31 +52,13 @@
       <Filter>Model</Filter>
     </ClInclude>
     <ClInclude Include="App.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="HTMLServer.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="WSServer.h">
-      <Filter>Source Files</Filter>
+      <Filter>General</Filter>
     </ClInclude>
     <ClInclude Include="Util.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Controller.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="tinyxml.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Input.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Output.h">
-      <Filter>Source Files</Filter>
+      <Filter>General</Filter>
     </ClInclude>
     <ClInclude Include="Singleton.h">
-      <Filter>Source Files</Filter>
+      <Filter>General</Filter>
     </ClInclude>
     <ClInclude Include="Race.h">
       <Filter>Model</Filter>
@@ -112,10 +94,10 @@
       <Filter>Model</Filter>
     </ClInclude>
     <ClInclude Include="Players.h">
-      <Filter>Source Files</Filter>
+      <Filter>General</Filter>
     </ClInclude>
     <ClInclude Include="Player.h">
-      <Filter>Source Files</Filter>
+      <Filter>General</Filter>
     </ClInclude>
     <ClInclude Include="Cmd.h">
       <Filter>Model\Commands</Filter>
@@ -139,10 +121,10 @@
       <Filter>Model</Filter>
     </ClInclude>
     <ClInclude Include="EnumTraits.h">
-      <Filter>Source Files</Filter>
+      <Filter>General</Filter>
     </ClInclude>
     <ClInclude Include="Xml.h">
-      <Filter>Source Files</Filter>
+      <Filter>General</Filter>
     </ClInclude>
     <ClInclude Include="Games.h">
       <Filter>Model</Filter>
@@ -166,13 +148,13 @@
       <Filter>Model</Filter>
     </ClInclude>
     <ClInclude Include="Dynamic.h">
-      <Filter>Source Files</Filter>
+      <Filter>General</Filter>
     </ClInclude>
     <ClInclude Include="Serial.h">
-      <Filter>Source Files</Filter>
+      <Filter>General</Filter>
     </ClInclude>
     <ClInclude Include="OS.h">
-      <Filter>Source Files</Filter>
+      <Filter>General</Filter>
     </ClInclude>
     <ClInclude Include="ResearchCmd.h">
       <Filter>Model\Commands</Filter>
@@ -195,19 +177,37 @@
     <ClInclude Include="PhaseCmd.h">
       <Filter>Model\Commands</Filter>
     </ClInclude>
+    <ClInclude Include="Controller.h">
+      <Filter>Input/output</Filter>
+    </ClInclude>
+    <ClInclude Include="HTMLServer.h">
+      <Filter>Input/output</Filter>
+    </ClInclude>
+    <ClInclude Include="Input.h">
+      <Filter>Input/output</Filter>
+    </ClInclude>
+    <ClInclude Include="MongooseServer.h">
+      <Filter>Input/output</Filter>
+    </ClInclude>
+    <ClInclude Include="Output.h">
+      <Filter>Input/output</Filter>
+    </ClInclude>
+    <ClInclude Include="WSServer.h">
+      <Filter>Input/output</Filter>
+    </ClInclude>
+    <ClInclude Include="mongoose.h">
+      <Filter>External</Filter>
+    </ClInclude>
+    <ClInclude Include="tinyxml.h">
+      <Filter>External</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="mongoose.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MongooseServer.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>General</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>General</Filter>
     </ClCompile>
     <ClCompile Include="Game.cpp">
       <Filter>Model</Filter>
@@ -230,35 +230,11 @@
     <ClCompile Include="InfluenceTrack.cpp">
       <Filter>Model</Filter>
     </ClCompile>
-    <ClCompile Include="HTMLServer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="WSServer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Util.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Controller.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="tinyxml.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Desktop\tinyxml\tinyxmlerror.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Desktop\tinyxml\tinyxmlparser.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Input.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Output.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>General</Filter>
     </ClCompile>
     <ClCompile Include="App.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>General</Filter>
     </ClCompile>
     <ClCompile Include="Race.cpp">
       <Filter>Model</Filter>
@@ -285,10 +261,10 @@
       <Filter>Model</Filter>
     </ClCompile>
     <ClCompile Include="Players.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>General</Filter>
     </ClCompile>
     <ClCompile Include="Player.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>General</Filter>
     </ClCompile>
     <ClCompile Include="Cmd.cpp">
       <Filter>Model\Commands</Filter>
@@ -318,7 +294,7 @@
       <Filter>Model</Filter>
     </ClCompile>
     <ClCompile Include="Xml.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>General</Filter>
     </ClCompile>
     <ClCompile Include="Games.cpp">
       <Filter>Model</Filter>
@@ -342,13 +318,13 @@
       <Filter>Model</Filter>
     </ClCompile>
     <ClCompile Include="Dynamic.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>General</Filter>
     </ClCompile>
     <ClCompile Include="Serial.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>General</Filter>
     </ClCompile>
     <ClCompile Include="OS.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>General</Filter>
     </ClCompile>
     <ClCompile Include="ResearchCmd.cpp">
       <Filter>Model\Commands</Filter>
@@ -370,6 +346,36 @@
     </ClCompile>
     <ClCompile Include="PhaseCmd.cpp">
       <Filter>Model\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller.cpp">
+      <Filter>Input/output</Filter>
+    </ClCompile>
+    <ClCompile Include="HTMLServer.cpp">
+      <Filter>Input/output</Filter>
+    </ClCompile>
+    <ClCompile Include="Input.cpp">
+      <Filter>Input/output</Filter>
+    </ClCompile>
+    <ClCompile Include="MongooseServer.cpp">
+      <Filter>Input/output</Filter>
+    </ClCompile>
+    <ClCompile Include="Output.cpp">
+      <Filter>Input/output</Filter>
+    </ClCompile>
+    <ClCompile Include="WSServer.cpp">
+      <Filter>Input/output</Filter>
+    </ClCompile>
+    <ClCompile Include="mongoose.c">
+      <Filter>External</Filter>
+    </ClCompile>
+    <ClCompile Include="tinyxml.cpp">
+      <Filter>External</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Desktop\tinyxml\tinyxmlerror.cpp">
+      <Filter>External</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Desktop\tinyxml\tinyxmlparser.cpp">
+      <Filter>External</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
