@@ -23,7 +23,7 @@ public:
 	ShipLayout(ShipType type);
 
 	ShipType GetType() const { return m_type; }
-	void SetType(ShipType t) { m_type = t; }
+	void SetType(ShipType t);
 	int GetSlotCount() const { return m_slots.size(); }
 	ShipPart GetSlot(int i) const { return m_slots[i]; }
 	void SetSlot(int i, ShipPart part) { m_slots[i] = part; }
@@ -35,6 +35,8 @@ public:
 	static int GetShield(ShipPart p);
 	static int GetMovement(ShipPart p);
 	static int GetHulls(ShipPart p);
+
+	static int GetSlotCount(ShipType t);
 
 	void Save(Serial::SaveNode& node) const;
 	void Load(const Serial::LoadNode& node);

@@ -15,6 +15,7 @@ Blueprint::Blueprint() : m_pDef(nullptr)
 Blueprint::Blueprint(RaceType r, ShipType s) : m_pDef(nullptr)
 {
 	Init(r, s);
+	m_overlay.SetType(s);
 }
 
 Blueprint::Blueprint(const BlueprintDef& def) : m_pDef(&def), m_overlay(m_pDef->GetBaseLayout().GetType())
@@ -24,7 +25,6 @@ Blueprint::Blueprint(const BlueprintDef& def) : m_pDef(&def), m_overlay(m_pDef->
 void Blueprint::Init(RaceType r, ShipType s) 
 {
 	m_pDef = &BlueprintDefs::Get(r, s);
-	m_overlay.SetType(s);
 }
 
 ShipType Blueprint::GetType() const { return m_pDef->GetBaseLayout().GetType(); }

@@ -8,19 +8,16 @@ ShipLayout::ShipLayout() : m_type(ShipType::None)
 {
 }
 
-ShipLayout::ShipLayout(ShipType type) : m_type(type)
+ShipLayout::ShipLayout(ShipType type) : m_type(ShipType::None)
 {
-	int slots = 0;
-	switch (type)
-	{
-	case ShipType::Interceptor:	slots = 4; break;
-	case ShipType::Starbase:	slots = 5; break;
-	case ShipType::Cruiser:		slots = 6; break;
-	case ShipType::Dreadnought:	slots = 8; break;
-	case ShipType::Ancient:		slots = 3; break;
-	case ShipType::GCDS:		slots = 11; break;
-	}
-	m_slots.resize(slots);
+	SetType(type);
+}
+
+void ShipLayout::SetType(ShipType t) 
+{
+	ASSERT(m_slots.empty());
+	m_type = t;
+	m_slots.resize(GetSlotCount(t));
 }
 
 int ShipLayout::GetInitiative(ShipPart p)
@@ -111,6 +108,21 @@ int ShipLayout::GetHulls(ShipPart p)
 	case ShipPart::Hull:			return 1;
 	case ShipPart::ImprovedHull :	return 2;
 	}
+	return 0;
+}
+
+int ShipLayout::GetSlotCount(ShipType t) 
+{
+	switch (t)
+	{
+	case ShipType::Interceptor:	return 4;
+	case ShipType::Starbase:	return 5;
+	case ShipType::Cruiser:		return 6;
+	case ShipType::Dreadnought:	return 8;
+	case ShipType::Ancient:		return 3;
+	case ShipType::GCDS:		return 11;
+	}
+	ASSERT(false);
 	return 0;
 }
 
