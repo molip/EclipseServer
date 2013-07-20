@@ -26,8 +26,20 @@ public:
 	int GetFixedPower() const;
 	int GetFixedComputer() const;
 
+	int GetInitiative() const;
+	int GetPowerSource() const;
+	int GetPowerDrain() const;
+	int GetComputer() const;
+	int GetShield() const;
+	int GetMovement() const;
+	int GetHulls() const;
+
+	int GetSlotCount() const { return m_overlay.GetSlotCount(); }
+	void SetSlot(int i, ShipPart part) { m_overlay.SetSlot(i, part); }
+	ShipPart GetSlot(int i) const;
+
 	static const Blueprint& GetAncientShip();
-	static const Blueprint& GCDS();
+	static const Blueprint& GetGCDS();
 
 	void Save(Serial::SaveNode& node) const;
 	void Load(const Serial::LoadNode& node);

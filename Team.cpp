@@ -112,6 +112,12 @@ void Team::ReturnColonyShips(int nShips)
 	m_nColonyShipsUsed = std::max(0, m_nColonyShipsUsed - nShips);
 }
 
+const Blueprint& Team::GetBlueprint(ShipType s) const
+{
+	AssertThrowModel("Team::GetBlueprint", int(s) >= 0 && s!= ShipType::_Count);
+	return *m_blueprints[int(s)];
+}
+
 bool Team::IsAncientAlliance(const Team* pTeam1, const Team* pTeam2)
 {
 	AssertThrowModel("Team::IsAncientAlliance", pTeam1 != pTeam2);

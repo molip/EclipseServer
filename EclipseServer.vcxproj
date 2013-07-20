@@ -96,6 +96,7 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="Hex.h" />
     <ClInclude Include="HexDefs.h" />
+    <ClInclude Include="IndexRange.h" />
     <ClInclude Include="InfluenceCmd.h" />
     <ClInclude Include="InfluenceTrack.h" />
     <ClInclude Include="Map.h" />

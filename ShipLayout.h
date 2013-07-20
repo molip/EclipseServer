@@ -8,11 +8,12 @@ enum class ShipType;
 
 enum class ShipPart {	Empty = 0, Blocked, 
 						IonCannon, PlasmaCannon, AntimatterCannon, 
-						PlasmaMissile, 
-						ElectronComp, GluonComp, PositronComp, 
-						NuclearDrive, TachyonDrive, FusionDrive,
-						NuclearSource, TachyonSource, FusionSource, 
-						PhaseShield, GaussShield, 
+						PlasmaMissile, IonMissile,
+						IonTurret, 
+						ElectronComp, GluonComp, PositronComp, AxionComp,
+						NuclearDrive, TachyonDrive, FusionDrive, ConformalDrive,
+						NuclearSource, TachyonSource, FusionSource, HypergridSource,
+						PhaseShield, GaussShield, FluxShield,
 						Hull, ImprovedHull };
 
 class ShipLayout
@@ -26,6 +27,14 @@ public:
 	int GetSlotCount() const { return m_slots.size(); }
 	ShipPart GetSlot(int i) const { return m_slots[i]; }
 	void SetSlot(int i, ShipPart part) { m_slots[i] = part; }
+
+	static int GetInitiative(ShipPart p);
+	static int GetPowerSource(ShipPart p);
+	static int GetPowerDrain(ShipPart p);
+	static int GetComputer(ShipPart p);
+	static int GetShield(ShipPart p);
+	static int GetMovement(ShipPart p);
+	static int GetHulls(ShipPart p);
 
 	void Save(Serial::SaveNode& node) const;
 	void Load(const Serial::LoadNode& node);

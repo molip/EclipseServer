@@ -83,9 +83,6 @@
     <ClInclude Include="Bag.h">
       <Filter>Model</Filter>
     </ClInclude>
-    <ClInclude Include="EnumRange.h">
-      <Filter>Model</Filter>
-    </ClInclude>
     <ClInclude Include="Hex.h">
       <Filter>Model</Filter>
     </ClInclude>
@@ -196,6 +193,12 @@
     </ClInclude>
     <ClInclude Include="tinyxml.h">
       <Filter>External</Filter>
+    </ClInclude>
+    <ClInclude Include="IndexRange.h">
+      <Filter>General</Filter>
+    </ClInclude>
+    <ClInclude Include="EnumRange.h">
+      <Filter>General</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

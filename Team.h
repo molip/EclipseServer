@@ -77,6 +77,8 @@ public:
 	int GetUsedColonyShips() const { return m_nColonyShipsUsed; }
 	int GetUnusedColonyShips() const { return m_nColonyShips - m_nColonyShipsUsed; }
 
+	const Blueprint& GetBlueprint(ShipType s) const;
+
 	static bool IsAncientAlliance(const Team* pTeam1, const Team* pTeam2);
 
 	void Save(Serial::SaveNode& node) const;
