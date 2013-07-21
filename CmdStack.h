@@ -20,7 +20,6 @@ public:
 	void Clear();
 	
 	bool CanRemoveCmd() const;
-	bool HasAction() const;
 
 	void AssertValid() const;
 
@@ -56,7 +55,6 @@ private:
 		const Cmd* GetCurrentCmd() const { return const_cast<Chain*>(this)->GetCurrentCmd(); }
 	
 		bool CanRemoveCmd() const; 
-		bool HasAction() const;
 	
 		void AssertValid() const;
 

@@ -47,6 +47,7 @@ private:
 	CmdStack* m_pCmdStack;
 	std::vector<RecordPtr> m_records;
 	Phase m_phase;
+	bool m_bDoneAction;
 };
 
 DEFINE_UNIQUE_PTR(LiveGame)

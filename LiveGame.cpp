@@ -10,13 +10,13 @@
 
 #include <algorithm>
 
-LiveGame::LiveGame() : m_phase(Phase::Lobby)
+LiveGame::LiveGame() : m_phase(Phase::Lobby), m_bDoneAction(false)
 {
 	m_pCmdStack = new CmdStack;
 }
 
 LiveGame::LiveGame(int id, const std::string& name, const Player& owner) : 
-	Game(id, name, owner), m_phase(Phase::Lobby)
+	Game(id, name, owner), m_phase(Phase::Lobby), m_bDoneAction(false)
 {
 	m_pCmdStack = new CmdStack;
 }
@@ -118,7 +118,11 @@ void LiveGame::StartCmd(CmdPtr pCmd)
 	m_pCmdStack->StartCmd(pCmd);
 	
 	if (GetCurrentCmd()->IsAction())
+	{
+		AssertThrow("LiveGame::StartCmd",  !m_bDoneAction);
+		m_bDoneAction = true;
 		GetCurrentTeam().GetInfluenceTrack().RemoveDiscs(1); // TODO: return these at end of round
+	}
 	Save();
 }
 
@@ -130,8 +134,11 @@ Cmd* LiveGame::RemoveCmd()
 	Cmd* pUndo = m_pCmdStack->RemoveCmd();
 
 	if (bAction)
+	{
+		AssertThrow("LiveGame::RemoveCmd",  m_bDoneAction);
+		m_bDoneAction = false;
 		GetCurrentTeam().GetInfluenceTrack().AddDiscs(1);
-
+	}
 	Save();
 	return pUndo;
 }
@@ -141,7 +148,7 @@ bool LiveGame::CanDoAction() const
 	if (GetCurrentTeam().GetInfluenceTrack().GetDiscCount() == 0)
 		return false;
 	
-	return !m_pCmdStack->HasAction(); // Only one action per turn.
+	return !m_bDoneAction; // Only one action per turn.
 }
 
 bool LiveGame::CanRemoveCmd() const
@@ -167,6 +174,7 @@ bool LiveGame::PurgeCmds()
 void LiveGame::FinishTurn()
 {
 	m_pCmdStack->Clear();
+	m_bDoneAction = false;
 	__super::FinishTurn();
 	Save();
 }
@@ -201,6 +209,7 @@ void LiveGame::Save(Serial::SaveNode& node) const
 	node.SaveEnum("phase", m_phase);
 	node.SaveCntr("records", m_records, Serial::ObjectSaver());
 	node.SaveClass("commands", *m_pCmdStack);
+	node.SaveType("done_action", m_bDoneAction);
 }
 
 void LiveGame::Load(const Serial::LoadNode& node)
@@ -209,6 +218,7 @@ void LiveGame::Load(const Serial::LoadNode& node)
 	node.LoadEnum("phase", m_phase);
 	node.LoadCntr("records", m_records, Serial::ObjectLoader());
 	node.LoadClass("commands", *m_pCmdStack);
+	node.LoadType("done_action", m_bDoneAction);
 }
 
 DEFINE_ENUM_NAMES(LiveGame::Phase) { "Lobby", "ChooseTeam", "Main", "" };

@@ -93,12 +93,6 @@ bool CmdStack::Chain::CanRemoveCmd() const
 	return size() == 1 || (*(end() - 2))->pCmd->CanUndo();
 }
 
-bool CmdStack::Chain::HasAction() const
-{
-	AssertThrow("CmdStack::Chain::HasAction: empty chain", !empty());
-	return front()->pCmd->IsAction();
-}
-
 void CmdStack::Chain::AssertValid() const
 {
 	std::string s = "CmdStack::Chain::AssertValid";
@@ -196,14 +190,6 @@ Cmd* CmdStack::GetCurrentCmd()
 const Cmd* CmdStack::GetCurrentCmd() const
 {
 	return m_chains.empty() ? nullptr : m_chains.back()->GetCurrentCmd();
-}
-
-bool CmdStack::HasAction() const
-{
-	for (auto& chain : m_chains)
-		if (chain->HasAction())
-			return true;
-	return false;
 }
 
 bool CmdStack::CanRemoveCmd() const
