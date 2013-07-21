@@ -134,6 +134,9 @@ Move.OnCommandChooseSrc = function(elem)
 {
 	ShowActionElement('choose_move_src')
 
+	var can_skip = IsTrue(elem.getAttribute('can_skip'))
+	ShowElementById('choose_move_src_reject_btn', can_skip, true)
+
 	data.action = new Move.SrcStage()
 
 	var hexes = GetChildElements(elem, 'hex')

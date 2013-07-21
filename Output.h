@@ -88,12 +88,12 @@ struct ChooseInfluencePos : Choose { ChooseInfluencePos(const std::vector<MapPos
 struct ChooseInfluenceSrc : ChooseInfluencePos { ChooseInfluenceSrc(const std::vector<MapPos>& positions, bool bEnableTrack); };
 struct ChooseInfluenceDst : ChooseInfluencePos { ChooseInfluenceDst(const std::vector<MapPos>& positions, bool bEnableTrack); };
 
-struct ChooseResearch : Choose { ChooseResearch(const std::vector<std::pair<TechType, int>>& techs); };
+struct ChooseResearch : Choose { ChooseResearch(const std::vector<std::pair<TechType, int>>& techs, bool bCanSkip); };
 struct ChooseResearchArtifact : Choose { ChooseResearchArtifact(int nArtifacts); };
 
 struct ChooseBuild : Choose { ChooseBuild(); };
 struct ChooseDiplomacy : Choose { ChooseDiplomacy(); };
-struct ChooseMoveSrc : Choose { ChooseMoveSrc(std::map<MapPos, std::set<ShipType>>& srcs); };
+struct ChooseMoveSrc : Choose { ChooseMoveSrc(std::map<MapPos, std::set<ShipType>>& srcs, bool bCanSkip); };
 struct ChooseMoveDst : Choose { ChooseMoveDst(const std::set<MapPos>& dsts); };
 struct ChooseUpgrade : Choose { ChooseUpgrade(); };
 struct ChooseTrade : Choose { ChooseTrade(); };

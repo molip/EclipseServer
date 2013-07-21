@@ -109,7 +109,7 @@
 		<div id="choose_explore_pos" style="display:none">
 			Choose hex to explore...
 			<button id="choose_explore_pos_btn" type="button" onclick="data.action.SendPos()">Next</button>
-			<button id="choose_explore_pos_reject_btn" type="button" onclick="Explore.SendReject()">Skip</button>
+			<button id="choose_explore_pos_reject_btn" type="button" onclick="SendAbort()">Skip</button>
 		</div>
 		<div id="choose_explore_hex" style="display:none">
 			Choose hex placement...
@@ -119,7 +119,7 @@
 			<button id="choose_explore_hex_take_btn" type="button" onclick="data.action.SendTake()">Take another</button>
 			<input type = "checkbox" id="choose_explore_hex_influence_check">Influence</input>
 			<button type="button" onclick="data.action.SendHex()">Next</button>
-			<button type="button" onclick="Explore.SendReject()">Reject</button>
+			<button type="button" onclick="SendAbort()">Reject</button>
 		</div>
 		<div id="choose_explore_discovery" style="display:none">
 			You have discovered something!
@@ -128,7 +128,7 @@
 		<div id="choose_influence_src" style="display:none">
 			Choose disc to move...
 			<button id="choose_influence_src_btn" type="button" onclick="data.action.Send()">Next</button>
-			<button id="choose_explore_pos_reject_btn" type="button" onclick="Explore.SendReject()">Finish</button>
+			<button type="button" onclick="SendAbort()">Finish</button>
 		</div>
 		<div id="choose_influence_dst" style="display:none">
 			Choose disc destination...
@@ -148,6 +148,7 @@
 			Choose technology to research...
 			<select id="select_tech"></select>
 			<button id="choose_research_btn" type="button" onclick="data.action.Send()">Next</button>
+			<button id="choose_research_reject_btn" type="button" onclick="SendAbort()">Finish</button>
 		</div>
 		<div id="choose_research_artifact" style="display:none">
 			Choose artifact distribution (<span id="choose_research_artifactkey_count"></span> remaining):<br>
@@ -171,7 +172,7 @@
 			Choose hex and ship to move:
 			<select id="select_move_ship"></select>
 			<button id="choose_move_src_btn" type="button" onclick="data.action.SendPos()">Next</button>
-			<button id="choose_move_src_reject_btn" type="button" onclick="Explore.SendReject()">Skip</button>
+			<button id="choose_move_src_reject_btn" type="button" onclick="SendAbort()">Skip</button>
 		</div>
 		<div id="choose_move_dst" style="display:none">
 			Choose hex to move to:

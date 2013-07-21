@@ -25,12 +25,12 @@ ExploreCmd::ExploreCmd(Colour colour, LiveGame& game, int iPhase) : PhaseCmd(col
 
 void ExploreCmd::UpdateClient(const Controller& controller, const LiveGame& game) const
 {
-	controller.SendMessage(Output::ChooseExplorePos(m_positions, m_iPhase > 1), GetPlayer(game));
+	controller.SendMessage(Output::ChooseExplorePos(m_positions, m_iPhase > 0), GetPlayer(game));
 }
 
 CmdPtr ExploreCmd::Process(const Input::CmdMessage& msg, const Controller& controller, LiveGame& game)
 {
-	if (dynamic_cast<const Input::CmdExploreReject*>(&msg))
+	if (dynamic_cast<const Input::CmdAbort*>(&msg))
 		return nullptr;
 
 	auto& m = CastThrow<const Input::CmdExplorePos>(msg);
@@ -229,7 +229,7 @@ CmdPtr ExploreHexCmd::Process(const Input::CmdMessage& msg, const Controller& co
 		return CmdPtr(new ExploreHexCmd(m_colour, game, m_pos, hexIDs, m_iPhase));
 	}
 
-	bool bReject = !!dynamic_cast<const Input::CmdExploreReject*>(&msg);
+	bool bReject = !!dynamic_cast<const Input::CmdAbort*>(&msg);
 	if (bReject)
 	{
 		// TODO: Add discarded hexes to discard pile. 

@@ -28,7 +28,7 @@ CmdPtr InfluenceCmd::Process(const Input::CmdMessage& msg, const Controller& con
 {
 	// TODO: Flip colony ships.
 
-	if (dynamic_cast<const Input::CmdExploreReject*>(&msg))
+	if (dynamic_cast<const Input::CmdAbort*>(&msg))
 		return nullptr;
 
 	auto& m = CastThrow<const Input::CmdInfluenceSrc>(msg);

@@ -125,3 +125,12 @@ function SendRegister()
 
 	SendXMLDoc(doc)
 }
+
+function SendAbort()
+{
+	ExitAction()
+
+	var doc = CreateXMLDoc()
+	var node = CreateCommandNode(doc, "cmd_abort")
+	SendXMLDoc(doc)
+}

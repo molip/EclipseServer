@@ -230,11 +230,3 @@ Explore.OnCommandChooseDiscovery = function(elem)
 	Map.DrawSelectLayer()
 }
 
-Explore.SendReject = function()
-{
-	ExitAction()
-
-	var doc = CreateXMLDoc()
-	var node = CreateCommandNode(doc, "cmd_explore_reject")
-	SendXMLDoc(doc)
-}

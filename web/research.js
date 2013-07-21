@@ -92,6 +92,10 @@ Research.ArtifactStage.prototype.OnButton = function(button, resource, delta)
 Research.OnCommand = function(elem)
 {
 	ShowActionElement('choose_research')
+
+	var can_skip = IsTrue(elem.getAttribute('can_skip'))
+	ShowElementById('choose_research_reject_btn', can_skip, true)
+
 	data.action = new Research.Stage()
 
 	var select = document.getElementById('select_tech')

@@ -69,8 +69,8 @@ MessagePtr CreateCommand(const Xml::Element& root)
 		return MessagePtr(new CmdInfluenceSrc(root));
 	if (type == "cmd_influence_dst")
 		return MessagePtr(new CmdInfluenceDst(root));
-	if (type == "cmd_explore_reject")
-		return MessagePtr(new CmdExploreReject);
+	if (type == "cmd_abort")
+		return MessagePtr(new CmdAbort);
 	if (type == "cmd_colonise_pos")
 		return MessagePtr(new CmdColonisePos(root));
 	if (type == "cmd_colonise_squares")

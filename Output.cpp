@@ -370,8 +370,10 @@ ChooseInfluenceSrc::ChooseInfluenceSrc(const std::vector<MapPos>& positions, boo
 ChooseInfluenceDst::ChooseInfluenceDst(const std::vector<MapPos>& positions, bool bEnableTrack) : 
 	ChooseInfluencePos(positions, bEnableTrack, "influence_dst") {}
 
-ChooseResearch::ChooseResearch(const std::vector<std::pair<TechType, int>>& techs) : Choose("research")
+ChooseResearch::ChooseResearch(const std::vector<std::pair<TechType, int>>& techs, bool bCanSkip) : Choose("research")
 {
+	m_root.SetAttribute("can_skip", bCanSkip);
+
 	for (auto& it : techs)
 	{
 		auto e = m_root.AddElement("tech");
@@ -393,8 +395,10 @@ ChooseDiplomacy::ChooseDiplomacy() : Choose("diplomacy")
 {
 }
 
-ChooseMoveSrc::ChooseMoveSrc(std::map<MapPos, std::set<ShipType>>& srcs) : Choose("move_src")
+ChooseMoveSrc::ChooseMoveSrc(std::map<MapPos, std::set<ShipType>>& srcs, bool bCanSkip) : Choose("move_src")
 {
+	m_root.SetAttribute("can_skip", bCanSkip);
+
 	for (auto& it : srcs)
 	{
 		auto e = m_root.AddElement("hex");

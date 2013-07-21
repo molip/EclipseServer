@@ -27,12 +27,12 @@ void MoveCmd::UpdateClient(const Controller& controller, const LiveGame& game) c
 				if (s.GetColour() == m_colour)
 					srcs[h.first].insert(s.GetType());
 
-	controller.SendMessage(Output::ChooseMoveSrc(srcs), GetPlayer(game));
+	controller.SendMessage(Output::ChooseMoveSrc(srcs, m_iPhase > 0), GetPlayer(game));
 }
 
 CmdPtr MoveCmd::Process(const Input::CmdMessage& msg, const Controller& controller, LiveGame& game)
 {
-	if (dynamic_cast<const Input::CmdExploreReject*>(&msg))
+	if (dynamic_cast<const Input::CmdAbort*>(&msg))
 		return nullptr;
 
 	auto& m = CastThrow<const Input::CmdMoveSrc>(msg);

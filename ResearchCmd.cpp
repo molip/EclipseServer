@@ -80,7 +80,7 @@ REGISTER_DYNAMIC(ResearchRecord)
 
 //-----------------------------------------------------------------------------
 
-ResearchCmd::ResearchCmd(Colour colour, LiveGame& game, int iPhase) : PhaseCmd(colour, iPhase)
+ResearchCmd::ResearchCmd(Colour colour, LiveGame& game, int iPhase) : PhaseCmd(colour, iPhase), m_bAborted(false)
 {
 }
 
@@ -102,11 +102,14 @@ void ResearchCmd::UpdateClient(const Controller& controller, const LiveGame& gam
 		}
 	}
 
-	controller.SendMessage(Output::ChooseResearch(m_techs), GetPlayer(game));
+	controller.SendMessage(Output::ChooseResearch(m_techs, m_iPhase > 0), GetPlayer(game));
 }
 
 CmdPtr ResearchCmd::Process(const Input::CmdMessage& msg, const Controller& controller, LiveGame& game)
 {
+	if (m_bAborted = !!dynamic_cast<const Input::CmdAbort*>(&msg))
+		return nullptr;
+
 	auto& m = CastThrow<const Input::CmdResearch>(msg);
 	AssertThrow("ResearchCmd::Process: invalid tech index", InRange(m_techs, m.m_iTech));
 
@@ -125,18 +128,23 @@ CmdPtr ResearchCmd::Process(const Input::CmdMessage& msg, const Controller& cont
 
 void ResearchCmd::Undo(const Controller& controller, LiveGame& game)
 {
-	RecordPtr pRec = game.PopRecord();
-	pRec->Undo(game, controller);
+	if (HasRecord()) // Not aborted
+	{
+		RecordPtr pRec = game.PopRecord();
+		pRec->Undo(game, controller);
+	}
 }
 
 void ResearchCmd::Save(Serial::SaveNode& node) const 
 {
 	__super::Save(node);
+	node.SaveType("aborted", m_bAborted);
 }
 
 void ResearchCmd::Load(const Serial::LoadNode& node) 
 {
 	__super::Load(node);
+	node.LoadType("aborted", m_bAborted);
 }
 
 REGISTER_DYNAMIC(ResearchCmd)

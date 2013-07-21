@@ -147,7 +147,7 @@ struct CmdColoniseSquares : CmdMessage
 	Population m_fixed, m_grey, m_orbital;
 };
 
-struct CmdExploreReject : CmdMessage
+struct CmdAbort : CmdMessage
 {
 };
 
