@@ -37,6 +37,8 @@ public:
 	void GetInfluencableNeighbours(const MapPos& pos, const Team& team, std::set<MapPos>& neighbours) const;
 	void GetEmptyNeighbours(const MapPos& pos, bool bHasWormholeGen, std::set<MapPos>& neighbours) const;
 	std::vector<const Hex*> GetSurroundingHexes(const MapPos& pos, const Team& team) const; // Returns empty hexes too.
+	std::set<MapPos> GetNeighbours(const MapPos& pos, bool bHasWormholeGen) const;
+	bool HasNeighbour(const MapPos& pos, bool bWormholeGen) const;
 
 	void Save(Serial::SaveNode& node) const;
 	void Load(const Serial::LoadNode& node);

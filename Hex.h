@@ -16,6 +16,8 @@ enum class Colour;
 class Team;
 class Game;
 class HexDef;
+class Blueprint;
+class Map;
 
 extern Edge ReverseEdge(Edge e);
 extern Edge RotateEdge(Edge e, int n);
@@ -54,6 +56,7 @@ public:
 	ShipType GetType() const { return m_type; }
 	Colour GetColour() const { return m_colour; }
 	const Team* GetOwner(const Game& game) const;
+	const Blueprint& GetBlueprint(const Game& game) const;
 
 	void Save(Serial::SaveNode& node) const;
 	void Load(const Serial::LoadNode& node);
@@ -79,9 +82,13 @@ public:
 	bool IsOwnedBy(const Team& team) const;
 
 	void AddShip(ShipType type, Colour owner);
+	void RemoveShip(ShipType type, Colour owner);
+	bool HasShip(const Colour& c, ShipType ship) const;
+	bool HasShip(const Colour& c, bool bMoveableOnly) const;
 	bool HasShip(const Team* pTeam) const;
 	bool HasEnemyShip(const Game& game, const Team* pTeam) const; // Ancients and their allies are not enemies.
 	bool HasForeignShip(const Game& game, const Team* pTeam) const; // Ancients and their allies are foreign.
+	bool AreAllShipsPinned(const Colour& c) const;
 
 	int GetID() const { return m_id; }
 	const MapPos& GetPos() const { return m_pos; }
@@ -96,8 +103,12 @@ public:
 	bool HasDiscovery() const;
 	void RemoveDiscoveryTile();
 	void SetDiscoveryTile(DiscoveryType type);
+	bool CanMoveOut(Colour c) const;
+	bool CanMoveThrough(Colour c) const;
 	
 	Square* FindSquare(SquareType type, bool bOccupied);
+
+	bool HasNeighbour(const Map& map, bool bWormholeGen) const;
 
 	void Save(Serial::SaveNode& node) const;
 	void Load(const Serial::LoadNode& node);
@@ -110,6 +121,8 @@ private:
 	void SetSquareOccupied(int i, bool b);
 	bool IsSquareOccupied(int i) const;
 
+	int GetPinnage(const Colour& c) const;
+	
 	const HexDef* m_pDef; 
 	int m_id;
 	MapPos m_pos;

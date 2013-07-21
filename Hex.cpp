@@ -37,6 +37,17 @@ const Team* Ship::GetOwner(const Game& game) const
 	return m_colour == Colour::None ? nullptr : &game.GetTeam(m_colour);
 }
 
+const Blueprint& Ship::GetBlueprint(const Game& game) const
+{
+	switch (m_type)
+	{
+	case ShipType::Ancient:	return Blueprint::GetAncientShip();
+	case ShipType::GCDS:	return Blueprint::GetGCDS();
+	}
+
+	return game.GetTeam(m_colour).GetBlueprint(m_type);
+}
+
 void Ship::Save(Serial::SaveNode& node) const
 {
 	node.SaveEnum("type", m_type);
@@ -117,13 +128,36 @@ void Hex::AddShip(ShipType type, Colour owner)
 	m_ships.push_back(Ship(type, owner));
 }
 
-bool Hex::HasShip(const Team* pTeam) const
+void Hex::RemoveShip(ShipType type, Colour owner)
 {
-	Colour c = pTeam ? pTeam->GetColour() : Colour::None;
+	for (auto s = m_ships.begin(); s != m_ships.end(); ++s)
+		if (s->GetType() == type && s->GetColour() == owner)
+		{
+			m_ships.erase(s);
+			return;
+		}
+	AssertThrow("Hex::RemoveShip");
+}
+
+bool Hex::HasShip(const Colour& c, ShipType ship) const
+{
 	for (auto& s : m_ships)
-		if (s.GetColour() == c)
+		if (s.GetColour() == c && s.GetType() == ship)
 			return true;
 	return false;
+}
+
+bool Hex::HasShip(const Colour& c, bool bMoveableOnly) const
+{
+	for (auto& s : m_ships)
+		if (s.GetColour() == c && (!bMoveableOnly || s.GetType() != ShipType::Starbase))
+			return true;
+	return false;
+}
+
+bool Hex::HasShip(const Team* pTeam) const
+{
+	return HasShip(pTeam ? pTeam->GetColour() : Colour::None, false);
 }
 
 bool Hex::HasEnemyShip(const Game& game, const Team* pTeam) const
@@ -149,6 +183,30 @@ bool Hex::HasForeignShip(const Game& game, const Team* pTeam) const
 	return false;
 }
 
+int Hex::GetPinnage(const Colour& c) const
+{
+	AssertThrowModel("Hex::GetPinnage", c != Colour::None);
+	
+	int nPinnage = 0;
+	for (auto& s : m_ships)
+	{
+		if (s.GetType() == ShipType::GCDS)
+			return 1000;
+		nPinnage += s.GetColour() == c ? -1 : 1;
+	}
+	return nPinnage;
+}
+
+bool Hex::CanMoveOut(Colour c) const
+{
+	return GetPinnage(c) < 0;
+}
+
+bool Hex::CanMoveThrough(Colour c) const
+{
+	return GetPinnage(c) <= 0;
+}
+
 void Hex::SetColour(Colour c)
 {
 	AssertThrowModel("Hex::SetOwner", (c == Colour::None) != (m_colour == Colour::None));
@@ -163,6 +221,11 @@ bool Hex::IsOwned() const
 bool Hex::IsOwnedBy(const Team& team) const
 {
 	return m_colour == team.GetColour();
+}
+
+bool Hex::HasNeighbour(const Map& map, bool bWormholeGen) const
+{
+	return map.HasNeighbour(m_pos, bWormholeGen);
 }
 
 void Hex::RemoveDiscoveryTile()

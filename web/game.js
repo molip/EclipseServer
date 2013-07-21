@@ -120,6 +120,12 @@ function GetFirstChildElement(elem, name)
 	return null
 }
 
+function ClearSelect(select_elem)
+{
+	while (select_elem.length)
+		select_elem.remove(0)
+}
+
 function OnMessage(msg)
 {
 	writeToScreen(msg.data)

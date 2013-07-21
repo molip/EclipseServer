@@ -10,7 +10,7 @@ Research.Stage = function()
 	ShowElementById('choose_undo', true)
 	document.getElementById('choose_undo_btn').disabled = false
 
-
+	ClearSelect(document.getElementById('select_tech'))
 }
 
 Research.Stage.prototype.Send = function()
@@ -28,11 +28,7 @@ Research.Stage.prototype.Send = function()
 
 Research.Stage.prototype.CleanUp = function()
 {
-	var select = document.getElementById('select_tech')
-	while (select.length)
-		select.remove(0)
 }
-
 
 Research.ArtifactStage = function(count)
 {

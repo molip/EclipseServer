@@ -93,7 +93,8 @@ struct ChooseResearchArtifact : Choose { ChooseResearchArtifact(int nArtifacts);
 
 struct ChooseBuild : Choose { ChooseBuild(); };
 struct ChooseDiplomacy : Choose { ChooseDiplomacy(); };
-struct ChooseMove : Choose { ChooseMove(); };
+struct ChooseMoveSrc : Choose { ChooseMoveSrc(std::map<MapPos, std::set<ShipType>>& srcs); };
+struct ChooseMoveDst : Choose { ChooseMoveDst(const std::set<MapPos>& dsts); };
 struct ChooseUpgrade : Choose { ChooseUpgrade(); };
 struct ChooseTrade : Choose { ChooseTrade(); };
 

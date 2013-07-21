@@ -393,8 +393,31 @@ ChooseDiplomacy::ChooseDiplomacy() : Choose("diplomacy")
 {
 }
 
-ChooseMove::ChooseMove() : Choose("move")
+ChooseMoveSrc::ChooseMoveSrc(std::map<MapPos, std::set<ShipType>>& srcs) : Choose("move_src")
 {
+	for (auto& it : srcs)
+	{
+		auto e = m_root.AddElement("hex");
+		e.SetAttribute("x", it.first.GetX());
+		e.SetAttribute("y", it.first.GetY());
+		
+		for (auto s : EnumRange<ShipType>())
+		{
+			auto j = it.second.find(s);
+			if (j != it.second.end())
+				e.AddElement("ship").SetAttribute("type", EnumTraits<ShipType>::ToString(s));
+		}
+	}
+}
+
+ChooseMoveDst::ChooseMoveDst(const std::set<MapPos>& dsts) : Choose("move_dst")
+{
+	for (auto& h : dsts)
+	{
+		auto e = m_root.AddElement("hex");
+		e.SetAttribute("x", h.GetX());
+		e.SetAttribute("y", h.GetY());
+	}
 }
 
 ChooseUpgrade::ChooseUpgrade() : Choose("upgrade")

@@ -79,8 +79,10 @@ MessagePtr CreateCommand(const Xml::Element& root)
 		return MessagePtr(new CmdResearch(root));
 	if (type == "cmd_research_artifact")
 		return MessagePtr(new CmdResearchArtifact(root));
-	if (type == "cmd_move")
-		return MessagePtr(new CmdMove(root));
+	if (type == "cmd_move_src")
+		return MessagePtr(new CmdMoveSrc(root));
+	if (type == "cmd_move_dst")
+		return MessagePtr(new CmdMoveDst(root));
 	if (type == "cmd_build")
 		return MessagePtr(new CmdBuild(root));
 	if (type == "cmd_upgrade")
@@ -431,8 +433,17 @@ CmdResearchArtifact::CmdResearchArtifact(const Xml::Element& node)
 		m_artifacts[r] = node.GetAttributeInt(EnumTraits<Resource>::ToString(r));
 }
 
-CmdMove::CmdMove(const Xml::Element& node)
+CmdMoveSrc::CmdMoveSrc(const Xml::Element& node)
 {
+	m_x = node.GetAttributeInt("x");
+	m_y = node.GetAttributeInt("y");
+	m_ship = EnumTraits<ShipType>::FromString(node.GetAttributeStr("ship"));
+}
+
+CmdMoveDst::CmdMoveDst(const Xml::Element& node)
+{
+	m_x = node.GetAttributeInt("x");
+	m_y = node.GetAttributeInt("y");
 }
 
 CmdBuild::CmdBuild(const Xml::Element& node)

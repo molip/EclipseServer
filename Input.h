@@ -11,6 +11,8 @@ class Player;
 class Game;
 class LiveGame; 
 
+enum class ShipType;
+
 namespace Input 
 {
 
@@ -173,9 +175,17 @@ struct CmdResearchArtifact : CmdMessage
 	Storage m_artifacts;
 };
 
-struct CmdMove : CmdMessage
+struct CmdMoveSrc : CmdMessage
 {
-	CmdMove(const Xml::Element& node);
+	CmdMoveSrc(const Xml::Element& node);
+	int m_x, m_y;
+	ShipType m_ship;
+};
+
+struct CmdMoveDst : CmdMessage
+{
+	CmdMoveDst(const Xml::Element& node);
+	int m_x, m_y;
 };
 
 struct CmdBuild : CmdMessage

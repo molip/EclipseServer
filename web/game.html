@@ -167,8 +167,15 @@
 		<div id="choose_build" style="display:none">
 			Build
 		</div>
-		<div id="choose_move" style="display:none">
-			Move
+		<div id="choose_move_src" style="display:none">
+			Choose hex and ship to move:
+			<select id="select_move_ship"></select>
+			<button id="choose_move_src_btn" type="button" onclick="data.action.SendPos()">Next</button>
+			<button id="choose_move_src_reject_btn" type="button" onclick="Explore.SendReject()">Skip</button>
+		</div>
+		<div id="choose_move_dst" style="display:none">
+			Choose hex to move to:
+			<button id="choose_move_dst_btn" type="button" onclick="data.action.SendPos()">Next</button>
 		</div>
 		<div id="choose_upgrade" style="display:none">
 			Upgrade

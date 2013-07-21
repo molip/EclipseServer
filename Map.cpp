@@ -117,6 +117,36 @@ void Map::GetEmptyNeighbours(const MapPos& pos, bool bWormholeGen, std::set<MapP
 		}
 }
 
+std::set<MapPos> Map::GetNeighbours(const MapPos& pos, bool bWormholeGen) const
+{
+	std::set<MapPos> neighbours;
+
+	const Hex& hex = GetHex(pos);
+
+	for (auto e : EnumRange<Edge>())
+		if (bWormholeGen || hex.HasWormhole(e))
+		{
+			MapPos pos2 = pos.GetNeighbour(e);
+			if (FindHex(pos2))
+				neighbours.insert(pos2);
+		}
+	return neighbours;
+}
+
+bool Map::HasNeighbour(const MapPos& pos, bool bWormholeGen) const
+{
+	const Hex& hex = GetHex(pos);
+
+	for (auto e : EnumRange<Edge>())
+		if (bWormholeGen || hex.HasWormhole(e))
+		{
+			MapPos pos2 = pos.GetNeighbour(e);
+			if (FindHex(pos2))
+				return true;
+		}
+	return false;
+}
+
 std::vector<const Hex*> Map::GetSurroundingHexes(const MapPos& pos, const Team& team) const
 {
 	std::vector<const Hex*> hexes;
