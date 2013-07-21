@@ -206,7 +206,8 @@ ExploreHexCmd::ExploreHexCmd(Colour colour, LiveGame& game, const MapPos& pos, s
 
 void ExploreHexCmd::UpdateClient(const Controller& controller, const LiveGame& game) const
 {
-	bool bCanTake = Race(GetTeam(game).GetRace()).GetExploreChoices() > (int)m_hexChoices.size();
+	bool bCanTake = Race(GetTeam(game).GetRace()).GetExploreChoices() > (int)m_hexChoices.size() 
+		&& !game.GetHexBag(m_pos.GetRing()).IsEmpty();
 
 	Output::ChooseExploreHex msg(m_pos.GetX(), m_pos.GetY(), bCanTake, game.CanRemoveCmd());
 	for (auto& hc : m_hexChoices)
@@ -222,7 +223,11 @@ CmdPtr ExploreHexCmd::Process(const Input::CmdMessage& msg, const Controller& co
 
 	if (dynamic_cast<const Input::CmdExploreHexTake*>(&msg))
 	{
-		m_idTaken = game.GetHexBag(m_pos.GetRing()).TakeTile(); 
+		HexBag& bag = game.GetHexBag(m_pos.GetRing());
+		AssertThrow("ExploreHexCmd::Process: no tiles left in bag", !bag.IsEmpty());
+		AssertThrow("ExploreHexCmd::Process: too many tiles taken", Race(GetTeam(game).GetRace()).GetExploreChoices() > m_hexIDs.size());
+
+		m_idTaken = bag.TakeTile(); 
 		std::vector<int> hexIDs = m_hexIDs;
 		hexIDs.insert(hexIDs.begin(), m_idTaken); // At front so it appears first.
 		m_idTaken = true;

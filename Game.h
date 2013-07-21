@@ -55,6 +55,7 @@ public:
 	TechnologyBag& GetTechnologyBag() { return m_techBag; }
 	DiscoveryBag& GetDiscoveryBag() { return m_discBag; }
 	HexBag& GetHexBag(HexRing ring) { return m_hexBag[(int)ring]; }
+	const HexBag& GetHexBag(HexRing ring) const { return m_hexBag[(int)ring]; }
 
 	const Map& GetMap() const { return m_map; }
 	Map& GetMap() { return m_map; }
