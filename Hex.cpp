@@ -90,7 +90,7 @@ Hex::Hex(const Hex& rhs) :
 
 void Hex::InitSquares()
 {
-	AssertThrow(m_squares.empty());
+	AssertThrow("Hex::InitSquares", m_squares.empty());
 	for (int i = 0; i < GetDef().GetSquareCount(); ++i)
 		m_squares.push_back(Square(*this, i));
 }

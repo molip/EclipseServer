@@ -18,12 +18,6 @@ int Mod(int a, int b)
 	return a % b + (a < 0 ? b : 0);
 }
 
-void AssertThrow(bool b)
-{
-	if (!ASSERT(b))
-		throw GenericException();
-}
-
 void AssertThrow(const std::string& msg, bool b)
 {
 	if (!ASSERT(b))
