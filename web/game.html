@@ -166,7 +166,10 @@
 			<button id="choose_research_artifact_next" type="button" onclick="data.action.Send()">Next</button>
 		</div>
 		<div id="choose_build" style="display:none">
-			Build
+			Choose hex and thing to build:
+			<select id="select_build"></select>
+			<button id="choose_build_btn" type="button" onclick="data.action.Send()">Next</button>
+			<button id="choose_build_reject_btn" type="button" onclick="SendAbort()">Finish</button>
 		</div>
 		<div id="choose_move_src" style="display:none">
 			Choose hex and ship to move:

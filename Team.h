@@ -15,7 +15,7 @@
 #include <memory>
 
 enum class Colour { None = -1, Red, Blue, Green, Yellow, White, Black, _Count };
-enum class Buildable { Interceptor, Cruiser, Dreadnought, Starbase, Orbital, Monolith, _Count };
+enum class Buildable { None = -1, Interceptor, Cruiser, Dreadnought, Starbase, Orbital, Monolith, _Count };
 
 enum class RaceType;
 
@@ -68,6 +68,7 @@ public:
 
 	void AddShips(ShipType type, int nShips);
 	void RemoveShips(ShipType type, int nShips) { AddShips(type, -nShips); }
+	int GetUnusedShips(ShipType type) const;
 
 	void PopulateStartHex(Hex& hex);
 

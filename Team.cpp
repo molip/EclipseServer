@@ -82,7 +82,15 @@ const Game& Team::GetGame() const
 
 void Team::AddShips(ShipType type, int nShips)
 {
+	// TODO: Check max count not exceeded.
+	AssertThrow("Team::AddShips: invalid ship type", int(type) >= 0);
 	m_nShips[(int)type] += nShips;
+}
+
+int Team::GetUnusedShips(ShipType type) const 
+{
+	AssertThrow("Team::GetUnusedShips", int(type) >= 0);
+	return m_nShips[(int)type]; 
 }
 
 void Team::PopulateStartHex(Hex& hex)
@@ -169,4 +177,4 @@ void Team::Load(const Serial::LoadNode& node)
 }
 
 DEFINE_ENUM_NAMES2(Colour, -1) { "None", "Red", "Blue", "Green", "Yellow", "White", "Black", "" };
-DEFINE_ENUM_NAMES(Buildable) { "Interceptor", "Cruiser", "Dreadnought", "Starbase", "Orbital", "Monolith", "" };
+DEFINE_ENUM_NAMES2(Buildable, -1) { "None", "Interceptor", "Cruiser", "Dreadnought", "Starbase", "Orbital", "Monolith", "" };

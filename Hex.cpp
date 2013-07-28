@@ -62,12 +62,15 @@ void Ship::Load(const Serial::LoadNode& node)
 
 //-----------------------------------------------------------------------------
 
-Hex::Hex() : m_id(0), m_nRotation(0), m_discovery(DiscoveryType::None), m_colour(Colour::None), m_pDef(nullptr)
+Hex::Hex() : 
+	m_id(0), m_nRotation(0), m_discovery(DiscoveryType::None), m_colour(Colour::None), m_pDef(nullptr), 
+	m_bOrbital(false), m_bMonolith(false)
 {
 }
 
 Hex::Hex(int id, const MapPos& pos, int nRotation) : 
-	m_id(id), m_pos(pos), m_nRotation(nRotation), m_discovery(DiscoveryType::None), m_colour(Colour::None), m_pDef(&HexDefs::Get(id))
+	m_id(id), m_pos(pos), m_nRotation(nRotation), m_discovery(DiscoveryType::None), m_colour(Colour::None), m_pDef(&HexDefs::Get(id)),
+	m_bOrbital(false), m_bMonolith(false)
 {
 	AssertThrow("Hex::Hex: Invalid rotation", nRotation >= 0 && nRotation < 6);
 
@@ -79,7 +82,8 @@ Hex::Hex(int id, const MapPos& pos, int nRotation) :
 
 Hex::Hex(const Hex& rhs) : 
 	m_id(rhs.m_id), m_pos(rhs.m_pos), m_nRotation(rhs.m_nRotation), m_ships(rhs.m_ships), 
-	m_discovery(rhs.m_discovery), m_colour(rhs.m_colour), m_occupied(rhs.m_occupied), m_pDef(rhs.m_pDef)
+	m_discovery(rhs.m_discovery), m_colour(rhs.m_colour), m_occupied(rhs.m_occupied), m_pDef(rhs.m_pDef),
+	m_bOrbital(rhs.m_bOrbital), m_bMonolith(rhs.m_bMonolith)
 {
 	InitSquares();
 }
@@ -261,6 +265,8 @@ void Hex::Save(Serial::SaveNode& node) const
 	node.SaveEnum("discovery", m_discovery);
 	node.SaveEnum("colour", m_colour);
 	node.SaveCntr("occupied", m_occupied, Serial::TypeSaver());
+	node.SaveType("has_orbital", m_bOrbital);
+	node.SaveType("has_monolith", m_bMonolith);
 }
 
 void Hex::Load(const Serial::LoadNode& node)
@@ -271,6 +277,8 @@ void Hex::Load(const Serial::LoadNode& node)
 	node.LoadEnum("discovery", m_discovery);
 	node.LoadEnum("colour", m_colour);
 	node.LoadCntr("occupied", m_occupied, Serial::TypeLoader());
+	node.LoadType("has_orbital", m_bOrbital);
+	node.LoadType("has_monolith", m_bMonolith);
 
 	m_pDef = &HexDefs::Get(m_id);
 	InitSquares();

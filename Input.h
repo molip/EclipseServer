@@ -12,6 +12,7 @@ class Game;
 class LiveGame; 
 
 enum class ShipType;
+enum class Buildable;
 
 namespace Input 
 {
@@ -191,6 +192,8 @@ struct CmdMoveDst : CmdMessage
 struct CmdBuild : CmdMessage
 {
 	CmdBuild(const Xml::Element& node);
+	int m_x, m_y;
+	Buildable m_buildable;
 };
 
 struct CmdDiplomacy : CmdMessage

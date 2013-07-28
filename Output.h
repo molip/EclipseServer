@@ -91,7 +91,7 @@ struct ChooseInfluenceDst : ChooseInfluencePos { ChooseInfluenceDst(const std::v
 struct ChooseResearch : Choose { ChooseResearch(const std::vector<std::pair<TechType, int>>& techs, bool bCanSkip); };
 struct ChooseResearchArtifact : Choose { ChooseResearchArtifact(int nArtifacts); };
 
-struct ChooseBuild : Choose { ChooseBuild(); };
+struct ChooseBuild : Choose { ChooseBuild(const std::set<ShipType>& ships, const std::map<MapPos, std::pair<bool, bool>>& hexes, bool bCanSkip); }; // (orbital, monolith)
 struct ChooseDiplomacy : Choose { ChooseDiplomacy(); };
 struct ChooseMoveSrc : Choose { ChooseMoveSrc(std::map<MapPos, std::set<ShipType>>& srcs, bool bCanSkip); };
 struct ChooseMoveDst : Choose { ChooseMoveDst(const std::set<MapPos>& dsts); };

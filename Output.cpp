@@ -387,8 +387,23 @@ ChooseResearchArtifact::ChooseResearchArtifact(int nArtifacts) : Choose("researc
 	m_root.SetAttribute("count", nArtifacts);
 }
 
-ChooseBuild::ChooseBuild() : Choose("build")
+ChooseBuild::ChooseBuild(const std::set<ShipType>& ships, const std::map<MapPos, std::pair<bool, bool>>& hexes, bool bCanSkip) : Choose("build")
 {
+	m_root.SetAttribute("can_skip", bCanSkip);
+
+	auto ship_elems = m_root.AddElement("ships");
+	for (auto s : ships)
+		ship_elems.AddElement("ship").SetAttribute("type", EnumTraits<ShipType>::ToString(s));
+
+	auto hex_elems = m_root.AddElement("hexes");
+	for (auto& it : hexes)
+	{
+		auto e = hex_elems.AddElement("hex");
+		e.SetAttribute("x", it.first.GetX());
+		e.SetAttribute("y", it.first.GetY());
+		e.SetAttribute("can_build_orbital", it.second.first);
+		e.SetAttribute("can_build_monolith", it.second.second);
+	}
 }
 
 ChooseDiplomacy::ChooseDiplomacy() : Choose("diplomacy")

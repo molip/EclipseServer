@@ -448,6 +448,9 @@ CmdMoveDst::CmdMoveDst(const Xml::Element& node)
 
 CmdBuild::CmdBuild(const Xml::Element& node)
 {
+	m_x = node.GetAttributeInt("x");
+	m_y = node.GetAttributeInt("y");
+	m_buildable = EnumTraits<Buildable>::FromString(node.GetAttributeStr("buildable"));
 }
 
 CmdDiplomacy::CmdDiplomacy(const Xml::Element& node)

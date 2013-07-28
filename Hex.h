@@ -110,6 +110,11 @@ public:
 
 	bool HasNeighbour(const Map& map, bool bWormholeGen) const;
 
+	void SetOrbital(bool b) { m_bOrbital = b; }
+	void SetMonolith(bool b) { m_bMonolith = b; }
+	bool HasOrbital() const { return m_bOrbital; }
+	bool HasMonolith() const { return m_bMonolith; }
+
 	void Save(Serial::SaveNode& node) const;
 	void Load(const Serial::LoadNode& node);
 
@@ -132,7 +137,7 @@ private:
 	DiscoveryType m_discovery;
 	Colour m_colour;
 	std::set<int> m_occupied;
-	//structures
+	bool m_bOrbital, m_bMonolith;
 };
 
 typedef std::unique_ptr<Hex> HexPtr;
