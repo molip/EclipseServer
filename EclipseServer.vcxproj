@@ -138,8 +138,6 @@
     <ClInclude Include="Xml.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\Desktop\tinyxml\tinyxmlerror.cpp" />
-    <ClCompile Include="..\..\..\Desktop\tinyxml\tinyxmlparser.cpp" />
     <ClCompile Include="App.cpp" />
     <ClCompile Include="Bag.cpp" />
     <ClCompile Include="Blueprint.cpp" />
@@ -193,6 +191,8 @@
     <ClCompile Include="Technology.cpp" />
     <ClCompile Include="TechTrack.cpp" />
     <ClCompile Include="tinyxml.cpp" />
+    <ClCompile Include="tinyxmlerror.cpp" />
+    <ClCompile Include="tinyxmlparser.cpp" />
     <ClCompile Include="TradeCmd.cpp" />
     <ClCompile Include="Turn.cpp" />
     <ClCompile Include="UpgradeCmd.cpp" />

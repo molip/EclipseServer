@@ -370,10 +370,10 @@
     <ClCompile Include="tinyxml.cpp">
       <Filter>External</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Desktop\tinyxml\tinyxmlerror.cpp">
+    <ClCompile Include="tinyxmlparser.cpp">
       <Filter>External</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Desktop\tinyxml\tinyxmlparser.cpp">
+    <ClCompile Include="tinyxmlerror.cpp">
       <Filter>External</Filter>
     </ClCompile>
   </ItemGroup>
