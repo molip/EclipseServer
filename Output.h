@@ -65,6 +65,7 @@ struct UpdateStorageTrack : Update { UpdateStorageTrack(const Team& team); };
 struct UpdateTechnologyTrack : Update { UpdateTechnologyTrack(const Team& team); };
 struct UpdatePopulationTrack : Update { UpdatePopulationTrack(const Team& team); };
 struct UpdateReputationTrack : Update { UpdateReputationTrack(const Team& team, bool bSendValues); };
+struct UpdatePassed : Update { UpdatePassed(const Team& team); };
 struct UpdateMap : Update { UpdateMap(const Game& game); };
 struct UpdateReviewUI : Update { UpdateReviewUI(const ReviewGame& game); };
 struct UpdateTechnologies : Update { UpdateTechnologies(const Game& game); };

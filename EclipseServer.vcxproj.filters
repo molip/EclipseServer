@@ -200,6 +200,9 @@
     <ClInclude Include="EnumRange.h">
       <Filter>General</Filter>
     </ClInclude>
+    <ClInclude Include="PassCmd.h">
+      <Filter>Commands</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -375,6 +378,9 @@
     </ClCompile>
     <ClCompile Include="tinyxmlerror.cpp">
       <Filter>External</Filter>
+    </ClCompile>
+    <ClCompile Include="PassCmd.cpp">
+      <Filter>Commands</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

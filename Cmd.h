@@ -25,7 +25,9 @@ public:
 	virtual void UpdateClient(const Controller& controller, const LiveGame& game) const {}
 	virtual CmdPtr Process(const Input::CmdMessage& msg, const Controller& controller, LiveGame& game) = 0;
 	
+	virtual bool IsAutoProcess() const { return false; } 
 	virtual bool IsAction() const { return false; } 
+	virtual bool CostsInfluence() const { return IsAction(); } 
 	virtual bool HasRecord() const { return false; } 
 	virtual bool CanUndo() const { return true; } 
 	virtual void Undo(const Controller& controller, LiveGame& game) { } 

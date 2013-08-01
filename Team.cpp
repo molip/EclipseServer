@@ -8,14 +8,14 @@
 #include "Players.h"
 #include "Serial.h"
 
-Team::Team() : m_idGame(0), m_idPlayer(0), m_race(RaceType::None), m_colour(Colour::None), m_nColonyShipsUsed(0), m_repTrack(*this)
+Team::Team() : m_idGame(0), m_idPlayer(0), m_race(RaceType::None), m_colour(Colour::None), m_nColonyShipsUsed(0), m_bPassed(false), m_repTrack(*this)
 {
 	for (int i = 0; i < 4; ++i)
 		m_nShips[i] = 0;
 }
 
 Team::Team(int idGame, int idPlayer) :
-	m_idGame(idGame), m_idPlayer(idPlayer), m_race(RaceType::None), m_colour(Colour::None), m_nColonyShipsUsed(0), m_repTrack(*this)
+	m_idGame(idGame), m_idPlayer(idPlayer), m_race(RaceType::None), m_colour(Colour::None), m_nColonyShipsUsed(0), m_bPassed(false), m_repTrack(*this)
 {
 	for (int i = 0; i < 4; ++i)
 		m_nShips[i] = 0;
@@ -24,7 +24,7 @@ Team::Team(int idGame, int idPlayer) :
 Team::Team(const Team& rhs, int idGame) : 
 	m_idGame(idGame), m_idPlayer(rhs.m_idPlayer), m_race(rhs.m_race), m_colour(rhs.m_colour), m_allies(rhs.m_allies),
 	m_popTrack(rhs.m_popTrack), m_infTrack(rhs.m_infTrack), m_repTrack(rhs.m_repTrack), m_techTrack(rhs.m_techTrack), 
-	m_storage(rhs.m_storage), m_nColonyShipsUsed(rhs.m_nColonyShipsUsed)
+	m_storage(rhs.m_storage), m_nColonyShipsUsed(rhs.m_nColonyShipsUsed), m_bPassed(rhs.m_bPassed)
 {	
 	for (int i = 0; i < 4; ++i)
 		m_nShips[i] = rhs.m_nShips[i];
@@ -153,6 +153,7 @@ void Team::Save(Serial::SaveNode& node) const
 	node.SaveArray("ships", m_nShips, Serial::TypeSaver());
 
 	node.SaveType("colony_ships_used", m_nColonyShipsUsed);
+	node.SaveType("passed", m_bPassed);
 }
 
 void Team::Load(const Serial::LoadNode& node)
@@ -172,6 +173,7 @@ void Team::Load(const Serial::LoadNode& node)
 	node.LoadArray("ships", m_nShips, Serial::TypeLoader());
 
 	node.LoadType("colony_ships_used", m_nColonyShipsUsed);
+	node.LoadType("passed", m_bPassed);
 
 	if (m_race != RaceType::None)
 		for (auto s : EnumRange<ShipType>())

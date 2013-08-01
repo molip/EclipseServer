@@ -78,6 +78,9 @@ public:
 	int GetUsedColonyShips() const { return m_nColonyShipsUsed; }
 	int GetUnusedColonyShips() const { return GetColonyShips() - m_nColonyShipsUsed; }
 
+	void SetPassed(bool b) { m_bPassed = b; }
+	bool HasPassed() const { return m_bPassed; }
+
 	const Blueprint& GetBlueprint(ShipType s) const;
 
 	static bool IsAncientAlliance(const Team* pTeam1, const Team* pTeam2);
@@ -102,6 +105,7 @@ private:
 	int m_nShips[4];
 
 	int m_nColonyShipsUsed;
+	bool m_bPassed;
 };
 
 typedef std::unique_ptr<Team> TeamPtr;

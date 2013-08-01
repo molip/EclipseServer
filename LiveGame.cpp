@@ -121,8 +121,11 @@ void LiveGame::StartCmd(CmdPtr pCmd)
 	{
 		AssertThrow("LiveGame::StartCmd",  !m_bDoneAction);
 		m_bDoneAction = true;
-		GetCurrentTeam().GetInfluenceTrack().RemoveDiscs(1); // TODO: return these at end of round
 	}
+
+	if (GetCurrentCmd()->CostsInfluence())
+		GetCurrentTeam().GetInfluenceTrack().RemoveDiscs(1); // TODO: return these at end of round
+
 	Save();
 }
 
@@ -130,6 +133,7 @@ Cmd* LiveGame::RemoveCmd()
 {
 	const Cmd* pCmd = GetCurrentCmd();
 	bool bAction = pCmd && pCmd->IsAction();
+	bool bCostsInfluence = pCmd && pCmd->CostsInfluence();
 
 	Cmd* pUndo = m_pCmdStack->RemoveCmd();
 
@@ -137,8 +141,11 @@ Cmd* LiveGame::RemoveCmd()
 	{
 		AssertThrow("LiveGame::RemoveCmd",  m_bDoneAction);
 		m_bDoneAction = false;
-		GetCurrentTeam().GetInfluenceTrack().AddDiscs(1);
 	}
+
+	if (bCostsInfluence)
+		GetCurrentTeam().GetInfluenceTrack().AddDiscs(1);
+
 	Save();
 	return pUndo;
 }

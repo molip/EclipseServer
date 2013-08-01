@@ -100,6 +100,8 @@ function OnCommandUpdate(elem)
 		OnCommandUpdatePopulationTrack(elem)
 	else if (param == "reputation_track")
 		OnCommandUpdateReputationTrack(elem)
+	else if (param == "passed")
+		OnCommandUpdatePassed(elem)
 	else if (param == "map")
 		OnCommandUpdateMap(elem)
 	else if (param == "review_ui")
@@ -222,6 +224,7 @@ function OnCommandUpdateTeams(elem)
 						<div id="{0}_technology"></div>\
 						<div id="{0}_reputation"></div>\
 						<div id="{0}_influence" onclick="if (data.action && data.action.OnClickInfluenceTrack) data.action.OnClickInfluenceTrack()"></div>\
+						<div id="{0}_passed"></div>\
 					</div>'
 	
 	var html_tabs = '', html_pages = ''
@@ -259,6 +262,14 @@ function OnCommandUpdateTeam(elem)
 		<br/>\
 	'
 	SetDivFromCommandElem(document.getElementById(GetTeamDivIDFromName(elem.getAttribute('id'), 'summary')), elem, xsl)
+}
+
+function OnCommandUpdatePassed(elem)
+{
+	var xsl = '\
+		<b>Passed:</b> <xsl:value-of select="@has_passed"/><br/>\
+	'
+	SetDivFromCommandElem(document.getElementById(GetTeamDivIDFromName(elem.getAttribute('id'), 'passed')), elem, xsl)
 }
 
 function OnCommandUpdateInfluenceTrack(elem)
@@ -412,6 +423,8 @@ function OnCommandChooseAction(elem)
 	document.getElementById('choose_action_colonise_btn').disabled = !IsTrue(elem.getAttribute('can_colonise'))
 	document.getElementById('choose_action_diplomacy_btn').disabled = !IsTrue(elem.getAttribute('can_diplomacy'))
 	document.getElementById('choose_action_trade_btn').disabled = !IsTrue(elem.getAttribute('can_trade'))
+	document.getElementById('choose_action_pass_btn').disabled = !IsTrue(elem.getAttribute('can_pass'))
+	document.getElementById('choose_end_turn_btn').disabled = !IsTrue(elem.getAttribute('can_end_turn'))
 
 	ShowElementById('choose_subaction', true)
 

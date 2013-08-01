@@ -13,6 +13,7 @@
 #include "DiplomacyCmd.h"
 #include "UpgradeCmd.h"
 #include "TradeCmd.h"
+#include "PassCmd.h"
 #include "Xml.h"
 #include "EnumTraits.h"
 #include "Games.h"
@@ -293,14 +294,19 @@ bool StartAction::Process(Controller& controller, Player& player) const
 		game.StartCmd(CmdPtr(new UpgradeCmd(colour, game)));
 	else if (m_action == "trade") 
 		game.StartCmd(CmdPtr(new TradeCmd(colour, game)));
+	else if (m_action == "pass") 
+		game.StartCmd(CmdPtr(new PassCmd(colour, game)));
 
 	Cmd* pCmd = game.GetCurrentCmd();
 	AssertThrow("StartAction::Process: No command created", !!pCmd);
 	
-	if (pCmd->IsAction())
+	if (pCmd->CostsInfluence())
 		controller.SendMessage(Output::UpdateInfluenceTrack(*player.GetCurrentTeam()), game);
 
-	pCmd->UpdateClient(controller, game);
+	if (pCmd->IsAutoProcess())
+		CmdMessage().Process(controller, player);
+	else
+		pCmd->UpdateClient(controller, game);
 	return true;	
 }
 
@@ -309,7 +315,7 @@ bool Undo::Process(Controller& controller, Player& player) const
 	LiveGame& game = GetLiveGame(player);
 
 	const Cmd* pCmd = game.GetCurrentCmd();
-	bool bAction = pCmd && pCmd->IsAction();
+	bool bAction = pCmd && pCmd->CostsInfluence();
 
 	if (Cmd* pUndo = game.RemoveCmd())
 	{
@@ -325,6 +331,9 @@ bool Undo::Process(Controller& controller, Player& player) const
 			for (auto& g : Games::GetReviewGames())
 				if (g->GetLiveGameID() == game.GetID())
 					controller.SendMessage(Output::UpdateReviewUI(*g), *g);
+
+		if (pUndo->IsAutoProcess())
+			game.RemoveCmd();
 	}
 
 	if (Cmd* pCmd2 = game.GetCurrentCmd())

@@ -161,6 +161,12 @@ UpdateReputationTrack::UpdateReputationTrack(const Team& team, bool bSendValues)
 	m_root.SetAttribute("send_values", bSendValues);
 }
 
+UpdatePassed::UpdatePassed(const Team& team) : Update("passed")
+{
+	m_root.SetAttribute("id", team.GetPlayer().GetID());
+	m_root.SetAttribute("has_passed", team.HasPassed());
+}
+
 UpdateMap::UpdateMap(const Game& game) : Update("map")
 {
 	const Map& map = game.GetMap();
@@ -276,6 +282,8 @@ ChooseAction::ChooseAction(const LiveGame& game) : Choose("action")
 	m_root.SetAttribute("can_colonise",		game.GetCurrentTeam().GetUnusedColonyShips() > 0); 
 	m_root.SetAttribute("can_diplomacy",	true);
 	m_root.SetAttribute("can_trade",		true);
+	m_root.SetAttribute("can_pass",			bCanDoAction);
+	m_root.SetAttribute("can_end_turn",		!bCanDoAction);
 }
 
 ChooseFinished::ChooseFinished() : Choose("finished") 
