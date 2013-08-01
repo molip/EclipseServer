@@ -10,13 +10,13 @@
 
 #include <algorithm>
 
-LiveGame::LiveGame() : m_phase(Phase::Lobby), m_bDoneAction(false)
+LiveGame::LiveGame() : m_phase(Phase::Lobby), m_bDoneAction(false), m_iTurn(-1), m_iRound(-1), m_iStartTeam(-1), m_iStartTeamNext(-1)
 {
 	m_pCmdStack = new CmdStack;
 }
 
 LiveGame::LiveGame(int id, const std::string& name, const Player& owner) : 
-	Game(id, name, owner), m_phase(Phase::Lobby), m_bDoneAction(false)
+	Game(id, name, owner), m_phase(Phase::Lobby), m_bDoneAction(false), m_iTurn(-1), m_iRound(-1), m_iStartTeam(-1), m_iStartTeamNext(-1)
 {
 	m_pCmdStack = new CmdStack;
 }
@@ -178,11 +178,50 @@ bool LiveGame::PurgeCmds()
 	return m_pCmdStack->Purge();
 }
 
+const Player& LiveGame::GetCurrentPlayer() const
+{
+	return Players::Get(GetCurrentTeam().GetPlayerID());
+}
+
+Player& LiveGame::GetCurrentPlayer() 
+{
+	return Players::Get(GetCurrentTeam().GetPlayerID());
+}
+
+Team& LiveGame::GetCurrentTeam()
+{
+	return *m_teams[(m_iStartTeam + m_iTurn) % m_teams.size()];
+}
+
+void LiveGame::StartRound()
+{
+	assert(m_iRound < 9);
+
+	++m_iRound;
+
+	if (m_iRound == 9) // Game over.
+		return;
+
+	// Take new technologies from bag.
+	const int startTech[] = { 12, 12, 14, 16, 18, 20 };
+	const int roundTech[] = { 4, 4, 6, 7, 8, 9 };
+
+	int nTech = (m_iRound == 0 ? startTech : roundTech)[m_teams.size() - 1];
+	for (int i = 0; i < nTech && !m_techBag.IsEmpty(); ++i)
+		++m_techs[m_techBag.TakeTile()];
+}
+
+void LiveGame::AdvanceTurn()
+{
+	m_iTurn = (m_iTurn + 1) % m_teams.size();
+	Save();
+}
+
 void LiveGame::FinishTurn()
 {
 	m_pCmdStack->Clear();
 	m_bDoneAction = false;
-	__super::FinishTurn();
+	AdvanceTurn();
 	Save();
 }
 
@@ -212,11 +251,14 @@ void LiveGame::Save() const
 void LiveGame::Save(Serial::SaveNode& node) const 
 {
 	__super::Save(node);
-	//CmdStack* m_pCmdStack;
 	node.SaveEnum("phase", m_phase);
 	node.SaveCntr("records", m_records, Serial::ObjectSaver());
 	node.SaveClass("commands", *m_pCmdStack);
 	node.SaveType("done_action", m_bDoneAction);
+	node.SaveType("turn", m_iTurn);
+	node.SaveType("round", m_iRound);
+	node.SaveType("start_team", m_iStartTeam);
+	node.SaveType("start_team_next", m_iStartTeamNext);
 }
 
 void LiveGame::Load(const Serial::LoadNode& node)
@@ -226,6 +268,10 @@ void LiveGame::Load(const Serial::LoadNode& node)
 	node.LoadCntr("records", m_records, Serial::ObjectLoader());
 	node.LoadClass("commands", *m_pCmdStack);
 	node.LoadType("done_action", m_bDoneAction);
+	node.LoadType("turn", m_iTurn);
+	node.LoadType("round", m_iRound);
+	node.LoadType("start_team", m_iStartTeam);
+	node.LoadType("start_team_next", m_iStartTeamNext);
 }
 
 DEFINE_ENUM_NAMES(LiveGame::Phase) { "Lobby", "ChooseTeam", "Main", "" };

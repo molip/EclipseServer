@@ -35,18 +35,13 @@ public:
 
 	Team* FindTeam(const Player& player);
 
-	const Player& GetCurrentPlayer() const;
-	Player& GetCurrentPlayer();
-
 	Team* FindTeam(Colour c);
 	Team& GetTeam(Colour c);
 	Team& GetTeam(const Player& player);
-	Team& GetCurrentTeam();
 
 	const Team* FindTeam(Colour c) const			{ return const_cast<Game*>(this)->FindTeam(c); }
 	const Team& GetTeam(Colour c) const				{ return const_cast<Game*>(this)->GetTeam(c); }
 	const Team& GetTeam(const Player& player) const	{ return const_cast<Game*>(this)->GetTeam(player); }
-	const Team& GetCurrentTeam() const				{ return const_cast<Game*>(this)->GetCurrentTeam(); }
 
 	virtual bool HasStarted() const = 0;
 	virtual bool IsLive() const { return false; }
@@ -63,17 +58,11 @@ public:
 	const std::map<TechType, int>& GetTechnologies() const { return m_techs; }
 	std::map<TechType, int>& GetTechnologies() { return m_techs; }
 
-	virtual void FinishTurn();
-
 	virtual void Save(Serial::SaveNode& node) const;
 	virtual void Load(const Serial::LoadNode& node);
 
 protected:
 	virtual void Save() const {}
-
-	void StartRound();
-
-	void AdvanceTurn();
 	
 	int m_id; 
 	std::string m_name;
@@ -89,9 +78,6 @@ protected:
 	HexBag m_hexBag[HexRing::_Count];
 
 	Map	m_map; // After m_discBag
-
-	int m_iTurn, m_iRound;
-	int m_iStartTeam, m_iStartTeamNext;
 };
 
 typedef std::unique_ptr<Game> GamePtr;

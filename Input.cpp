@@ -263,6 +263,9 @@ bool ChooseTeam::Process(Controller& controller, Player& player) const
 	controller.SendMessage(Output::ChooseTeam(*pGame, false), player);
 	controller.SendUpdateGame(*pGame);
 
+	if (pGame->GetPhase() == LiveGame::Phase::Main)
+		controller.SendMessage(Output::UpdateTechnologies(*pGame), *pGame); // TODO: Move to record.
+
 	return true;	
 }
 

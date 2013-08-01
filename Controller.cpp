@@ -72,7 +72,7 @@ void Controller::SendUpdateGame(const Game& game, const Player* pPlayer) const
 {
 	auto pLive = dynamic_cast<const LiveGame*>(&game);
 	
-	bool bSendToCurrentPlayer = pLive && pLive->HasStarted() && (!pPlayer || pPlayer == &game.GetCurrentPlayer());
+	bool bSendToCurrentPlayer = pLive && pLive->HasStarted() && (!pPlayer || pPlayer == &pLive->GetCurrentPlayer());
 
 	if (pLive)
 	{
@@ -93,7 +93,7 @@ void Controller::SendUpdateGame(const Game& game, const Player* pPlayer) const
 			SendMessage(Output::UpdateChoose(*pLive), game, pPlayer);
 
 			if (bSendToCurrentPlayer)
-				SendMessage(Output::ChooseTeam(game, true), game.GetCurrentPlayer());
+				SendMessage(Output::ChooseTeam(game, true), pLive->GetCurrentPlayer());
 			return;
 		}
 	}
@@ -133,5 +133,5 @@ void Controller::SendUpdateGame(const Game& game, const Player* pPlayer) const
 		if (const Cmd* pCmd = pLive->GetCurrentCmd())
 			pCmd->UpdateClient(*this, *pLive);
 		else
-			SendMessage(Output::ChooseAction(*pLive), game.GetCurrentPlayer());
+			SendMessage(Output::ChooseAction(*pLive), pLive->GetCurrentPlayer());
 }

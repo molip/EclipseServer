@@ -36,7 +36,13 @@ public:
 	std::unique_ptr<Record> PopRecord();
 	const std::vector<RecordPtr>& GetRecords() const { return m_records; }
 	
-	virtual void FinishTurn() override;
+	const Player& GetCurrentPlayer() const;
+	Player& GetCurrentPlayer();
+	const Team& GetCurrentTeam() const	{ return const_cast<LiveGame*>(this)->GetCurrentTeam(); }
+	Team& GetCurrentTeam();
+
+	void FinishTurn();
+	void StartRound();
 
 	virtual void Save(Serial::SaveNode& node) const override;
 	virtual void Load(const Serial::LoadNode& node) override;
@@ -44,10 +50,15 @@ public:
 private:
 	virtual void Save() const override;
 
+	void AdvanceTurn();
+
 	CmdStack* m_pCmdStack;
 	std::vector<RecordPtr> m_records;
 	Phase m_phase;
 	bool m_bDoneAction;
+
+	int m_iTurn, m_iRound;
+	int m_iStartTeam, m_iStartTeamNext;
 };
 
 DEFINE_UNIQUE_PTR(LiveGame)

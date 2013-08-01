@@ -7,7 +7,6 @@
 #include "Players.h"
 #include "Record.h"
 #include "Serial.h"
-#include "Controller.h"
 #include "Output.h"
 
 #include <algorithm>
@@ -18,19 +17,17 @@ namespace
 }
 
 Game::Game() : 
-	m_id(0), m_idOwner(0), m_iTurn(-1), m_iRound(-1), m_iStartTeam(-1), m_iStartTeamNext(-1), m_map(*this)
+	m_id(0), m_idOwner(0), m_map(*this)
 {
 }
 
 Game::Game(int id, const std::string& name, const Player& owner) : 
-	m_id(id), m_name(name), m_idOwner(owner.GetID()), m_iTurn(-1), m_iRound(-1), m_iStartTeam(-1), m_iStartTeamNext(-1),
-	m_map(*this)
+	m_id(id), m_name(name), m_idOwner(owner.GetID()), m_map(*this)
 {
 }
 
 Game::Game(int id, const std::string& name, const Player& owner, const Game& rhs) :
 	m_id(id), m_name(name), m_idOwner(owner.GetID()), 
-	m_iTurn(rhs.m_iTurn), m_iRound(rhs.m_iRound), m_iStartTeam(rhs.m_iRound), m_iStartTeamNext(rhs.m_iStartTeamNext),
 	m_map(rhs.m_map, *this), m_techs(rhs.m_techs), m_repBag(rhs.m_repBag), m_techBag(rhs.m_techBag), m_discBag(rhs.m_discBag)
 {
 	for (auto& t : rhs.m_teams)
@@ -49,26 +46,6 @@ const Player& Game::GetOwner() const
 	return Players::Get(m_idOwner);
 }
 
-void Game::StartRound()
-{
-	assert(m_iRound < 9);
-
-	++m_iRound;
-
-	if (m_iRound == 9) // Game over.
-		return;
-
-	// Take new technologies from bag.
-	const int startTech[] = { 12, 12, 14, 16, 18, 20 };
-	const int roundTech[] = { 4, 4, 6, 7, 8, 9 };
-
-	int nTech = (m_iRound == 0 ? startTech : roundTech)[m_teams.size() - 1];
-	for (int i = 0; i < nTech && !m_techBag.IsEmpty(); ++i)
-		++m_techs[m_techBag.TakeTile()];
-
-	Controller::Get()->SendMessage(Output::UpdateTechnologies(*this), *this);
-}
-
 Team* Game::FindTeam(const Player& player)
 {
 	for (auto& t : m_teams)
@@ -82,21 +59,6 @@ Team& Game::GetTeam(const Player& player)
 	Team* pTeam = FindTeam(player);
 	AssertThrow("Game::GetTeam: player not in game: " + player.GetName(), !!pTeam);
 	return *pTeam;
-}
-
-const Player& Game::GetCurrentPlayer() const
-{
-	return Players::Get(GetCurrentTeam().GetPlayerID());
-}
-
-Player& Game::GetCurrentPlayer() 
-{
-	return Players::Get(GetCurrentTeam().GetPlayerID());
-}
-
-Team& Game::GetCurrentTeam()
-{
-	return *m_teams[(m_iStartTeam + m_iTurn) % m_teams.size()];
 }
 
 Team* Game::FindTeam(Colour c) 
@@ -114,26 +76,11 @@ Team& Game::GetTeam(Colour c)
 	return *pTeam;
 }
 
-void Game::AdvanceTurn()
-{
-	m_iTurn = (m_iTurn + 1) % m_teams.size();
-	Save();
-}
-
-void Game::FinishTurn()
-{
-	AdvanceTurn();
-}
-
 void Game::Save(Serial::SaveNode& node) const 
 {
 	node.SaveType("id", m_id);
 	node.SaveType("name", m_name);
 	node.SaveType("owner", m_idOwner);
-	node.SaveType("turn", m_iTurn);
-	node.SaveType("round", m_iRound);
-	node.SaveType("start_team", m_iStartTeam);
-	node.SaveType("start_team_next", m_iStartTeamNext);
 	node.SaveMap("techs", m_techs, Serial::EnumSaver(), Serial::TypeSaver());
 	node.SaveCntr("teams", m_teams, Serial::ClassPtrSaver());
 	node.SaveClass("rep_bag", m_repBag);
@@ -148,10 +95,6 @@ void Game::Load(const Serial::LoadNode& node)
 	node.LoadType("id", m_id);
 	node.LoadType("name", m_name);
 	node.LoadType("owner", m_idOwner);
-	node.LoadType("turn", m_iTurn);
-	node.LoadType("round", m_iRound);
-	node.LoadType("start_team", m_iStartTeam);
-	node.LoadType("start_team_next", m_iStartTeamNext);
 	node.LoadMap("techs", m_techs, Serial::EnumLoader(), Serial::TypeLoader());
 	node.LoadCntr("teams", m_teams, Serial::ClassPtrLoader());
 	node.LoadClass("rep_bag", m_repBag);
