@@ -19,6 +19,8 @@ CmdPtr UpgradeCmd::Process(const Input::CmdMessage& msg, const Controller& contr
 {
 	auto& m = CastThrow<const Input::CmdUpgrade>(msg);
 	
+	// TODO: Reaction
+
 	return nullptr;
 }
 

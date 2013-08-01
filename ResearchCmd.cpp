@@ -82,6 +82,8 @@ REGISTER_DYNAMIC(ResearchRecord)
 
 ResearchCmd::ResearchCmd(Colour colour, LiveGame& game, int iPhase) : PhaseCmd(colour, iPhase), m_bAborted(false)
 {
+	Team& team = GetTeam(game);
+	AssertThrow("ResearchCmd::ResearchCmd", !team.HasPassed());
 }
 
 void ResearchCmd::UpdateClient(const Controller& controller, const LiveGame& game) const

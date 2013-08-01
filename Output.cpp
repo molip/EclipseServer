@@ -271,19 +271,20 @@ ChooseAction::ChooseAction(const LiveGame& game) : Choose("action")
 	AssertThrow("ChooseAction::ChooseAction", !game.GetCurrentCmd());
 
 	bool bCanDoAction = game.CanDoAction();
+	bool bPassed = game.GetCurrentTeam().HasPassed();
 
 	m_root.SetAttribute("can_undo",			game.CanRemoveCmd());
-	m_root.SetAttribute("can_explore",		bCanDoAction);
-	m_root.SetAttribute("can_influence",	bCanDoAction);
-	m_root.SetAttribute("can_research",		bCanDoAction);
+	m_root.SetAttribute("can_explore",		bCanDoAction && !bPassed);
+	m_root.SetAttribute("can_influence",	bCanDoAction && !bPassed);
+	m_root.SetAttribute("can_research",		bCanDoAction && !bPassed);
 	m_root.SetAttribute("can_upgrade",		bCanDoAction);
 	m_root.SetAttribute("can_build",		bCanDoAction);
 	m_root.SetAttribute("can_move",			bCanDoAction);
 	m_root.SetAttribute("can_colonise",		game.GetCurrentTeam().GetUnusedColonyShips() > 0); 
 	m_root.SetAttribute("can_diplomacy",	true);
 	m_root.SetAttribute("can_trade",		true);
-	m_root.SetAttribute("can_pass",			bCanDoAction);
-	m_root.SetAttribute("can_end_turn",		!bCanDoAction);
+	m_root.SetAttribute("can_pass",			bCanDoAction && !bPassed);
+	m_root.SetAttribute("can_end_turn",		!bCanDoAction || bPassed);
 }
 
 ChooseFinished::ChooseFinished() : Choose("finished") 

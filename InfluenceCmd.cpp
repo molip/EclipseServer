@@ -12,10 +12,13 @@
 
 InfluenceCmd::InfluenceCmd(Colour colour, LiveGame& game, int iPhase) : PhaseCmd(colour, iPhase)
 {
+	Team& team = GetTeam(game);
+	AssertThrow("InfluenceCmd::InfluenceCmd", !team.HasPassed());
+
 	const Map& map = game.GetMap();
 	const Map::HexMap& hexes = map.GetHexes();
 	for (auto& h : hexes)
-		if (h.second->IsOwnedBy(GetTeam(game)))
+		if (h.second->IsOwnedBy(team))
 			m_srcs.push_back(h.first);
 }
 

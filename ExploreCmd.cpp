@@ -13,7 +13,9 @@
 
 ExploreCmd::ExploreCmd(Colour colour, LiveGame& game, int iPhase) : PhaseCmd(colour, iPhase), m_idHex(-1), m_iPos(-1)
 {
-	auto& team = GetTeam(game);
+	Team& team = GetTeam(game);
+	AssertThrow("ExploreCmd::ExploreCmd", !team.HasPassed());
+
 	std::set<MapPos> positions;
 	const Map::HexMap& hexes = game.GetMap().GetHexes();
 	for (auto& h : hexes)

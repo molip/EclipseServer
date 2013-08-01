@@ -148,7 +148,7 @@ CmdPtr BuildCmd::Process(const Input::CmdMessage& msg, const Controller& control
 	pRec->Do(game, controller);
 	game.PushRecord(RecordPtr(pRec));
 
-	if (m_iPhase + 1 < Race(team.GetRace()).GetBuildRate())
+	if (!team.HasPassed() && m_iPhase + 1 < Race(team.GetRace()).GetBuildRate())
 		return CmdPtr(new BuildCmd(m_colour, game, m_iPhase + 1));
 
 	return nullptr;

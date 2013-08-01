@@ -147,7 +147,8 @@ CmdPtr MoveDstCmd::Process(const Input::CmdMessage& msg, const Controller& contr
 	pRec->Do(game, controller);
 	game.PushRecord(RecordPtr(pRec));
 
-	if (m_iPhase + 1 < Race(GetTeam(game).GetRace()).GetMoves())
+	Team& team = GetTeam(game);
+	if (!team.HasPassed() && m_iPhase + 1 < Race(team.GetRace()).GetMoves())
 		return CmdPtr(new MoveCmd(m_colour, game, m_iPhase + 1));
 
 	return nullptr;
