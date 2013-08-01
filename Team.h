@@ -74,9 +74,9 @@ public:
 
 	void UseColonyShips(int nShips);
 	void ReturnColonyShips(int nShips);
-	int GetColonyShips() const { return m_nColonyShips; }
+	int GetColonyShips() const;
 	int GetUsedColonyShips() const { return m_nColonyShipsUsed; }
-	int GetUnusedColonyShips() const { return m_nColonyShips - m_nColonyShipsUsed; }
+	int GetUnusedColonyShips() const { return GetColonyShips() - m_nColonyShipsUsed; }
 
 	const Blueprint& GetBlueprint(ShipType s) const;
 
@@ -101,7 +101,7 @@ private:
 	BlueprintPtr m_blueprints[4];
 	int m_nShips[4];
 
-	int m_nColonyShips, m_nColonyShipsUsed;
+	int m_nColonyShipsUsed;
 };
 
 typedef std::unique_ptr<Team> TeamPtr;

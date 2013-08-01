@@ -24,7 +24,7 @@ Team::Team(int idGame, int idPlayer) :
 Team::Team(const Team& rhs, int idGame) : 
 	m_idGame(idGame), m_idPlayer(rhs.m_idPlayer), m_race(rhs.m_race), m_colour(rhs.m_colour), m_allies(rhs.m_allies),
 	m_popTrack(rhs.m_popTrack), m_infTrack(rhs.m_infTrack), m_repTrack(rhs.m_repTrack), m_techTrack(rhs.m_techTrack), 
-	m_storage(rhs.m_storage), m_nColonyShips(rhs.m_nColonyShips), m_nColonyShipsUsed(rhs.m_nColonyShipsUsed)
+	m_storage(rhs.m_storage), m_nColonyShipsUsed(rhs.m_nColonyShipsUsed)
 {	
 	for (int i = 0; i < 4; ++i)
 		m_nShips[i] = rhs.m_nShips[i];
@@ -38,7 +38,6 @@ void Team::Assign(RaceType race, Colour colour)
 
 	Race r(race);
 	m_storage = r.GetStartStorage();
-	m_nColonyShips = r.GetStartColonyShips();
 	
 	m_infTrack.AddDiscs(r.GetStartInfluenceDiscs());
 
@@ -111,13 +110,18 @@ void Team::PopulateStartHex(Hex& hex)
 
 void Team::UseColonyShips(int nShips)
 {
-	AssertThrowModel("Team::UseColonyShips", m_nColonyShipsUsed + nShips <= m_nColonyShips);
+	AssertThrowModel("Team::UseColonyShips", m_nColonyShipsUsed + nShips <= GetColonyShips());
 	m_nColonyShipsUsed += nShips;
 }
 
 void Team::ReturnColonyShips(int nShips)
 {
 	m_nColonyShipsUsed = std::max(0, m_nColonyShipsUsed - nShips);
+}
+
+int Team::GetColonyShips() const
+{
+	return Race(m_race).GetStartColonyShips();
 }
 
 const Blueprint& Team::GetBlueprint(ShipType s) const
@@ -148,7 +152,6 @@ void Team::Save(Serial::SaveNode& node) const
 	node.SaveArray("blueprints", m_blueprints, Serial::ClassPtrSaver());
 	node.SaveArray("ships", m_nShips, Serial::TypeSaver());
 
-	node.SaveType("colony_ships", m_nColonyShips);
 	node.SaveType("colony_ships_used", m_nColonyShipsUsed);
 }
 
@@ -168,7 +171,6 @@ void Team::Load(const Serial::LoadNode& node)
 	node.LoadArray("blueprints", m_blueprints, Serial::ClassPtrLoader());
 	node.LoadArray("ships", m_nShips, Serial::TypeLoader());
 
-	node.LoadType("colony_ships", m_nColonyShips);
 	node.LoadType("colony_ships_used", m_nColonyShipsUsed);
 
 	if (m_race != RaceType::None)
