@@ -137,14 +137,14 @@ Cmd* LiveGame::RemoveCmd()
 
 	Cmd* pUndo = m_pCmdStack->RemoveCmd();
 
-	if (bAction)
+	if (bAction && !pUndo) // It's a start cmd.
 	{
 		AssertThrow("LiveGame::RemoveCmd",  m_bDoneAction);
 		m_bDoneAction = false;
-	}
 
-	if (bCostsInfluence)
-		GetCurrentTeam().GetInfluenceTrack().AddDiscs(1);
+		if (bCostsInfluence)
+			GetCurrentTeam().GetInfluenceTrack().AddDiscs(1);
+	}
 
 	Save();
 	return pUndo;
