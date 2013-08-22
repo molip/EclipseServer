@@ -2,11 +2,6 @@ var Build = {}
 
 Build.Stage = function(ships, hexes) // pos, orbital, monolith
 {
-	ShowElementById('choose_subaction', true)
-
-	ShowElementById('choose_undo', true)
-	document.getElementById('choose_undo_btn').disabled = false
-
 	document.getElementById('choose_build_btn').disabled = true
 
 	ClearSelect(document.getElementById('select_build'))

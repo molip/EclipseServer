@@ -76,6 +76,8 @@ function OnCommandShow(elem)
 
 function OnCommandUpdate(elem)
 {
+	Assert(data.action == null);
+
 	var param = elem.getAttribute('param')
 
 	if (param == "game_list")
@@ -155,6 +157,13 @@ function OnCommandChoose(elem)
 		OnCommandChooseFinished(elem)
 	else
 		writeToScreen('OnCommandChoose: unknown param: ' + param)
+
+	if (data.action)
+	{
+		ShowElementById('choose_undo', true)
+		ShowElementById('choose_subaction', !data.action.flagNoSubAction)
+		document.getElementById('choose_undo_btn').disabled = data.action.flagCantUndo
+	}
 }
 
 function OnCommandUpdateGameList(elem)

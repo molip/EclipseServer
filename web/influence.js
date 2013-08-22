@@ -15,11 +15,6 @@ Influence.Stage = function(positions, can_select_track, btn_id, command)
 
 	document.getElementById(btn_id).disabled = true
 
-	ShowElementById('choose_subaction', true)
-
-	ShowElementById('choose_undo', true)
-	document.getElementById('choose_undo_btn').disabled = false
-
 	this.UpdateTrackSelection()
 }
 

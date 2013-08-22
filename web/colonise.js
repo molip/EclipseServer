@@ -5,15 +5,13 @@ var Colonise = {}
 
 Colonise.ChoosePosStage = function(positions)
 {
+	this.flagNoSubAction = true;
+
 	this.positions = positions
 	this.selected = null
 	this.pos_idx = -1
 
 	document.getElementById('choose_colonise_pos_btn').disabled = true
-
-	ShowElementById('choose_subaction', true)
-	ShowElementById('choose_undo', true)
-	document.getElementById('choose_undo_btn').disabled = false
 }
 
 Colonise.ChoosePosStage.prototype.OnHexMouseDown = function(pt)
@@ -56,6 +54,8 @@ Colonise.ChoosePosStage.prototype.CleanUp = function()
 
 Colonise.ChooseSquaresStage = function(num_ships, square_counts, max_cubes)
 {
+	this.flagNoSubAction = true;
+
 	this.num_ships = num_ships
 
 	this.max_fixed = [square_counts.Money, square_counts.Science, square_counts.Materials]
@@ -64,10 +64,6 @@ Colonise.ChooseSquaresStage = function(num_ships, square_counts, max_cubes)
 	this.max_orbital = square_counts.Orbital
 
 	document.getElementById('choose_colonise_squares_btn').disabled = true
-
-	ShowElementById('choose_subaction', true)
-	ShowElementById('choose_undo', true)
-	document.getElementById('choose_undo_btn').disabled = false
 
 	var div = document.getElementById('choose_colonise_squares_content')
 

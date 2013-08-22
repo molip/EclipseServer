@@ -48,8 +48,10 @@ Explore.ChoosePosStage.prototype.CleanUp = function()
 
 ///////////////////////////////////////////////////////////////////////////////
 
-Explore.ChooseHexStage = function(pos)
+Explore.ChooseHexStage = function(pos, canUndo)
 {
+	this.flagCantUndo = !canUndo
+
 	this.selected = pos.Clone()
 	this.choices = [] // id, rotations, rot_idx, can_influence
 	this.choice_idx = 0
@@ -136,8 +138,10 @@ Explore.ChooseHexStage.prototype.UpdateInfluenceCheckbox = function()
 
 ///////////////////////////////////////////////////////////////////////////////
 
-Explore.ChooseDiscoveryStage = function(pos)
+Explore.ChooseDiscoveryStage = function(canUndo)
 {
+	this.flagNoSubAction = true;
+	this.flagCantUndo = !canUndo
 }
 
 Explore.ChooseDiscoveryStage.prototype.SendDiscovery = function()
@@ -167,10 +171,6 @@ Explore.OnCommandChoosePos = function(elem)
 	document.getElementById('choose_explore_pos_btn').disabled = true
 	ShowElementById('choose_explore_pos_reject_btn', can_skip, true)
 
-	ShowElementById('choose_subaction', true)
-	ShowElementById('choose_undo', true)
-	document.getElementById('choose_undo_btn').disabled = false
-	
 	Map.DrawActionLayer()
 }
 
@@ -182,8 +182,9 @@ Explore.OnCommandChooseHex = function(elem)
 	var x = Number(elem.getAttribute('x'))
 	var y = Number(elem.getAttribute('y'))
 	var can_take = IsTrue(elem.getAttribute('can_take'))
+	var can_undo = IsTrue(elem.getAttribute('can_undo'))
 	
-	data.action = new Explore.ChooseHexStage(new Point(x, y))
+	data.action = new Explore.ChooseHexStage(new Point(x, y), can_undo)
 	
 	var hexes = GetChildElements(elem, 'hex')
 	for (var i = 0; i < hexes.length; ++i)
@@ -205,26 +206,16 @@ Explore.OnCommandChooseHex = function(elem)
 	data.action.UpdateInfluenceCheckbox()
 	data.action.UpdateHex()
 
-	ShowElementById('choose_subaction', true)
-
-	var can_undo = IsTrue(elem.getAttribute('can_undo'))
-	ShowElementById('choose_undo', true)
-	document.getElementById('choose_undo_btn').disabled = !can_undo
-	
 	Map.DrawSelectLayer()
 }
 
 Explore.OnCommandChooseDiscovery = function(elem)
 {
-	data.action = new Explore.ChooseDiscoveryStage()
-
 	var can_undo = IsTrue(elem.getAttribute('can_undo'))
-	
-	ShowElementById('choose_subaction', false)
+
+	data.action = new Explore.ChooseDiscoveryStage(can_undo)
 
 	ShowActionElement('choose_explore_discovery')
-	ShowElementById('choose_undo', true)
-	document.getElementById('choose_undo_btn').disabled = !can_undo
 	
 	Map.DrawActionLayer()
 	Map.DrawSelectLayer()

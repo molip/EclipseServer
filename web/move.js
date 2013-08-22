@@ -5,11 +5,6 @@ var Move = {}
 
 Move.SrcStage = function()
 {
-	ShowElementById('choose_subaction', true)
-
-	ShowElementById('choose_undo', true)
-	document.getElementById('choose_undo_btn').disabled = false
-
 	document.getElementById('choose_move_src_btn').disabled = true
 
 	ClearSelect(document.getElementById('select_move_ship'))
@@ -78,11 +73,6 @@ Move.SrcStage.prototype.CleanUp = function()
 
 Move.DstStage = function(hexes)
 {
-	ShowElementById('choose_subaction', true)
-
-	ShowElementById('choose_undo', true)
-	document.getElementById('choose_undo_btn').disabled = false
-
 	document.getElementById('choose_move_dst_btn').disabled = true
 
 	this.hexes = hexes
