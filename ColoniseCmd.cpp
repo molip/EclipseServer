@@ -160,8 +160,7 @@ CmdPtr ColoniseSquaresCmd::Process(const Input::CmdMessage& msg, const Controlle
 
 	AssertThrow("ColoniseSquaresCmd::Process: not enough squares", fixed.IsEmpty() || grey.IsEmpty() || orbital.IsEmpty());
 
-	pRec->Do(game, controller);
-	game.PushRecord(RecordPtr(pRec));
+	DoRecord(RecordPtr(pRec), controller, game);
 
 	return nullptr;
 }

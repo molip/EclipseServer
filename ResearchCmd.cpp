@@ -79,7 +79,7 @@ REGISTER_DYNAMIC(ResearchRecord)
 
 //-----------------------------------------------------------------------------
 
-ResearchCmd::ResearchCmd(Colour colour, LiveGame& game, int iPhase) : PhaseCmd(colour, iPhase), m_bAborted(false)
+ResearchCmd::ResearchCmd(Colour colour, LiveGame& game, int iPhase) : PhaseCmd(colour, iPhase)
 {
 	Team& team = GetTeam(game);
 	AssertThrow("ResearchCmd::ResearchCmd", !team.HasPassed());
@@ -108,15 +108,14 @@ void ResearchCmd::UpdateClient(const Controller& controller, const LiveGame& gam
 
 CmdPtr ResearchCmd::Process(const Input::CmdMessage& msg, const Controller& controller, LiveGame& game)
 {
-	if (m_bAborted = !!dynamic_cast<const Input::CmdAbort*>(&msg))
+	if (dynamic_cast<const Input::CmdAbort*>(&msg))
 		return nullptr;
 
 	auto& m = CastThrow<const Input::CmdResearch>(msg);
 	AssertThrow("ResearchCmd::Process: invalid tech index", InRange(m_techs, m.m_iTech));
 
 	ResearchRecord* pRec = new ResearchRecord(m_colour, m_techs[m.m_iTech].first);
-	pRec->Do(game, controller);
-	game.PushRecord(RecordPtr(pRec));
+	DoRecord(RecordPtr(pRec), controller, game);
 
 	if (m_techs[m.m_iTech].first == TechType::ArtifactKey)
 		return CmdPtr(new ResearchArtifactCmd(m_colour, game, m_iPhase));
@@ -130,13 +129,11 @@ CmdPtr ResearchCmd::Process(const Input::CmdMessage& msg, const Controller& cont
 void ResearchCmd::Save(Serial::SaveNode& node) const 
 {
 	__super::Save(node);
-	node.SaveType("aborted", m_bAborted);
 }
 
 void ResearchCmd::Load(const Serial::LoadNode& node) 
 {
 	__super::Load(node);
-	node.LoadType("aborted", m_bAborted);
 }
 
 REGISTER_DYNAMIC(ResearchCmd)
@@ -199,8 +196,7 @@ CmdPtr ResearchArtifactCmd::Process(const Input::CmdMessage& msg, const Controll
 	auto& m = CastThrow<const Input::CmdResearchArtifact>(msg);
 
 	ResearchArtifactRecord* pRec = new ResearchArtifactRecord(m_colour, m.m_artifacts);
-	pRec->Do(game, controller);
-	game.PushRecord(RecordPtr(pRec));
+	DoRecord(RecordPtr(pRec), controller, game);
 
 	if (m_iPhase + 1 < Race(GetTeam(game).GetRace()).GetResearchRate())
 		return CmdPtr(new ResearchCmd(m_colour, game, m_iPhase + 1));

@@ -32,8 +32,10 @@ public:
 	Cmd* GetCurrentCmd();
 	const Cmd* GetCurrentCmd() const;
 
+	// Only call from Cmd::DoRecord/PopRecord.
 	void PushRecord(std::unique_ptr<Record>& pRec);
 	std::unique_ptr<Record> PopRecord();
+
 	const std::vector<RecordPtr>& GetRecords() const { return m_records; }
 	
 	const Player& GetCurrentPlayer() const;
@@ -58,6 +60,7 @@ private:
 	bool m_bDoneAction;
 
 	int m_iTurn, m_iRound;
+
 	int m_iStartTeam, m_iStartTeamNext;
 };
 

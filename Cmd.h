@@ -15,6 +15,9 @@ namespace Input { class CmdMessage; }
 class Cmd;
 typedef std::unique_ptr<Cmd> CmdPtr;
 
+class Record;
+typedef std::unique_ptr<Record> RecordPtr;
+
 class Cmd : public Dynamic
 {
 public:
@@ -28,11 +31,13 @@ public:
 	virtual bool IsAutoProcess() const { return false; } 
 	virtual bool IsAction() const { return false; } 
 	virtual bool CostsInfluence() const { return IsAction(); } 
-	virtual bool HasRecord() const { return false; } 
+	virtual bool HasRecord() const { return m_bHasRecord; } 
 	virtual bool CanUndo() const { return true; } 
 	
 	virtual void Save(Serial::SaveNode& node) const override;
 	virtual void Load(const Serial::LoadNode& node) override;
+
+	void PopRecord(const Controller& controller, LiveGame& game);
 
 protected:
 	Team& GetTeam(LiveGame& game);
@@ -41,5 +46,8 @@ protected:
 	Player& GetPlayer(LiveGame& game);
 	const Player& GetPlayer(const LiveGame& game) const;
 
+	void DoRecord(RecordPtr pRec, const Controller& controller, LiveGame& game);
+
 	Colour m_colour;
+	bool m_bHasRecord;
 };

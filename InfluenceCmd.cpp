@@ -199,9 +199,9 @@ CmdPtr InfluenceDstCmd::Process(const Input::CmdMessage& msg, const Controller& 
 	const MapPos* pDstPos = m.m_iPos >= 0 ? &m_dsts[m.m_iPos] : nullptr;
 	
 	InfluenceRecord* pRec = new InfluenceRecord(m_colour, m_pSrcPos.get(), pDstPos);
-	pRec->Do(game, controller);
+	DoRecord(RecordPtr(pRec), controller, game);
+
 	m_discovery = pRec->GetDiscovery();
-	game.PushRecord(RecordPtr(pRec));
 
 	const bool bFinish = m_iPhase == 1;
 

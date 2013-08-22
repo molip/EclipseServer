@@ -330,7 +330,7 @@ bool Undo::Process(Controller& controller, Player& player) const
 				if (g->GetLiveGameID() == game.GetID())
 					g->OnPreRecordPop(controller);
 
-			game.PopRecord()->Undo(game, controller);
+			pUndo->PopRecord(controller, game);
 
 			for (auto& g : Games::GetReviewGames())
 				if (g->GetLiveGameID() == game.GetID())

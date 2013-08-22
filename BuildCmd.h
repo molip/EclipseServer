@@ -14,7 +14,6 @@ public:
 
 	virtual void UpdateClient(const Controller& controller, const LiveGame& game) const override;
 	virtual CmdPtr Process(const Input::CmdMessage& msg, const Controller& controller, LiveGame& game) override;
-	virtual bool HasRecord() const { return true; } 
 	virtual bool IsAction() const { return m_iPhase == 0; } 
 
 private:

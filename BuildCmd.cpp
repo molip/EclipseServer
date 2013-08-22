@@ -144,8 +144,7 @@ CmdPtr BuildCmd::Process(const Input::CmdMessage& msg, const Controller& control
 		GetTeam(game).GetUnusedShips(BuildableToShip(m.m_buildable)) > 0);
 
 	BuildRecord* pRec = new BuildRecord(m_colour, pos, m.m_buildable);
-	pRec->Do(game, controller);
-	game.PushRecord(RecordPtr(pRec));
+	DoRecord(RecordPtr(pRec), controller, game);
 
 	if (!team.HasPassed() && m_iPhase + 1 < Race(team.GetRace()).GetBuildRate())
 		return CmdPtr(new BuildCmd(m_colour, game, m_iPhase + 1));

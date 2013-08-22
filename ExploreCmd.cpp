@@ -226,7 +226,7 @@ CmdPtr ExploreHexCmd::Process(const Input::CmdMessage& msg, const Controller& co
 	{
 		HexBag& bag = game.GetHexBag(m_pos.GetRing());
 		AssertThrow("ExploreHexCmd::Process: no tiles left in bag", !bag.IsEmpty());
-		AssertThrow("ExploreHexCmd::Process: too many tiles taken", Race(GetTeam(game).GetRace()).GetExploreChoices() > m_hexIDs.size());
+		AssertThrow("ExploreHexCmd::Process: too many tiles taken", Race(GetTeam(game).GetRace()).GetExploreChoices() > (int)m_hexIDs.size());
 
 		m_idTaken = bag.TakeTile(); 
 		std::vector<int> hexIDs = m_hexIDs;
@@ -253,9 +253,9 @@ CmdPtr ExploreHexCmd::Process(const Input::CmdMessage& msg, const Controller& co
 		m_iRot = m.m_iRot;
 
 		ExploreRecord* pRec = new ExploreRecord(m_colour, m_pos, m_hexChoices[m_iHex].m_idHex, hc.m_rotations[m_iRot], m.m_bInfluence);
-		pRec->Do(game, controller);
+		DoRecord(RecordPtr(pRec), controller, game);
+
 		m_discovery = pRec->GetDiscovery();
-		game.PushRecord(RecordPtr(pRec));
 	}
 
 	const bool bFinish = m_iPhase + 1 == Race(GetTeam(game).GetRace()).GetExploreRate();

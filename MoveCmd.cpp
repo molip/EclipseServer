@@ -143,8 +143,7 @@ CmdPtr MoveDstCmd::Process(const Input::CmdMessage& msg, const Controller& contr
 	AssertThrow("MoveDstCmd::Process: invalid hex", dsts.find(dst) != dsts.end());
 
 	MoveRecord* pRec = new MoveRecord(m_colour, m_ship, m_src, dst);
-	pRec->Do(game, controller);
-	game.PushRecord(RecordPtr(pRec));
+	DoRecord(RecordPtr(pRec), controller, game);
 
 	Team& team = GetTeam(game);
 	if (!team.HasPassed() && m_iPhase + 1 < Race(team.GetRace()).GetMoves())
