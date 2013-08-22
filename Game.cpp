@@ -81,13 +81,13 @@ void Game::Save(Serial::SaveNode& node) const
 	node.SaveType("id", m_id);
 	node.SaveType("name", m_name);
 	node.SaveType("owner", m_idOwner);
-	node.SaveMap("techs", m_techs, Serial::EnumSaver(), Serial::TypeSaver());
 	node.SaveCntr("teams", m_teams, Serial::ClassPtrSaver());
+	node.SaveClass("map", m_map);
+	node.SaveMap("techs", m_techs, Serial::EnumSaver(), Serial::TypeSaver());
 	node.SaveClass("rep_bag", m_repBag);
 	node.SaveClass("tech_bag", m_techBag);
 	node.SaveClass("disc_bag", m_discBag);
 	node.SaveArray("hex_bags", m_hexBag, Serial::ClassSaver());
-	node.SaveClass("map", m_map);
 }
 
 void Game::Load(const Serial::LoadNode& node)
@@ -95,13 +95,13 @@ void Game::Load(const Serial::LoadNode& node)
 	node.LoadType("id", m_id);
 	node.LoadType("name", m_name);
 	node.LoadType("owner", m_idOwner);
-	node.LoadMap("techs", m_techs, Serial::EnumLoader(), Serial::TypeLoader());
 	node.LoadCntr("teams", m_teams, Serial::ClassPtrLoader());
+	node.LoadClass("map", m_map);
+	node.LoadMap("techs", m_techs, Serial::EnumLoader(), Serial::TypeLoader());
 	node.LoadClass("rep_bag", m_repBag);
 	node.LoadClass("tech_bag", m_techBag);
 	node.LoadClass("disc_bag", m_discBag);
 	node.LoadArray("hex_bags", m_hexBag, Serial::ClassLoader());
-	node.LoadClass("map", m_map);
 
 	for (auto& t : m_teams)
 		t->SetGameID(m_id);
