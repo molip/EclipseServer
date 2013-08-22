@@ -128,15 +128,6 @@ CmdPtr ResearchCmd::Process(const Input::CmdMessage& msg, const Controller& cont
 	return nullptr;
 }
 
-void ResearchCmd::Undo(const Controller& controller, LiveGame& game)
-{
-	if (HasRecord()) // Not aborted
-	{
-		RecordPtr pRec = game.PopRecord();
-		pRec->Undo(game, controller);
-	}
-}
-
 void ResearchCmd::Save(Serial::SaveNode& node) const 
 {
 	__super::Save(node);
@@ -217,12 +208,6 @@ CmdPtr ResearchArtifactCmd::Process(const Input::CmdMessage& msg, const Controll
 		return CmdPtr(new ResearchCmd(m_colour, game, m_iPhase + 1));
 
 	return nullptr;
-}
-
-void ResearchArtifactCmd::Undo(const Controller& controller, LiveGame& game)
-{
-	RecordPtr pRec = game.PopRecord();
-	pRec->Undo(game, controller);
 }
 
 void ResearchArtifactCmd::Save(Serial::SaveNode& node) const 

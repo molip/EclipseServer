@@ -212,12 +212,6 @@ CmdPtr InfluenceDstCmd::Process(const Input::CmdMessage& msg, const Controller& 
 	return CmdPtr(bFinish ? nullptr : new InfluenceCmd(m_colour, game, 1));
 }
 
-void InfluenceDstCmd::Undo(const Controller& controller, LiveGame& game)
-{
-	RecordPtr pRec = game.PopRecord();
-	pRec->Undo(game, controller);
-}
-
 void InfluenceDstCmd::Save(Serial::SaveNode& node) const 
 {
 	__super::Save(node);

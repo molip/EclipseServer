@@ -26,10 +26,6 @@ CmdPtr DiscoverCmd::Process(const Input::CmdMessage& msg, const Controller& cont
 	return GetNextCmd(game);
 }
 
-void DiscoverCmd::Undo(const Controller& controller, LiveGame& game)
-{
-}
-
 void DiscoverCmd::Save(Serial::SaveNode& node) const 
 {
 	__super::Save(node);

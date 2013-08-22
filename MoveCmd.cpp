@@ -154,11 +154,6 @@ CmdPtr MoveDstCmd::Process(const Input::CmdMessage& msg, const Controller& contr
 	return nullptr;
 }
 
-void MoveDstCmd::Undo(const Controller& controller, LiveGame& game)
-{
-	game.PopRecord()->Undo(game, controller);
-}
-
 void MoveDstCmd::Save(Serial::SaveNode& node) const 
 {
 	__super::Save(node);

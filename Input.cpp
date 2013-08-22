@@ -19,6 +19,7 @@
 #include "Games.h"
 #include "LiveGame.h"
 #include "ReviewGame.h"
+#include "Record.h"
 
 #include <sstream>
 
@@ -322,20 +323,21 @@ bool Undo::Process(Controller& controller, Player& player) const
 
 	if (Cmd* pUndo = game.RemoveCmd())
 	{
-		bool bRecord = pUndo->HasRecord();
-		if (bRecord) // Update review games before record gets popped. 
+		if (pUndo->HasRecord())
+		{
+			// Update review games before record gets popped. 
 			for (auto& g : Games::GetReviewGames())
 				if (g->GetLiveGameID() == game.GetID())
 					g->OnPreRecordPop(controller);
 
-		pUndo->Undo(controller, game);
+			game.PopRecord()->Undo(game, controller);
 
-		if (bRecord) 
 			for (auto& g : Games::GetReviewGames())
 				if (g->GetLiveGameID() == game.GetID())
 					controller.SendMessage(Output::UpdateReviewUI(*g), *g);
+		}
 
-		if (pUndo->IsAutoProcess())
+		if (pUndo->IsAutoProcess()) // Also undo the command start. 
 			game.RemoveCmd();
 	}
 

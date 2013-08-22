@@ -30,7 +30,6 @@ public:
 	virtual bool CostsInfluence() const { return IsAction(); } 
 	virtual bool HasRecord() const { return false; } 
 	virtual bool CanUndo() const { return true; } 
-	virtual void Undo(const Controller& controller, LiveGame& game) { } 
 	
 	virtual void Save(Serial::SaveNode& node) const override;
 	virtual void Load(const Serial::LoadNode& node) override;

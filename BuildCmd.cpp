@@ -154,9 +154,4 @@ CmdPtr BuildCmd::Process(const Input::CmdMessage& msg, const Controller& control
 	return nullptr;
 }
 
-void BuildCmd::Undo(const Controller& controller, LiveGame& game)
-{
-	game.PopRecord()->Undo(game, controller);
-}
-
 REGISTER_DYNAMIC(BuildCmd)

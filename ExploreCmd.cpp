@@ -267,15 +267,6 @@ CmdPtr ExploreHexCmd::Process(const Input::CmdMessage& msg, const Controller& co
 	return CmdPtr(bFinish ? nullptr : new ExploreCmd(m_colour, game, 1));
 }
 
-void ExploreHexCmd::Undo(const Controller& controller, LiveGame& game)
-{
-	if (!HasRecord()) // Rejected
-		return;
-
-	RecordPtr pRec = game.PopRecord();
-	pRec->Undo(game, controller);
-}
-
 void ExploreHexCmd::Save(Serial::SaveNode& node) const 
 {
 	__super::Save(node);

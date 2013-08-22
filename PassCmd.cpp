@@ -52,12 +52,4 @@ CmdPtr PassCmd::Process(const Input::CmdMessage& msg, const Controller& controll
 	return nullptr;
 }
 
-void PassCmd::Undo(const Controller& controller, LiveGame& game)
-{
-	AssertThrow("PassCmd::Undo", GetTeam(game).HasPassed());
-
-	RecordPtr pRec = game.PopRecord();
-	pRec->Undo(game, controller);
-}
-
 REGISTER_DYNAMIC(PassCmd)

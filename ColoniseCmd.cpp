@@ -167,12 +167,6 @@ CmdPtr ColoniseSquaresCmd::Process(const Input::CmdMessage& msg, const Controlle
 	return nullptr;
 }
 
-void ColoniseSquaresCmd::Undo(const Controller& controller, LiveGame& game)
-{
-	RecordPtr pRec = game.PopRecord();
-	pRec->Undo(game, controller);
-}
-
 void ColoniseSquaresCmd::Save(Serial::SaveNode& node) const 
 {
 	__super::Save(node);
