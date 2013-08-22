@@ -76,8 +76,6 @@ function OnCommandShow(elem)
 
 function OnCommandUpdate(elem)
 {
-	Assert(data.action == null);
-
 	var param = elem.getAttribute('param')
 
 	if (param == "game_list")
