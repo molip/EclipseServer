@@ -59,10 +59,10 @@ REGISTER_DYNAMIC(InfluenceCmd)
 class InfluenceRecord : public Record
 {
 public:
-	InfluenceRecord() : m_colour(Colour::None), m_discovery(DiscoveryType::None) {}
+	InfluenceRecord() : m_discovery(DiscoveryType::None) {}
 
 	InfluenceRecord(Colour colour, const MapPos* pSrcPos, const MapPos* pDstPos) : 
-		m_colour(colour), m_discovery(DiscoveryType::None) 
+		Record(colour), m_discovery(DiscoveryType::None) 
 	{
 		m_pSrcPos.reset(pSrcPos ? new MapPos(*pSrcPos) : nullptr);
 		m_pDstPos.reset(pDstPos ? new MapPos(*pDstPos) : nullptr);
@@ -93,7 +93,7 @@ public:
 
 	virtual void Save(Serial::SaveNode& node) const override 
 	{
-		node.SaveEnum("colour", m_colour);
+		__super::Save(node);
 		node.SaveEnum("discovery", m_discovery);
 		node.SaveTypePtr("src_pos", m_pSrcPos);
 		node.SaveTypePtr("dst_pos", m_pDstPos);
@@ -101,7 +101,7 @@ public:
 	
 	virtual void Load(const Serial::LoadNode& node) override 
 	{
-		node.LoadEnum("colour", m_colour);
+		__super::Load(node);
 		node.LoadEnum("discovery", m_discovery);
 		node.LoadTypePtr("src_pos", m_pSrcPos);
 		node.LoadTypePtr("dst_pos", m_pDstPos);
@@ -138,7 +138,6 @@ private:
 		return pDstHex;
 	}
 
-	Colour m_colour;
 	MapPosPtr m_pSrcPos, m_pDstPos;
 	DiscoveryType m_discovery;
 };

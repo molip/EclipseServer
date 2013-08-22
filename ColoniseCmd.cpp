@@ -50,20 +50,20 @@ REGISTER_DYNAMIC(ColoniseCmd)
 class ColoniseRecord : public Record
 {
 public:
-	ColoniseRecord() : m_colour(Colour::None) {}
-	ColoniseRecord(Colour colour, const MapPos& pos) : m_colour(colour), m_pos(pos) {}
+	ColoniseRecord() {}
+	ColoniseRecord(Colour colour, const MapPos& pos) : Record(colour), m_pos(pos) {}
 	void AddMove(SquareType st, Resource r) { m_moves.push_back(std::make_pair(st, r)); }
 
 	virtual void Save(Serial::SaveNode& node) const override 
 	{
-		node.SaveEnum("colour", m_colour);
+		__super::Save(node);
 		node.SaveType("pos", m_pos);
 		node.SavePairs("moves", m_moves, Serial::EnumSaver(), Serial::EnumSaver());
 	}
 	
 	virtual void Load(const Serial::LoadNode& node) override 
 	{
-		node.LoadEnum("colour", m_colour);
+		__super::Load(node);
 		node.LoadType("pos", m_pos);
 		node.LoadPairs("moves", m_moves, Serial::EnumLoader(), Serial::EnumLoader());
 	}
@@ -86,7 +86,6 @@ private:
 		controller.SendMessage(Output::UpdatePopulationTrack(team), game);
 	}
 
-	Colour m_colour;
 	MapPos m_pos;
 	std::vector<std::pair<SquareType, Resource>> m_moves;
 };

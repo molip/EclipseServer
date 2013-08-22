@@ -62,13 +62,13 @@ REGISTER_DYNAMIC(MoveCmd)
 class MoveRecord : public Record
 {
 public:
-	MoveRecord() : m_colour(Colour::None) {}
+	MoveRecord() {}
 	MoveRecord(Colour colour, ShipType ship, const MapPos& src, const MapPos& dst) : 
-		m_colour(colour), m_ship(ship), m_src(src), m_dst(dst) {}
+		Record(colour), m_ship(ship), m_src(src), m_dst(dst) {}
 
 	virtual void Save(Serial::SaveNode& node) const override 
 	{
-		node.SaveEnum("colour", m_colour);
+		__super::Save(node);
 		node.SaveEnum("ship", m_ship);
 		node.SaveType("src_pos", m_src);
 		node.SaveType("dst_pos", m_dst);
@@ -76,7 +76,7 @@ public:
 	
 	virtual void Load(const Serial::LoadNode& node) override 
 	{
-		node.LoadEnum("colour", m_colour);
+		__super::Load(node);
 		node.LoadEnum("ship", m_ship);
 		node.LoadType("src_pos", m_src);
 		node.LoadType("dst_pos", m_dst);
@@ -94,7 +94,6 @@ private:
 		controller.SendMessage(Output::UpdateMap(game), game);
 	}
 
-	Colour m_colour;
 	ShipType m_ship;
 	MapPos m_src, m_dst;
 };

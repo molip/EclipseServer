@@ -9,18 +9,8 @@
 class PassRecord : public Record
 {
 public:
-	PassRecord() : m_colour(Colour::None) {}
-	PassRecord(Colour colour) : m_colour(colour) {}
-
-	virtual void Save(Serial::SaveNode& node) const override 
-	{
-		node.SaveEnum("colour", m_colour);
-	}
-	
-	virtual void Load(const Serial::LoadNode& node) override 
-	{
-		node.LoadEnum("colour", m_colour);
-	}
+	PassRecord() {}
+	PassRecord(Colour colour) : Record(colour) {}
 
 private:
 	virtual void Apply(bool bDo, Game& game, const Controller& controller) override
@@ -29,8 +19,6 @@ private:
 		team.SetPassed(bDo);
 		controller.SendMessage(Output::UpdatePassed(team), game);
 	}
-
-	Colour m_colour;
 };
 
 REGISTER_DYNAMIC(PassRecord)

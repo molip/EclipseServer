@@ -39,23 +39,23 @@ REGISTER_DYNAMIC(TradeCmd)
 class TradeRecord : public Record
 {
 public:
-	TradeRecord() : m_colour(Colour::None) {}
-	TradeRecord(Colour colour) : m_colour(colour) {}
+	TradeRecord() {}
+	TradeRecord(Colour colour) : Record(colour) {}
 
 	virtual void Save(Serial::SaveNode& node) const override 
 	{
+		__super::Save(node);
 	}
 	
 	virtual void Load(const Serial::LoadNode& node) override 
 	{
+		__super::Load(node);
 	}
 
 private:
 	virtual void Apply(bool bDo, Game& game, const Controller& controller) override
 	{
 	}
-
-	Colour m_colour;
 };
 
 REGISTER_DYNAMIC(TradeRecord)

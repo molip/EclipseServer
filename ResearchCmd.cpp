@@ -9,18 +9,18 @@
 class ResearchRecord : public Record
 {
 public:
-	ResearchRecord() : m_colour(Colour::None), m_tech(TechType::None) {}
-	ResearchRecord(Colour colour, TechType t) : m_colour(colour), m_tech(t) {}
+	ResearchRecord() : m_tech(TechType::None) {}
+	ResearchRecord(Colour colour, TechType t) : Record(colour), m_tech(t) {}
 
 	virtual void Save(Serial::SaveNode& node) const override 
 	{
-		node.SaveEnum("colour", m_colour);
+		__super::Save(node);
 		node.SaveEnum("tech", m_tech);
 	}
 	
 	virtual void Load(const Serial::LoadNode& node) override 
 	{
-		node.LoadEnum("colour", m_colour);
+		__super::Load(node);
 		node.LoadEnum("tech", m_tech);
 	}
 
@@ -72,7 +72,6 @@ private:
 		controller.SendMessage(Output::UpdateStorageTrack(team), game);
 	}
 
-	Colour m_colour;
 	TechType m_tech;
 };
 
@@ -147,18 +146,18 @@ REGISTER_DYNAMIC(ResearchCmd)
 class ResearchArtifactRecord : public Record
 {
 public:
-	ResearchArtifactRecord() : m_colour(Colour::None) {}
-	ResearchArtifactRecord(Colour colour, const Storage& artifacts) : m_colour(colour), m_artifacts(artifacts) {}
+	ResearchArtifactRecord() {}
+	ResearchArtifactRecord(Colour colour, const Storage& artifacts) : Record(colour), m_artifacts(artifacts) {}
 
 	virtual void Save(Serial::SaveNode& node) const override 
 	{
-		node.SaveEnum("colour", m_colour);
+		__super::Save(node);
 		node.SaveClass("artifacts", m_artifacts);
 	}
 	
 	virtual void Load(const Serial::LoadNode& node) override 
 	{
-		node.LoadEnum("colour", m_colour);
+		__super::Load(node);
 		node.LoadClass("artifacts", m_artifacts);
 	}
 
@@ -173,7 +172,6 @@ private:
 		controller.SendMessage(Output::UpdateStorageTrack(team), game);
 	}
 
-	Colour m_colour;
 	Storage m_artifacts;
 };
 

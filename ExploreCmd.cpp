@@ -71,10 +71,10 @@ REGISTER_DYNAMIC(ExploreCmd)
 class ExploreRecord : public Record
 {
 public:
-	ExploreRecord() : m_colour(Colour::None), m_idHex(-1), m_iRot(-1), m_bInfluence(false), m_discovery(DiscoveryType::None) {}
+	ExploreRecord() : m_idHex(-1), m_iRot(-1), m_bInfluence(false), m_discovery(DiscoveryType::None) {}
 
 	ExploreRecord(Colour colour, const MapPos& pos, int idHex, int iRot, bool bInfluence) : 
-		m_colour(colour), m_pos(pos), m_idHex(idHex), m_iRot(iRot), m_bInfluence(bInfluence), m_discovery(DiscoveryType::None) {}
+		Record(colour), m_pos(pos), m_idHex(idHex), m_iRot(iRot), m_bInfluence(bInfluence), m_discovery(DiscoveryType::None) {}
 
 	DiscoveryType GetDiscovery() const { return m_discovery; }
 
@@ -115,7 +115,7 @@ public:
 
 	virtual void Save(Serial::SaveNode& node) const override 
 	{
-		node.SaveEnum("colour", m_colour);
+		__super::Save(node);
 		node.SaveEnum("discovery", m_discovery);
 		node.SaveType("pos", m_pos);
 		node.SaveType("hex_id", m_idHex);
@@ -125,7 +125,7 @@ public:
 	
 	virtual void Load(const Serial::LoadNode& node) override 
 	{
-		node.LoadEnum("colour", m_colour);
+		__super::Load(node);
 		node.LoadEnum("discovery", m_discovery);
 		node.LoadType("pos", m_pos);
 		node.LoadType("hex_id", m_idHex);
@@ -134,7 +134,6 @@ public:
 	}
 
 private:
-	Colour m_colour;
 	MapPos m_pos;
 	int m_idHex, m_iRot;
 	bool m_bInfluence;

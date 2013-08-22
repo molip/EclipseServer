@@ -40,19 +40,19 @@ namespace
 class BuildRecord : public Record
 {
 public:
-	BuildRecord() : m_colour(Colour::None), m_buildable(Buildable::None) {}
-	BuildRecord(Colour colour, const MapPos& pos, Buildable buildable) : m_colour(colour), m_pos(pos), m_buildable(buildable) {}
+	BuildRecord() : m_buildable(Buildable::None) {}
+	BuildRecord(Colour colour, const MapPos& pos, Buildable buildable) : Record(colour), m_pos(pos), m_buildable(buildable) {}
 
 	virtual void Save(Serial::SaveNode& node) const override 
 	{
-		node.SaveEnum("colour", m_colour);
+		__super::Save(node);
 		node.SaveEnum("buildable", m_buildable);
 		node.SaveType("pos", m_pos);
 	}
 	
 	virtual void Load(const Serial::LoadNode& node) override 
 	{
-		node.LoadEnum("colour", m_colour);
+		__super::Load(node);
 		node.LoadEnum("buildable", m_buildable);
 		node.LoadType("pos", m_pos);
 	}
@@ -86,7 +86,6 @@ private:
 		controller.SendMessage(Output::UpdateStorageTrack(team), game);
 	}
 
-	Colour m_colour;
 	Buildable m_buildable;
 	MapPos m_pos;
 };
