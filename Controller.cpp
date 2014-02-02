@@ -94,8 +94,17 @@ void Controller::SendUpdateGame(const Game& game, const Player* pPlayer) const
 			SendMessage(Output::ShowChoose(), game, pPlayer);
 			SendMessage(Output::UpdateChoose(*pLive), game, pPlayer);
 
-			if (!pPlayer || pPlayer == &pChooseTeamPhase->GetCurrentPlayer())
-				SendMessage(Output::ChooseTeam(game, true), pChooseTeamPhase->GetCurrentPlayer());
+			const Player& currentPlayer = pChooseTeamPhase->GetCurrentPlayer();
+
+			// Show "choose team" UI for current player and hide for others (could still be visible from previous game)
+			for (auto& pDstTeam : game.GetTeams())
+			{
+				const Player& dstPlayer = pDstTeam->GetPlayer();
+				if (dstPlayer.GetCurrentGame() == &game)
+					if (!pPlayer || pPlayer == &dstPlayer)
+						SendMessage(Output::ChooseTeam(game, &dstPlayer == &currentPlayer), game, &dstPlayer);
+			}
+
 			return;
 		}
 	}
