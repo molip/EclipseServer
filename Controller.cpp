@@ -106,27 +106,26 @@ void Controller::SendUpdateGame(const Game& game, const Player* pPlayer) const
 	if (auto pReview = dynamic_cast<const ReviewGame*>(&game))
 		SendMessage(Output::UpdateReviewUI(*pReview), game, pPlayer);
 	
-	for (auto& pTeam : game.GetTeams())
+	// Send info about each team.
+	for (auto& pInfoTeam : game.GetTeams())
 	{
-		const Player& player = pTeam->GetPlayer();
-		AssertThrow("Controller::SendUpdateGame: Team not chosen yet: " + player.GetName(), !!pTeam);
-		SendMessage(Output::UpdateTeam(*pTeam), game, pPlayer);
-		SendMessage(Output::UpdateInfluenceTrack(*pTeam), game, pPlayer);
-		SendMessage(Output::UpdateTechnologyTrack(*pTeam), game, pPlayer);
-		SendMessage(Output::UpdateStorageTrack(*pTeam), game, pPlayer);
-		SendMessage(Output::UpdatePopulationTrack(*pTeam), game, pPlayer);
-		SendMessage(Output::UpdatePassed(*pTeam), game, pPlayer);
+		const Player& infoPlayer = pInfoTeam->GetPlayer();
+		AssertThrow("Controller::SendUpdateGame: Team not chosen yet: " + infoPlayer.GetName(), !!pInfoTeam);
+		SendMessage(Output::UpdateTeam(*pInfoTeam), game, pPlayer);
+		SendMessage(Output::UpdateInfluenceTrack(*pInfoTeam), game, pPlayer);
+		SendMessage(Output::UpdateTechnologyTrack(*pInfoTeam), game, pPlayer);
+		SendMessage(Output::UpdateStorageTrack(*pInfoTeam), game, pPlayer);
+		SendMessage(Output::UpdatePopulationTrack(*pInfoTeam), game, pPlayer);
+		SendMessage(Output::UpdatePassed(*pInfoTeam), game, pPlayer);
 
 		// Reputation tile values are secret, so only send them to the relevant player. 
-		auto SendUpdateReputationTrack = [&] (const Player& player) { 
-			SendMessage(Output::UpdateReputationTrack(*pTeam, &player == &player), game, &player); };
-
-		if (pPlayer)
-			SendUpdateReputationTrack(*pPlayer);
-		else
-			for (auto& t : game.GetTeams())
-				if (player.GetCurrentGame() == &game)
-					SendUpdateReputationTrack(player);
+		for (auto& pDstTeam : game.GetTeams())
+		{
+			const Player& dstPlayer = pDstTeam->GetPlayer();
+			if (dstPlayer.GetCurrentGame() == &game)
+				if (!pPlayer || pPlayer == &dstPlayer)
+					SendMessage(Output::UpdateReputationTrack(*pInfoTeam, &dstPlayer == &infoPlayer), game, &dstPlayer);
+		}
 	}
 	SendMessage(Output::UpdateMap(game), game, pPlayer);
 	SendMessage(Output::UpdateTechnologies(game), game, pPlayer);
