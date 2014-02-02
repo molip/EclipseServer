@@ -5,6 +5,8 @@
 #include "Player.h"
 #include "LiveGame.h"
 #include "ReviewGame.h"
+#include "ActionPhase.h"
+#include "ChooseTeamPhase.h"
 
 #include "App.h"
 
@@ -67,16 +69,16 @@ void Controller::OnPlayerDisconnected(Player& player)
 
 }
 
+// Update everything. 
+// pPlayer: if null, update all players. Otherwise just update pPlayer.
 // Called from: Connect, join game, start game, choose team.
 void Controller::SendUpdateGame(const Game& game, const Player* pPlayer) const
 {
 	auto pLive = dynamic_cast<const LiveGame*>(&game);
 	
-	bool bSendToCurrentPlayer = pLive && pLive->HasStarted() && (!pPlayer || pPlayer == &pLive->GetCurrentPlayer());
-
 	if (pLive)
 	{
-		if (pLive->GetPhase() == LiveGame::Phase::Lobby)
+		if (!pLive->HasStarted())
 		{
 			SendMessage(Output::UpdateLobby(game), game, pPlayer);
 
@@ -87,13 +89,13 @@ void Controller::SendUpdateGame(const Game& game, const Player* pPlayer) const
 			}
 			return;
 		}
-		if (pLive->GetPhase() == LiveGame::Phase::ChooseTeam)
+		if (const ChooseTeamPhase* pChooseTeamPhase = dynamic_cast<const ChooseTeamPhase*>(&pLive->GetPhase()))
 		{
 			SendMessage(Output::ShowChoose(), game, pPlayer);
 			SendMessage(Output::UpdateChoose(*pLive), game, pPlayer);
 
-			if (bSendToCurrentPlayer)
-				SendMessage(Output::ChooseTeam(game, true), pLive->GetCurrentPlayer());
+			if (!pPlayer || pPlayer == &pChooseTeamPhase->GetCurrentPlayer())
+				SendMessage(Output::ChooseTeam(game, true), pChooseTeamPhase->GetCurrentPlayer());
 			return;
 		}
 	}
@@ -129,9 +131,8 @@ void Controller::SendUpdateGame(const Game& game, const Player* pPlayer) const
 	SendMessage(Output::UpdateMap(game), game, pPlayer);
 	SendMessage(Output::UpdateTechnologies(game), game, pPlayer);
 
-	if (bSendToCurrentPlayer) 
-		if (const Cmd* pCmd = pLive->GetCurrentCmd())
-			pCmd->UpdateClient(*this, *pLive);
-		else
-			SendMessage(Output::ChooseAction(*pLive), pLive->GetCurrentPlayer());
+	if (pLive)
+		if (const ActionPhase* pActionPhase = dynamic_cast<const ActionPhase*>(&pLive->GetPhase()))
+			if (!pPlayer || pPlayer == &pActionPhase->GetCurrentPlayer()) 
+				pActionPhase->UpdateClient(*this);
 }

@@ -9,6 +9,7 @@
 #include "LiveGame.h"
 #include "ReviewGame.h"
 #include "Games.h"
+#include "ActionPhase.h"
 
 namespace Output
 {
@@ -268,19 +269,21 @@ ChooseTeam::ChooseTeam(const Game& game, bool bActive) : Choose("team", bActive)
 
 ChooseAction::ChooseAction(const LiveGame& game) : Choose("action") 
 {
-	AssertThrow("ChooseAction::ChooseAction", !game.GetCurrentCmd());
+	const ActionPhase& phase = game.GetActionPhase();
 
-	bool bCanDoAction = game.CanDoAction();
-	bool bPassed = game.GetCurrentTeam().HasPassed();
+	AssertThrow("ChooseAction::ChooseAction", !phase.GetCurrentCmd());
 
-	m_root.SetAttribute("can_undo",			game.CanRemoveCmd());
+	bool bCanDoAction = phase.CanDoAction();
+	bool bPassed = phase.GetCurrentTeam().HasPassed();
+
+	m_root.SetAttribute("can_undo",			phase.CanRemoveCmd(phase.GetCurrentTeam().GetColour()));
 	m_root.SetAttribute("can_explore",		bCanDoAction && !bPassed);
 	m_root.SetAttribute("can_influence",	bCanDoAction && !bPassed);
 	m_root.SetAttribute("can_research",		bCanDoAction && !bPassed);
 	m_root.SetAttribute("can_upgrade",		bCanDoAction);
 	m_root.SetAttribute("can_build",		bCanDoAction);
 	m_root.SetAttribute("can_move",			bCanDoAction);
-	m_root.SetAttribute("can_colonise",		game.GetCurrentTeam().GetUnusedColonyShips() > 0); 
+	m_root.SetAttribute("can_colonise",		phase.GetCurrentTeam().GetUnusedColonyShips() > 0); 
 	m_root.SetAttribute("can_diplomacy",	true);
 	m_root.SetAttribute("can_trade",		true);
 	m_root.SetAttribute("can_pass",			bCanDoAction && !bPassed);

@@ -10,6 +10,7 @@
 #include "DiscoverCmd.h"
 #include "Record.h"
 #include "EdgeSet.h"
+#include "ActionPhase.h"
 
 ExploreCmd::ExploreCmd(Colour colour, LiveGame& game, int iPhase) : PhaseCmd(colour, iPhase), m_idHex(-1), m_iPos(-1)
 {
@@ -210,7 +211,7 @@ void ExploreHexCmd::UpdateClient(const Controller& controller, const LiveGame& g
 	bool bCanTake = Race(GetTeam(game).GetRace()).GetExploreChoices() > (int)m_hexChoices.size() 
 		&& !game.GetHexBag(m_pos.GetRing()).IsEmpty();
 
-	Output::ChooseExploreHex msg(m_pos.GetX(), m_pos.GetY(), bCanTake, game.CanRemoveCmd());
+	Output::ChooseExploreHex msg(m_pos.GetX(), m_pos.GetY(), bCanTake, game.GetActionPhase().CanRemoveCmd());
 	for (auto& hc : m_hexChoices)
 		msg.AddHexChoice(hc.m_idHex, hc.m_rotations, hc.m_bCanInfluence);
 

@@ -2,48 +2,51 @@
 
 #include "Game.h"
 
+class Phase;
+class ActionPhase;
+class ChooseTeamPhase;
+
 DEFINE_UNIQUE_PTR(Record)
+DEFINE_UNIQUE_PTR(CmdStack)
+DEFINE_UNIQUE_PTR(Phase)
 
 class LiveGame : public Game
 {
+	friend class TurnPhase;
+	friend class Phase;
+
 public:
-	enum class Phase { Lobby, ChooseTeam, Main };
+	enum class GamePhase { Lobby, ChooseTeam, Main };
 
 	LiveGame();
 	LiveGame(int id, const std::string& name, const Player& owner);
 	virtual ~LiveGame();
 
 	void AddPlayer(Player& player);
-	void AssignTeam(Player& player, RaceType race, Colour colour);
 
-	void StartChooseTeamPhase();
-	void StartMainPhase();
-	virtual bool HasStarted() const override { return m_phase != Phase::Lobby; }
+	void StartChooseTeamGamePhase();
+	void StartMainGamePhase();
+	virtual bool HasStarted() const override { return m_gamePhase != GamePhase::Lobby; }
 	virtual bool IsLive() const { return true; }
-	Phase GetPhase() const { return m_phase; }
 
-	void StartCmd(CmdPtr pCmd);
-	void AddCmd(CmdPtr pCmd);
-	Cmd* RemoveCmd(); // Returns cmd to undo.
-	bool PurgeCmds();
-	bool CanRemoveCmd() const;
-	bool CanDoAction() const;
+	GamePhase GetGamePhase() const { return m_gamePhase; }
+	
+	const Phase& GetPhase() const { return const_cast<LiveGame*>(this)->GetPhase(); };
+	Phase& GetPhase();
 
-	Cmd* GetCurrentCmd();
-	const Cmd* GetCurrentCmd() const;
+	const ActionPhase& GetActionPhase() const { return const_cast<LiveGame*>(this)->GetActionPhase(); };
+	ActionPhase& GetActionPhase();
+	ChooseTeamPhase& GetChooseTeamPhase();
 
 	// Only call from Cmd::DoRecord/PopRecord.
 	void PushRecord(std::unique_ptr<Record>& pRec);
 	std::unique_ptr<Record> PopRecord();
 
 	const std::vector<RecordPtr>& GetRecords() const { return m_records; }
-	
-	const Player& GetCurrentPlayer() const;
-	Player& GetCurrentPlayer();
-	const Team& GetCurrentTeam() const	{ return const_cast<LiveGame*>(this)->GetCurrentTeam(); }
-	Team& GetCurrentTeam();
 
-	void FinishTurn();
+	bool HaveAllPassed() const;
+	bool NeedCombat() const;
+
 	void StartRound();
 
 	virtual void Save(Serial::SaveNode& node) const override;
@@ -52,16 +55,11 @@ public:
 private:
 	virtual void Save() const override;
 
-	void AdvanceTurn();
-
-	CmdStack* m_pCmdStack;
 	std::vector<RecordPtr> m_records;
-	Phase m_phase;
-	bool m_bDoneAction;
+	GamePhase m_gamePhase;
+	PhasePtr m_pPhase;
 
-	int m_iTurn, m_iRound;
-
-	int m_iStartTeam, m_iStartTeamNext;
+	int m_iRound;
 };
 
 DEFINE_UNIQUE_PTR(LiveGame)

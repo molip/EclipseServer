@@ -38,6 +38,7 @@ public:
 	virtual void Load(const Serial::LoadNode& node) override;
 
 	void PopRecord(const Controller& controller, LiveGame& game);
+	Colour GetColour() const { return m_colour; }
 
 protected:
 	Team& GetTeam(LiveGame& game);

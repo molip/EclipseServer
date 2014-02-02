@@ -7,23 +7,22 @@
 #include "Players.h"
 #include "Record.h"
 #include "Serial.h"
+#include "ActionPhase.h"
+#include "ChooseTeamPhase.h"
 
 #include <algorithm>
 
-LiveGame::LiveGame() : m_phase(Phase::Lobby), m_bDoneAction(false), m_iTurn(-1), m_iRound(-1), m_iStartTeam(-1), m_iStartTeamNext(-1)
+LiveGame::LiveGame() : m_gamePhase(GamePhase::Lobby), m_iRound(-1)
 {
-	m_pCmdStack = new CmdStack;
 }
 
 LiveGame::LiveGame(int id, const std::string& name, const Player& owner) : 
-	Game(id, name, owner), m_phase(Phase::Lobby), m_bDoneAction(false), m_iTurn(-1), m_iRound(-1), m_iStartTeam(-1), m_iStartTeamNext(-1)
+	Game(id, name, owner), m_gamePhase(GamePhase::Lobby), m_iRound(-1)
 {
-	m_pCmdStack = new CmdStack;
 }
 
 LiveGame::~LiveGame()
 {
-	delete m_pCmdStack;
 }
 
 void LiveGame::AddPlayer(Player& player)
@@ -34,14 +33,14 @@ void LiveGame::AddPlayer(Player& player)
 	Save();
 }
 
-void LiveGame::StartChooseTeamPhase()
+void LiveGame::StartChooseTeamGamePhase()
 {
 	AssertThrow("LiveGame::Start: Game already started: " + m_name, !HasStarted());
 	AssertThrow("LiveGame::Start: Game has no players: " + m_name, !m_teams.empty());
 	
-	m_phase = Phase::ChooseTeam;
-
-	m_iTurn = m_iStartTeam = m_iStartTeamNext = 0;
+	m_gamePhase = GamePhase::ChooseTeam;
+	m_pPhase = PhasePtr(new ChooseTeamPhase);
+	m_pPhase->SetGame(*this);
 
 	// Decide team order.
 	std::shuffle(m_teams.begin(), m_teams.end(), GetRandom());
@@ -59,7 +58,7 @@ void LiveGame::StartChooseTeamPhase()
 	for (auto r : EnumRange<HexRing>())
 		m_hexBag[(int)r] = HexBag(r, m_teams.size());
 
-	m_hexBag[1].ReturnTile(206); // Discovery, no ancients, 1 materials square.
+	//m_hexBag[1].ReturnTile(206); // Discovery, no ancients, 1 materials square.
 
 	m_repBag.Init();
 	m_techBag.Init();
@@ -68,26 +67,17 @@ void LiveGame::StartChooseTeamPhase()
 	Save();
 }
 
-void LiveGame::AssignTeam(Player& player, RaceType race, Colour colour)
+void LiveGame::StartMainGamePhase()
 {
-	GetTeam(player).Assign(race, colour);
+	AssertThrowModel("LiveGame::StartMainGamePhase", m_gamePhase == GamePhase::ChooseTeam);
 
-	AdvanceTurn();
-	Save();
-
-	if (m_iTurn == 0)
-		StartMainPhase();
-}
-
-void LiveGame::StartMainPhase()
-{
-	AssertThrowModel("LiveGame::StartMainPhase", m_phase == Phase::ChooseTeam && m_iTurn == 0);
-
-	m_phase = Phase::Main;
+	m_gamePhase = GamePhase::Main;
+	
+	m_pPhase = PhasePtr(new ActionPhase);
+	m_pPhase->SetGame(*this);
 
 	Hex& centre = m_map.AddHex(MapPos(0, 0), 001, 0);
 	centre.AddShip(ShipType::GCDS, Colour::None);
-
 
 	// Initialise starting hexes.
 	auto startPositions = m_map.GetTeamStartPositions();
@@ -107,90 +97,27 @@ void LiveGame::StartMainPhase()
 	Save();
 }
 
-void LiveGame::AddCmd(CmdPtr pCmd)
+Phase& LiveGame::GetPhase()
 {
-	m_pCmdStack->AddCmd(pCmd);
-	Save();
+	AssertThrow("LiveGame::GetPhase", m_pPhase);
+	return *m_pPhase;
 }
 
-void LiveGame::StartCmd(CmdPtr pCmd)
+ActionPhase& LiveGame::GetActionPhase()
 {
-	m_pCmdStack->StartCmd(pCmd);
-	
-	if (GetCurrentCmd()->IsAction())
-	{
-		AssertThrow("LiveGame::StartCmd",  !m_bDoneAction);
-		m_bDoneAction = true;
-	}
-
-	if (GetCurrentCmd()->CostsInfluence())
-		GetCurrentTeam().GetInfluenceTrack().RemoveDiscs(1); // TODO: return these at end of round
-
-	Save();
+	AssertThrow("LiveGame::GetActionPhase", m_pPhase && dynamic_cast<ActionPhase*>(m_pPhase.get()));
+	return static_cast<ActionPhase&>(*m_pPhase);
 }
 
-Cmd* LiveGame::RemoveCmd()
+ChooseTeamPhase& LiveGame::GetChooseTeamPhase()
 {
-	const Cmd* pCmd = GetCurrentCmd();
-	bool bAction = pCmd && pCmd->IsAction();
-	bool bCostsInfluence = pCmd && pCmd->CostsInfluence();
-
-	Cmd* pUndo = m_pCmdStack->RemoveCmd();
-
-	if (bAction && !pUndo) // It's a start cmd.
-	{
-		AssertThrow("LiveGame::RemoveCmd",  m_bDoneAction);
-		m_bDoneAction = false;
-
-		if (bCostsInfluence)
-			GetCurrentTeam().GetInfluenceTrack().AddDiscs(1);
-	}
-
-	Save();
-	return pUndo;
+	AssertThrow("LiveGame::GetChooseTeamPhase", m_pPhase && dynamic_cast<ChooseTeamPhase*>(m_pPhase.get()));
+	return static_cast<ChooseTeamPhase&>(*m_pPhase);
 }
 
-bool LiveGame::CanDoAction() const
+bool LiveGame::NeedCombat() const
 {
-	if (GetCurrentTeam().GetInfluenceTrack().GetDiscCount() == 0)
-		return false;
-	
-	return !m_bDoneAction; // Only one action per turn.
-}
-
-bool LiveGame::CanRemoveCmd() const
-{
-	return m_pCmdStack->CanRemoveCmd();
-}
-
-Cmd* LiveGame::GetCurrentCmd()
-{
-	return m_pCmdStack->GetCurrentCmd();
-}
-
-const Cmd* LiveGame::GetCurrentCmd() const
-{
-	return m_pCmdStack->GetCurrentCmd();
-}
-
-bool LiveGame::PurgeCmds()
-{
-	return m_pCmdStack->Purge();
-}
-
-const Player& LiveGame::GetCurrentPlayer() const
-{
-	return Players::Get(GetCurrentTeam().GetPlayerID());
-}
-
-Player& LiveGame::GetCurrentPlayer() 
-{
-	return Players::Get(GetCurrentTeam().GetPlayerID());
-}
-
-Team& LiveGame::GetCurrentTeam()
-{
-	return *m_teams[(m_iStartTeam + m_iTurn) % m_teams.size()];
+	return false;
 }
 
 void LiveGame::StartRound()
@@ -209,20 +136,6 @@ void LiveGame::StartRound()
 	int nTech = (m_iRound == 0 ? startTech : roundTech)[m_teams.size() - 1];
 	for (int i = 0; i < nTech && !m_techBag.IsEmpty(); ++i)
 		++m_techs[m_techBag.TakeTile()];
-}
-
-void LiveGame::AdvanceTurn()
-{
-	m_iTurn = (m_iTurn + 1) % m_teams.size();
-	Save();
-}
-
-void LiveGame::FinishTurn()
-{
-	m_pCmdStack->Clear();
-	m_bDoneAction = false;
-	AdvanceTurn();
-	Save();
 }
 
 void LiveGame::PushRecord(std::unique_ptr<Record>& pRec)
@@ -251,27 +164,22 @@ void LiveGame::Save() const
 void LiveGame::Save(Serial::SaveNode& node) const 
 {
 	__super::Save(node);
-	node.SaveEnum("phase", m_phase);
+	node.SaveEnum("game_phase", m_gamePhase);
 	node.SaveCntr("records", m_records, Serial::ObjectSaver());
-	node.SaveClass("commands", *m_pCmdStack);
-	node.SaveType("done_action", m_bDoneAction);
-	node.SaveType("turn", m_iTurn);
 	node.SaveType("round", m_iRound);
-	node.SaveType("start_team", m_iStartTeam);
-	node.SaveType("start_team_next", m_iStartTeamNext);
+	node.SaveObject("phase", m_pPhase);
 }
 
 void LiveGame::Load(const Serial::LoadNode& node)
 {
 	__super::Load(node);
-	node.LoadEnum("phase", m_phase);
+	node.LoadEnum("game_phase", m_gamePhase);
 	node.LoadCntr("records", m_records, Serial::ObjectLoader());
-	node.LoadClass("commands", *m_pCmdStack);
-	node.LoadType("done_action", m_bDoneAction);
-	node.LoadType("turn", m_iTurn);
 	node.LoadType("round", m_iRound);
-	node.LoadType("start_team", m_iStartTeam);
-	node.LoadType("start_team_next", m_iStartTeamNext);
+	node.LoadObject("phase", m_pPhase);
+
+	if (m_pPhase)
+		m_pPhase->SetGame(*this);
 }
 
-DEFINE_ENUM_NAMES(LiveGame::Phase) { "Lobby", "ChooseTeam", "Main", "" };
+DEFINE_ENUM_NAMES(LiveGame::GamePhase) { "Lobby", "ChooseTeam", "Main", "" };

@@ -20,6 +20,8 @@
 #include "LiveGame.h"
 #include "ReviewGame.h"
 #include "Record.h"
+#include "ActionPhase.h"
+#include "ChooseTeamPhase.h"
 
 #include <sstream>
 
@@ -111,8 +113,8 @@ LiveGame& Message::GetLiveGame(Player& player) const
 {
 	LiveGame* pGame = player.GetCurrentLiveGame();
 	AssertThrow("ChooseMessage: player not registered in any game", !!pGame);
-	AssertThrow("ChooseMessage: player played out of turn", &player == &pGame->GetCurrentPlayer());
-	AssertThrow("ChooseMessage: game not in main phase: " + pGame->GetName(), pGame->GetPhase() == LiveGame::Phase::Main);
+	AssertThrow("ChooseMessage: game not in main phase: " + pGame->GetName(), pGame->GetGamePhase() == LiveGame::GamePhase::Main);
+	AssertThrow("ChooseMessage: player played out of turn", pGame->GetPhase().IsTeamActive(player.GetCurrentTeam()->GetColour()));
 	return *pGame;
 }
 
@@ -228,7 +230,7 @@ bool StartGame::Process(Controller& controller, Player& player) const
 	AssertThrow("StartGame: player isn't the owner of game: " + pGame->GetName(), &player == &pGame->GetOwner());
 	AssertThrow("StartGame: game already started: " + pGame->GetName(), !pGame->HasStarted());
 	
-	pGame->StartChooseTeamPhase();
+	pGame->StartChooseTeamGamePhase();
 
 	controller.SendUpdateGameList();
 	controller.SendUpdateGame(*pGame);
@@ -246,8 +248,8 @@ bool ChooseTeam::Process(Controller& controller, Player& player) const
 {
 	LiveGame* pGame = player.GetCurrentLiveGame();
 	AssertThrow("ChooseTeam: player not registered in any game", !!pGame);
-	AssertThrow("ChooseTeam: player played out of turn", &player == &pGame->GetCurrentPlayer());
-	AssertThrow("ChooseTeam: game not in choose phase: " + pGame->GetName(), pGame->GetPhase() == LiveGame::Phase::ChooseTeam);
+	AssertThrow("ChooseMessage: player played out of turn", 
+		pGame->GetChooseTeamPhase().GetCurrentTeam().GetColour() == player.GetCurrentTeam()->GetColour());
 
 	RaceType race = EnumTraits<RaceType>::FromString(m_race);
 	Colour colour = EnumTraits<Colour>::FromString(m_colour);
@@ -259,12 +261,12 @@ bool ChooseTeam::Process(Controller& controller, Player& player) const
 	if (race != RaceType::Human)
 		AssertThrowXML("ChooseTeam: colour doesn't match race", colour == Race(race).GetColour());
 
-	pGame->AssignTeam(player, race, colour);
+	pGame->GetChooseTeamPhase().AssignTeam(player, race, colour);
 
 	controller.SendMessage(Output::ChooseTeam(*pGame, false), player);
 	controller.SendUpdateGame(*pGame);
 
-	if (pGame->GetPhase() == LiveGame::Phase::Main)
+	if (pGame->GetGamePhase() == LiveGame::GamePhase::Main)
 		controller.SendMessage(Output::UpdateTechnologies(*pGame), *pGame); // TODO: Move to record.
 
 	return true;	
@@ -280,86 +282,45 @@ bool StartAction::Process(Controller& controller, Player& player) const
 	LiveGame& game = GetLiveGame(player);
 	Colour colour = player.GetCurrentTeam()->GetColour();
 
-	if (m_action == "explore") 
-		game.StartCmd(CmdPtr(new ExploreCmd(colour, game)));
-	else if (m_action == "influence") 
-		game.StartCmd(CmdPtr(new InfluenceCmd(colour, game)));
-	else if (m_action == "colonise") 
-		game.StartCmd(CmdPtr(new ColoniseCmd(colour, game)));
-	else if (m_action == "research") 
-		game.StartCmd(CmdPtr(new ResearchCmd(colour, game)));
-	else if (m_action == "move") 
-		game.StartCmd(CmdPtr(new MoveCmd(colour, game)));
-	else if (m_action == "build") 
-		game.StartCmd(CmdPtr(new BuildCmd(colour, game)));
-	else if (m_action == "diplomacy") 
-		game.StartCmd(CmdPtr(new DiplomacyCmd(colour, game)));
-	else if (m_action == "upgrade") 
-		game.StartCmd(CmdPtr(new UpgradeCmd(colour, game)));
-	else if (m_action == "trade") 
-		game.StartCmd(CmdPtr(new TradeCmd(colour, game)));
-	else if (m_action == "pass") 
-		game.StartCmd(CmdPtr(new PassCmd(colour, game)));
+	Cmd* pCmd = nullptr;
 
-	Cmd* pCmd = game.GetCurrentCmd();
+	if (m_action == "explore") 
+		pCmd = new ExploreCmd(colour, game);
+	else if (m_action == "influence") 
+		pCmd = new InfluenceCmd(colour, game);
+	else if (m_action == "colonise") 
+		pCmd = new ColoniseCmd(colour, game);
+	else if (m_action == "research") 
+		pCmd = new ResearchCmd(colour, game);
+	else if (m_action == "move") 
+		pCmd = new MoveCmd(colour, game);
+	else if (m_action == "build") 
+		pCmd = new BuildCmd(colour, game);
+	else if (m_action == "diplomacy") 
+		pCmd = new DiplomacyCmd(colour, game);
+	else if (m_action == "upgrade") 
+		pCmd = new UpgradeCmd(colour, game);
+	else if (m_action == "trade") 
+		pCmd = new TradeCmd(colour, game);
+	else if (m_action == "pass") 
+		pCmd = new PassCmd(colour, game);
+
 	AssertThrow("StartAction::Process: No command created", !!pCmd);
 	
-	if (pCmd->CostsInfluence())
-		controller.SendMessage(Output::UpdateInfluenceTrack(*player.GetCurrentTeam()), game);
+	game.GetActionPhase().StartCmd(CmdPtr(pCmd), controller);
 
-	if (pCmd->IsAutoProcess())
-		CmdMessage().Process(controller, player);
-	else
-		pCmd->UpdateClient(controller, game);
 	return true;	
 }
 
 bool Undo::Process(Controller& controller, Player& player) const 
 {
-	LiveGame& game = GetLiveGame(player);
-
-	const Cmd* pCmd = game.GetCurrentCmd();
-	bool bAction = pCmd && pCmd->CostsInfluence();
-
-	if (Cmd* pUndo = game.RemoveCmd())
-	{
-		if (pUndo->HasRecord())
-		{
-			// Update review games before record gets popped. 
-			for (auto& g : Games::GetReviewGames())
-				if (g->GetLiveGameID() == game.GetID())
-					g->OnPreRecordPop(controller);
-
-			pUndo->PopRecord(controller, game);
-
-			for (auto& g : Games::GetReviewGames())
-				if (g->GetLiveGameID() == game.GetID())
-					controller.SendMessage(Output::UpdateReviewUI(*g), *g);
-		}
-
-		if (pUndo->IsAutoProcess()) // Also undo the command start. 
-			game.RemoveCmd();
-	}
-
-	if (Cmd* pCmd2 = game.GetCurrentCmd())
-		pCmd2->UpdateClient(controller,  game);
-	else
-		controller.SendMessage(Output::ChooseAction(game), player);
-
-	if (bAction)
-		controller.SendMessage(Output::UpdateInfluenceTrack(*player.GetCurrentTeam()), game);
-
+	GetLiveGame(player).GetPhase().UndoCmd(controller, player); 
 	return true;	
 }
 
 bool Commit::Process(Controller& controller, Player& player) const 
 {
-	LiveGame& game = GetLiveGame(player);
-
-	game.FinishTurn();
-
-	controller.SendMessage(Output::ChooseFinished(), player);
-	controller.SendMessage(Output::ChooseAction(game), game.GetCurrentPlayer());
+	GetLiveGame(player).GetActionPhase().FinishTurn(controller);
 	return true;
 }
 
@@ -367,24 +328,7 @@ bool Commit::Process(Controller& controller, Player& player) const
 
 bool CmdMessage::Process(Controller& controller, Player& player) const
 {
-	LiveGame& game = GetLiveGame(player);
-	Cmd* pCmd = game.GetCurrentCmd();
-	AssertThrow("CmdMessage::Process: No current command", !!pCmd);
-
-	CmdPtr pNext = pCmd->Process(*this, controller, game); // Might be null.
-	game.PurgeCmds();
-	game.AddCmd(std::move(pNext)); 
-
-	if (Cmd* pNewCmd = game.GetCurrentCmd())
-		pNewCmd->UpdateClient(controller, game);
-	else
-		controller.SendMessage(Output::ChooseAction(game), game.GetCurrentPlayer());
-
-	if (pCmd->HasRecord()) 
-		for (auto& g : Games::GetReviewGames())
-			if (g->GetLiveGameID() == game.GetID())
-				controller.SendMessage(Output::UpdateReviewUI(*g), *g);
-
+	GetLiveGame(player).GetPhase().ProcessCmdMessage(*this, controller, player);
 	return true;
 }
 

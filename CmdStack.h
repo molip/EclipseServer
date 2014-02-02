@@ -23,12 +23,12 @@ public:
 
 	void AssertValid() const;
 
-	bool Purge();
-
 	void Save(Serial::SaveNode& node) const;
 	void Load(const Serial::LoadNode& node);
 
 private:
+	bool Purge();
+
 	class Chain;
 	typedef std::unique_ptr<Chain> ChainPtr;
 	struct Node

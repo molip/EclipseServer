@@ -164,6 +164,8 @@ void CmdStack::AddCmd(CmdPtr& pCmd)
 	AssertThrow("CmdStack::AddCmd: no chains", !m_chains.empty());
 	AssertThrow("CmdStack::AddCmd: chain not open", m_chains.back()->IsOpen());
 	
+	Purge();
+
 	m_chains.back()->AddCmd(pCmd, false); 
 	
 	AssertValid();

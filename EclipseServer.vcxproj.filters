@@ -203,6 +203,15 @@
     <ClInclude Include="PassCmd.h">
       <Filter>Commands</Filter>
     </ClInclude>
+    <ClInclude Include="Phase.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="ActionPhase.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="ChooseTeamPhase.h">
+      <Filter>Model</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -381,6 +390,15 @@
     </ClCompile>
     <ClCompile Include="PassCmd.cpp">
       <Filter>Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="Phase.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="ActionPhase.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="ChooseTeamPhase.cpp">
+      <Filter>Model</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

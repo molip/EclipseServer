@@ -7,6 +7,7 @@
 #include "Race.h"
 #include "Team.h"
 #include "LiveGame.h"
+#include "ActionPhase.h"
 
 DiscoverCmd::DiscoverCmd(Colour colour, LiveGame& game, DiscoveryType discovery) : 
 	Cmd(colour), m_discovery(discovery)
@@ -15,7 +16,7 @@ DiscoverCmd::DiscoverCmd(Colour colour, LiveGame& game, DiscoveryType discovery)
 
 void DiscoverCmd::UpdateClient(const Controller& controller, const LiveGame& game) const
 {
-	Output::ChooseDiscovery msg(game.CanRemoveCmd());
+	Output::ChooseDiscovery msg(game.GetActionPhase().CanRemoveCmd());
 	controller.SendMessage(msg, GetPlayer(game));
 }
 

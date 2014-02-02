@@ -76,11 +76,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="ActionPhase.h" />
     <ClInclude Include="App.h" />
     <ClInclude Include="Bag.h" />
     <ClInclude Include="Blueprint.h" />
     <ClInclude Include="BlueprintDefs.h" />
     <ClInclude Include="BuildCmd.h" />
+    <ClInclude Include="ChooseTeamPhase.h" />
     <ClInclude Include="Cmd.h" />
     <ClInclude Include="CmdStack.h" />
     <ClInclude Include="ColoniseCmd.h" />
@@ -121,6 +123,7 @@
     <ClInclude Include="ResearchCmd.h" />
     <ClInclude Include="Resources.h" />
     <ClInclude Include="ReviewGame.h" />
+    <ClInclude Include="Phase.h" />
     <ClInclude Include="Serial.h" />
     <ClInclude Include="Ship.h" />
     <ClInclude Include="ShipLayout.h" />
@@ -139,11 +142,13 @@
     <ClInclude Include="Xml.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ActionPhase.cpp" />
     <ClCompile Include="App.cpp" />
     <ClCompile Include="Bag.cpp" />
     <ClCompile Include="Blueprint.cpp" />
     <ClCompile Include="BlueprintDefs.cpp" />
     <ClCompile Include="BuildCmd.cpp" />
+    <ClCompile Include="ChooseTeamPhase.cpp" />
     <ClCompile Include="Cmd.cpp" />
     <ClCompile Include="CmdStack.cpp" />
     <ClCompile Include="ColoniseCmd.cpp" />
@@ -182,6 +187,7 @@
     <ClCompile Include="ResearchCmd.cpp" />
     <ClCompile Include="Resources.cpp" />
     <ClCompile Include="ReviewGame.cpp" />
+    <ClCompile Include="Phase.cpp" />
     <ClCompile Include="Serial.cpp" />
     <ClCompile Include="Ship.cpp" />
     <ClCompile Include="ShipLayout.cpp" />
