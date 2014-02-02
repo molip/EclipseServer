@@ -18,6 +18,9 @@
       <Extensions>
       </Extensions>
     </Filter>
+    <Filter Include="Model\Phases">
+      <UniqueIdentifier>{78fabba7-1f68-42f6-8d16-def4f96d8e28}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -203,14 +206,14 @@
     <ClInclude Include="PassCmd.h">
       <Filter>Commands</Filter>
     </ClInclude>
-    <ClInclude Include="Phase.h">
-      <Filter>Model</Filter>
-    </ClInclude>
     <ClInclude Include="ActionPhase.h">
-      <Filter>Model</Filter>
+      <Filter>Model\Phases</Filter>
     </ClInclude>
     <ClInclude Include="ChooseTeamPhase.h">
-      <Filter>Model</Filter>
+      <Filter>Model\Phases</Filter>
+    </ClInclude>
+    <ClInclude Include="Phase.h">
+      <Filter>Model\Phases</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -391,14 +394,14 @@
     <ClCompile Include="PassCmd.cpp">
       <Filter>Commands</Filter>
     </ClCompile>
-    <ClCompile Include="Phase.cpp">
-      <Filter>Model</Filter>
-    </ClCompile>
     <ClCompile Include="ActionPhase.cpp">
-      <Filter>Model</Filter>
+      <Filter>Model\Phases</Filter>
     </ClCompile>
     <ClCompile Include="ChooseTeamPhase.cpp">
-      <Filter>Model</Filter>
+      <Filter>Model\Phases</Filter>
+    </ClCompile>
+    <ClCompile Include="Phase.cpp">
+      <Filter>Model\Phases</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

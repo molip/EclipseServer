@@ -276,7 +276,7 @@ ChooseAction::ChooseAction(const LiveGame& game) : Choose("action")
 	bool bCanDoAction = phase.CanDoAction();
 	bool bPassed = phase.GetCurrentTeam().HasPassed();
 
-	m_root.SetAttribute("can_undo",			phase.CanRemoveCmd(phase.GetCurrentTeam().GetColour()));
+	m_root.SetAttribute("can_undo",			phase.CanRemoveCmd());
 	m_root.SetAttribute("can_explore",		bCanDoAction && !bPassed);
 	m_root.SetAttribute("can_influence",	bCanDoAction && !bPassed);
 	m_root.SetAttribute("can_research",		bCanDoAction && !bPassed);
