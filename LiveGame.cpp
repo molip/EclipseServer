@@ -163,20 +163,20 @@ void LiveGame::Save() const
 
 void LiveGame::Save(Serial::SaveNode& node) const 
 {
-	__super::Save(node);
-	node.SaveEnum("game_phase", m_gamePhase);
 	node.SaveCntr("records", m_records, Serial::ObjectSaver());
-	node.SaveType("round", m_iRound);
 	node.SaveObject("phase", m_pPhase);
+	node.SaveEnum("game_phase", m_gamePhase);
+	node.SaveType("round", m_iRound);
+	__super::Save(node);
 }
 
 void LiveGame::Load(const Serial::LoadNode& node)
 {
-	__super::Load(node);
 	node.LoadEnum("game_phase", m_gamePhase);
 	node.LoadCntr("records", m_records, Serial::ObjectLoader());
 	node.LoadType("round", m_iRound);
 	node.LoadObject("phase", m_pPhase);
+	__super::Load(node);
 
 	if (m_pPhase)
 		m_pPhase->SetGame(*this);
