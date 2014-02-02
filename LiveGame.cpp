@@ -99,7 +99,7 @@ void LiveGame::StartMainGamePhase()
 
 Phase& LiveGame::GetPhase()
 {
-	AssertThrow("LiveGame::GetPhase", m_pPhase);
+	AssertThrow("LiveGame::GetPhase", !!m_pPhase);
 	return *m_pPhase;
 }
 

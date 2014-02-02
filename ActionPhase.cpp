@@ -18,7 +18,7 @@ ActionPhase::~ActionPhase()
 void ActionPhase::AddCmd(CmdPtr pCmd)
 {
 	AssertThrow("ActionPhase::AddCmd: Team not active", IsTeamActive(pCmd->GetColour()));
-	AssertThrow("ActionPhase::AddCmd: pCmd is null",  pCmd);
+	AssertThrow("ActionPhase::AddCmd: pCmd is null",  !!pCmd);
 
 	m_pCmdStack->AddCmd(pCmd);
 	SaveGame();
