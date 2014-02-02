@@ -491,7 +491,14 @@ template <typename T> bool LoadClass(const std::string& path, T& obj)
 		Xml::Element root = doc.GetRoot();
 		if (!root.IsNull() && root.GetName() == "class")
 		{
-			ClassLoader()(doc.GetRoot(), obj);
+			try
+			{
+				ClassLoader()(doc.GetRoot(), obj);
+			}
+			catch(LoadException& e)
+			{
+				return false;
+			}
 			return true;
 		}
 	}
@@ -505,7 +512,14 @@ template <typename T> bool LoadObject(const std::string& path, T& pObj)
 	{
 		Xml::Element root = doc.GetRoot();
 		if (!root.IsNull() && root.GetName() == "object")
-			return ObjectSaver()(doc.GetRoot()pObj);
+			try
+			{
+				return ObjectLoader()(doc.GetRoot(), pObj);
+			}
+			catch(LoadException& e)
+			{
+				return false;
+			}
 	}
 	return false;
 }

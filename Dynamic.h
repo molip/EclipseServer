@@ -6,6 +6,10 @@
 
 namespace Serial { class SaveNode; class LoadNode; }
 
+class LoadException {};
+
+extern bool _DebugBreak();
+
 class Dynamic
 {
 	typedef std::function<Dynamic*()> Func;
@@ -21,14 +25,21 @@ public:
 	template <typename T> static T* CreateObject(const std::string& id)
 	{
 		auto it = GetClassMap().find(id);
+		if (it == GetClassMap().end())
+		{
+			_DebugBreak();
+			throw LoadException();
+		}
 		T* pObj = dynamic_cast<T*>(it->second());
 		if (pObj == nullptr)
-			throw 1;
+		{
+			_DebugBreak();
+			throw LoadException();
+		}
 		return pObj;
 	}
 
 private:
-
 	static ClassMap& GetClassMap();
 };
 
