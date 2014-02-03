@@ -68,9 +68,17 @@ function OnCommandShow(elem)
     if (!found)
         writeToScreen('OnCommandShow: unknown element: ' + panel)
 		
-	if (panel == 'game_panel')
+	if (panel == 'choose_panel')
+	{
+		ShowElementById('choose_team', false)
+	}
+	else if (panel == 'game_panel')
 	{
 		Map.Init()
+
+		ShowElementById('choose_subaction', false)
+		ShowElementById('choose_undo', false)
+		ShowActionElement(null)
 	}
 }
 
@@ -416,6 +424,7 @@ function OnCommandChooseTeam(elem, active)
 		'
 	}
 	SetDivFromCommandElem(div, elem, xsl) 
+	ShowElement(div, active)
 }
 
 function OnCommandChooseAction(elem)
