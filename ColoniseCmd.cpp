@@ -82,8 +82,13 @@ private:
 				pSquare->SetOccupied(bDo);
 				team.GetPopulationTrack().Add(move.second, bDo ? -1 : 1);
 			}
+
+		int nMoves = m_moves.size();
+		team.UseColonyShips(bDo ? nMoves : -nMoves);
+
 		controller.SendMessage(Output::UpdateMap(game), game);
 		controller.SendMessage(Output::UpdatePopulationTrack(team), game);
+		controller.SendMessage(Output::UpdateColonyShips(team), game);
 	}
 
 	MapPos m_pos;
@@ -126,6 +131,8 @@ CmdPtr ColoniseSquaresCmd::Process(const Input::CmdMessage& msg, const Controlle
 	Population fixed = m.m_fixed, grey = m.m_grey, orbital = m.m_orbital;
 
 	AssertThrow("ColoniseSquaresCmd::Process: no cubes specified", !fixed.IsEmpty() || !grey.IsEmpty() || !orbital.IsEmpty());
+	AssertThrow("ColoniseSquaresCmd::Process: not enough ships", 
+		fixed.GetTotal() + grey.GetTotal() + orbital.GetTotal() <= GetTeam(game).GetUnusedColonyShips());
 
 	ColoniseRecord* pRec = new ColoniseRecord(m_colour, m_pos);
 

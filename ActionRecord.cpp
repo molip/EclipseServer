@@ -12,8 +12,10 @@ ActionRecord::ActionRecord(Colour colour) : Record(colour) {}
 void ActionRecord::Apply(bool bDo, Game& game, const Controller& controller)
 {
 	Team& team = game.GetTeam(m_colour);
-	team.GetInfluenceTrack().AddDiscs(bDo ? -1 : 1);
+	team.GetInfluenceTrack().RemoveDiscs(bDo ? 1 : -1);
+	team.GetActionTrack().AddDiscs(bDo ? 1 : -1);
 	controller.SendMessage(Output::UpdateInfluenceTrack(team), game);
+	controller.SendMessage(Output::UpdateActionTrack(team), game);
 }
 
 REGISTER_DYNAMIC(ActionRecord)

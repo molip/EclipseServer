@@ -224,6 +224,9 @@
     <ClInclude Include="ActionRecord.h">
       <Filter>Model</Filter>
     </ClInclude>
+    <ClInclude Include="DiscTrack.h">
+      <Filter>Model</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -419,6 +422,9 @@
       <Filter>Model</Filter>
     </ClCompile>
     <ClCompile Include="ActionRecord.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="DiscTrack.cpp">
       <Filter>Model</Filter>
     </ClCompile>
   </ItemGroup>

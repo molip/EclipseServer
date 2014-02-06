@@ -102,6 +102,10 @@ function OnCommandUpdate(elem)
 		OnCommandUpdateTeam(elem)
 	else if (param == "influence_track")
 		OnCommandUpdateInfluenceTrack(elem)
+	else if (param == "action_track")
+		OnCommandUpdateActionTrack(elem)
+	else if (param == "colony_ships")
+		OnCommandUpdateColonyShips(elem)
 	else if (param == "storage_track")
 		OnCommandUpdateStorageTrack(elem)
 	else if (param == "technology_track")
@@ -247,6 +251,8 @@ function OnCommandUpdateTeams(elem)
 						<div id="{0}_technology"></div>\
 						<div id="{0}_reputation"></div>\
 						<div id="{0}_influence" onclick="if (data.action && data.action.OnClickInfluenceTrack) data.action.OnClickInfluenceTrack()"></div>\
+						<div id="{0}_actions"></div>\
+						<div id="{0}_colony_ships"></div>\
 						<div id="{0}_passed"></div>\
 					</div>'
 	
@@ -301,6 +307,22 @@ function OnCommandUpdateInfluenceTrack(elem)
 		<b>Influence discs:</b> <xsl:value-of select="@discs"/><br/>\
 	'
 	SetDivFromCommandElem(document.getElementById(GetTeamDivIDFromName(elem.getAttribute('id'), 'influence')), elem, xsl)
+}
+
+function OnCommandUpdateActionTrack(elem)
+{
+	var xsl = '\
+		<b>Actions done:</b> <xsl:value-of select="@discs"/><br/>\
+	'
+	SetDivFromCommandElem(document.getElementById(GetTeamDivIDFromName(elem.getAttribute('id'), 'actions')), elem, xsl)
+}
+
+function OnCommandUpdateColonyShips(elem)
+{
+	var xsl = '\
+		<b>Colony ships left:</b> <xsl:value-of select="@used"/>/<xsl:value-of select="@total"/><br/>\
+	'
+	SetDivFromCommandElem(document.getElementById(GetTeamDivIDFromName(elem.getAttribute('id'), 'colony_ships')), elem, xsl)
 }
 
 function OnCommandUpdateStorageTrack(elem)

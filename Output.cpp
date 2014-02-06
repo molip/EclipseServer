@@ -125,6 +125,12 @@ UpdateInfluenceTrack::UpdateInfluenceTrack(const Team& team) : Update("influence
 	m_root.SetAttribute("discs", team.GetInfluenceTrack().GetDiscCount());
 }
 
+UpdateActionTrack::UpdateActionTrack(const Team& team) : Update("action_track")
+{
+	m_root.SetAttribute("id", team.GetPlayer().GetID());
+	m_root.SetAttribute("discs", team.GetActionTrack().GetDiscCount());
+}
+
 UpdateStorageTrack::UpdateStorageTrack(const Team& team) : Update("storage_track")
 {
 	m_root.SetAttribute("id", team.GetPlayer().GetID());
@@ -152,6 +158,13 @@ UpdatePopulationTrack::UpdatePopulationTrack(const Team& team) : Update("populat
 	m_root.SetAttribute("id", team.GetPlayer().GetID());
 	for (auto r : EnumRange<Resource>())
 		m_root.SetAttribute(EnumTraits<Resource>::ToString(r), team.GetPopulationTrack().GetPopulation()[r]);
+}
+
+UpdateColonyShips::UpdateColonyShips(const Team& team) : Update("colony_ships")
+{
+	m_root.SetAttribute("id", team.GetPlayer().GetID());
+	m_root.SetAttribute("used", team.GetUnusedColonyShips());
+	m_root.SetAttribute("total", team.GetColonyShips());
 }
 
 UpdateReputationTrack::UpdateReputationTrack(const Team& team, bool bSendValues) : Update("reputation_track")

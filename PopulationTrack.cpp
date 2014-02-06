@@ -28,6 +28,14 @@ int PopulationTrack::GetIncome(int nPop)
 	return vals[nPop];
 }
 
+Storage PopulationTrack::GetIncome() const
+{
+	Storage income;
+	for (auto r : EnumRange<Resource>())
+		income[r] = GetIncome(r);
+	return income;
+}
+
 void PopulationTrack::Save(Serial::SaveNode& node) const
 {
 	node.SaveClass("pop", m_pop);

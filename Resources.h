@@ -10,8 +10,11 @@ enum class Resource { None = -1, Money, Science, Materials, _Count };
 class Resources : private std::vector<int>
 {
 public:
-	const int& operator[] (Resource r) const { return __super::at((int)r); }
-	int& operator[] (Resource r) { return __super::at((int)r); }
+	const int& operator[] (Resource r) const { return at(r); }
+	int& operator[] (Resource r) { return at(r); }
+
+	void operator+=(const Resources& rhs);
+	void operator-=(const Resources& rhs);
 
 	int GetTotal() const { int n = 0; for (auto& r : *this) n += r; return n; }
 	bool IsEmpty() const { for (auto& r : *this) if (r) return false; return true; }
@@ -27,6 +30,9 @@ protected:
 		push_back(sci);
 		push_back(mat);
 	}
+
+	const int& at(Resource r) const { return __super::at((int)r); }
+	int& at(Resource r) { return __super::at((int)r); }
 
 private:
 };

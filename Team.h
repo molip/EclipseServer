@@ -63,12 +63,17 @@ public:
 	InfluenceTrack& GetInfluenceTrack() { return m_infTrack; }
 	const InfluenceTrack& GetInfluenceTrack() const { return m_infTrack; }
 
+	DiscTrack& GetActionTrack() { return m_actionTrack; }
+	const DiscTrack& GetActionTrack() const { return m_actionTrack; }
+
 	const TechTrack& GetTechTrack() const { return m_techTrack; }
 	TechTrack& GetTechTrack() { return m_techTrack; }
 
 	void AddShips(ShipType type, int nShips);
 	void RemoveShips(ShipType type, int nShips) { AddShips(type, -nShips); }
 	int GetUnusedShips(ShipType type) const;
+
+	Storage GetIncome() const;
 
 	void PopulateStartHex(Hex& hex);
 
@@ -97,6 +102,7 @@ private:
 
 	PopulationTrack m_popTrack;
 	InfluenceTrack m_infTrack;
+	DiscTrack m_actionTrack;
 	ReputationTrack m_repTrack;
 	TechTrack m_techTrack;
 	Storage m_storage;
@@ -105,6 +111,7 @@ private:
 	int m_nShips[4];
 
 	int m_nColonyShipsUsed;
+	int m_nActions;
 	bool m_bPassed;
 };
 

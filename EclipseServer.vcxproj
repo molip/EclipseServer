@@ -91,6 +91,7 @@
     <ClInclude Include="DiplomacyCmd.h" />
     <ClInclude Include="DiscoverCmd.h" />
     <ClInclude Include="Discovery.h" />
+    <ClInclude Include="DiscTrack.h" />
     <ClInclude Include="Dynamic.h" />
     <ClInclude Include="EdgeSet.h" />
     <ClInclude Include="EnumRange.h" />
@@ -160,6 +161,7 @@
     <ClCompile Include="DiplomacyCmd.cpp" />
     <ClCompile Include="DiscoverCmd.cpp" />
     <ClCompile Include="Discovery.cpp" />
+    <ClCompile Include="DiscTrack.cpp" />
     <ClCompile Include="Dynamic.cpp" />
     <ClCompile Include="EdgeSet.cpp" />
     <ClCompile Include="ExploreCmd.cpp" />
