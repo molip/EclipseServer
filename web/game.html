@@ -72,6 +72,7 @@
 			<input type = "image" id="map_pan_up_btn" src="/images/btn_pan_u.png" onclick="Map.PanY(-1)">
 			<input type = "image" id="map_pan_down_btn" src="/images/btn_pan_d.png" onclick="Map.PanY(1)">
 			<input type = "image" id="map_pan_centre_btn" src="/images/btn_pan_centre.png" onclick="Map.PanCentre()">
+			<span style="float:right">Round:<span id="round_count"></span></span>
 		</div>
 		<div id="map">
 			<canvas id="map_canvas" width="600" height="600" style="background-color:black"></canvas>
@@ -89,6 +90,10 @@
 	<div id="live_ui">
 		<a href="Back to game list" onclick="SendExitGame();return false;">Back to game list</a>
 		<a href="Review game" onclick="SendStartReview();return false;">Review game</a>
+		<div id="choose_upkeep" style="display:none">
+			Upkeep Phase
+			<button type="button" id="finish_upkeep_btn" onclick="SendFinishUpkeep()">Finish</button>
+		</div>
 		<div id="choose_undo" style="display:none">
 			<button type="button" id="choose_undo_btn" onclick="SendChooseUndo()">Undo</button>
 		</div>
@@ -96,7 +101,8 @@
 			<button id="choose_action_colonise_btn" type="button" onclick="SendChooseAction('colonise')">Colonise</button>
 			<button id="choose_action_diplomacy_btn" type="button" onclick="SendChooseAction('diplomacy')">Diplomacy</button>
 			<button id="choose_action_trade_btn" type="button" onclick="SendChooseAction('trade')">Trade</button>
-		</div>
+			<button id="choose_action_bankrupt_btn" type="button" onclick="alert('NYI')">Bankrupt</button>
+			</div>
 		<div id="choose_action" style="display:none">
 			<button id="choose_action_explore_btn" type="button" onclick="SendChooseAction('explore')">Explore</button>
 			<button id="choose_action_influence_btn" type="button" onclick="SendChooseAction('influence')">Influence</button>

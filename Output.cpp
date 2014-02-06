@@ -222,13 +222,19 @@ UpdateTechnologies::UpdateTechnologies(const Game& game) : Update("technologies"
 {
 	auto& techs = game.GetTechnologies();
 	for (auto t : techs)
-	{
-		auto e = m_root.AddElement("tech");
-		e.SetAttribute("type", EnumTraits<TechType>::ToString(t.first));
-		e.SetAttribute("count", t.second);
-		e.SetAttribute("max_cost", Technology::GetMaxCost(t.first));
-		e.SetAttribute("min_cost", Technology::GetMinCost(t.first));
-	}
+		if (t.second > 0)
+		{
+			auto e = m_root.AddElement("tech");
+			e.SetAttribute("type", EnumTraits<TechType>::ToString(t.first));
+			e.SetAttribute("count", t.second);
+			e.SetAttribute("max_cost", Technology::GetMaxCost(t.first));
+			e.SetAttribute("min_cost", Technology::GetMinCost(t.first));
+		}
+}
+
+UpdateRound::UpdateRound(const Game& game) : Update("round")
+{
+	m_root.SetAttribute("round", game.GetRound() + 1);
 }
 
 //UpdateUndo::UpdateUndo(bool bEnable) : Update("undo")
@@ -458,6 +464,19 @@ ChooseUpgrade::ChooseUpgrade() : Choose("upgrade")
 ChooseTrade::ChooseTrade() : Choose("trade")
 {
 }
+
+ChooseUpkeep::ChooseUpkeep(const Team& team, bool canUndo) : Choose("upkeep")
+{
+	m_root.SetAttribute("can_undo", canUndo);
+	m_root.SetAttribute("can_colonise", team.GetUnusedColonyShips() > 0);
+	m_root.SetAttribute("can_trade", true);
+	m_root.SetAttribute("can_bankrupt", false);
+}
+
+ChooseUpkeepFinished::ChooseUpkeepFinished() : Choose("upkeep_finished")
+{
+}
+
 
 } // namespace
 

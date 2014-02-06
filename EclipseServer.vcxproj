@@ -77,6 +77,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="ActionPhase.h" />
+    <ClInclude Include="ActionRecord.h" />
     <ClInclude Include="App.h" />
     <ClInclude Include="Bag.h" />
     <ClInclude Include="Blueprint.h" />
@@ -128,6 +129,7 @@
     <ClInclude Include="Ship.h" />
     <ClInclude Include="ShipLayout.h" />
     <ClInclude Include="Singleton.h" />
+    <ClInclude Include="StartRoundRecord.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="Team.h" />
@@ -137,12 +139,14 @@
     <ClInclude Include="TradeCmd.h" />
     <ClInclude Include="Turn.h" />
     <ClInclude Include="UpgradeCmd.h" />
+    <ClInclude Include="UpkeepPhase.h" />
     <ClInclude Include="Util.h" />
     <ClInclude Include="WSServer.h" />
     <ClInclude Include="Xml.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ActionPhase.cpp" />
+    <ClCompile Include="ActionRecord.cpp" />
     <ClCompile Include="App.cpp" />
     <ClCompile Include="Bag.cpp" />
     <ClCompile Include="Blueprint.cpp" />
@@ -191,6 +195,7 @@
     <ClCompile Include="Serial.cpp" />
     <ClCompile Include="Ship.cpp" />
     <ClCompile Include="ShipLayout.cpp" />
+    <ClCompile Include="StartRoundRecord.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -204,6 +209,7 @@
     <ClCompile Include="TradeCmd.cpp" />
     <ClCompile Include="Turn.cpp" />
     <ClCompile Include="UpgradeCmd.cpp" />
+    <ClCompile Include="UpkeepPhase.cpp" />
     <ClCompile Include="Util.cpp" />
     <ClCompile Include="WSServer.cpp" />
     <ClCompile Include="Xml.cpp" />

@@ -17,18 +17,19 @@ namespace
 }
 
 Game::Game() : 
-	m_id(0), m_idOwner(0), m_map(*this)
+	m_id(0), m_idOwner(0), m_map(*this), m_iRound(-1)
 {
 }
 
 Game::Game(int id, const std::string& name, const Player& owner) : 
-	m_id(id), m_name(name), m_idOwner(owner.GetID()), m_map(*this)
+	m_id(id), m_name(name), m_idOwner(owner.GetID()), m_map(*this), m_iRound(-1)
 {
 }
 
 Game::Game(int id, const std::string& name, const Player& owner, const Game& rhs) :
 	m_id(id), m_name(name), m_idOwner(owner.GetID()), 
-	m_map(rhs.m_map, *this), m_techs(rhs.m_techs), m_repBag(rhs.m_repBag), m_techBag(rhs.m_techBag), m_discBag(rhs.m_discBag)
+	m_map(rhs.m_map, *this), m_techs(rhs.m_techs), m_repBag(rhs.m_repBag), m_techBag(rhs.m_techBag), m_discBag(rhs.m_discBag),
+	m_iRound(rhs.m_iRound)
 {
 	for (auto& t : rhs.m_teams)
 		m_teams.push_back(TeamPtr(new Team(*t, id)));
@@ -76,6 +77,15 @@ Team& Game::GetTeam(Colour c)
 	return *pTeam;
 }
 
+bool Game::IncrementRound(bool bDo)
+{
+	m_iRound += bDo ? 1 : -1;
+
+	assert(m_iRound >= 0 && m_iRound <= 9);
+
+	return m_iRound == 9;
+}
+
 void Game::Save(Serial::SaveNode& node) const 
 {
 	node.SaveType("id", m_id);
@@ -88,6 +98,7 @@ void Game::Save(Serial::SaveNode& node) const
 	node.SaveClass("tech_bag", m_techBag);
 	node.SaveClass("disc_bag", m_discBag);
 	node.SaveArray("hex_bags", m_hexBag, Serial::ClassSaver());
+	node.SaveType("round", m_iRound);
 }
 
 void Game::Load(const Serial::LoadNode& node)
@@ -102,6 +113,7 @@ void Game::Load(const Serial::LoadNode& node)
 	node.LoadClass("tech_bag", m_techBag);
 	node.LoadClass("disc_bag", m_discBag);
 	node.LoadArray("hex_bags", m_hexBag, Serial::ClassLoader());
+	node.LoadType("round", m_iRound);
 
 	for (auto& t : m_teams)
 		t->SetGameID(m_id);

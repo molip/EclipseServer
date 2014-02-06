@@ -69,6 +69,7 @@ struct UpdatePassed : Update { UpdatePassed(const Team& team); };
 struct UpdateMap : Update { UpdateMap(const Game& game); };
 struct UpdateReviewUI : Update { UpdateReviewUI(const ReviewGame& game); };
 struct UpdateTechnologies : Update { UpdateTechnologies(const Game& game); };
+struct UpdateRound : Update { UpdateRound(const Game& game); };
 //struct UpdateUndo : Update { UpdateUndo(bool bEnable); };
 
 struct ChooseTeam : Choose { ChooseTeam(const Game& game, bool bActive); };
@@ -98,6 +99,9 @@ struct ChooseMoveSrc : Choose { ChooseMoveSrc(std::map<MapPos, std::set<ShipType
 struct ChooseMoveDst : Choose { ChooseMoveDst(const std::set<MapPos>& dsts); };
 struct ChooseUpgrade : Choose { ChooseUpgrade(); };
 struct ChooseTrade : Choose { ChooseTrade(); };
+
+struct ChooseUpkeep : Choose { ChooseUpkeep(const Team& team, bool canUndo); };
+struct ChooseUpkeepFinished : Choose { ChooseUpkeepFinished(); };
 
 struct ShowGameList : Show { ShowGameList(); };
 struct ShowLobby : Show { ShowLobby(); };

@@ -24,6 +24,7 @@ public:
 	void SetCurrentGame(Game* pGame);
 
 	Team* GetCurrentTeam();
+	const Team* GetCurrentTeam() const { return const_cast<Player*>(this)->GetCurrentTeam(); }
 
 private:
 	int m_id;

@@ -106,6 +106,11 @@ struct Commit : Message
 	virtual bool Process(Controller& controller, Player& player) const override; 
 };
 
+struct FinishUpkeep : Message
+{
+	virtual bool Process(Controller& controller, Player& player) const override;
+};
+
 //-----------------------------------------------------------------------------
 
 class CmdMessage : public Message

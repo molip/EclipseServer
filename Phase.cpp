@@ -8,8 +8,9 @@
 #include "Games.h"
 #include "ReviewGame.h"
 
-Phase::Phase() : m_pGame(nullptr)
+Phase::Phase(LiveGame* pGame) : m_pGame(pGame)
 {
+
 }
 
 void Phase::Save(Serial::SaveNode& node) const 
@@ -32,7 +33,7 @@ void Phase::ProcessCmdMessage(const Input::CmdMessage& msg, Controller& controll
 	LiveGame& game = GetGame();
 	AssertThrow("Phase::ProcessCmdMessage: Player not in game", &game == player.GetCurrentLiveGame());
 
-	const Colour colour = player.GetCurrentTeam()->GetColour();
+	const Colour colour = game.GetTeam(player).GetColour();
 	Cmd* pCmd = GetCurrentCmd(colour);
 	AssertThrow("Phase::ProcessCmdMessage: No current command", !!pCmd);
 
@@ -42,7 +43,7 @@ void Phase::ProcessCmdMessage(const Input::CmdMessage& msg, Controller& controll
 	else
 		FinishCmd(colour);
 
-	UpdateClient(controller);
+	UpdateClient(controller, &player);
 
 	if (pCmd->HasRecord()) 
 		for (auto& g : Games::GetReviewGames())
@@ -55,11 +56,10 @@ void Phase::UndoCmd(Controller& controller, Player& player)
 	LiveGame& game = GetGame();
 	AssertThrow("Phase::UndoCmd: Player not in game", &game == player.GetCurrentLiveGame());
 
-	const Colour colour = player.GetCurrentTeam()->GetColour();
+	const Colour colour = game.GetTeam(player).GetColour();
 	const Cmd* pCmd = GetCurrentCmd(colour);
-	bool bAction = pCmd && pCmd->CostsInfluence();
 
-	if (Cmd* pUndo = RemoveCmd(colour))
+	if (Cmd* pUndo = RemoveCmd(controller, colour))
 	{
 		if (pUndo->HasRecord())
 		{
@@ -76,21 +76,15 @@ void Phase::UndoCmd(Controller& controller, Player& player)
 		}
 
 		if (pUndo->IsAutoProcess()) // Also undo the command start. 
-			RemoveCmd(colour);
+			RemoveCmd(controller, colour);
 	}
 
-	if (Cmd* pCmd2 = GetCurrentCmd(colour))
-		pCmd2->UpdateClient(controller,  game);
-	else
-		controller.SendMessage(Output::ChooseAction(game), player);
-
-	if (bAction)
-		controller.SendMessage(Output::UpdateInfluenceTrack(*player.GetCurrentTeam()), game);
+	UpdateClient(controller, &player);
 }
 
 //-----------------------------------------------------------------------------
 
-TurnPhase::TurnPhase() : m_iTurn(0), m_iStartTeam(0), m_iStartTeamNext(0)
+TurnPhase::TurnPhase(LiveGame* pGame) : Phase(pGame), m_iTurn(0)
 {
 }
 
@@ -106,12 +100,12 @@ Player& TurnPhase::GetCurrentPlayer()
 
 Team& TurnPhase::GetCurrentTeam()
 {
-	return *GetGame().GetTeams()[(m_iStartTeam + m_iTurn) % GetGame().GetTeams().size()];
+	return *GetGame().GetTeams()[m_iTurn % GetGame().GetTeams().size()];
 }
 
 void TurnPhase::AdvanceTurn()
 {
-	m_iTurn = (m_iTurn + 1) % GetGame().GetTeams().size();
+	++m_iTurn;
 	SaveGame();
 }
 
@@ -119,16 +113,12 @@ void TurnPhase::Save(Serial::SaveNode& node) const
 {
 	__super::Save(node);
 	node.SaveType("turn", m_iTurn);
-	node.SaveType("start_team", m_iStartTeam);
-	node.SaveType("start_team_next", m_iStartTeamNext);
 }
 
 void TurnPhase::Load(const Serial::LoadNode& node)
 {
 	__super::Load(node);
 	node.LoadType("turn", m_iTurn);
-	node.LoadType("start_team", m_iStartTeam);
-	node.LoadType("start_team_next", m_iStartTeamNext);
 }
 
 //-----------------------------------------------------------------------------

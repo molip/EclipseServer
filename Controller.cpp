@@ -76,63 +76,52 @@ void Controller::SendUpdateGame(const Game& game, const Player* pPlayer) const
 {
 	auto pLive = dynamic_cast<const LiveGame*>(&game);
 	
-	if (pLive)
+	if (pLive && !pLive->HasStarted())
 	{
-		if (!pLive->HasStarted())
-		{
-			SendMessage(Output::UpdateLobby(game), game, pPlayer);
+		SendMessage(Output::UpdateLobby(game), game, pPlayer);
 
-			if (pPlayer)
+		if (pPlayer)
+		{
+			SendMessage(Output::ShowLobby(), *pPlayer);
+			SendMessage(Output::UpdateLobbyControls(pPlayer == &game.GetOwner()), *pPlayer);
+		}
+		return;
+	}
+
+	if (!pLive || pLive->GetGamePhase() == LiveGame::GamePhase::Main)
+	{
+		SendMessage(Output::ShowGame(), game, pPlayer);
+		SendMessage(Output::UpdateTeams(game), game, pPlayer);
+
+		if (auto pReview = dynamic_cast<const ReviewGame*>(&game))
+			SendMessage(Output::UpdateReviewUI(*pReview), game, pPlayer);
+
+		// Send info about each team.
+		for (auto& pInfoTeam : game.GetTeams())
+		{
+			const Player& infoPlayer = pInfoTeam->GetPlayer();
+			AssertThrow("Controller::SendUpdateGame: Team not chosen yet: " + infoPlayer.GetName(), !!pInfoTeam);
+			SendMessage(Output::UpdateTeam(*pInfoTeam), game, pPlayer);
+			SendMessage(Output::UpdateInfluenceTrack(*pInfoTeam), game, pPlayer);
+			SendMessage(Output::UpdateTechnologyTrack(*pInfoTeam), game, pPlayer);
+			SendMessage(Output::UpdateStorageTrack(*pInfoTeam), game, pPlayer);
+			SendMessage(Output::UpdatePopulationTrack(*pInfoTeam), game, pPlayer);
+			SendMessage(Output::UpdatePassed(*pInfoTeam), game, pPlayer);
+
+			// Reputation tile values are secret, so only send them to the relevant player. 
+			for (auto& pDstTeam : game.GetTeams())
 			{
-				SendMessage(Output::ShowLobby(), *pPlayer);
-				SendMessage(Output::UpdateLobbyControls(pPlayer == &game.GetOwner()), *pPlayer);
+				const Player& dstPlayer = pDstTeam->GetPlayer();
+				if (dstPlayer.GetCurrentGame() == &game)
+					if (!pPlayer || pPlayer == &dstPlayer)
+						SendMessage(Output::UpdateReputationTrack(*pInfoTeam, &dstPlayer == &infoPlayer), game, &dstPlayer);
 			}
-			return;
 		}
-		if (const ChooseTeamPhase* pChooseTeamPhase = dynamic_cast<const ChooseTeamPhase*>(&pLive->GetPhase()))
-		{
-			SendMessage(Output::ShowChoose(), game, pPlayer);
-			SendMessage(Output::UpdateChoose(*pLive), game, pPlayer);
-
-			if (!pPlayer || pPlayer == &pChooseTeamPhase->GetCurrentPlayer())
-				SendMessage(Output::ChooseTeam(game, true), pChooseTeamPhase->GetCurrentPlayer());
-
-			return;
-		}
+		SendMessage(Output::UpdateMap(game), game, pPlayer);
+		SendMessage(Output::UpdateTechnologies(game), game, pPlayer);
+		SendMessage(Output::UpdateRound(game), game, pPlayer);
 	}
-
-	SendMessage(Output::ShowGame(), game, pPlayer);
-	SendMessage(Output::UpdateTeams(game), game, pPlayer);
-	
-	if (auto pReview = dynamic_cast<const ReviewGame*>(&game))
-		SendMessage(Output::UpdateReviewUI(*pReview), game, pPlayer);
-	
-	// Send info about each team.
-	for (auto& pInfoTeam : game.GetTeams())
-	{
-		const Player& infoPlayer = pInfoTeam->GetPlayer();
-		AssertThrow("Controller::SendUpdateGame: Team not chosen yet: " + infoPlayer.GetName(), !!pInfoTeam);
-		SendMessage(Output::UpdateTeam(*pInfoTeam), game, pPlayer);
-		SendMessage(Output::UpdateInfluenceTrack(*pInfoTeam), game, pPlayer);
-		SendMessage(Output::UpdateTechnologyTrack(*pInfoTeam), game, pPlayer);
-		SendMessage(Output::UpdateStorageTrack(*pInfoTeam), game, pPlayer);
-		SendMessage(Output::UpdatePopulationTrack(*pInfoTeam), game, pPlayer);
-		SendMessage(Output::UpdatePassed(*pInfoTeam), game, pPlayer);
-
-		// Reputation tile values are secret, so only send them to the relevant player. 
-		for (auto& pDstTeam : game.GetTeams())
-		{
-			const Player& dstPlayer = pDstTeam->GetPlayer();
-			if (dstPlayer.GetCurrentGame() == &game)
-				if (!pPlayer || pPlayer == &dstPlayer)
-					SendMessage(Output::UpdateReputationTrack(*pInfoTeam, &dstPlayer == &infoPlayer), game, &dstPlayer);
-		}
-	}
-	SendMessage(Output::UpdateMap(game), game, pPlayer);
-	SendMessage(Output::UpdateTechnologies(game), game, pPlayer);
 
 	if (pLive)
-		if (const ActionPhase* pActionPhase = dynamic_cast<const ActionPhase*>(&pLive->GetPhase()))
-			if (!pPlayer || pPlayer == &pActionPhase->GetCurrentPlayer()) 
-				pActionPhase->UpdateClient(*this);
+		pLive->GetPhase().UpdateClient(*this, pPlayer);
 }

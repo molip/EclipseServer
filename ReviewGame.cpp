@@ -24,14 +24,19 @@ const std::vector<RecordPtr>& ReviewGame::GetRecords() const
 
 void ReviewGame::Advance(const Controller& controller)
 {
-	AssertThrow("ReviewGame::Advance", CanAdvance());
-	GetRecords()[m_iRecord++]->Do(*this, controller);
+	AssertThrow("ReviewGame::Advance: Already at end", CanAdvance());
+	Record& rec = *GetRecords()[m_iRecord++];
+	rec.Do(*this, controller);
+	if (CanAdvance() && rec.WantMergeNext())
+		Advance(controller);
 }
 
 void ReviewGame::Retreat(const Controller& controller)
 {
-	AssertThrow("ReviewGame::Retreat", CanRetreat());
+	AssertThrow("ReviewGame::Retreat: Already at start", CanRetreat());
 	GetRecords()[--m_iRecord]->Undo(*this, controller);
+	if (CanRetreat() && GetRecords()[m_iRecord - 1]->WantMergeNext())
+		Retreat(controller);
 }
 
 bool ReviewGame::CanAdvance() const
@@ -48,5 +53,5 @@ void ReviewGame::OnPreRecordPop(const Controller& controller)
 {
 	AssertThrow("ReviewGame::OnPreRecordPop", m_iRecord > 0 && m_iRecord <= (int)GetRecords().size());
 	if (m_iRecord == GetRecords().size())
-		Retreat(controller);
+		GetRecords()[--m_iRecord]->Undo(*this, controller); // Don't retreat merged.
 }

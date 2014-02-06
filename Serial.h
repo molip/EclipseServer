@@ -495,7 +495,7 @@ template <typename T> bool LoadClass(const std::string& path, T& obj)
 			{
 				ClassLoader()(doc.GetRoot(), obj);
 			}
-			catch(LoadException& e)
+			catch(LoadException&)
 			{
 				return false;
 			}

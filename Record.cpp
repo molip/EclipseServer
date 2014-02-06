@@ -2,6 +2,9 @@
 #include "Record.h"
 #include "Team.h"
 #include "Serial.h"
+#include "Game.h"
+#include "Controller.h"
+#include "Output.h"
 
 Record::Record() : m_colour(Colour::None) {}
 Record::Record(Colour colour) : m_colour(colour) {}

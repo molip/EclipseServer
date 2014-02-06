@@ -4,8 +4,9 @@
 #include "LiveGame.h"
 #include "Controller.h"
 #include "Output.h"
+#include "ActionRecord.h"
 
-ActionPhase::ActionPhase() : m_bDoneAction(false)
+ActionPhase::ActionPhase(LiveGame* pGame) : TurnPhase(pGame), m_bDoneAction(false)
 {
 	m_pCmdStack = new CmdStack;
 }
@@ -32,7 +33,7 @@ void ActionPhase::FinishCmd(Colour c)
 	SaveGame();
 }
 
-Cmd* ActionPhase::RemoveCmd(Colour c)
+Cmd* ActionPhase::RemoveCmd(const Controller& controller, Colour c)
 {
 	AssertThrow("ActionPhase::RemoveCmd", IsTeamActive(c));
 
@@ -48,7 +49,11 @@ Cmd* ActionPhase::RemoveCmd(Colour c)
 		m_bDoneAction = false;
 
 		if (bCostsInfluence)
-			GetCurrentTeam().GetInfluenceTrack().AddDiscs(1);
+		{
+			RecordPtr pRec = GetGame().PopRecord();
+			AssertThrow("ActionPhase::RemoveCmd: current record not ActionRecord", !!dynamic_cast<ActionRecord*>(pRec.get()));
+			pRec->Undo(GetGame(), controller);
+		}
 	}
 
 	SaveGame();
@@ -84,25 +89,26 @@ bool ActionPhase::CanRemoveCmd() const
 
 void ActionPhase::StartCmd(CmdPtr pCmd, Controller& controller)
 {
-	AssertThrow("ActionPhase::StartCmd", IsTeamActive(pCmd->GetColour()));
+	AssertThrow("ActionPhase::StartCmd: Team not active", IsTeamActive(pCmd->GetColour()));
 
 	if (pCmd->IsAction()) // Includes PassCmd.
 	{
-		AssertThrow("Phase::StartCmd",  !m_bDoneAction);
+		AssertThrow("ActionPhasePhase::StartCmd: Already done an action",  !m_bDoneAction);
 		m_bDoneAction = true;
 	}
 
 	if (pCmd->CostsInfluence())
-		GetCurrentTeam().GetInfluenceTrack().RemoveDiscs(1); // TODO: return these at end of 
-
+	{
+		RecordPtr pRec = std::make_unique<ActionRecord>(GetCurrentTeam().GetColour());
+		pRec->Do(GetGame(), controller);
+		GetGame().PushRecord(pRec);
+	}
+	
 	m_pCmdStack->StartCmd(pCmd);
 
 	SaveGame();
 
 	Cmd* pStartedCmd = GetCurrentCmd();
-
-	if (pStartedCmd->CostsInfluence())
-		controller.SendMessage(Output::UpdateInfluenceTrack(GetCurrentTeam()), GetGame()); // TODO: Move to record.
 
 	if (pStartedCmd->IsAutoProcess())
 		ProcessCmdMessage(Input::CmdMessage(), controller, GetCurrentPlayer());
@@ -122,16 +128,31 @@ void ActionPhase::FinishTurn(Controller& controller)
 {
 	controller.SendMessage(Output::ChooseFinished(), GetCurrentPlayer());
 
+	Colour c = GetCurrentTeam().GetColour();
+	if (GetCurrentTeam().HasPassed() && std::find(m_passOrder.begin(), m_passOrder.end(), c) == m_passOrder.end())
+	{
+		LiveGame& game = GetGame();
+
+		m_passOrder.push_back(c);
+		if (m_passOrder.size() == game.GetTeams().size())
+		{
+			game.FinishActionPhase(m_passOrder); // Deletes this.
+			game.GetPhase().UpdateClient(controller, nullptr); // Show upkeep UI.
+			return;
+		}
+	}
 	m_pCmdStack->Clear();
 	m_bDoneAction = false;
 	AdvanceTurn();
-	SaveGame();
 
-	controller.SendMessage(Output::ChooseAction(GetGame()), GetCurrentPlayer());
+	UpdateClient(controller, &GetCurrentPlayer());
 }
 
-void ActionPhase::UpdateClient(const Controller& controller) const 
+void ActionPhase::UpdateClient(const Controller& controller, const Player* pPlayer) const
 {
+	if (pPlayer && pPlayer != &GetCurrentPlayer())
+		return; // Nothing to send to this player.
+
 	if (const Cmd* pCmd = GetCurrentCmd())
 		pCmd->UpdateClient(controller, GetGame());
 	else
@@ -143,6 +164,7 @@ void ActionPhase::Save(Serial::SaveNode& node) const
 	__super::Save(node);
 	node.SaveClass("commands", *m_pCmdStack);
 	node.SaveType("done_action", m_bDoneAction);
+	node.SaveCntr("pass_order", m_passOrder, Serial::EnumSaver());
 }
 
 void ActionPhase::Load(const Serial::LoadNode& node)
@@ -150,6 +172,7 @@ void ActionPhase::Load(const Serial::LoadNode& node)
 	__super::Load(node);
 	node.LoadClass("commands", *m_pCmdStack);
 	node.LoadType("done_action", m_bDoneAction);
+	node.LoadCntr("pass_order", m_passOrder, Serial::EnumLoader());
 }
 
 REGISTER_DYNAMIC(ActionPhase)

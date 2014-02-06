@@ -58,6 +58,9 @@ public:
 	const std::map<TechType, int>& GetTechnologies() const { return m_techs; }
 	std::map<TechType, int>& GetTechnologies() { return m_techs; }
 
+	bool IncrementRound(bool bDo); // Returns true if game finished.
+	int GetRound() const { return m_iRound; }
+
 	virtual void Save(Serial::SaveNode& node) const;
 	virtual void Load(const Serial::LoadNode& node);
 
@@ -71,13 +74,15 @@ protected:
 	std::map<TechType, int> m_techs;
 
 	std::vector<TeamPtr> m_teams;
-	
+
 	ReputationBag m_repBag;
 	TechnologyBag m_techBag;
 	DiscoveryBag m_discBag;
 	HexBag m_hexBag[HexRing::_Count];
 
 	Map	m_map; // After m_discBag
+
+	int m_iRound;
 };
 
 typedef std::unique_ptr<Game> GamePtr;

@@ -19,9 +19,9 @@
 #include "Games.h"
 #include "LiveGame.h"
 #include "ReviewGame.h"
-#include "Record.h"
 #include "ActionPhase.h"
 #include "ChooseTeamPhase.h"
+#include "UpkeepPhase.h"
 
 #include <sstream>
 
@@ -58,7 +58,9 @@ MessagePtr CreateCommand(const Xml::Element& root)
 		return MessagePtr(new Undo);
 	if (type == "commit")
 		return MessagePtr(new Commit);
-	
+	if (type == "finish_upkeep")
+		return MessagePtr(new FinishUpkeep);
+
 	if (type == "cmd_explore_pos")
 		return MessagePtr(new CmdExplorePos(root));
 	if (type == "cmd_explore_hex")
@@ -114,7 +116,7 @@ LiveGame& Message::GetLiveGame(Player& player) const
 	LiveGame* pGame = player.GetCurrentLiveGame();
 	AssertThrow("ChooseMessage: player not registered in any game", !!pGame);
 	AssertThrow("ChooseMessage: game not in main phase: " + pGame->GetName(), pGame->GetGamePhase() == LiveGame::GamePhase::Main);
-	AssertThrow("ChooseMessage: player played out of turn", pGame->GetPhase().IsTeamActive(player.GetCurrentTeam()->GetColour()));
+	AssertThrow("ChooseMessage: player played out of turn", pGame->GetPhase().IsTeamActive(pGame->GetTeam(player).GetColour()));
 	return *pGame;
 }
 
@@ -261,13 +263,7 @@ bool ChooseTeam::Process(Controller& controller, Player& player) const
 	if (race != RaceType::Human)
 		AssertThrowXML("ChooseTeam: colour doesn't match race", colour == Race(race).GetColour());
 
-	pGame->GetChooseTeamPhase().AssignTeam(player, race, colour);
-
-	controller.SendMessage(Output::ChooseTeam(*pGame, false), player);
-	controller.SendUpdateGame(*pGame);
-
-	if (pGame->GetGamePhase() == LiveGame::GamePhase::Main)
-		controller.SendMessage(Output::UpdateTechnologies(*pGame), *pGame); // TODO: Move to record.
+	pGame->GetChooseTeamPhase().AssignTeam(controller, player, race, colour);
 
 	return true;	
 }
@@ -280,7 +276,7 @@ StartAction::StartAction(const Xml::Element& node)
 bool StartAction::Process(Controller& controller, Player& player) const 
 {
 	LiveGame& game = GetLiveGame(player);
-	Colour colour = player.GetCurrentTeam()->GetColour();
+	Colour colour = game.GetTeam(player).GetColour();
 
 	Cmd* pCmd = nullptr;
 
@@ -307,7 +303,7 @@ bool StartAction::Process(Controller& controller, Player& player) const
 
 	AssertThrow("StartAction::Process: No command created", !!pCmd);
 	
-	game.GetActionPhase().StartCmd(CmdPtr(pCmd), controller);
+	game.GetPhase().StartCmd(CmdPtr(pCmd), controller);
 
 	return true;	
 }
@@ -321,6 +317,12 @@ bool Undo::Process(Controller& controller, Player& player) const
 bool Commit::Process(Controller& controller, Player& player) const 
 {
 	GetLiveGame(player).GetActionPhase().FinishTurn(controller);
+	return true;
+}
+
+bool FinishUpkeep::Process(Controller& controller, Player& player) const
+{
+	GetLiveGame(player).GetUpkeepPhase().FinishTurn(controller, player);
 	return true;
 }
 

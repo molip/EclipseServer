@@ -21,7 +21,7 @@ namespace Input { class CmdMessage; }
 class Phase : public Dynamic
 {
 public:
-	Phase();
+	Phase(LiveGame* pGame);
 	virtual ~Phase() {}
 
 	void SetGame(LiveGame& game) { m_pGame = &game; }
@@ -29,16 +29,18 @@ public:
 	void ProcessCmdMessage(const Input::CmdMessage& msg, Controller& controller, Player& player);
 	void UndoCmd(Controller& controller, Player& player);
 	
+	virtual void StartCmd(CmdPtr pCmd, Controller& controller) { ASSERT(false); }
+
 	virtual void AddCmd(CmdPtr pCmd) = 0;
 	virtual void FinishCmd(Colour c) = 0;
-	virtual Cmd* RemoveCmd(Colour c) = 0; // Returns cmd to undo.
+	virtual Cmd* RemoveCmd(const Controller& controller, Colour c) = 0; // Returns cmd to undo.
 	virtual bool CanRemoveCmd(Colour c) const = 0;
 	virtual bool IsTeamActive(Colour c) const = 0;
 
 	virtual Cmd* GetCurrentCmd(Colour c) = 0;
 	const Cmd* GetCurrentCmd(Colour c) const { return const_cast<Phase*>(this)->GetCurrentCmd(c); }
 
-	virtual void UpdateClient(const Controller& controller) const {}
+	virtual void UpdateClient(const Controller& controller, const Player* pPlayer) const {}
 
 	virtual void Save(Serial::SaveNode& node) const override;
 	virtual void Load(const Serial::LoadNode& node) override;
@@ -56,7 +58,7 @@ DEFINE_UNIQUE_PTR(Phase)
 class TurnPhase : public Phase
 {
 public:
-	TurnPhase();
+	TurnPhase(LiveGame* pGame);
 	virtual ~TurnPhase() {}
 
 	const Player& GetCurrentPlayer() const;
@@ -72,8 +74,5 @@ protected:
 	int GetTurn() const { return m_iTurn; }
 
 private:
-	TurnPhase(TurnPhase& phase);
-
 	int m_iTurn;
-	int m_iStartTeam, m_iStartTeamNext;
 };

@@ -9,15 +9,16 @@
 #include "Serial.h"
 #include "ActionPhase.h"
 #include "ChooseTeamPhase.h"
+#include "UpkeepPhase.h"
 
 #include <algorithm>
 
-LiveGame::LiveGame() : m_gamePhase(GamePhase::Lobby), m_iRound(-1)
+LiveGame::LiveGame() : m_gamePhase(GamePhase::Lobby)
 {
 }
 
 LiveGame::LiveGame(int id, const std::string& name, const Player& owner) : 
-	Game(id, name, owner), m_gamePhase(GamePhase::Lobby), m_iRound(-1)
+	Game(id, name, owner), m_gamePhase(GamePhase::Lobby)
 {
 }
 
@@ -39,8 +40,7 @@ void LiveGame::StartChooseTeamGamePhase()
 	AssertThrow("LiveGame::Start: Game has no players: " + m_name, !m_teams.empty());
 	
 	m_gamePhase = GamePhase::ChooseTeam;
-	m_pPhase = PhasePtr(new ChooseTeamPhase);
-	m_pPhase->SetGame(*this);
+	m_pPhase = PhasePtr(new ChooseTeamPhase(this));
 
 	// Decide team order.
 	std::shuffle(m_teams.begin(), m_teams.end(), GetRandom());
@@ -72,9 +72,6 @@ void LiveGame::StartMainGamePhase()
 	AssertThrowModel("LiveGame::StartMainGamePhase", m_gamePhase == GamePhase::ChooseTeam);
 
 	m_gamePhase = GamePhase::Main;
-	
-	m_pPhase = PhasePtr(new ActionPhase);
-	m_pPhase->SetGame(*this);
 
 	Hex& centre = m_map.AddHex(MapPos(0, 0), 001, 0);
 	centre.AddShip(ShipType::GCDS, Colour::None);
@@ -92,9 +89,7 @@ void LiveGame::StartMainGamePhase()
 
 		team.PopulateStartHex(hex);
 	}
-	StartRound();
-
-	Save();
+	StartActionPhase();
 }
 
 Phase& LiveGame::GetPhase()
@@ -115,27 +110,47 @@ ChooseTeamPhase& LiveGame::GetChooseTeamPhase()
 	return static_cast<ChooseTeamPhase&>(*m_pPhase);
 }
 
+UpkeepPhase& LiveGame::GetUpkeepPhase()
+{
+	AssertThrow("LiveGame::GetUpkeepPhase", m_pPhase && dynamic_cast<UpkeepPhase*>(m_pPhase.get()));
+	return static_cast<UpkeepPhase&>(*m_pPhase);
+}
+
 bool LiveGame::NeedCombat() const
 {
 	return false;
 }
 
-void LiveGame::StartRound()
+void LiveGame::StartActionPhase()
 {
-	assert(m_iRound < 9);
+	m_pPhase = PhasePtr(new ActionPhase(this));
 
-	++m_iRound;
+	Save();
+}
 
-	if (m_iRound == 9) // Game over.
-		return;
+void LiveGame::FinishActionPhase(std::vector<Colour>& passOrder)
+{
+	AssertThrow("LiveGame::FinishActionPhase", passOrder.size() == m_teams.size());
+	
+#if 0	// Special passing rule.
+	std::map<Colour, TeamPtr> map;
+	for (auto& team : m_teams)
+		map[team->GetColour()] = std::move(team);
 
-	// Take new technologies from bag.
-	const int startTech[] = { 12, 12, 14, 16, 18, 20 };
-	const int roundTech[] = { 4, 4, 6, 7, 8, 9 };
+	m_teams.clear();
+	for (Colour c : passOrder)
+		m_teams.push_back(std::move(map[c]));
+#else // Normal passing rule.
+	for (auto it = m_teams.begin(); it != m_teams.end(); ++it)
+		if ((*it)->GetColour() == passOrder.front())
+		{
+			std::rotate(m_teams.begin(), it, m_teams.end());
+			break;
+		}
+#endif
 
-	int nTech = (m_iRound == 0 ? startTech : roundTech)[m_teams.size() - 1];
-	for (int i = 0; i < nTech && !m_techBag.IsEmpty(); ++i)
-		++m_techs[m_techBag.TakeTile()];
+	m_pPhase = PhasePtr(new UpkeepPhase(this));
+	Save();
 }
 
 void LiveGame::PushRecord(std::unique_ptr<Record>& pRec)
@@ -166,16 +181,14 @@ void LiveGame::Save(Serial::SaveNode& node) const
 	node.SaveCntr("records", m_records, Serial::ObjectSaver());
 	node.SaveObject("phase", m_pPhase);
 	node.SaveEnum("game_phase", m_gamePhase);
-	node.SaveType("round", m_iRound);
 	__super::Save(node);
 }
 
 void LiveGame::Load(const Serial::LoadNode& node)
 {
-	node.LoadEnum("game_phase", m_gamePhase);
 	node.LoadCntr("records", m_records, Serial::ObjectLoader());
-	node.LoadType("round", m_iRound);
 	node.LoadObject("phase", m_pPhase);
+	node.LoadEnum("game_phase", m_gamePhase);
 	__super::Load(node);
 
 	if (m_pPhase)

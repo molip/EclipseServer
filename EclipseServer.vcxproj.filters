@@ -215,6 +215,15 @@
     <ClInclude Include="Phase.h">
       <Filter>Model\Phases</Filter>
     </ClInclude>
+    <ClInclude Include="UpkeepPhase.h">
+      <Filter>Model\Phases</Filter>
+    </ClInclude>
+    <ClInclude Include="StartRoundRecord.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="ActionRecord.h">
+      <Filter>Model</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -402,6 +411,15 @@
     </ClCompile>
     <ClCompile Include="Phase.cpp">
       <Filter>Model\Phases</Filter>
+    </ClCompile>
+    <ClCompile Include="UpkeepPhase.cpp">
+      <Filter>Model\Phases</Filter>
+    </ClCompile>
+    <ClCompile Include="StartRoundRecord.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="ActionRecord.cpp">
+      <Filter>Model</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

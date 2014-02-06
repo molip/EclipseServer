@@ -2,12 +2,10 @@
 
 #include "Phase.h"
 
-class ActionPhase : public TurnPhase
+class UpkeepPhase : public Phase
 {
 public:
-	ActionPhase(LiveGame* pGame = nullptr);
-
-	virtual ~ActionPhase();
+	UpkeepPhase(LiveGame* pGame = nullptr);
 
 	virtual void StartCmd(CmdPtr pCmd, Controller& controller) override;
 
@@ -19,25 +17,18 @@ public:
 
 	virtual Cmd* GetCurrentCmd(Colour c) override;
 
-	Cmd* GetCurrentCmd();
-	const Cmd* GetCurrentCmd() const { return const_cast<ActionPhase*>(this)->GetCurrentCmd(); }
-	bool CanRemoveCmd() const;
-
-	bool CanDoAction() const;
-	Cmd* GetCurrentPlayerCmd();
-	const Cmd* GetCurrentPlayerCmd() const { return const_cast<ActionPhase*>(this)->GetCurrentPlayerCmd(); }
-	void FinishTurn(Controller& controller);
-
 	virtual void UpdateClient(const Controller& controller, const Player* pPlayer) const override;
 
 	virtual void Save(Serial::SaveNode& node) const override;
 	virtual void Load(const Serial::LoadNode& node) override;
 
-private:
-	std::vector<Colour> m_passOrder;
+	void FinishTurn(Controller& controller, const Player& player);
 
-	CmdStack* m_pCmdStack;
-	bool m_bDoneAction;
+private:
+	CmdStack& GetCmdStack(Colour c);
+	const CmdStack& GetCmdStack(Colour c) const { return const_cast<UpkeepPhase*>(this)->GetCmdStack(c); }
+
+	std::map<Colour, CmdStackPtr> m_cmdStacks;
+	std::set<Colour> m_finished;
 };
 
-DEFINE_UNIQUE_PTR(Phase)

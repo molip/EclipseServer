@@ -49,8 +49,6 @@ function SendCreateGame()
 
 function SendExitGame()
 {
-	ExitAction()
-	
 	SendXMLDoc(CreateCommandDoc("exit_game"))
 }
 
@@ -113,6 +111,13 @@ function SendChooseUndo()
 	ExitAction()
 
 	SendXMLDoc(CreateCommandDoc("undo"))
+}
+
+function SendFinishUpkeep()
+{
+	ExitAction()
+
+	SendXMLDoc(CreateCommandDoc("finish_upkeep"))
 }
 
 function SendRegister()

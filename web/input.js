@@ -79,6 +79,8 @@ function OnCommandShow(elem)
 		ShowElementById('choose_subaction', false)
 		ShowElementById('choose_undo', false)
 		ShowActionElement(null)
+		
+		ShowElementById('choose_upkeep', false)
 	}
 }
 
@@ -116,6 +118,8 @@ function OnCommandUpdate(elem)
 		OnCommandUpdateReviewUI(elem)
 	else if (param == "technologies")
 		OnCommandUpdateTechnologies(elem)
+	else if (param == "round")
+		OnCommandUpdateRound(elem)
 	else
         writeToScreen('OnCommandUpdate: unknown param: ' + param)
 }
@@ -127,6 +131,12 @@ function OnCommandChoose(elem)
 
 	if (param == "team")
 		OnCommandChooseTeam(elem, active)
+	else if (param == "finished")
+		OnCommandChooseFinished(elem)
+	else if (param == "upkeep")
+		OnCommandChooseUpkeep(elem)
+	else if (param == "upkeep_finished")
+		OnCommandChooseUpkeepFinished(elem)
 	else if (param == "action")
 		OnCommandChooseAction(elem)
 	else if (param == "explore_pos")
@@ -159,8 +169,6 @@ function OnCommandChoose(elem)
 		Diplomacy.OnCommand(elem)
 	else if (param == "trade")
 		Trade.OnCommand(elem)
-	else if (param == "finished")
-		OnCommandChooseFinished(elem)
 	else
 		writeToScreen('OnCommandChoose: unknown param: ' + param)
 
@@ -406,6 +414,11 @@ function OnCommandUpdateTechnologies(elem)
 	SetDivFromCommandElem(div, elem, xsl) 
 }
 
+function OnCommandUpdateRound(elem)
+{
+	document.getElementById('round_count').innerHTML = elem.getAttribute('round')
+}
+
 function OnCommandChooseTeam(elem, active)
 {		
 	var div = document.getElementById('choose_team')
@@ -443,6 +456,8 @@ function OnCommandChooseAction(elem)
 	document.getElementById('choose_end_turn_btn').disabled = !IsTrue(elem.getAttribute('can_end_turn'))
 
 	ShowElementById('choose_subaction', true)
+	ShowElementById('choose_action_diplomacy_btn', true, true)
+	ShowElementById('choose_action_bankrupt_btn', false, true)
 
 	ShowElementById('choose_undo', true)
 	ShowActionElement('choose_action')
@@ -455,3 +470,26 @@ function OnCommandChooseFinished(elem)
 	ShowActionElement(null)
 }
 
+function OnCommandChooseUpkeep(elem)
+{
+	ShowActionElement('choose_upkeep') 
+	ShowElementById('choose_undo', true)
+
+	ShowElementById('choose_subaction', true)
+	ShowElementById('choose_action_diplomacy_btn', false, true)
+	ShowElementById('choose_action_bankrupt_btn', true, true)
+
+	document.getElementById('choose_action_colonise_btn').disabled = !IsTrue(elem.getAttribute('can_colonise'))
+	document.getElementById('choose_action_trade_btn').disabled = !IsTrue(elem.getAttribute('can_trade'))
+	document.getElementById('choose_action_bankrupt_btn').disabled = !IsTrue(elem.getAttribute('can_bankrupt'))
+	document.getElementById('choose_undo_btn').disabled = !IsTrue(elem.getAttribute('can_undo'))
+}
+
+function OnCommandChooseUpkeepFinished(elem)
+{
+	ShowElementById('choose_subaction', false)
+	ShowElementById('choose_undo', false)
+
+	ShowActionElement(null) // If we show any UI here (e.g. a "waiting" message, we'll need a "round started" message to hide it. 
+}
+	

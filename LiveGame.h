@@ -5,6 +5,7 @@
 class Phase;
 class ActionPhase;
 class ChooseTeamPhase;
+class UpkeepPhase;
 
 DEFINE_UNIQUE_PTR(Record)
 DEFINE_UNIQUE_PTR(CmdStack)
@@ -37,6 +38,7 @@ public:
 	const ActionPhase& GetActionPhase() const { return const_cast<LiveGame*>(this)->GetActionPhase(); };
 	ActionPhase& GetActionPhase();
 	ChooseTeamPhase& GetChooseTeamPhase();
+	UpkeepPhase& GetUpkeepPhase();
 
 	// Only call from Cmd::DoRecord/PopRecord.
 	void PushRecord(std::unique_ptr<Record>& pRec);
@@ -44,10 +46,10 @@ public:
 
 	const std::vector<RecordPtr>& GetRecords() const { return m_records; }
 
-	bool HaveAllPassed() const;
 	bool NeedCombat() const;
 
-	void StartRound();
+	void StartActionPhase();
+	void FinishActionPhase(std::vector<Colour>& passOrder);
 
 	virtual void Save(Serial::SaveNode& node) const override;
 	virtual void Load(const Serial::LoadNode& node) override;
@@ -58,8 +60,6 @@ private:
 	std::vector<RecordPtr> m_records;
 	GamePhase m_gamePhase;
 	PhasePtr m_pPhase;
-
-	int m_iRound;
 };
 
 DEFINE_UNIQUE_PTR(LiveGame)
