@@ -79,38 +79,39 @@ public:
 
 	DiscoveryType GetDiscovery() const { return m_discovery; }
 
-	virtual void Do(Game& game, const Controller& controller) override
+	virtual void Apply(bool bDo, Game& game, const Controller& controller) override
 	{
-		Hex& hex = game.GetMap().AddHex(m_pos, m_idHex, m_iRot);
-				
-		if (m_bInfluence)
+		if (bDo)
 		{
-			hex.SetColour(m_colour);
+			Hex& hex = game.GetMap().AddHex(m_pos, m_idHex, m_iRot);
 
-			Team& team = game.GetTeam(m_colour);
-			team.GetInfluenceTrack().RemoveDiscs(1);
-			controller.SendMessage(Output::UpdateInfluenceTrack(team), game);
-			
-			m_discovery = hex.GetDiscoveryTile();
-			if (m_discovery != DiscoveryType::None)
-				hex.RemoveDiscoveryTile();
+			if (m_bInfluence)
+			{
+				hex.SetColour(m_colour);
 
-		}					
-		controller.SendMessage(Output::UpdateMap(game), game);
-	}
+				Team& team = game.GetTeam(m_colour);
+				team.GetInfluenceTrack().RemoveDiscs(1);
+				controller.SendMessage(Output::UpdateInfluenceTrack(team), game);
 
-	virtual void Undo(Game& game, const Controller& controller) override
-	{
-		if (m_bInfluence)
+				m_discovery = hex.GetDiscoveryTile();
+				if (m_discovery != DiscoveryType::None)
+					hex.RemoveDiscoveryTile();
+
+			}
+		}
+		else
 		{
-			Team& team = game.GetTeam(m_colour);
-			team.GetInfluenceTrack().AddDiscs(1);
-			controller.SendMessage(Output::UpdateInfluenceTrack(team), game);
+			if (m_bInfluence)
+			{
+				Team& team = game.GetTeam(m_colour);
+				team.GetInfluenceTrack().AddDiscs(1);
+				controller.SendMessage(Output::UpdateInfluenceTrack(team), game);
 
-			if (m_discovery != DiscoveryType::None)
-				game.GetMap().GetHex(m_pos).SetDiscoveryTile(m_discovery);
-		}					
-		game.GetMap().DeleteHex(m_pos);
+				if (m_discovery != DiscoveryType::None)
+					game.GetMap().GetHex(m_pos).SetDiscoveryTile(m_discovery);
+			}
+			game.GetMap().DeleteHex(m_pos);
+		}
 		controller.SendMessage(Output::UpdateMap(game), game);
 	}
 

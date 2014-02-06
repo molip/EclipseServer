@@ -70,24 +70,25 @@ public:
 
 	DiscoveryType GetDiscovery() const { return m_discovery; }
 
-	virtual void Do(Game& game, const Controller& controller) override
+	virtual void Apply(bool bDo, Game& game, const Controller& controller) override
 	{
-		Hex* pDstHex = TransferDisc(m_pSrcPos, m_pDstPos, game, controller);
-
-		if (pDstHex && pDstHex->GetDiscoveryTile() != DiscoveryType::None)
+		if (bDo)
 		{
-			m_discovery = pDstHex->GetDiscoveryTile();
-			pDstHex->RemoveDiscoveryTile();
+			Hex* pDstHex = TransferDisc(m_pSrcPos, m_pDstPos, game, controller);
+
+			if (pDstHex && pDstHex->GetDiscoveryTile() != DiscoveryType::None)
+			{
+				m_discovery = pDstHex->GetDiscoveryTile();
+				pDstHex->RemoveDiscoveryTile();
+			}
 		}
-		controller.SendMessage(Output::UpdateMap(game), game);
-	}
+		else
+		{
+			if (m_discovery != DiscoveryType::None)
+				game.GetMap().GetHex(*m_pDstPos).SetDiscoveryTile(m_discovery);
 
-	virtual void Undo(Game& game, const Controller& controller) override
-	{
-		if (m_discovery != DiscoveryType::None)
-			game.GetMap().GetHex(*m_pDstPos).SetDiscoveryTile(m_discovery);
-
-		TransferDisc(m_pDstPos, m_pSrcPos, game, controller);
+			TransferDisc(m_pDstPos, m_pSrcPos, game, controller);
+		}
 		controller.SendMessage(Output::UpdateMap(game), game);
 	}
 
