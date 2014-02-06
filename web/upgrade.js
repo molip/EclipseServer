@@ -5,10 +5,6 @@ var Upgrade = {}
 
 Upgrade.Stage = function()
 {
-	ShowElementById('choose_subaction', true)
-
-	ShowElementById('choose_undo', true)
-	document.getElementById('choose_undo_btn').disabled = false
 }
 
 Upgrade.Stage.prototype.Send = function()

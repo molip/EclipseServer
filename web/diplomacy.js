@@ -5,10 +5,7 @@ var Diplomacy = {}
 
 Diplomacy.Stage = function()
 {
-	ShowElementById('choose_subaction', true)
-
-	ShowElementById('choose_undo', true)
-	document.getElementById('choose_undo_btn').disabled = false
+	this.flagNoSubAction = true;
 }
 
 Diplomacy.Stage.prototype.Send = function()

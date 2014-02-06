@@ -5,11 +5,6 @@ var Research = {}
 
 Research.Stage = function()
 {
-	ShowElementById('choose_subaction', true)
-
-	ShowElementById('choose_undo', true)
-	document.getElementById('choose_undo_btn').disabled = false
-
 	ClearSelect(document.getElementById('select_tech'))
 }
 
@@ -32,11 +27,6 @@ Research.Stage.prototype.CleanUp = function()
 
 Research.ArtifactStage = function(count)
 {
-	ShowElementById('choose_subaction', true)
-
-	ShowElementById('choose_undo', true)
-	document.getElementById('choose_undo_btn').disabled = false
-
 	this.count = count
 	this.array = [0, 0, 0]
 	
