@@ -51,7 +51,7 @@ struct Update : Command
 
 struct Choose : Command
 {
-	Choose(const std::string& param, bool bActive = true);
+	Choose(const std::string& param);
 };
 
 struct UpdateGameList : Update { UpdateGameList(); };
@@ -103,7 +103,6 @@ struct ChooseUpgrade : Choose { ChooseUpgrade(); };
 struct ChooseTrade : Choose { ChooseTrade(); };
 
 struct ChooseUpkeep : Choose { ChooseUpkeep(const Team& team, bool canUndo); };
-struct ChooseUpkeepFinished : Choose { ChooseUpkeepFinished(); };
 
 struct ShowGameList : Show { ShowGameList(); };
 struct ShowLobby : Show { ShowLobby(); };

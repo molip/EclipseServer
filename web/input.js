@@ -131,16 +131,13 @@ function OnCommandUpdate(elem)
 function OnCommandChoose(elem)
 {
 	var param = elem.getAttribute('param')
-	var active = IsTrue(elem.getAttribute('active'))
 
 	if (param == "team")
-		OnCommandChooseTeam(elem, active)
+		OnCommandChooseTeam(elem)
 	else if (param == "finished")
 		OnCommandChooseFinished(elem)
 	else if (param == "upkeep")
 		OnCommandChooseUpkeep(elem)
-	else if (param == "upkeep_finished")
-		OnCommandChooseUpkeepFinished(elem)
 	else if (param == "action")
 		OnCommandChooseAction(elem)
 	else if (param == "explore_pos")
@@ -441,8 +438,9 @@ function OnCommandUpdateRound(elem)
 	document.getElementById('round_count').innerHTML = elem.getAttribute('round')
 }
 
-function OnCommandChooseTeam(elem, active)
+function OnCommandChooseTeam(elem)
 {		
+	var active = IsTrue(elem.getAttribute('active'))
 	var div = document.getElementById('choose_team')
 	var xsl = ''
 	if (active)
@@ -506,12 +504,3 @@ function OnCommandChooseUpkeep(elem)
 	document.getElementById('choose_action_bankrupt_btn').disabled = !IsTrue(elem.getAttribute('can_bankrupt'))
 	document.getElementById('choose_undo_btn').disabled = !IsTrue(elem.getAttribute('can_undo'))
 }
-
-function OnCommandChooseUpkeepFinished(elem)
-{
-	ShowElementById('choose_subaction', false)
-	ShowElementById('choose_undo', false)
-
-	ShowActionElement(null) // If we show any UI here (e.g. a "waiting" message, we'll need a "round started" message to hide it. 
-}
-	

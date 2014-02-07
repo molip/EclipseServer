@@ -37,10 +37,9 @@ Update::Update(const std::string& param) : Command("update")
 	m_root.SetAttribute("param", param);
 }
 
-Choose::Choose(const std::string& param, bool bActive) : Command("choose")
+Choose::Choose(const std::string& param) : Command("choose")
 {
 	m_root.SetAttribute("param", param);
-	m_root.SetAttribute("active", bActive);
 }
 
 UpdateGameList::UpdateGameList() : Update("game_list")
@@ -260,8 +259,10 @@ ShowChoose::ShowChoose() :		Show("choose_panel") {}
 ShowLobby::ShowLobby() :		Show("lobby_panel") {}
 ShowGame::ShowGame() :			Show("game_panel") {}
 
-ChooseTeam::ChooseTeam(const Game& game, bool bActive) : Choose("team", bActive)
+ChooseTeam::ChooseTeam(const Game& game, bool bActive) : Choose("team")
 {
+	m_root.SetAttribute("active", bActive);
+
 	if (!bActive)
 		return;
 
@@ -485,11 +486,6 @@ ChooseUpkeep::ChooseUpkeep(const Team& team, bool canUndo) : Choose("upkeep")
 	m_root.SetAttribute("can_trade", true);
 	m_root.SetAttribute("can_bankrupt", false);
 }
-
-ChooseUpkeepFinished::ChooseUpkeepFinished() : Choose("upkeep_finished")
-{
-}
-
 
 } // namespace
 

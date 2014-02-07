@@ -90,7 +90,7 @@ void UpkeepPhase::UpdateClient(const Controller& controller, const Player* pPlay
 			else if (m_finished.find(c) == m_finished.end())
 				controller.SendMessage(Output::ChooseUpkeep(*team, cmdStack.CanRemoveCmd()), playerSend);
 			else
-				controller.SendMessage(Output::ChooseUpkeepFinished(), playerSend);
+				controller.SendMessage(Output::ChooseFinished(), playerSend);
 		}
 	}
 }
