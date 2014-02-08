@@ -141,7 +141,7 @@ function OnMessage(msg)
   
 function OnClose()
 {
-	writeToScreen('Closed\n')
+	document.getElementById('shroud').style.display = 'table' // For v centre
 }
 
 function load()

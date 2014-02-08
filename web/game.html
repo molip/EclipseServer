@@ -43,9 +43,6 @@
     }
 	.blanket {
 		position:fixed;
-        background-image:url(images/throbber6.gif);
-        background-position:center;
-		background-repeat:no-repeat;
 		width:100%;
 		height:100%;
 		top:0px;
@@ -53,8 +50,22 @@
 		z-index:1000;
 		display:none;
 	}
+	.throbber {
+        background-image:url(images/throbber6.gif);
+        background-position:center;
+		background-repeat:no-repeat;
+	}
+	.shroud {
+		background-color:rgba(255, 255, 255, 0.8);
+	}
+	.shroud_text {
+		text-align:center;
+		vertical-align:middle;
+		display:table-cell;
+	}
 </style>
-<div id="blanket" class="blanket"></div>
+<div id="blanket" class="blanket throbber"></div>
+<div id="shroud" class="blanket shroud"><div class="shroud_text">Lost connection</div></div>
 <div id="game_list_panel" class="panel">
 	<h2>Game List</h2> 
 	<div id="game_list_content">
