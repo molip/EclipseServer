@@ -21,6 +21,11 @@ std::string Message::GetXML() const
 
 //--------------------------------------------
 
+Response::Response()
+{
+	m_root = m_doc.AddElement("response");
+}
+
 Command::Command(const std::string& cmd) 
 {
 	m_root = m_doc.AddElement("command");

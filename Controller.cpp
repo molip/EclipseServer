@@ -29,6 +29,8 @@ void Controller::OnMessage(const Input::MessagePtr& pMsg, Player& player)
 {
 	bool bOK = pMsg->Process(*this, player);
 	ASSERT(bOK);
+
+	SendMessage(Output::Response(), player);
 }
 
 bool Controller::SendMessage(const Output::Message& msg, const Player& player) const

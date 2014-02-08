@@ -41,8 +41,20 @@
     #game_list_panel {
         padding:5px;
     }
+	.blanket {
+		position:fixed;
+        background-image:url(images/throbber6.gif);
+        background-position:center;
+		background-repeat:no-repeat;
+		width:100%;
+		height:100%;
+		top:0px;
+		left:0px;
+		z-index:1000;
+		display:none;
+	}
 </style>
-
+<div id="blanket" class="blanket"></div>
 <div id="game_list_panel" class="panel">
 	<h2>Game List</h2> 
 	<div id="game_list_content">

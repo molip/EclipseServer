@@ -132,8 +132,11 @@ function OnMessage(msg)
 	
 	var xml = parser.parseFromString(msg.data, "text/xml");
 
-	if (xml.firstChild.nodeName == "command")
+	var name = xml.firstChild.nodeName
+	if (name == "command")
 		OnCommand(xml.firstChild)
+	else if (name == "response")
+		ShowBlanket(false)
 }
   
 function OnClose()
@@ -208,4 +211,9 @@ function ShowSupplyPage()
 {
 	ShowElementById('game_pages', false)
 	ShowElementById('supply_page', true)
+}
+
+function ShowBlanket(show)
+{
+	ShowElementById('blanket', show)
 }

@@ -31,6 +31,11 @@ protected:
 	Xml::Element m_root;
 };
 
+struct Response : Message
+{
+	Response();
+};
+
 struct Command : Message
 {
 	Command(const std::string& cmd);

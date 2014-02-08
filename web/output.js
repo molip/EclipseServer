@@ -27,11 +27,14 @@ function AddTextElem(doc, parent, name, text)
 	return elem
 }
 
-function SendXMLDoc(doc)
+function SendXMLDoc(doc, noBlanket)
 {
 	var str = new XMLSerializer().serializeToString(doc)
 	writeToScreen("Sending: " + str + "\n")
 	ws.send(str)
+
+	if (!noBlanket)
+		ShowBlanket(true)
 }
 
 function SendJoinGame(id)
@@ -128,7 +131,7 @@ function SendRegister()
 	node.setAttribute("player", data.playerID)
 	//AddTextElem(doc, node, "player", data.playerID)
 
-	SendXMLDoc(doc)
+	SendXMLDoc(doc, true)
 }
 
 function SendAbort()
