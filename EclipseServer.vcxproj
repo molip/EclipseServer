@@ -50,7 +50,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);TIXML_USE_STL</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);TIXML_USE_STL;USE_WEBSOCKET</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
@@ -65,7 +65,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions);TIXML_USE_STL</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions);TIXML_USE_STL;USE_WEBSOCKET</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
@@ -84,6 +84,7 @@
     <ClInclude Include="BlueprintDefs.h" />
     <ClInclude Include="BuildCmd.h" />
     <ClInclude Include="ChooseTeamPhase.h" />
+    <ClInclude Include="civetweb.h" />
     <ClInclude Include="Cmd.h" />
     <ClInclude Include="CmdStack.h" />
     <ClInclude Include="ColoniseCmd.h" />
@@ -107,7 +108,6 @@
     <ClInclude Include="Input.h" />
     <ClInclude Include="MapPos.h" />
     <ClInclude Include="Games.h" />
-    <ClInclude Include="mongoose.h" />
     <ClInclude Include="MongooseServer.h" />
     <ClInclude Include="LiveGame.h" />
     <ClInclude Include="MoveCmd.h" />
@@ -154,6 +154,7 @@
     <ClCompile Include="BlueprintDefs.cpp" />
     <ClCompile Include="BuildCmd.cpp" />
     <ClCompile Include="ChooseTeamPhase.cpp" />
+    <ClCompile Include="civetweb.c" />
     <ClCompile Include="Cmd.cpp" />
     <ClCompile Include="CmdStack.cpp" />
     <ClCompile Include="ColoniseCmd.cpp" />
@@ -176,7 +177,6 @@
     <ClCompile Include="MapPos.cpp" />
     <ClCompile Include="Games.cpp" />
     <ClCompile Include="MongooseServer.cpp" />
-    <ClCompile Include="mongoose.c" />
     <ClCompile Include="LiveGame.cpp" />
     <ClCompile Include="MoveCmd.cpp" />
     <ClCompile Include="OS.cpp" />
@@ -215,6 +215,9 @@
     <ClCompile Include="Util.cpp" />
     <ClCompile Include="WSServer.cpp" />
     <ClCompile Include="Xml.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="md5.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -27,14 +27,19 @@ public:
 	MongooseServer(int port);
 	virtual ~MongooseServer();
 
-	void Register(ClientID client, mg_connection* pConn);
-	void Unregister(ClientID client);
+	void RegisterClient(ClientID client, mg_connection* pConn);
+	bool UnregisterClient(ClientID client, bool bAbort = false);
 	bool SendMessage(ClientID client, const std::string& msg) const;
+	bool PopAbort(mg_connection* pConn);
+
+protected:
+	bool AbortClient(ClientID client);
 
 private:
-	mg_connection* MongooseServer::FindConnection(ClientID client) const;
+	mg_connection* FindConnection(ClientID client) const;
 
 	mg_context* m_pContext;
 	mutable std::mutex m_mutex;
 	std::map<ClientID, mg_connection*> m_mapPortToConn;
+	std::set<mg_connection*> m_setAbortConns;
 };

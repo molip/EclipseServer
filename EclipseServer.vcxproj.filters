@@ -191,9 +191,6 @@
     <ClInclude Include="WSServer.h">
       <Filter>Input/output</Filter>
     </ClInclude>
-    <ClInclude Include="mongoose.h">
-      <Filter>External</Filter>
-    </ClInclude>
     <ClInclude Include="tinyxml.h">
       <Filter>External</Filter>
     </ClInclude>
@@ -226,6 +223,9 @@
     </ClInclude>
     <ClInclude Include="DiscTrack.h">
       <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="civetweb.h">
+      <Filter>External</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -391,9 +391,6 @@
     <ClCompile Include="WSServer.cpp">
       <Filter>Input/output</Filter>
     </ClCompile>
-    <ClCompile Include="mongoose.c">
-      <Filter>External</Filter>
-    </ClCompile>
     <ClCompile Include="tinyxml.cpp">
       <Filter>External</Filter>
     </ClCompile>
@@ -427,5 +424,13 @@
     <ClCompile Include="DiscTrack.cpp">
       <Filter>Model</Filter>
     </ClCompile>
+    <ClCompile Include="civetweb.c">
+      <Filter>External</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="md5.inl">
+      <Filter>External</Filter>
+    </None>
   </ItemGroup>
 </Project>

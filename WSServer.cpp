@@ -14,7 +14,6 @@ WSServer::WSServer(Controller& controller) : MongooseServer(8998), m_controller(
 
 void WSServer::OnConnect(ClientID client, const std::string& url)
 {
-	LOCK(m_mutex); 
 	std::cout << "INFO: Client connected: " << client << std::endl;
 }
 
@@ -46,14 +45,18 @@ void WSServer::OnMessage(ClientID client, const std::string& message)
 	}
 }
 
+void WSServer::OnDisconnect(ClientID client)
+{
+	LOCK(m_mutex);
+	UnregisterPlayer(client);
+}
+
 void WSServer::RegisterPlayer(ClientID client, Player& player)
 {
 	auto i = m_mapPlayerToClient.find(&player);
 	if (i != m_mapPlayerToClient.end())
-	{
-		__super::SendMessage(client, "ERROR:DUPLICATE_PLAYER");
-		return;
-	}
+		if (UnregisterClient(i->second, true))
+			UnregisterPlayer(i->second);
 		
 	m_mapPlayerToClient[&player] = client;
 	m_mapClientToPlayer[client] = &player;
@@ -62,10 +65,9 @@ void WSServer::RegisterPlayer(ClientID client, Player& player)
 	m_controller.OnPlayerConnected(player);
 }
 
-void WSServer::OnDisconnect(ClientID client) 
-{
-	LOCK(m_mutex); 
 
+void WSServer::UnregisterPlayer(ClientID client)
+{
 	auto i = m_mapClientToPlayer.find(client);
 	if (i == m_mapClientToPlayer.end())
 		std::cerr << "ERROR: Unregistered client disconnected: " << client << std::endl;

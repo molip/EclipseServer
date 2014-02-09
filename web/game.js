@@ -8,6 +8,7 @@ data.team_count = 0
 
 data.current_action_elem = null
 data.action = null
+data.ping_timer_id = 0
 
 Colour = { 'Red': '#cd171a', 'Blue': '#283583', 'Green': '#3fa535', 'Yellow': '#ffd500', 'White': '#fff', 'Black': '#111' }
 
@@ -141,7 +142,11 @@ function OnMessage(msg)
   
 function OnClose()
 {
+	ShowBlanket(false)
 	document.getElementById('shroud').style.display = 'table' // For v centre
+
+	if (data.ping_timer_id)
+		window.clearInterval(data.ping_timer_id)
 }
 
 function load()
@@ -152,6 +157,8 @@ function load()
 		ws.onopen = function() { SendRegister(); }
 		ws.onmessage = OnMessage;
 		ws.onclose = OnClose;
+
+		data.ping_timer_id = window.setInterval(function() { ws.send('') }, 30000);
 	}
 	else
 	{
