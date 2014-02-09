@@ -68,6 +68,6 @@ SquareType ResourceToSquareType(Resource t)
 
 std::default_random_engine& GetRandom()
 { 
-	static std::default_random_engine engine(::time(nullptr) );
+	static std::default_random_engine engine((unsigned int)::time(nullptr) );
 	return engine;
 }
