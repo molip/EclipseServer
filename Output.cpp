@@ -11,6 +11,29 @@
 #include "Games.h"
 #include "ActionPhase.h"
 
+namespace
+{
+	void AddNonOwnerPlayers(const Game& game, Json::Element& root)
+	{
+		auto playersNode = root.AddArray("players");
+		for (auto& i : game.GetTeams())
+			if (i->GetPlayerID() != game.GetOwner().GetID())
+				playersNode.Append(i->GetPlayer().GetName());
+	}
+	void AddPointElement(int x, int y, const std::string& name, Json::Element& root)
+	{
+		auto node = root.AddElement(name);
+		node.SetAttribute("x", x);
+		node.SetAttribute("y", y);
+	}
+	void AppendPointElement(int x, int y, Json::Element& array)
+	{
+		auto node = array.AppendElement();
+		node.SetAttribute("x", x);
+		node.SetAttribute("y", y);
+	}
+}
+
 namespace Output
 {
 
@@ -49,20 +72,16 @@ Choose::Choose(const std::string& param) : Command("choose")
 
 UpdateGameList::UpdateGameList() : Update("game_list")
 {
+	auto gamesNode = m_root.AddArray("games");
 	for (auto& g : Games::GetLiveGames())
 	{
-		auto gameNode = m_root.AddElement("game");
+		auto gameNode = gamesNode.AppendElement();
 		gameNode.SetAttribute("name", g->GetName());
 		gameNode.SetAttribute("id", g->GetID());
 		gameNode.SetAttribute("owner", g->GetOwner().GetName());
 		gameNode.SetAttribute("started", g->HasStarted());
 	
-		for (auto& i : g->GetTeams())
-			if (i->GetPlayerID() != g->GetOwner().GetID())
-			{
-				auto playerNode = gameNode.AddElement("player");
-				playerNode.SetAttribute("name", i->GetPlayer().GetName());
-			}
+		AddNonOwnerPlayers(*g, gameNode);
 	}
 }
 
@@ -70,12 +89,7 @@ UpdateLobby::UpdateLobby(const Game& game) : Update("lobby")
 {
 	m_root.SetAttribute("owner", game.GetOwner().GetName());
 	m_root.SetAttribute("game", game.GetName());
-	for (auto& t : game.GetTeams())
-		if (t->GetPlayerID() != game.GetOwner().GetID())
-		{
-			auto pPlayerNode = m_root.AddElement("player");
-			pPlayerNode.SetAttribute("name", t->GetPlayer().GetName());
-		}
+	AddNonOwnerPlayers(game, m_root);
 }
 
 UpdateLobbyControls::UpdateLobbyControls(bool bShow) : Update("lobby_controls")
@@ -86,14 +100,15 @@ UpdateLobbyControls::UpdateLobbyControls(bool bShow) : Update("lobby_controls")
 UpdateChoose::UpdateChoose(const LiveGame& game) : Update("choose_team")
 {
 	m_root.SetAttribute("game", game.GetName());
+	auto teamsNode = m_root.AddArray("teams");
 	for (auto& t : game.GetTeams())
 	{
-		auto pTeamNode = m_root.AddElement("team");
-		pTeamNode.SetAttribute("name", t->GetPlayer().GetName());
+		auto teamNode = teamsNode.AppendElement();
+		teamNode.SetAttribute("name", t->GetPlayer().GetName());
 		if (t->GetRace() != RaceType::None)
 		{
-			pTeamNode.SetAttribute("race", EnumTraits<RaceType>::ToString(t->GetRace()));
-			pTeamNode.SetAttribute("colour", EnumTraits<Colour>::ToString(t->GetColour()));
+			teamNode.SetAttribute("race", EnumTraits<RaceType>::ToString(t->GetRace()));
+			teamNode.SetAttribute("colour", EnumTraits<Colour>::ToString(t->GetColour()));
 		}
 	}
 }
@@ -104,14 +119,14 @@ UpdateTeams::UpdateTeams(const Game& game) : Update("teams")
 
 	m_root.SetAttribute("game_type", game.IsLive() ? "live" : "review");
 
-	//m_root.SetAttribute("teams", game.GetName());
+	auto teamsNode = m_root.AddArray("teams");
 	for (auto& pTeam : game.GetTeams())
 	{
 		AssertThrow("UpdateTeams: Team not chosen yet: " + pTeam->GetPlayer().GetName(), pTeam->GetRace() != RaceType::None);
 
-		auto pTeamNode = m_root.AddElement("team");
-		pTeamNode.SetAttribute("name", pTeam->GetPlayer().GetName());
-		pTeamNode.SetAttribute("id", pTeam->GetPlayerID());
+		auto teamNode = teamsNode.AppendElement();
+		teamNode.SetAttribute("name", pTeam->GetPlayer().GetName());
+		teamNode.SetAttribute("id", pTeam->GetPlayerID());
 	}
 }
 
@@ -145,15 +160,14 @@ UpdateStorageTrack::UpdateStorageTrack(const Team& team) : Update("storage_track
 UpdateTechnologyTrack::UpdateTechnologyTrack(const Team& team) : Update("technology_track")
 {
 	m_root.SetAttribute("id", team.GetPlayer().GetID());
+	auto classesNode = m_root.AddArray("classes");
 	for (auto c : EnumRange<Technology::Class>())
 	{
-		auto eClass = m_root.AddElement("class");
+		auto eClass = classesNode.AppendElement();
 		eClass.SetAttribute("name", EnumTraits<Technology::Class>::ToString(c));
+		auto techsNode = eClass.AddArray("techs");
 		for (auto& t : team.GetTechTrack().GetClass(c))
-		{
-			auto eTech = eClass.AddElement("tech");
-			eTech.SetAttribute("name", EnumTraits<TechType>::ToString(t));
-		}
+			techsNode.AppendElement().SetAttribute("name", EnumTraits<TechType>::ToString(t));
 	}
 }
 
@@ -190,12 +204,13 @@ UpdateMap::UpdateMap(const Game& game) : Update("map")
 	const Map& map = game.GetMap();
 	auto& hexes = map.GetHexes();
 
+	auto hexesNode = m_root.AddArray("hexes");
 	for (auto& i : hexes)
 	{
 		const MapPos& pos = i.first;
 		const Hex& hex = *i.second.get();
 
-		auto e = m_root.AddElement("hex");
+		auto e = hexesNode.AppendElement();
 		e.SetAttribute("x", pos.GetX());
 		e.SetAttribute("y", pos.GetY());
 		e.SetAttribute("id", hex.GetID());
@@ -206,20 +221,20 @@ UpdateMap::UpdateMap(const Game& game) : Update("map")
 			const Team& team = game.GetTeam(hex.GetColour());
 			e.SetAttribute("colour", EnumTraits<Colour>::ToString(team.GetColour()));
 		
-			auto eSquares = e.AddElement("squares");
+			auto eSquares = e.AddArray("squares");
 			for (auto& square : hex.GetSquares())
 				if (square.IsOccupied())
 				{
-					auto eSquare = eSquares.AddElement("square");
+					auto eSquare = eSquares.AppendElement();
 					eSquare.SetAttribute("x", square.GetX());
 					eSquare.SetAttribute("y", square.GetY());
 				}
 		}
 
-		auto eShips = e.AddElement("ships");
+		auto eShips = e.AddArray("ships");
 		for (auto& ship : hex.GetShips())
 		{
-			auto eShip = eShips.AddElement("ship");
+			auto eShip = eShips.AppendElement();
 			eShip.SetAttribute("colour", EnumTraits<Colour>::ToString(ship.GetColour()));
 			eShip.SetAttribute("type", EnumTraits<ShipType>::ToString(ship.GetType()));
 		}
@@ -237,11 +252,12 @@ UpdateReviewUI::UpdateReviewUI(const ReviewGame& game) : Update("review_ui")
 
 UpdateTechnologies::UpdateTechnologies(const Game& game) : Update("technologies")
 {
+	auto techsNode = m_root.AddArray("techs");
 	auto& techs = game.GetTechnologies();
 	for (auto t : techs)
 		if (t.second > 0)
 		{
-			auto e = m_root.AddElement("tech");
+			auto e = techsNode.AppendElement();
 			e.SetAttribute("type", EnumTraits<TechType>::ToString(t.first));
 			e.SetAttribute("count", t.second);
 			e.SetAttribute("max_cost", Technology::GetMaxCost(t.first));
@@ -271,21 +287,22 @@ ChooseTeam::ChooseTeam(const Game& game, bool bActive) : Choose("team")
 	if (!bActive)
 		return;
 
+	auto teamsNode = m_root.AddArray("teams");
 	for (auto c : EnumRange<Colour>())
 		if (!game.FindTeam(c))
 		{
-			auto e = m_root.AddElement("race");
+			auto e = teamsNode.AppendElement();
 			e.SetAttribute("name", EnumTraits<RaceType>::ToString(RaceType::Human));
 			e.SetAttribute("colour", EnumTraits<Colour>::ToString(c));
 		}
-
+	
 	for (auto r : EnumRange<RaceType>())
 		if (r != RaceType::Human)
 		{
 			Colour c = Race(r).GetColour();
 			if (!game.FindTeam(c))
 			{
-				auto e = m_root.AddElement("race");
+				auto e = teamsNode.AppendElement();
 				e.SetAttribute("name", EnumTraits<RaceType>::ToString(r));
 				e.SetAttribute("colour", EnumTraits<Colour>::ToString(c));
 			}
@@ -323,12 +340,9 @@ ChooseExplorePos::ChooseExplorePos(const std::vector<MapPos>& positions, bool bC
 {
 	m_root.SetAttribute("can_skip", bCanSkip);
 
+	auto positionsNode = m_root.AddArray("positions");
 	for (auto& pos : positions)
-	{
-		auto e = m_root.AddElement("pos");
-		e.SetAttribute("x", pos.GetX());
-		e.SetAttribute("y", pos.GetY());
-	}
+		AppendPointElement(pos.GetX(), pos.GetY(), positionsNode);
 }
 
 ChooseExploreHex::ChooseExploreHex(int x, int y, bool bCanTake, bool bCanUndo) : Choose("explore_hex") 
@@ -337,19 +351,19 @@ ChooseExploreHex::ChooseExploreHex(int x, int y, bool bCanTake, bool bCanUndo) :
 	m_root.SetAttribute("y", y);
 	m_root.SetAttribute("can_take", bCanTake);
 	m_root.SetAttribute("can_undo", bCanUndo);
+
+	m_hexes = m_root.AddArray("hexes");
 }
 
 void ChooseExploreHex::AddHexChoice(int idHex, const std::vector<int>& rotations, bool bCanInfluence)
 {
-	auto eHex = m_root.AddElement("hex");
+	auto eHex = m_hexes.AppendElement();
 	eHex.SetAttribute("id", idHex);
 	eHex.SetAttribute("can_influence", bCanInfluence);
 	
+	auto rotationsNode = eHex.AddArray("rotations");
 	for (int r : rotations)
-	{
-		auto eRot = eHex.AddElement("rotation");
-		eRot.SetAttribute("steps", r);
-	}
+		rotationsNode.Append(r);
 }
 
 ChooseDiscovery::ChooseDiscovery(bool bCanUndo) : Choose("discovery") 
@@ -359,12 +373,9 @@ ChooseDiscovery::ChooseDiscovery(bool bCanUndo) : Choose("discovery")
 
 ChooseColonisePos::ChooseColonisePos(const std::vector<MapPos>& hexes) : Choose("colonise_pos") 
 {
+	auto positionsNode = m_root.AddArray("positions");
 	for (auto& hex : hexes)
-	{
-		auto e = m_root.AddElement("pos");
-		e.SetAttribute("x", hex.GetX());
-		e.SetAttribute("y", hex.GetY());
-	}
+		AppendPointElement(hex.GetX(), hex.GetY(), positionsNode);
 }
 
 ChooseColoniseSquares::ChooseColoniseSquares(const int squares[SquareType::_Count], const Population& pop, int nShips) : Choose("colonise_squares") 
@@ -373,30 +384,20 @@ ChooseColoniseSquares::ChooseColoniseSquares(const int squares[SquareType::_Coun
 
 	auto eCounts = m_root.AddElement("square_counts");
 	for (auto t : EnumRange<SquareType>())
-	{
-		auto eType = eCounts.AddElement("type");
-		eType.SetAttribute("name", EnumTraits<SquareType>::ToString(t));
-		eType.SetAttribute("count", squares[(int)t]);
-	}
+		eCounts.SetAttribute(EnumTraits<SquareType>::ToString(t), squares[(int)t]);
+
 	auto eCubes = m_root.AddElement("max_cubes");
 	for (auto r : EnumRange<Resource>())
-	{
-		auto eType = eCubes.AddElement("type");
-		eType.SetAttribute("name", EnumTraits<Resource>::ToString(r));
-		eType.SetAttribute("count", pop[r]);
-	}
+		eCubes.SetAttribute(EnumTraits<Resource>::ToString(r), pop[r]);
 }
 
 ChooseInfluencePos::ChooseInfluencePos(const std::vector<MapPos>& positions, bool bEnableTrack, const std::string& param) : Choose(param) 
 {
 	m_root.SetAttribute("can_select_track", bEnableTrack);
 
+	auto positionsNode = m_root.AddArray("positions");
 	for (auto& pos : positions)
-	{
-		auto e = m_root.AddElement("pos");
-		e.SetAttribute("x", pos.GetX());
-		e.SetAttribute("y", pos.GetY());
-	}
+		AppendPointElement(pos.GetX(), pos.GetY(), positionsNode);
 }
 
 ChooseInfluenceSrc::ChooseInfluenceSrc(const std::vector<MapPos>& positions, bool bEnableTrack) : 
@@ -411,9 +412,10 @@ ChooseResearch::ChooseResearch(const std::vector<std::pair<TechType, int>>& tech
 {
 	m_root.SetAttribute("can_skip", bCanSkip);
 
+	auto techsNode = m_root.AddArray("techs");
 	for (auto& it : techs)
 	{
-		auto e = m_root.AddElement("tech");
+		auto e = techsNode.AppendElement();
 		e.SetAttribute("type", EnumTraits<TechType>::ToString(it.first));
 		e.SetAttribute("cost", it.second);
 	}
@@ -428,16 +430,15 @@ ChooseBuild::ChooseBuild(const std::set<ShipType>& ships, const std::map<MapPos,
 {
 	m_root.SetAttribute("can_skip", bCanSkip);
 
-	auto ship_elems = m_root.AddElement("ships");
+	auto ship_elems = m_root.AddArray("ships");
 	for (auto s : ships)
-		ship_elems.AddElement("ship").SetAttribute("type", EnumTraits<ShipType>::ToString(s));
+		ship_elems.Append(EnumTraits<ShipType>::ToString(s));
 
-	auto hex_elems = m_root.AddElement("hexes");
+	auto hex_elems = m_root.AddArray("hexes");
 	for (auto& it : hexes)
 	{
-		auto e = hex_elems.AddElement("hex");
-		e.SetAttribute("x", it.first.GetX());
-		e.SetAttribute("y", it.first.GetY());
+		auto e = hex_elems.AppendElement();
+		AddPointElement(it.first.GetX(), it.first.GetY(), "pos", e);
 		e.SetAttribute("can_build_orbital", it.second.first);
 		e.SetAttribute("can_build_monolith", it.second.second);
 	}
@@ -451,29 +452,27 @@ ChooseMoveSrc::ChooseMoveSrc(std::map<MapPos, std::set<ShipType>>& srcs, bool bC
 {
 	m_root.SetAttribute("can_skip", bCanSkip);
 
+	auto hexesNode = m_root.AddArray("hexes");
 	for (auto& it : srcs)
 	{
-		auto e = m_root.AddElement("hex");
-		e.SetAttribute("x", it.first.GetX());
-		e.SetAttribute("y", it.first.GetY());
-		
+		auto e = hexesNode.AppendElement();
+		AddPointElement(it.first.GetX(), it.first.GetY(), "pos", e);
+
+		auto shipsNode = e.AddArray("ships");
 		for (auto s : EnumRange<ShipType>())
 		{
 			auto j = it.second.find(s);
 			if (j != it.second.end())
-				e.AddElement("ship").SetAttribute("type", EnumTraits<ShipType>::ToString(s));
+				shipsNode.Append(EnumTraits<ShipType>::ToString(s));
 		}
 	}
 }
 
 ChooseMoveDst::ChooseMoveDst(const std::set<MapPos>& dsts) : Choose("move_dst")
 {
+	auto hexesNode = m_root.AddArray("hexes");
 	for (auto& h : dsts)
-	{
-		auto e = m_root.AddElement("hex");
-		e.SetAttribute("x", h.GetX());
-		e.SetAttribute("y", h.GetY());
-	}
+		AppendPointElement(h.GetX(), h.GetY(), hexesNode);
 }
 
 ChooseUpgrade::ChooseUpgrade() : Choose("upgrade")

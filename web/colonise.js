@@ -17,7 +17,7 @@ Colonise.ChoosePosStage = function(positions)
 Colonise.ChoosePosStage.prototype.OnHexMouseDown = function(pt)
 {
 	for (var i = 0; i < this.positions.length; ++i)
-		if (this.positions[i].equals(pt))
+		if (pt.equals(this.positions[i]))
 		{
 			this.selected = pt.Clone()
 			this.pos_idx = i
@@ -200,8 +200,7 @@ Colonise.OnCommandChoosePos = function(elem)
 	ShowActionElement('choose_colonise_pos')
 	Map.selecting = true
 
-	var positions = ReadPoints(elem, 'pos')
-	data.action = new Colonise.ChoosePosStage(positions)
+	data.action = new Colonise.ChoosePosStage(elem.positions)
 	Map.DrawActionLayer()
 }
 
@@ -210,27 +209,5 @@ Colonise.OnCommandChooseSquares = function(elem)
 	ShowActionElement('choose_colonise_squares')
 	Map.selecting = false
 
-	var num_ships = Number(elem.getAttribute('ships'))
-
-	var square_counts = {}
-	var square_counts_elem = GetFirstChildElement(elem, 'square_counts')
-	var elems = GetChildElements(square_counts_elem, 'type')
-	for (var i = 0; i < elems.length; ++i)
-	{
-		var type = elems[i].getAttribute('name')
-		var count = elems[i].getAttribute('count')
-		square_counts[type] = Number(count)
-	}
-	
-	var max_cubes = {}
-	var max_cubes_elem = GetFirstChildElement(elem, 'max_cubes')
-	var elems = GetChildElements(max_cubes_elem, 'type')
-	for (var i = 0; i < elems.length; ++i)
-	{
-		var type = elems[i].getAttribute('name')
-		var count = elems[i].getAttribute('count')
-		max_cubes[type] = Number(count)
-	}
-
-	data.action = new Colonise.ChooseSquaresStage(num_ships, square_counts, max_cubes)
+	data.action = new Colonise.ChooseSquaresStage(elem.ships, elem.square_counts, elem.max_cubes)
 }

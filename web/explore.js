@@ -13,7 +13,7 @@ Explore.ChoosePosStage = function(positions)
 Explore.ChoosePosStage.prototype.OnHexMouseDown = function(pt)
 {
 	for (var i = 0; i < this.positions.length; ++i)
-		if (this.positions[i].equals(pt))
+		if (pt.equals(this.positions[i]))
 		{
 			this.selected = pt.Clone()
 			this.pos_idx = i
@@ -48,19 +48,16 @@ Explore.ChoosePosStage.prototype.CleanUp = function()
 
 ///////////////////////////////////////////////////////////////////////////////
 
-Explore.ChooseHexStage = function(pos, canUndo)
+Explore.ChooseHexStage = function(pos, canUndo, hexes)
 {
 	this.flagCantUndo = !canUndo
 
 	this.selected = pos.Clone()
-	this.choices = [] // id, rotations, rot_idx, can_influence
+	this.choices = hexes // id, rotations, can_influence
 	this.choice_idx = 0
-}
-
-Explore.ChooseHexStage.prototype.AddHex = function(id, rotations, can_influence)
-{
-	var choice = { id:id, rot_idx:0, rotations:rotations, can_influence:can_influence }
-	this.choices.push(choice)
+	
+	for (var i = 0, hex; hex = this.choices[i]; ++i)
+		hex.rot_idx = 0
 }
 
 Explore.ChooseHexStage.prototype.UpdateHex = function()
@@ -162,14 +159,10 @@ Explore.OnCommandChoosePos = function(elem)
 	ShowActionElement('choose_explore_pos')
 	Map.selecting = true
 
-	var positions = ReadPoints(elem, 'pos')
-
-	data.action = new Explore.ChoosePosStage(positions)
-	
-	var can_skip = IsTrue(elem.getAttribute('can_skip'))
+	data.action = new Explore.ChoosePosStage(elem.positions)
 	
 	document.getElementById('choose_explore_pos_btn').disabled = true
-	ShowElementById('choose_explore_pos_reject_btn', can_skip, true)
+	ShowElementById('choose_explore_pos_reject_btn', elem.can_skip, true)
 
 	Map.DrawActionLayer()
 }
@@ -179,29 +172,10 @@ Explore.OnCommandChooseHex = function(elem)
 	Map.selecting = false
 	ShowActionElement('choose_explore_hex')
 
-	var x = Number(elem.getAttribute('x'))
-	var y = Number(elem.getAttribute('y'))
-	var can_take = IsTrue(elem.getAttribute('can_take'))
-	var can_undo = IsTrue(elem.getAttribute('can_undo'))
-	
-	data.action = new Explore.ChooseHexStage(new Point(x, y), can_undo)
-	
-	var hexes = GetChildElements(elem, 'hex')
-	for (var i = 0; i < hexes.length; ++i)
-	{
-		var id = hexes[i].getAttribute('id')
-		var can_influence = IsTrue(hexes[i].getAttribute('can_influence'))
-		var rotations = []
-		
-		var rot_elems = GetChildElements(hexes[i], 'rotation')
-		for (var j = 0; j < rot_elems.length; ++j)
-			rotations.push(rot_elems[j].getAttribute('steps'))
-		
-		data.action.AddHex(id, rotations, can_influence)
-	}
+	data.action = new Explore.ChooseHexStage(new Point(elem.x, elem.y), elem.can_undo, elem.hexes)
 
-	ShowElementById('choose_explore_hex_switch_btn', hexes.length > 1, true)
-	ShowElementById('choose_explore_hex_take_btn', can_take, true)
+	ShowElementById('choose_explore_hex_switch_btn', elem.hexes.length > 1, true)
+	ShowElementById('choose_explore_hex_take_btn', elem.can_take, true)
 	
 	data.action.UpdateInfluenceCheckbox()
 	data.action.UpdateHex()
@@ -211,9 +185,7 @@ Explore.OnCommandChooseHex = function(elem)
 
 Explore.OnCommandChooseDiscovery = function(elem)
 {
-	var can_undo = IsTrue(elem.getAttribute('can_undo'))
-
-	data.action = new Explore.ChooseDiscoveryStage(can_undo)
+	data.action = new Explore.ChooseDiscoveryStage(elem.can_undo)
 
 	ShowActionElement('choose_explore_discovery')
 	

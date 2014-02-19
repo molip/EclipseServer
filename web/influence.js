@@ -34,7 +34,7 @@ Influence.Stage.prototype.OnClickInfluenceTrack = function()
 Influence.Stage.prototype.OnHexMouseDown = function(pt)
 {
 	for (var i = 0; i < this.positions.length; ++i)
-		if (this.positions[i].equals(pt))
+		if (pt.equals(this.positions[i]))
 		{
 			this.selected = pt.Clone()
 			this.pos_idx = i
@@ -89,8 +89,7 @@ Influence.OnCommandChooseSrc = function(elem)
 	ShowActionElement('choose_influence_src')
 	Map.selecting = true
 
-	var positions = ReadPoints(elem, 'pos')
-	data.action = new Influence.Stage(positions, IsTrue(elem.getAttribute('can_select_track')), 'choose_influence_src_btn', 'cmd_influence_src')
+	data.action = new Influence.Stage(elem.positions, elem.can_select_track, 'choose_influence_src_btn', 'cmd_influence_src')
 	Map.DrawActionLayer()
 }
 
@@ -99,7 +98,6 @@ Influence.OnCommandChooseDst = function(elem)
 	ShowActionElement('choose_influence_dst')
 	Map.selecting = true
 
-	var positions = ReadPoints(elem, 'pos')
-	data.action = new Influence.Stage(positions, IsTrue(elem.getAttribute('can_select_track')), 'choose_influence_dst_btn', 'cmd_influence_dst')
+	data.action = new Influence.Stage(elem.positions, elem.can_select_track, 'choose_influence_dst_btn', 'cmd_influence_dst')
 	Map.DrawActionLayer()
 }

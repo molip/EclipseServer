@@ -1,13 +1,13 @@
 var Build = {}
 
-Build.Stage = function(ships, hexes) // pos, orbital, monolith
+Build.Stage = function(ships, hexes) 
 {
 	document.getElementById('choose_build_btn').disabled = true
 
 	ClearSelect(document.getElementById('select_build'))
 	
 	this.ships = ships
-	this.hexes = hexes
+	this.hexes = hexes // pos, can_build_orbital, can_build_monolith
 	this.hex_idx = -1
 	this.selected = null
 
@@ -17,7 +17,7 @@ Build.Stage = function(ships, hexes) // pos, orbital, monolith
 Build.Stage.prototype.OnHexMouseDown = function(pt)
 {
 	for (var i = 0; i < this.hexes.length; ++i)
-		if (this.hexes[i].pos.equals(pt))
+		if (pt.equals(this.hexes[i].pos))
 		{
 			this.selected = pt.Clone()
 			document.getElementById('choose_build_btn').disabled = false
@@ -29,9 +29,9 @@ Build.Stage.prototype.OnHexMouseDown = function(pt)
 			for (var j = 0; j < this.ships.length; ++j)
 				select.add(new Option(this.ships[j], ''))
 			
-			if (this.hexes[i].orbital)
+			if (this.hexes[i].can_build_orbital)
 				select.add(new Option('Orbital', ''))
-			if (this.hexes[i].monolith)
+			if (this.hexes[i].can_build_monolith)
 				select.add(new Option('Monolith', ''))
 			
 			this.hex_idx = i
@@ -74,27 +74,9 @@ Build.OnCommand = function(elem)
 {
 	ShowActionElement('choose_build')
 
-	var can_skip = IsTrue(elem.getAttribute('can_skip'))
-	ShowElementById('choose_build_reject_btn', can_skip, true)
-
-	var ships = []
-	var ship_elems = GetChildElements(GetFirstChildElement(elem, 'ships'), 'ship')
-		for (var i = 0; i < ship_elems.length; ++i)
-			ships.push(ship_elems[i].getAttribute('type'))
-
-	var hexes = []
-	var hex_elems = GetChildElements(GetFirstChildElement(elem, 'hexes'), 'hex')
-	for (var i = 0; i < hex_elems.length; ++i)
-	{
-		var x = hex_elems[i].getAttribute('x')
-		var y = hex_elems[i].getAttribute('y')
-		var orb = IsTrue(hex_elems[i].getAttribute('can_build_orbital'))
-		var mono = IsTrue(hex_elems[i].getAttribute('can_build_monolith'))
+	ShowElementById('choose_build_reject_btn', elem.can_skip, true)
 		
-		hexes.push( { pos:new Point(x, y), orbital:orb, monolith:mono } )
-	}
-		
-	data.action = new Build.Stage(ships, hexes)
+	data.action = new Build.Stage(elem.ships, elem.hexes)
 
 	Map.DrawActionLayer()
 	Map.DrawSelectLayer()

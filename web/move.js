@@ -3,28 +3,23 @@ var Move = {}
 ///////////////////////////////////////////////////////////////////////////////
 // Stages
 
-Move.SrcStage = function()
+Move.SrcStage = function(hexes)
 {
 	document.getElementById('choose_move_src_btn').disabled = true
 
 	ClearSelect(document.getElementById('select_move_ship'))
 	
-	this.hexes = [] //pt, ships
+	this.hexes = hexes //pos, ships
 	this.hex_idx = -1
 	this.selected = null
 
 	Map.selecting = true
 }
 
-Move.SrcStage.prototype.AddHex = function(pt, ships)
-{
-	this.hexes.push( { pt:pt, ships:ships } )
-}
-
 Move.SrcStage.prototype.OnHexMouseDown = function(pt)
 {
 	for (var i = 0; i < this.hexes.length; ++i)
-		if (this.hexes[i].pt.equals(pt))
+		if (pt.equals(this.hexes[i].pos))
 		{
 			this.selected = pt.Clone()
 			document.getElementById('choose_move_src_btn').disabled = false
@@ -46,7 +41,7 @@ Move.SrcStage.prototype.OnHexMouseDown = function(pt)
 Move.SrcStage.prototype.OnDraw = function(ctx)
 {
 	for (var i = 0; i < this.hexes.length; ++i)
-		Map.DrawCentred(ctx, Map.img_explore, this.hexes[i].pt)
+		Map.DrawCentred(ctx, Map.img_explore, this.hexes[i].pos)
 }
 
 Move.SrcStage.prototype.SendPos = function()
@@ -75,7 +70,7 @@ Move.DstStage = function(hexes)
 {
 	document.getElementById('choose_move_dst_btn').disabled = true
 
-	this.hexes = hexes
+	this.hexes = hexes // x, y
 	this.selected = null
 
 	Map.selecting = true
@@ -84,7 +79,7 @@ Move.DstStage = function(hexes)
 Move.DstStage.prototype.OnHexMouseDown = function(pt)
 {
 	for (var i = 0; i < this.hexes.length; ++i)
-		if (this.hexes[i].equals(pt))
+		if (pt.equals(this.hexes[i]))
 		{
 			this.selected = pt.Clone()
 			document.getElementById('choose_move_dst_btn').disabled = false
@@ -124,24 +119,9 @@ Move.OnCommandChooseSrc = function(elem)
 {
 	ShowActionElement('choose_move_src')
 
-	var can_skip = IsTrue(elem.getAttribute('can_skip'))
-	ShowElementById('choose_move_src_reject_btn', can_skip, true)
+	ShowElementById('choose_move_src_reject_btn', elem.can_skip, true)
 
-	data.action = new Move.SrcStage()
-
-	var hexes = GetChildElements(elem, 'hex')
-	for (var i = 0; i < hexes.length; ++i)
-	{
-		var x = hexes[i].getAttribute('x')
-		var y = hexes[i].getAttribute('y')
-		var ships = []
-	
-		var ship_elems = GetChildElements(hexes[i], 'ship')
-		for (var j = 0; j < ship_elems.length; ++j)
-			ships.push(ship_elems[j].getAttribute('type'))
-		
-		data.action.AddHex(new Point(x, y), ships)
-	}
+	data.action = new Move.SrcStage(elem.hexes)
 
 	Map.DrawActionLayer()
 	Map.DrawSelectLayer()
@@ -151,17 +131,7 @@ Move.OnCommandChooseDst = function(elem)
 {
 	ShowActionElement('choose_move_dst')
 
-	var hexes = []
-	var hex_elems = GetChildElements(elem, 'hex')
-	for (var i = 0; i < hex_elems.length; ++i)
-	{
-		var x = hex_elems[i].getAttribute('x')
-		var y = hex_elems[i].getAttribute('y')
-		
-		hexes.push(new Point(x, y))
-	}
-
-	data.action = new Move.DstStage(hexes)
+	data.action = new Move.DstStage(elem.hexes)
 
 	Map.DrawActionLayer()
 	Map.DrawSelectLayer()

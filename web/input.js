@@ -1,38 +1,11 @@
-function ClearDiv(div)
+function SetTeamDivHTML(team_id, elem_suffix, html)
 {
-	while (div.firstChild) 
-		div.removeChild(div.firstChild);
-}
-
-function SetDivFromXML(div, elem, xsl)
-{		
-	ClearDiv(div);
-	if (xsl == '')
-		return;
-
-	var xsl2 = '<?xml version="1.0"?><xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">'
-	xsl2 += xsl + '</xsl:stylesheet>'
-	
-	xslNode = parser.parseFromString(xsl2, "text/xml");
-  
-	xsltProcessor = new XSLTProcessor()
-	xsltProcessor.importStylesheet(xslNode)
-	var htmlNode = xsltProcessor.transformToFragment(elem, document)
-
-	div.appendChild(htmlNode)
-}
-
-function SetDivFromCommandElem(div, elem, xsl)
-{		
-	if (xsl == '')
-		ClearDiv(div);
-	else
-		SetDivFromXML(div, elem, '<xsl:template match="/command">' + xsl + '</xsl:template>')
+	document.getElementById(GetTeamDivIDFromName(team_id, elem_suffix)).innerHTML = html
 }
 
 function OnCommand(elem)
 {
-	var type = elem.getAttribute('type')
+	var type = elem.type
 
 	if (type == 'show')
 		OnCommandShow(elem)
@@ -46,7 +19,7 @@ function OnCommand(elem)
 
 function OnCommandShow(elem)
 {
-	var panel = elem.getAttribute('panel')
+	var panel = elem.panel
 
 	var panels =['game_list_panel', 'lobby_panel', 'choose_panel', 'game_panel']
     var found = false
@@ -86,7 +59,7 @@ function OnCommandShow(elem)
 
 function OnCommandUpdate(elem)
 {
-	var param = elem.getAttribute('param')
+	var param = elem.param
 
 	if (param == "game_list")
 		OnCommandUpdateGameList(elem)
@@ -130,7 +103,7 @@ function OnCommandUpdate(elem)
 
 function OnCommandChoose(elem)
 {
-	var param = elem.getAttribute('param')
+	var param = elem.param
 
 	if (param == "team")
 		OnCommandChooseTeam(elem)
@@ -183,55 +156,59 @@ function OnCommandChoose(elem)
 
 function OnCommandUpdateGameList(elem)
 {
-	var xsl = '\
-		<xsl:for-each select="game">\
-			<a href="Join Game" onclick="SendJoinGame(\'{@id}\');return false;"><xsl:value-of select="@name"/></a>\
-			<xsl:if test="@started=1">\
-			[started]\
-			</xsl:if>\
-			(\
-			<b> <xsl:value-of select="@owner"/></b>,\
-			<xsl:for-each select="player">\
-				<xsl:value-of select="@name"/>,\
-			</xsl:for-each>\
-			)<br/>\
-		</xsl:for-each>\
-		<br/><button type="button" onclick="SendCreateGame()">Create Game</button>\
-	'
-	SetDivFromCommandElem(document.getElementById('game_list_content'), elem, xsl) 
+	Assert(elem.games)
+	
+	var game_str = '<a href="Join Game" onclick="SendJoinGame(\'{0}\');return false;">{1}</a>{2}(<b> {3}</b>, {4})<br/>'
+	
+	var html = ''
+
+	for (var i in elem.games)
+	{
+		var game = elem.games[i]
+		Assert(game.players && game.id && game.name && game.owner)
+		var players = ''
+		for (var j in game.players)
+			players += game.players[j] + ','
+
+		html += game_str.format(game.id, game.name, game.started ? '[started]' : '', game.owner, players)
+	}
+	
+	html += '<br/><button type="button" onclick="SendCreateGame()">Create Game</button>'
+
+	document.getElementById('game_list_content').innerHTML = html
 }
 
 function OnCommandUpdateLobby(elem)
 {		
-	var xsl = '\
-		<h2><xsl:value-of select="@game"/></h2><br/>\
-		<b> <xsl:value-of select="@owner"/></b>,\
-		<xsl:for-each select="player">\
-			<xsl:value-of select="@name"/>,\
-		</xsl:for-each>\
-	'
-	SetDivFromCommandElem(document.getElementById('lobby_content'), elem, xsl) 
+	Assert(elem.game && elem.players && elem.owner)
+
+	var html = '<h2>{0}</h2><br/><b>{1}</b>,'.format(elem.game, elem.owner)
+	for (var i = 0, player;  player = elem.players[i]; ++i)
+		html += player + ','
+
+	document.getElementById('lobby_content').innerHTML = html
 }
 
 function OnCommandUpdateLobbyControls(elem)
 {	
-	var show = IsTrue(elem.getAttribute('show'))
-	var html = show ? '<br/><br/><button type="button" onclick="SendStartGame()">Start Game</button>' : ''
+	Assert(elem.show != null)
+
+	var html = elem.show ? '<br/><br/><button type="button" onclick="SendStartGame()">Start Game</button>' : ''
 	document.getElementById('lobby_owner_controls').innerHTML = html
 }
 
 function OnCommandUpdateChooseTeam(elem)
 {		
-	var xsl = '\
-		<h2><xsl:value-of select="@game"/></h2><br/>\
-		<xsl:for-each select="team">\
-			<xsl:value-of select="@name"/>:\
-			<xsl:value-of select="@race"/>:\
-			<xsl:value-of select="@colour"/>\
-			<br/>\
-		</xsl:for-each>\
-	'
-	SetDivFromCommandElem(document.getElementById('choose_team_content'), elem, xsl) 
+	Assert(elem.game && elem.teams)
+
+	var html = '<h2>{0}</h2><br/>'.format(elem.game)
+
+	for (var i = 0, team; team = elem.teams[i]; ++i)
+	{
+		Assert(team.name)
+		html += '{0}:{1}:{2}<br/>'.format(team.name, team.race || '', team.colour || '')
+	}
+	document.getElementById('choose_team_content').innerHTML = html
 }
 
 function OnCommandUpdateTeams(elem)
@@ -255,16 +232,12 @@ function OnCommandUpdateTeams(elem)
 	
 	var html_tabs = '', html_pages = ''
 
-	var teams = GetChildElements(elem, 'team')
-	for (var i = 0; i < teams.length; ++i)
+	for (var i = 0, team; team = elem.teams[i]; ++i)
 	{
-		var name = teams[i].getAttribute('name')
-		var id = teams[i].getAttribute('id')
-		
-		html_tabs += fmt_tab.format(id, name)
+		html_tabs += fmt_tab.format(team.id, team.name)
 		html_pages += fmt_page.format(GetTeamPageIDFromIndex(data.team_count))
 
-		data.team_pages[id] = data.team_count++
+		data.team_pages[team.id] = data.team_count++
 	}
 
 	html_tabs += '<button type="button" onclick="ShowSupplyPage()">Supply</button>'
@@ -274,206 +247,136 @@ function OnCommandUpdateTeams(elem)
 	
 	ShowTeamPage(data.playerID)
 
-	var game_type = elem.getAttribute('game_type')
-	ShowElementById('live_ui', game_type == "live")
-	ShowElementById('review_ui', game_type == "review")
+	ShowElementById('live_ui', elem.game_type == "live")
+	ShowElementById('review_ui', elem.game_type == "review")
 }
 
 function OnCommandUpdateTeam(elem)
 {		
-	var xsl = '\
-		<b>Team:</b> <xsl:value-of select="@name"/><br/>\
-		<b>Race:</b> <xsl:value-of select="@race"/><br/>\
-		<b>Colour:</b> <xsl:value-of select="@colour"/><br/>\
-		<br/>\
-	'
-	SetDivFromCommandElem(document.getElementById(GetTeamDivIDFromName(elem.getAttribute('id'), 'summary')), elem, xsl)
+	var html = '<b>Team:</b> {0}<br/><b>Race:</b> {1}<br/><b>Colour:</b> {2}<br/><br/>'.format(elem.name, elem.race, elem.colour)
+	SetTeamDivHTML(elem.id, 'summary', html)
 }
 
 function OnCommandUpdatePassed(elem)
 {
-	var xsl = '\
-		<b>Passed:</b> <xsl:value-of select="@has_passed"/><br/>\
-	'
-	SetDivFromCommandElem(document.getElementById(GetTeamDivIDFromName(elem.getAttribute('id'), 'passed')), elem, xsl)
+	var html = '<b>Passed:</b> {0}<br/>'.format(elem.has_passed)
+	SetTeamDivHTML(elem.id, 'passed', html)
 }
 
 function OnCommandUpdateInfluenceTrack(elem)
 {
-	var xsl = '\
-		<b>Influence discs:</b> <xsl:value-of select="@discs"/><br/>\
-	'
-	SetDivFromCommandElem(document.getElementById(GetTeamDivIDFromName(elem.getAttribute('id'), 'influence')), elem, xsl)
+	var html = '<b>Influence discs:</b> {0}<br/>'.format(elem.discs)
+	SetTeamDivHTML(elem.id, 'influence', html)
 }
 
 function OnCommandUpdateActionTrack(elem)
 {
-	var xsl = '\
-		<b>Actions done:</b> <xsl:value-of select="@discs"/><br/>\
-	'
-	SetDivFromCommandElem(document.getElementById(GetTeamDivIDFromName(elem.getAttribute('id'), 'actions')), elem, xsl)
+	var html = '<b>Actions done:</b> {0}<br/>'.format(elem.discs)
+	SetTeamDivHTML(elem.id, 'actions', html)
 }
 
 function OnCommandUpdateColonyShips(elem)
 {
-	var xsl = '\
-		<b>Colony ships left:</b> <xsl:value-of select="@used"/>/<xsl:value-of select="@total"/><br/>\
-	'
-	SetDivFromCommandElem(document.getElementById(GetTeamDivIDFromName(elem.getAttribute('id'), 'colony_ships')), elem, xsl)
+	var html = '<b>Colony ships left:</b> {0}/{1}<br/>'.format(elem.used, elem.total)
+	SetTeamDivHTML(elem.id, 'colony_ships', html)
 }
 
 function OnCommandUpdateStorageTrack(elem)
 {
-	var xsl = '\
-		<b>Storage:</b>\
-		Money: <xsl:value-of select="@Money"/>\
-		Science: <xsl:value-of select="@Science"/>\
-		Materials: <xsl:value-of select="@Materials"/>\
-		<br/>'
-		
-	SetDivFromCommandElem(document.getElementById(GetTeamDivIDFromName(elem.getAttribute('id'), 'storage')), elem, xsl)
+	var html = '<b>Storage:</b>Money: {0} Science: {1} Materials:{2}<br/>'.format(elem.Money, elem.Science, elem.Materials)
+	SetTeamDivHTML(elem.id, 'storage', html)
 }
 
 function OnCommandUpdateTechnologyTrack(elem)
 {
-	var xsl = '\
-		<b>Technology:</b><br/>\
-		<xsl:for-each select="class">\
-			<xsl:value-of select="@name"/>:\
-			<xsl:for-each select="tech">\
-				<xsl:value-of select="@name"/>, \
-			</xsl:for-each>\
-			<br/>\
-		</xsl:for-each>'
-		
-	SetDivFromCommandElem(document.getElementById(GetTeamDivIDFromName(elem.getAttribute('id'), 'technology')), elem, xsl)
+	var html = '<b>Technology:</b><br/>'
+	
+	for (var i = 0, cls; cls = elem.classes[i]; ++i)
+	{
+		html += cls.name + ':'
+		for (var j = 0, tech; tech = cls.techs[j]; ++j)
+			html += tech.name + ','
+		html += '<br/>'
+	}
+	SetTeamDivHTML(elem.id, 'technology', html)
 }
 
 function OnCommandUpdatePopulationTrack(elem)
 {
-	var xsl = '\
-		<b>Population:</b>\
-		Money: <xsl:value-of select="@Money"/>\
-		Science: <xsl:value-of select="@Science"/>\
-		Materials: <xsl:value-of select="@Materials"/>\
-		<br/>'
-		
-	SetDivFromCommandElem(document.getElementById(GetTeamDivIDFromName(elem.getAttribute('id'), 'population')), elem, xsl)
+	var html = '<b>Population:</b>Money: {0} Science: {1} Materials:{2}<br/>'.format(elem.Money, elem.Science, elem.Materials)
+	SetTeamDivHTML(elem.id, 'population', html)
 }
 
 function OnCommandUpdateReputationTrack(elem)
 {
-	var xsl = '\
-		<b>Reputation:</b>\
-		Tiles: <xsl:value-of select="@tiles"/>/<xsl:value-of select="@slots"/>\
-		send_values: <xsl:value-of select="@send_values"/>\
-		<br/>'
-		
-	SetDivFromCommandElem(document.getElementById(GetTeamDivIDFromName(elem.getAttribute('id'), 'reputation')), elem, xsl)
+	var html = '<b>Reputation:</b>Tiles: {0}/{1}<br/>'.format(elem.tiles, elem.slots)
+	SetTeamDivHTML(elem.id, 'reputation', html)
 }
 
 function OnCommandUpdateMap(elem)
 {
 	Map.Clear()
 	
-	var hexes = GetChildElements(elem, 'hex')
-	for (var i = 0; i < hexes.length; ++i)
-	{
-		var id = hexes[i].getAttribute('id')
-		var x = hexes[i].getAttribute('x')
-		var y = hexes[i].getAttribute('y')
-		var rotation = hexes[i].getAttribute('rotation')
-		var team = hexes[i].getAttribute('colour')
+	for (var i = 0, hex; hex = elem.hexes[i]; ++i)
+		Map.AddHex(hex.id, new Point(hex.x, hex.y), hex.rotation, hex.team, hex.squares, hex.ships)
 
-		var squares = []
-		var squares_elem = GetFirstChildElement(hexes[i], 'squares')
-		if (squares_elem)
-		{
-			var square_elems = GetChildElements(squares_elem, 'square')
-			for (var j = 0; j < square_elems.length; ++j)
-			{
-				var x2 = square_elems[j].getAttribute('x')
-				var y2 = square_elems[j].getAttribute('y')
-				squares.push(new Point(x2, y2))
-			}
-		}
-
-		var ships = []
-		var ships_elem = GetFirstChildElement(hexes[i], 'ships')
-		if (ships_elem)
-		{
-			var ship_elems = GetChildElements(ships_elem, 'ship')
-			for (var j = 0; j < ship_elems.length; ++j)
-			{
-				var colour = ship_elems[j].getAttribute('colour')
-				var type = ship_elems[j].getAttribute('type')
-				ships.push({ colour:colour, type:type })
-			}
-		}
-
-		Map.AddHex(id, new Point(x, y), rotation, team, squares, ships)
-	}
 	Map.Draw()
 }
 
 function OnCommandUpdateReviewUI(elem)
 {
-	document.getElementById('retreat_review').disabled = !IsTrue(elem.getAttribute('can_retreat'))
-	document.getElementById('advance_review').disabled = !IsTrue(elem.getAttribute('can_advance'))
+	document.getElementById('retreat_review').disabled = !elem.can_retreat
+	document.getElementById('advance_review').disabled = !elem.can_advance
 }
 
 function OnCommandUpdateTechnologies(elem)
 {
-	var div = document.getElementById('supply_technologies')
-	var xsl = '\
-		<xsl:for-each select="tech">\
-			<xsl:value-of select="@count"/> x <xsl:value-of select="@type"/> (<xsl:value-of select="@max_cost"/>/<xsl:value-of select="@min_cost"/>)<br/>\
-		</xsl:for-each>'
+	var html = ''
+	
+	for (var j = 0, tech; tech = elem.techs[j]; ++j)
+		html += '{0} x {1} ({2}/{3})<br/>'.format(tech.count, tech.type, tech.max_cost, tech.min_cost)
 
-	SetDivFromCommandElem(div, elem, xsl) 
+	document.getElementById('supply_technologies').innerHTML = html
 }
 
 function OnCommandUpdateRound(elem)
 {
-	document.getElementById('round_count').innerHTML = elem.getAttribute('round')
+	document.getElementById('round_count').innerHTML = elem.round
 }
 
 function OnCommandChooseTeam(elem)
 {		
-	var active = IsTrue(elem.getAttribute('active'))
-	var div = document.getElementById('choose_team')
-	var xsl = ''
-	if (active)
+	Assert(elem.active != null)
+	
+	var html = ''
+	if (elem.active)
 	{
-		xsl = '\
-			<div>\
-			Race: <select id="select_race">\
-			<xsl:for-each select="race">\
-				<option value="{@name},{@colour}"><xsl:value-of select="@name"/> (<xsl:value-of select="@colour"/>)</option>\
-			</xsl:for-each>\
-			</select>\
-			<button type="button" onclick="SendChooseTeam()">OK</button>\
-			</div>\
-		'
+		html = '<div>Race: <select id="select_race">'
+		
+		for (var i = 0, team; team = elem.teams[i]; ++i)
+			html += '<option value="{0},{1}">{0} ({1})</option>'.format(team.name, team.colour)
+
+		html += '</select><button type="button" onclick="SendChooseTeam()">OK</button></div>'
 	}
-	SetDivFromCommandElem(div, elem, xsl) 
-	ShowElement(div, active)
+	var div = document.getElementById('choose_team')
+	div.innerHTML = html
+	ShowElement(div, elem.active)
 }
 
 function OnCommandChooseAction(elem)
 {
-	document.getElementById('choose_undo_btn').disabled = !IsTrue(elem.getAttribute('can_undo'))
-	document.getElementById('choose_action_explore_btn').disabled = !IsTrue(elem.getAttribute('can_explore'))
-	document.getElementById('choose_action_influence_btn').disabled = !IsTrue(elem.getAttribute('can_influence'))
-	document.getElementById('choose_action_research_btn').disabled = !IsTrue(elem.getAttribute('can_research'))
-	document.getElementById('choose_action_upgrade_btn').disabled = !IsTrue(elem.getAttribute('can_upgrade'))
-	document.getElementById('choose_action_build_btn').disabled = !IsTrue(elem.getAttribute('can_build'))
-	document.getElementById('choose_action_move_btn').disabled = !IsTrue(elem.getAttribute('can_move'))
-	document.getElementById('choose_action_colonise_btn').disabled = !IsTrue(elem.getAttribute('can_colonise'))
-	document.getElementById('choose_action_diplomacy_btn').disabled = !IsTrue(elem.getAttribute('can_diplomacy'))
-	document.getElementById('choose_action_trade_btn').disabled = !IsTrue(elem.getAttribute('can_trade'))
-	document.getElementById('choose_action_pass_btn').disabled = !IsTrue(elem.getAttribute('can_pass'))
-	document.getElementById('choose_end_turn_btn').disabled = !IsTrue(elem.getAttribute('can_end_turn'))
+	document.getElementById('choose_undo_btn').disabled = !elem.can_undo
+	document.getElementById('choose_action_explore_btn').disabled = !elem.can_explore
+	document.getElementById('choose_action_influence_btn').disabled = !elem.can_influence
+	document.getElementById('choose_action_research_btn').disabled = !elem.can_research
+	document.getElementById('choose_action_upgrade_btn').disabled = !elem.can_upgrade
+	document.getElementById('choose_action_build_btn').disabled = !elem.can_build
+	document.getElementById('choose_action_move_btn').disabled = !elem.can_move
+	document.getElementById('choose_action_colonise_btn').disabled = !elem.can_colonise
+	document.getElementById('choose_action_diplomacy_btn').disabled = !elem.can_diplomacy
+	document.getElementById('choose_action_trade_btn').disabled = !elem.can_trade
+	document.getElementById('choose_action_pass_btn').disabled = !elem.can_pass
+	document.getElementById('choose_end_turn_btn').disabled = !elem.can_end_turn
 
 	ShowElementById('choose_subaction', true)
 	ShowElementById('choose_action_diplomacy_btn', true, true)
@@ -499,8 +402,8 @@ function OnCommandChooseUpkeep(elem)
 	ShowElementById('choose_action_diplomacy_btn', false, true)
 	ShowElementById('choose_action_bankrupt_btn', true, true)
 
-	document.getElementById('choose_action_colonise_btn').disabled = !IsTrue(elem.getAttribute('can_colonise'))
-	document.getElementById('choose_action_trade_btn').disabled = !IsTrue(elem.getAttribute('can_trade'))
-	document.getElementById('choose_action_bankrupt_btn').disabled = !IsTrue(elem.getAttribute('can_bankrupt'))
-	document.getElementById('choose_undo_btn').disabled = !IsTrue(elem.getAttribute('can_undo'))
+	document.getElementById('choose_action_colonise_btn').disabled = !elem.can_colonise
+	document.getElementById('choose_action_trade_btn').disabled = !elem.can_trade
+	document.getElementById('choose_action_bankrupt_btn').disabled = !elem.can_bankrupt
+	document.getElementById('choose_undo_btn').disabled = !elem.can_undo
 }

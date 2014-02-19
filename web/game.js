@@ -57,19 +57,6 @@ Point.prototype.equals = function(rhs)
 	return rhs && this.x == rhs.x && this.y == rhs.y
 }
 
-function ReadPoints(elem, elem_name)
-{
-	var points = []
-	var elems = GetChildElements(elem, elem_name)
-	for (var i = 0; i < elems.length; ++i)
-	{
-		var x = elems[i].getAttribute('x')
-		var y = elems[i].getAttribute('y')
-		points.push(new Point(x, y))
-	}
-	return points
-}
-
 function CompareObjects(lhs, rhs)
 {
 	return lhs == null ? rhs == null : lhs.equals(rhs)
@@ -131,12 +118,11 @@ function OnMessage(msg)
 {
 	writeToScreen(msg.data)
 	
-	var xml = parser.parseFromString(msg.data, "text/xml");
-
-	var name = xml.firstChild.nodeName
-	if (name == "command")
-		OnCommand(xml.firstChild)
-	else if (name == "response")
+	var obj = JSON.parse(msg.data);
+	
+	if (obj.command)
+		OnCommand(obj.command)
+	else if ('response' in obj)
 		ShowBlanket(false)
 }
   

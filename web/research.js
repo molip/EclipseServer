@@ -83,27 +83,19 @@ Research.OnCommand = function(elem)
 {
 	ShowActionElement('choose_research')
 
-	var can_skip = IsTrue(elem.getAttribute('can_skip'))
-	ShowElementById('choose_research_reject_btn', can_skip, true)
+	ShowElementById('choose_research_reject_btn', elem.can_skip, true)
 
 	data.action = new Research.Stage()
 
 	var select = document.getElementById('select_tech')
 	
-	var elems = GetChildElements(elem, 'tech')
-	//alert(elems.length)
-	for (var i = 0; i < elems.length; ++i)
-	{
-		var type = elems[i].getAttribute('type')
-		var cost = elems[i].getAttribute('cost')
-		select.add(new Option('{0} ({1})'.format(type, cost), ''))
-	}
+	for (var i = 0, tech; tech = elem.techs[i]; ++i)
+		select.add(new Option('{0} ({1})'.format(tech.type, tech.cost), ''))
 }
 
 Research.OnCommandArtifact = function(elem)
 {
 	ShowActionElement('choose_research_artifact')
 
-	var artifacts = elem.getAttribute('count')
-	data.action = new Research.ArtifactStage(artifacts)
+	data.action = new Research.ArtifactStage(elem.count)
 }

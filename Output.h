@@ -2,7 +2,7 @@
 
 #include "MapPos.h"
 #include "Hex.h"
-#include "Xml.h"
+#include "Json.h"
 
 #include <string>
 #include <memory>
@@ -27,8 +27,8 @@ public:
 	std::string GetXML() const;
 
 protected:
-	Xml::Document m_doc;
-	Xml::Element m_root;
+	Json::Document m_doc;
+	Json::Element m_root;
 };
 
 struct Response : Message
@@ -41,7 +41,7 @@ struct Command : Message
 	Command(const std::string& cmd);
 	//virtual void Create() { m_doc.In}
 	
-	TiXmlElement* m_pRoot;
+	Json::Element* m_pRoot;
 };
 
 struct Show : Command
@@ -88,6 +88,8 @@ struct ChooseExploreHex : Choose
 {
 	ChooseExploreHex(int x, int y, bool bCanTake, bool bCanUndo);
 	void AddHexChoice(int idHex, const std::vector<int>& rotations, bool bCanInfluence);
+private:
+	Json::Element m_hexes;
 };
 struct ChooseDiscovery : Choose { ChooseDiscovery(bool bCanUndo); };
 struct ChooseColonisePos : Choose { ChooseColonisePos(const std::vector<MapPos>& hexes); };
