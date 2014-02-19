@@ -85,6 +85,7 @@
     <ClInclude Include="BuildCmd.h" />
     <ClInclude Include="ChooseTeamPhase.h" />
     <ClInclude Include="civetweb.h" />
+    <ClInclude Include="cJSON.h" />
     <ClInclude Include="Cmd.h" />
     <ClInclude Include="CmdStack.h" />
     <ClInclude Include="ColoniseCmd.h" />
@@ -104,6 +105,7 @@
     <ClInclude Include="IndexRange.h" />
     <ClInclude Include="InfluenceCmd.h" />
     <ClInclude Include="InfluenceTrack.h" />
+    <ClInclude Include="Json.h" />
     <ClInclude Include="Map.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="MapPos.h" />
@@ -155,6 +157,10 @@
     <ClCompile Include="BuildCmd.cpp" />
     <ClCompile Include="ChooseTeamPhase.cpp" />
     <ClCompile Include="civetweb.c" />
+    <ClCompile Include="cJSON.c">
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);TIXML_USE_STL;USE_WEBSOCKET; _CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions);TIXML_USE_STL;USE_WEBSOCKET; _CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+    </ClCompile>
     <ClCompile Include="Cmd.cpp" />
     <ClCompile Include="CmdStack.cpp" />
     <ClCompile Include="ColoniseCmd.cpp" />
@@ -171,6 +177,7 @@
     <ClCompile Include="HexDefs.cpp" />
     <ClCompile Include="InfluenceCmd.cpp" />
     <ClCompile Include="InfluenceTrack.cpp" />
+    <ClCompile Include="Json.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="Input.cpp" />

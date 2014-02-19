@@ -227,6 +227,12 @@
     <ClInclude Include="civetweb.h">
       <Filter>External</Filter>
     </ClInclude>
+    <ClInclude Include="cJSON.h">
+      <Filter>External</Filter>
+    </ClInclude>
+    <ClInclude Include="Json.h">
+      <Filter>General</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -426,6 +432,12 @@
     </ClCompile>
     <ClCompile Include="civetweb.c">
       <Filter>External</Filter>
+    </ClCompile>
+    <ClCompile Include="cJSON.c">
+      <Filter>External</Filter>
+    </ClCompile>
+    <ClCompile Include="Json.cpp">
+      <Filter>General</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
