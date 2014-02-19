@@ -10,15 +10,14 @@ Research.Stage = function()
 
 Research.Stage.prototype.Send = function()
 {
-	var doc = CreateXMLDoc()
-	var node = CreateCommandNode(doc, 'cmd_research')
+	var json = CreateCommandJSON('cmd_research')
 
 	var idx = document.getElementById('select_tech').selectedIndex
-	node.setAttribute("tech_idx", idx)
+	json.tech_idx = idx
 	
 	ExitAction()
 
-	SendXMLDoc(doc)
+	SendJSON(json)
 }
 
 Research.Stage.prototype.CleanUp = function()
@@ -53,16 +52,15 @@ Research.ArtifactStage.prototype.UpdateCtrls = function()
 
 Research.ArtifactStage.prototype.Send = function()
 {
-	var doc = CreateXMLDoc()
-	var node = CreateCommandNode(doc, 'cmd_research_artifact')
+	var json = CreateCommandJSON('cmd_research_artifact')
 
-	node.setAttribute("Money", this.array[0])
-	node.setAttribute("Science", this.array[1])
-	node.setAttribute("Materials", this.array[2])
+	json.Money = this.array[0]
+	json.Science = this.array[1]
+	json.Materials = this.array[2]
 	
 	ExitAction()
 
-	SendXMLDoc(doc)
+	SendJSON(json)
 }
 
 Research.ArtifactStage.prototype.CleanUp = function()

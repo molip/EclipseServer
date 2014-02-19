@@ -1,35 +1,11 @@
-function CreateXMLDoc()
+function CreateCommandJSON(type)
 {
-	return document.implementation.createDocument(null, null, null)
+	return { "type": type }
 }
 
-function CreateCommandNode(doc, type)
+function SendJSON(json, noBlanket)
 {
-	var root = doc.createElement("command")
-	doc.appendChild(root)
-	root.setAttribute("type", type)
-	return root
-}
-
-function CreateCommandDoc(type)
-{
-	var doc = CreateXMLDoc()
-	var node = CreateCommandNode(doc, type)
-	return doc
-}
-
-function AddTextElem(doc, parent, name, text)
-{
-	var elem = doc.createElement(name)
-	var textNode = doc.createTextNode(text)
-	elem.appendChild(textNode)
-	parent.appendChild(elem)
-	return elem
-}
-
-function SendXMLDoc(doc, noBlanket)
-{
-	var str = new XMLSerializer().serializeToString(doc)
+	var str = JSON.stringify(json)
 	writeToScreen("Sending: " + str + "\n")
 	ws.send(str)
 
@@ -39,47 +15,45 @@ function SendXMLDoc(doc, noBlanket)
 
 function SendJoinGame(id)
 {
-	var doc = CreateXMLDoc()
-	var node = CreateCommandNode(doc, "join_game")
-	node.setAttribute("game", id)
-	SendXMLDoc(doc)
+	var json = CreateCommandJSON('join_game')
+	json.game = id
+	SendJSON(json)
 }
 
 function SendCreateGame()
 {
-	SendXMLDoc(CreateCommandDoc("create_game"))
+	SendJSON(CreateCommandJSON('create_game'))
 }
 
 function SendExitGame()
 {
-	SendXMLDoc(CreateCommandDoc("exit_game"))
+	SendJSON(CreateCommandJSON('exit_game'))
 }
 
 function SendStartReview()
 {
 	ExitAction()
-
-	SendXMLDoc(CreateCommandDoc("start_review"))
+	SendJSON(CreateCommandJSON('start_review'))
 }
 
 function SendExitReview()
 {
-	SendXMLDoc(CreateCommandDoc("exit_review"))
+	SendJSON(CreateCommandJSON('exit_review'))
 }
 
 function SendAdvanceReview()
 {
-	SendXMLDoc(CreateCommandDoc("advance_review"))
+	SendJSON(CreateCommandJSON('advance_review'))
 }
 
 function SendRetreatReview()
 {
-	SendXMLDoc(CreateCommandDoc("retreat_review"))
+	SendJSON(CreateCommandJSON('retreat_review'))
 }
 
 function SendStartGame()
 {
-	SendXMLDoc(CreateCommandDoc("start_game"))
+	SendJSON(CreateCommandJSON('start_game'))
 }
 
 function SendChooseTeam()
@@ -89,56 +63,50 @@ function SendChooseTeam()
 	
 	var race_colour = select_race.options[select_race.selectedIndex].value.split(',')
 	
-	var doc = CreateXMLDoc()
-	var node = CreateCommandNode(doc, "choose_team")
-	node.setAttribute("race", race_colour[0])
-	node.setAttribute("colour", race_colour[1])
-	SendXMLDoc(doc)
+	var json = CreateCommandJSON('choose_team')
+	json.race = race_colour[0]
+	json.colour = race_colour[1]
+	SendJSON(json)
 }
 
 function SendChooseAction(action)
 {
-	var doc = CreateXMLDoc()
-	var node = CreateCommandNode(doc, "start_action")
-	node.setAttribute("action", action)
-	SendXMLDoc(doc)
+	var json = CreateCommandJSON('start_action')
+	json.action = action
+	SendJSON(json)
 }
 
 function SendChooseCommit()
 {
-	SendXMLDoc(CreateCommandDoc("commit"))
+	SendJSON(CreateCommandJSON('commit'))
 }
 
 function SendChooseUndo()
 {
 	ExitAction()
 
-	SendXMLDoc(CreateCommandDoc("undo"))
+	SendJSON(CreateCommandJSON('undo'))
 }
 
 function SendFinishUpkeep()
 {
 	ExitAction()
 
-	SendXMLDoc(CreateCommandDoc("finish_upkeep"))
+	SendJSON(CreateCommandJSON('finish_upkeep'))
 }
 
 function SendRegister()
 {
-	var doc = CreateXMLDoc()
-	var node = CreateCommandNode(doc, "register")
+	var json = CreateCommandJSON('register')
 	
-	node.setAttribute("player", data.playerID)
-	//AddTextElem(doc, node, "player", data.playerID)
+	json.player = data.playerID
 
-	SendXMLDoc(doc, true)
+	SendJSON(json, true)
 }
 
 function SendAbort()
 {
 	ExitAction()
 
-	var doc = CreateXMLDoc()
-	var node = CreateCommandNode(doc, "cmd_abort")
-	SendXMLDoc(doc)
+	SendJSON(CreateCommandJSON('cmd_abort'))
 }

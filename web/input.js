@@ -158,7 +158,7 @@ function OnCommandUpdateGameList(elem)
 {
 	Assert(elem.games)
 	
-	var game_str = '<a href="Join Game" onclick="SendJoinGame(\'{0}\');return false;">{1}</a>{2}(<b> {3}</b>, {4})<br/>'
+	var game_str = '<a href="Join Game" onclick="SendJoinGame({0});return false;">{1}</a>{2}(<b> {3}</b>, {4})<br/>'
 	
 	var html = ''
 

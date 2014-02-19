@@ -10,12 +10,11 @@ Diplomacy.Stage = function()
 
 Diplomacy.Stage.prototype.Send = function()
 {
-	var doc = CreateXMLDoc()
-	var node = CreateCommandNode(doc, 'cmd_diplomacy')
+	var json = CreateCommandJSON('cmd_diplomacy')
 
 	ExitAction()
 
-	SendXMLDoc(doc)
+	SendJSON(json)
 }
 
 Diplomacy.Stage.prototype.CleanUp = function()

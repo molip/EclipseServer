@@ -54,13 +54,12 @@ Influence.Stage.prototype.OnDraw = function(ctx)
 
 Influence.Stage.prototype.Send = function()
 {
-	var doc = CreateXMLDoc()
-	var node = CreateCommandNode(doc, this.command)
-	node.setAttribute("pos_idx", this.pos_idx)
+	var json = CreateCommandJSON(this.command)
+	json.pos_idx = this.pos_idx
 
 	ExitAction()
 
-	SendXMLDoc(doc)
+	SendJSON(json)
 }
 
 Influence.Stage.prototype.UpdateTrackSelection = function()

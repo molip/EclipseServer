@@ -22,13 +22,14 @@
 #include "ActionPhase.h"
 #include "ChooseTeamPhase.h"
 #include "UpkeepPhase.h"
+#include "Json.h"
 
 #include <sstream>
 
 namespace Input 
 {
 
-MessagePtr CreateCommand(const Xml::Element& root)
+MessagePtr CreateCommand(const Json::Element& root)
 {
 	const std::string& type = root.GetAttributeStr("type");
 
@@ -69,8 +70,6 @@ MessagePtr CreateCommand(const Xml::Element& root)
 		return MessagePtr(new CmdExploreHexTake());
 	if (type == "cmd_explore_discovery")
 		return MessagePtr(new CmdExploreDiscovery(root));
-	if (type == "cmd_colonise")
-		return MessagePtr(new CmdColonisePos(root));
 	if (type == "cmd_influence_src")
 		return MessagePtr(new CmdInfluenceSrc(root));
 	if (type == "cmd_influence_dst")
@@ -102,13 +101,13 @@ MessagePtr CreateCommand(const Xml::Element& root)
 	return nullptr;
 }
 
-MessagePtr CreateMessage(const std::string& xml)
+MessagePtr CreateMessage(const std::string& msg)
 {
-	Xml::Document doc;
-	if (!doc.LoadFromString(xml))
+	Json::Document jsonDoc;
+	if (!jsonDoc.LoadFromString(msg))
 		return false;
-
-	return CreateCommand(doc.GetRoot());
+	
+	return CreateCommand(jsonDoc);
 }
 
 LiveGame& Message::GetLiveGame(Player& player) const
@@ -122,13 +121,13 @@ LiveGame& Message::GetLiveGame(Player& player) const
 
 //-----------------------------------------------------------------------------
 	
-Register::Register(const Xml::Element& node) : m_idPlayer(0)
+Register::Register(const Json::Element& node) : m_idPlayer(0)
 {
 	node.GetAttribute("player", m_idPlayer);
 	AssertThrowXML("Register", m_idPlayer > 0);
 }
 
-JoinGame::JoinGame(const Xml::Element& node) : m_idGame(0)
+JoinGame::JoinGame(const Json::Element& node) : m_idGame(0)
 {
 	node.GetAttribute("game", m_idGame);
 	AssertThrowXML("JoinGame", m_idGame > 0);
@@ -240,7 +239,7 @@ bool StartGame::Process(Controller& controller, Player& player) const
 	return true;	
 }
 
-ChooseTeam::ChooseTeam(const Xml::Element& node)
+ChooseTeam::ChooseTeam(const Json::Element& node)
 {
 	m_race = node.GetAttributeStr("race");
 	m_colour = node.GetAttributeStr("colour");
@@ -268,7 +267,7 @@ bool ChooseTeam::Process(Controller& controller, Player& player) const
 	return true;	
 }
 
-StartAction::StartAction(const Xml::Element& node)
+StartAction::StartAction(const Json::Element& node)
 {
 	m_action = node.GetAttributeStr("action");
 }
@@ -334,28 +333,28 @@ bool CmdMessage::Process(Controller& controller, Player& player) const
 	return true;
 }
 
-CmdExplorePos::CmdExplorePos(const Xml::Element& node)
+CmdExplorePos::CmdExplorePos(const Json::Element& node)
 {
 	m_iPos = node.GetAttributeInt("pos_idx");
 }
 
-CmdExploreHex::CmdExploreHex(const Xml::Element& node) : m_iRot(0), m_iHex(0), m_bInfluence(false)
+CmdExploreHex::CmdExploreHex(const Json::Element& node) : m_iRot(0), m_iHex(0), m_bInfluence(false)
 {
 	m_iRot = node.GetAttributeInt("rot_idx");
 	m_iHex = node.GetAttributeInt("hex_idx");
 	m_bInfluence = node.GetAttributeBool("influence");
 }
 
-CmdExploreDiscovery::CmdExploreDiscovery(const Xml::Element& node)
+CmdExploreDiscovery::CmdExploreDiscovery(const Json::Element& node)
 {
 }
 
-CmdColonisePos::CmdColonisePos(const Xml::Element& node)
+CmdColonisePos::CmdColonisePos(const Json::Element& node)
 {
 	m_iPos = node.GetAttributeInt("pos_idx");
 }
 
-CmdColoniseSquares::CmdColoniseSquares(const Xml::Element& node)
+CmdColoniseSquares::CmdColoniseSquares(const Json::Element& node)
 {
 	auto Read = [&] (const std::string& type, Population& pops)
 	{
@@ -372,56 +371,56 @@ CmdColoniseSquares::CmdColoniseSquares(const Xml::Element& node)
 	AssertThrowXML("CmdColonise: trying to add materials to orbital", m_orbital[Resource::Materials] == 0);
 }
 
-CmdInfluenceSrc::CmdInfluenceSrc(const Xml::Element& node)
+CmdInfluenceSrc::CmdInfluenceSrc(const Json::Element& node)
 {
 	m_iPos = node.GetAttributeInt("pos_idx");
 }
 
-CmdInfluenceDst::CmdInfluenceDst(const Xml::Element& node)
+CmdInfluenceDst::CmdInfluenceDst(const Json::Element& node)
 {
 	m_iPos = node.GetAttributeInt("pos_idx");
 }
 
-CmdResearch::CmdResearch(const Xml::Element& node)
+CmdResearch::CmdResearch(const Json::Element& node)
 {
 	m_iTech = node.GetAttributeInt("tech_idx");
 }
 
-CmdResearchArtifact::CmdResearchArtifact(const Xml::Element& node)
+CmdResearchArtifact::CmdResearchArtifact(const Json::Element& node)
 {
 	for (auto r : EnumRange<Resource>())
 		m_artifacts[r] = node.GetAttributeInt(EnumTraits<Resource>::ToString(r));
 }
 
-CmdMoveSrc::CmdMoveSrc(const Xml::Element& node)
+CmdMoveSrc::CmdMoveSrc(const Json::Element& node)
 {
 	m_x = node.GetAttributeInt("x");
 	m_y = node.GetAttributeInt("y");
 	m_ship = EnumTraits<ShipType>::FromString(node.GetAttributeStr("ship"));
 }
 
-CmdMoveDst::CmdMoveDst(const Xml::Element& node)
+CmdMoveDst::CmdMoveDst(const Json::Element& node)
 {
 	m_x = node.GetAttributeInt("x");
 	m_y = node.GetAttributeInt("y");
 }
 
-CmdBuild::CmdBuild(const Xml::Element& node)
+CmdBuild::CmdBuild(const Json::Element& node)
 {
 	m_x = node.GetAttributeInt("x");
 	m_y = node.GetAttributeInt("y");
 	m_buildable = EnumTraits<Buildable>::FromString(node.GetAttributeStr("buildable"));
 }
 
-CmdDiplomacy::CmdDiplomacy(const Xml::Element& node)
+CmdDiplomacy::CmdDiplomacy(const Json::Element& node)
 {
 }
 
-CmdUpgrade::CmdUpgrade(const Xml::Element& node)
+CmdUpgrade::CmdUpgrade(const Json::Element& node)
 {
 }
 
-CmdTrade::CmdTrade(const Xml::Element& node)
+CmdTrade::CmdTrade(const Json::Element& node)
 {
 }
 

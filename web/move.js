@@ -46,18 +46,17 @@ Move.SrcStage.prototype.OnDraw = function(ctx)
 
 Move.SrcStage.prototype.SendPos = function()
 {
-	var doc = CreateXMLDoc()
-	var node = CreateCommandNode(doc, "cmd_move_src")
-	node.setAttribute("x", this.selected.x)
-	node.setAttribute("y", this.selected.y)
+	var json = CreateCommandJSON('cmd_move_src')
+	json.x = this.selected.x
+	json.y = this.selected.y
 
 	var ship_idx = document.getElementById('select_move_ship').selectedIndex
 	var ship = this.hexes[this.hex_idx].ships[ship_idx]
-	node.setAttribute("ship", ship)
+	json.ship = ship
 	
 	ExitAction()
 
-	SendXMLDoc(doc)
+	SendJSON(json)
 }
 
 Move.SrcStage.prototype.CleanUp = function()
@@ -96,14 +95,13 @@ Move.DstStage.prototype.OnDraw = function(ctx)
 
 Move.DstStage.prototype.SendPos = function()
 {
-	var doc = CreateXMLDoc()
-	var node = CreateCommandNode(doc, "cmd_move_dst")
-	node.setAttribute("x", this.selected.x)
-	node.setAttribute("y", this.selected.y)
+	var json = CreateCommandJSON('cmd_move_dst')
+	json.x = this.selected.x
+	json.y = this.selected.y
 	
 	ExitAction()
 
-	SendXMLDoc(doc)
+	SendJSON(json)
 }
 
 Move.DstStage.prototype.CleanUp = function()

@@ -31,13 +31,12 @@ Explore.ChoosePosStage.prototype.OnDraw = function(ctx)
 
 Explore.ChoosePosStage.prototype.SendPos = function()
 {
-	var doc = CreateXMLDoc()
-	var node = CreateCommandNode(doc, "cmd_explore_pos")
-	node.setAttribute("pos_idx", this.pos_idx)
+	var json = CreateCommandJSON("cmd_explore_pos")
+	json.pos_idx = this.pos_idx
 
 	ExitAction()
 
-	SendXMLDoc(doc)
+	SendJSON(json)
 }
 
 Explore.ChoosePosStage.prototype.CleanUp = function()
@@ -78,25 +77,23 @@ Explore.ChooseHexStage.prototype.SendHex = function()
 	var choice = this.choices[this.choice_idx]
 	var influence = choice.can_influence && document.getElementById('choose_explore_hex_influence_check').checked 
 	
-	var doc = CreateXMLDoc()
-	var node = CreateCommandNode(doc, "cmd_explore_hex")
-	node.setAttribute("rot_idx", choice.rot_idx)
-	node.setAttribute("hex_idx", this.choice_idx)
-	node.setAttribute("influence", influence)
+	var json = CreateCommandJSON("cmd_explore_hex")
+	json.rot_idx = choice.rot_idx
+	json.hex_idx = this.choice_idx
+	json.influence = influence
 
 	ExitAction()
 	
-	SendXMLDoc(doc)
+	SendJSON(json)
 }
 
 Explore.ChooseHexStage.prototype.SendTake = function()
 {
-	var doc = CreateXMLDoc()
-	var node = CreateCommandNode(doc, "cmd_explore_hex_take")
+	var json = CreateCommandJSON('cmd_explore_hex_take')
 
 	ExitAction()
 
-	SendXMLDoc(doc)
+	SendJSON(json)
 }
 
 Explore.ChooseHexStage.prototype.CleanUp = function()
@@ -143,12 +140,11 @@ Explore.ChooseDiscoveryStage = function(canUndo)
 
 Explore.ChooseDiscoveryStage.prototype.SendDiscovery = function()
 {
-	var doc = CreateXMLDoc()
-	var node = CreateCommandNode(doc, "cmd_explore_discovery")
+	var json = CreateCommandJSON('cmd_explore_discovery')
 
 	ExitAction()
 	
-	SendXMLDoc(doc)
+	SendJSON(json)
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -35,13 +35,12 @@ Colonise.ChoosePosStage.prototype.OnDraw = function(ctx)
 
 Colonise.ChoosePosStage.prototype.Send = function()
 {
-	var doc = CreateXMLDoc()
-	var node = CreateCommandNode(doc, 'cmd_colonise_pos')
-	node.setAttribute("pos_idx", this.pos_idx)
+	var json = CreateCommandJSON('cmd_colonise_pos')
+	json.pos_idx = this.pos_idx
 
 	ExitAction()
 
-	SendXMLDoc(doc)
+	SendJSON(json)
 }
 
 Colonise.ChoosePosStage.prototype.CleanUp = function()
@@ -170,22 +169,21 @@ Colonise.ChooseSquaresStage.prototype.Validate = function()
 
 Colonise.ChooseSquaresStage.prototype.Send = function()
 {
-	var doc = CreateXMLDoc()
-	var node = CreateCommandNode(doc, 'cmd_colonise_squares')
+	var json = CreateCommandJSON('cmd_colonise_squares')
 
 	var rows = ['Fixed', 'Grey', 'Orbital']
 	var cols = ['Money', 'Science', 'Materials']
 	for (var y = 0; y < 3; ++y)
 	{
-		var row = doc.createElement(rows[y])
+		var row = {}
 		for (var x = 0; x < 3; ++x)
-			row.setAttribute(cols[x], this.array[x][y])
-		node.appendChild(row)
+			row[cols[x]] = this.array[x][y]
+		json[rows[y]] = row
 	}
 	
 	ExitAction()
 
-	SendXMLDoc(doc)
+	SendJSON(json)
 }
 
 Colonise.ChooseSquaresStage.prototype.CleanUp = function()

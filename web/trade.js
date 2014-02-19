@@ -10,12 +10,11 @@ Trade.Stage = function()
 
 Trade.Stage.prototype.Send = function()
 {
-	var doc = CreateXMLDoc()
-	var node = CreateCommandNode(doc, 'cmd_trade')
-
+	var json = CreateCommandJSON('cmd_trade')
+	
 	ExitAction()
 
-	SendXMLDoc(doc)
+	SendJSON(json)
 }
 
 Trade.Stage.prototype.CleanUp = function()

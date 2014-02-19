@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Resources.h"
-#include "Xml.h"
 
 #include <string>
 #include <memory>
@@ -13,6 +12,8 @@ class LiveGame;
 
 enum class ShipType;
 enum class Buildable;
+
+namespace Json { class Element; }
 
 namespace Input 
 {
@@ -34,7 +35,7 @@ MessagePtr CreateMessage(const std::string& xml);
 
 struct Register: Message 
 {
-	Register(const Xml::Element& node);
+	Register(const Json::Element& node);
 	int GetPlayerID() const { return m_idPlayer; }
 private:
 	int m_idPlayer;
@@ -42,7 +43,7 @@ private:
 
 struct JoinGame: Message 
 {
-	JoinGame(const Xml::Element& node);
+	JoinGame(const Json::Element& node);
 	virtual bool Process(Controller& controller, Player& player) const override; 
 	int m_idGame;
 };
@@ -84,14 +85,14 @@ struct StartGame : Message
 
 struct ChooseTeam : Message 
 {
-	ChooseTeam(const Xml::Element& node);
+	ChooseTeam(const Json::Element& node);
 	virtual bool Process(Controller& controller, Player& player) const override; 
 	std::string m_race, m_colour;
 };
 
 struct StartAction : Message 
 {
-	StartAction(const Xml::Element& node);
+	StartAction(const Json::Element& node);
 	virtual bool Process(Controller& controller, Player& player) const override; 
 	std::string m_action;
 };
@@ -121,13 +122,13 @@ public:
 
 struct CmdExplorePos : CmdMessage
 {
-	CmdExplorePos(const Xml::Element& node);
+	CmdExplorePos(const Json::Element& node);
 	int m_iPos;
 };
 
 struct CmdExploreHex : CmdMessage
 {
-	CmdExploreHex(const Xml::Element& node);
+	CmdExploreHex(const Json::Element& node);
 	int m_iRot;
 	int m_iHex;
 	bool m_bInfluence;
@@ -137,18 +138,18 @@ struct CmdExploreHexTake : CmdMessage {};
 
 struct CmdExploreDiscovery : CmdMessage
 {
-	CmdExploreDiscovery(const Xml::Element& node);
+	CmdExploreDiscovery(const Json::Element& node);
 };
 
 struct CmdColonisePos : CmdMessage
 {
-	CmdColonisePos(const Xml::Element& node);
+	CmdColonisePos(const Json::Element& node);
 	int m_iPos;
 };
 
 struct CmdColoniseSquares : CmdMessage
 {
-	CmdColoniseSquares(const Xml::Element& node);
+	CmdColoniseSquares(const Json::Element& node);
 	
 	Population m_fixed, m_grey, m_orbital;
 };
@@ -159,61 +160,61 @@ struct CmdAbort : CmdMessage
 
 struct CmdInfluenceSrc : CmdMessage
 {
-	CmdInfluenceSrc(const Xml::Element& node);
+	CmdInfluenceSrc(const Json::Element& node);
 	int m_iPos;
 };
 
 struct CmdInfluenceDst : CmdMessage
 {
-	CmdInfluenceDst(const Xml::Element& node);
+	CmdInfluenceDst(const Json::Element& node);
 	int m_iPos;
 };
 
 struct CmdResearch : CmdMessage
 {
-	CmdResearch(const Xml::Element& node);
+	CmdResearch(const Json::Element& node);
 	int m_iTech;
 };
 
 struct CmdResearchArtifact : CmdMessage
 {
-	CmdResearchArtifact(const Xml::Element& node);
+	CmdResearchArtifact(const Json::Element& node);
 	Storage m_artifacts;
 };
 
 struct CmdMoveSrc : CmdMessage
 {
-	CmdMoveSrc(const Xml::Element& node);
+	CmdMoveSrc(const Json::Element& node);
 	int m_x, m_y;
 	ShipType m_ship;
 };
 
 struct CmdMoveDst : CmdMessage
 {
-	CmdMoveDst(const Xml::Element& node);
+	CmdMoveDst(const Json::Element& node);
 	int m_x, m_y;
 };
 
 struct CmdBuild : CmdMessage
 {
-	CmdBuild(const Xml::Element& node);
+	CmdBuild(const Json::Element& node);
 	int m_x, m_y;
 	Buildable m_buildable;
 };
 
 struct CmdDiplomacy : CmdMessage
 {
-	CmdDiplomacy(const Xml::Element& node);
+	CmdDiplomacy(const Json::Element& node);
 };
 
 struct CmdUpgrade : CmdMessage
 {
-	CmdUpgrade(const Xml::Element& node);
+	CmdUpgrade(const Json::Element& node);
 };
 
 struct CmdTrade : CmdMessage
 {
-	CmdTrade(const Xml::Element& node);
+	CmdTrade(const Json::Element& node);
 };
 
 }

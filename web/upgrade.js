@@ -9,12 +9,11 @@ Upgrade.Stage = function()
 
 Upgrade.Stage.prototype.Send = function()
 {
-	var doc = CreateXMLDoc()
-	var node = CreateCommandNode(doc, 'cmd_upgrade')
+	var json = CreateCommandJSON('cmd_upgrade')
 
 	ExitAction()
 
-	SendXMLDoc(doc)
+	SendJSON(json)
 }
 
 Upgrade.Stage.prototype.CleanUp = function()

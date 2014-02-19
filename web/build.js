@@ -48,17 +48,16 @@ Build.Stage.prototype.OnDraw = function(ctx)
 
 Build.Stage.prototype.Send = function()
 {
-	var doc = CreateXMLDoc()
-	var node = CreateCommandNode(doc, "cmd_build")
-	node.setAttribute("x", this.selected.x)
-	node.setAttribute("y", this.selected.y)
+	var json = CreateCommandJSON("cmd_build")
+	json.x = this.selected.x
+	json.y = this.selected.y
 
 	var select = document.getElementById('select_build')
-	node.setAttribute("buildable", select.options[select.selectedIndex].text)
+	json.buildable = select.options[select.selectedIndex].text
 	
 	ExitAction()
 
-	SendXMLDoc(doc)
+	SendJSON(json)
 }
 
 Build.Stage.prototype.CleanUp = function()
