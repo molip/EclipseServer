@@ -318,7 +318,7 @@ function OnCommandUpdateMap(elem)
 	Map.Clear()
 	
 	for (var i = 0, hex; hex = elem.hexes[i]; ++i)
-		Map.AddHex(hex.id, new Point(hex.x, hex.y), hex.rotation, hex.team, hex.squares, hex.ships)
+		Map.AddHex(hex.id, new Point(hex.x, hex.y), hex.rotation, hex.colour, hex.squares, hex.ships)
 
 	Map.Draw()
 }
