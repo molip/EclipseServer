@@ -328,7 +328,7 @@ ChooseAction::ChooseAction(const LiveGame& game) : Choose("action")
 	m_root.SetAttribute("can_colonise",		phase.GetCurrentTeam().GetUnusedColonyShips() > 0); 
 	m_root.SetAttribute("can_diplomacy",	true);
 	m_root.SetAttribute("can_trade",		true);
-	m_root.SetAttribute("can_pass",			bCanDoAction && !bPassed);
+	m_root.SetAttribute("can_pass",			!phase.HasDoneAction() && !bPassed);
 	m_root.SetAttribute("can_end_turn",		!bCanDoAction || bPassed);
 }
 

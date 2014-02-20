@@ -23,6 +23,7 @@ public:
 	const Cmd* GetCurrentCmd() const { return const_cast<ActionPhase*>(this)->GetCurrentCmd(); }
 	bool CanRemoveCmd() const;
 
+	bool HasDoneAction() const { return m_bDoneAction; }
 	bool CanDoAction() const;
 	Cmd* GetCurrentPlayerCmd();
 	const Cmd* GetCurrentPlayerCmd() const { return const_cast<ActionPhase*>(this)->GetCurrentPlayerCmd(); }
