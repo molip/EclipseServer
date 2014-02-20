@@ -215,6 +215,8 @@ struct CmdUpgrade : CmdMessage
 struct CmdTrade : CmdMessage
 {
 	CmdTrade(const Json::Element& node);
+	Resource m_from, m_to;
+	int m_count; // Count of "to" resource produced.
 };
 
 }

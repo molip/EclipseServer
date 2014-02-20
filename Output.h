@@ -107,7 +107,7 @@ struct ChooseDiplomacy : Choose { ChooseDiplomacy(); };
 struct ChooseMoveSrc : Choose { ChooseMoveSrc(std::map<MapPos, std::set<ShipType>>& srcs, bool bCanSkip); };
 struct ChooseMoveDst : Choose { ChooseMoveDst(const std::set<MapPos>& dsts); };
 struct ChooseUpgrade : Choose { ChooseUpgrade(); };
-struct ChooseTrade : Choose { ChooseTrade(); };
+struct ChooseTrade : Choose { ChooseTrade(const Team& team); };
 
 struct ChooseUpkeep : Choose { ChooseUpkeep(const Team& team, bool canUndo); };
 

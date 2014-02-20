@@ -479,8 +479,17 @@ ChooseUpgrade::ChooseUpgrade() : Choose("upgrade")
 {
 }
 
-ChooseTrade::ChooseTrade() : Choose("trade")
+ChooseTrade::ChooseTrade(const Team& team) : Choose("trade")
 {
+	const int rate = Race(team.GetRace()).GetTradeRate();
+	auto available = m_root.AddElement("available");
+	for (auto r : EnumRange<Resource>())
+	{
+		int storage = team.GetStorage()[r];
+		if (storage >= rate)
+			available.SetAttribute(EnumTraits<Resource>::ToString(r), storage);
+	}
+	m_root.SetAttribute("rate", rate);
 }
 
 ChooseUpkeep::ChooseUpkeep(const Team& team, bool canUndo) : Choose("upkeep")

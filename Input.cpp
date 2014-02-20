@@ -422,6 +422,9 @@ CmdUpgrade::CmdUpgrade(const Json::Element& node)
 
 CmdTrade::CmdTrade(const Json::Element& node)
 {
+	m_from = EnumTraits<Resource>::FromString(node.GetAttributeStr("from"));
+	m_to = EnumTraits<Resource>::FromString(node.GetAttributeStr("to"));
+	m_count = node.GetAttributeInt("count");
 }
 
 } // namespace

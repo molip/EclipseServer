@@ -38,6 +38,7 @@ public:
 	template <typename T, typename S> void SaveArray(const std::string& name, const T& cntr, S saver);
 	template <typename T, typename SK, typename SV> void SaveMap(const std::string& name, const T& map, SK keySaver, SV valSaver);
 	template <typename T, typename S1, typename S2> void SavePairs(const std::string& name, const T& cntr, S1 saver1, S2 saver2);
+	template <typename T, typename S1, typename S2> void SavePair(const std::string& name, const T& pair, S1 saver1, S2 saver2);
 
 private:
 	Xml::Element m_elem;
@@ -153,6 +154,13 @@ template <typename T, typename S1, typename S2> void SaveNode::SavePairs(const s
 	}
 }
 
+template <typename T, typename S1, typename S2> void SaveNode::SavePair(const std::string& name, const T& pair, S1 saver1, S2 saver2)
+{
+	Xml::Element elem = m_elem.AddElement(name);
+	saver1(elem.AddElement("_first"), pair.first);
+	saver2(elem.AddElement("_second"), pair.second);
+}
+
 template <typename T, typename S> void SaveNode::SaveArray(const std::string& name, const T& cntr, S saver)
 {
 	Xml::Element elem = m_elem.AddElement(name);
@@ -223,6 +231,7 @@ public:
 	template <typename T, typename L> bool LoadArray(const std::string& name, T& cntr, L loader) const;
 	template <typename T, typename LK, typename LV> bool LoadMap(const std::string& name, T& map, LK keyLoader, LV valLoader) const;
 	template <typename T, typename L1, typename L2> bool LoadPairs(const std::string& name, T& cntr, L1 loader1, L2 loader2) const;
+	template <typename T, typename L1, typename L2> bool LoadPair(const std::string& name, T& pair, L1 loader1, L2 loader2) const;
 
 private:
 	const Xml::Element m_elem;
@@ -442,6 +451,21 @@ template <typename T, typename L1, typename L2> bool LoadNode::LoadPairs(const s
 
 		cntr.insert(cntr.end(), std::make_pair(std::move(v1), std::move(v2)));
 	}
+	return true;
+}
+
+template <typename T, typename L1, typename L2> bool LoadNode::LoadPair(const std::string& name, T& pair, L1 loader1, L2 loader2) const
+{
+	Xml::Element e = m_elem.GetFirstChild(name);
+	if (e.IsNull())
+		return false;
+
+	Xml::Element e1 = e.GetFirstChild("_first");
+	loader1(e1, pair.first);
+
+	Xml::Element e2 = e.GetFirstChild("_second");
+	loader2(e2, pair.second);
+
 	return true;
 }
 

@@ -218,7 +218,12 @@
 			Diplomacy
 		</div>
 		<div id="choose_trade" style="display:none">
-			Trade
+			Trade: convert <select id="select_trade_from" onchange="data.action.OnSelectFrom()"></select> x 
+			<input id="choose_trade_text" type="text" value="0" size="1" disabled> 
+			<button id="choose_trade_minus" type="button" onclick="data.action.OnButton(this, -1)">-</button>
+			<button id="choose_trade_plus" type="button" onclick="data.action.OnButton(this, 1)">+</button>
+			into <select id="select_trade_to"></select> x <span id="trade_result_content"></span>
+			<button id="choose_trade_finish" type="button" onclick="data.action.Send()">Finish</button>
 		</div>
 	</div>
 	<div id="review_ui">
