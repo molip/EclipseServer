@@ -6,11 +6,11 @@
 #include "LiveGame.h"
 #include "Record.h"
 
-class ResearchRecord : public Record
+class ResearchRecord : public TeamRecord
 {
 public:
 	ResearchRecord() : m_tech(TechType::None) {}
-	ResearchRecord(Colour colour, TechType t) : Record(colour), m_tech(t) {}
+	ResearchRecord(Colour colour, TechType t) : TeamRecord(colour), m_tech(t) {}
 
 	virtual void Save(Serial::SaveNode& node) const override 
 	{
@@ -79,9 +79,9 @@ REGISTER_DYNAMIC(ResearchRecord)
 
 //-----------------------------------------------------------------------------
 
-ResearchCmd::ResearchCmd(Colour colour, LiveGame& game, int iPhase) : PhaseCmd(colour, iPhase)
+ResearchCmd::ResearchCmd(Colour colour, const LiveGame& game, int iPhase) : PhaseCmd(colour, iPhase)
 {
-	Team& team = GetTeam(game);
+	const Team& team = GetTeam(game);
 	AssertThrow("ResearchCmd::ResearchCmd", !team.HasPassed());
 }
 
@@ -106,7 +106,7 @@ void ResearchCmd::UpdateClient(const Controller& controller, const LiveGame& gam
 	controller.SendMessage(Output::ChooseResearch(m_techs, m_iPhase > 0), GetPlayer(game));
 }
 
-CmdPtr ResearchCmd::Process(const Input::CmdMessage& msg, const Controller& controller, LiveGame& game)
+CmdPtr ResearchCmd::Process(const Input::CmdMessage& msg, const Controller& controller, const LiveGame& game)
 {
 	if (dynamic_cast<const Input::CmdAbort*>(&msg))
 		return nullptr;
@@ -140,11 +140,11 @@ REGISTER_DYNAMIC(ResearchCmd)
 
 //-----------------------------------------------------------------------------
 
-class ResearchArtifactRecord : public Record
+class ResearchArtifactRecord : public TeamRecord
 {
 public:
 	ResearchArtifactRecord() {}
-	ResearchArtifactRecord(Colour colour, const Storage& artifacts) : Record(colour), m_artifacts(artifacts) {}
+	ResearchArtifactRecord(Colour colour, const Storage& artifacts) : TeamRecord(colour), m_artifacts(artifacts) {}
 
 	virtual void Save(Serial::SaveNode& node) const override 
 	{
@@ -176,7 +176,7 @@ REGISTER_DYNAMIC(ResearchArtifactRecord)
 
 //-----------------------------------------------------------------------------
 
-ResearchArtifactCmd::ResearchArtifactCmd(Colour colour, LiveGame& game, int iPhase) : PhaseCmd(colour, iPhase), m_nArtifacts(0)
+ResearchArtifactCmd::ResearchArtifactCmd(Colour colour, const LiveGame& game, int iPhase) : PhaseCmd(colour, iPhase), m_nArtifacts(0)
 {
 }
 
@@ -191,7 +191,7 @@ void ResearchArtifactCmd::UpdateClient(const Controller& controller, const LiveG
 	controller.SendMessage(Output::ChooseResearchArtifact(m_nArtifacts), GetPlayer(game));
 }
 
-CmdPtr ResearchArtifactCmd::Process(const Input::CmdMessage& msg, const Controller& controller, LiveGame& game)
+CmdPtr ResearchArtifactCmd::Process(const Input::CmdMessage& msg, const Controller& controller, const LiveGame& game)
 {
 	auto& m = CastThrow<const Input::CmdResearchArtifact>(msg);
 

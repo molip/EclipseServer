@@ -1,27 +1,27 @@
 #include "stdafx.h"
 #include "Team.h"
 #include "Race.h"
-#include "Game.h"
+#include "LiveGame.h"
 #include "EnumRange.h"
 #include "EnumTraits.h"
 #include "Games.h"
 #include "Players.h"
 #include "Serial.h"
 
-Team::Team() : Team(0, 0) 
+Team::Team() : Team(0) 
 {
 }
 
-Team::Team(int idGame, int idPlayer) :
-	m_idGame(idGame), m_idPlayer(idPlayer), m_race(RaceType::None), m_colour(Colour::None), m_nColonyShipsUsed(0), 
+Team::Team(int idPlayer) :
+	m_idPlayer(idPlayer), m_race(RaceType::None), m_colour(Colour::None), m_nColonyShipsUsed(0), 
 	m_bPassed(false), m_repTrack(*this)
 {
 	for (int i = 0; i < 4; ++i)
 		m_nShips[i] = 0;
 }
 
-Team::Team(const Team& rhs, int idGame) : 
-	m_idGame(idGame), m_idPlayer(rhs.m_idPlayer), m_race(rhs.m_race), m_colour(rhs.m_colour), m_allies(rhs.m_allies),
+Team::Team(const Team& rhs) : 
+	m_idPlayer(rhs.m_idPlayer), m_race(rhs.m_race), m_colour(rhs.m_colour), m_allies(rhs.m_allies),
 	m_popTrack(rhs.m_popTrack), m_infTrack(rhs.m_infTrack), m_actionTrack(rhs.m_actionTrack), m_repTrack(rhs.m_repTrack), 
 	m_techTrack(rhs.m_techTrack), m_storage(rhs.m_storage), m_nColonyShipsUsed(rhs.m_nColonyShipsUsed), m_bPassed(rhs.m_bPassed)
 {	
@@ -29,7 +29,7 @@ Team::Team(const Team& rhs, int idGame) :
 		m_nShips[i] = rhs.m_nShips[i];
 }
 
-void Team::Assign(RaceType race, Colour colour)
+void Team::Assign(RaceType race, Colour colour, LiveGame& game)
 {
 	AssertThrowModel("Team::Assign", m_race == RaceType::None);
 	m_race = race;
@@ -45,7 +45,7 @@ void Team::Assign(RaceType race, Colour colour)
 		m_techTrack.Add(t);
 
 	for (int i = 0; i < r.GetStartReputationTiles(); ++i)
-		m_repTrack.AddReputationTile(Games::Get(m_idGame).GetReputationBag().TakeTile());
+		m_repTrack.AddReputationTile(game.GetReputationBag().TakeTile());
 	
 	for (auto i : EnumRange<ShipType>())
 		m_blueprints[(int)i].reset(new Blueprint(race, i));
@@ -71,11 +71,6 @@ const Player& Team::GetPlayer() const
 Player& Team::GetPlayer() 
 {
 	return Players::Get(m_idPlayer);
-}
-
-const Game& Team::GetGame() const
-{
-	return Games::Get(m_idGame);
 }
 
 void Team::AddShips(ShipType type, int nShips)

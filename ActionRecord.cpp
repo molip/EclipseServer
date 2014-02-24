@@ -7,7 +7,7 @@
 
 ActionRecord::ActionRecord() {}
 
-ActionRecord::ActionRecord(Colour colour) : Record(colour) {}
+ActionRecord::ActionRecord(Colour colour) : TeamRecord(colour) {}
 
 void ActionRecord::Apply(bool bDo, Game& game, const Controller& controller)
 {

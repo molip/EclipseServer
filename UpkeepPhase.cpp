@@ -110,9 +110,7 @@ void UpkeepPhase::FinishTurn(Controller& controller, const Player& player)
 
 	if (m_finished.size() == game.GetTeams().size())
 	{
-		RecordPtr pRec(new StartRoundRecord);
-		pRec->Do(game, controller);
-		game.PushRecord(pRec);
+		Record::DoAndPush(RecordPtr(new StartRoundRecord), game, controller);
 
 		game.StartActionPhase(); // Deletes this.
 		game.GetPhase().UpdateClient(controller, nullptr);

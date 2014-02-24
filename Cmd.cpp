@@ -31,19 +31,18 @@ const Player& Cmd::GetPlayer(const LiveGame& game) const
 	return GetTeam(game).GetPlayer(); 
 }
 
-void Cmd::DoRecord(RecordPtr pRec, const Controller& controller, LiveGame& game)
+void Cmd::DoRecord(RecordPtr pRec, const Controller& controller, const LiveGame& game)
 {
 	AssertThrow("Cmd::DoRecord", !m_bHasRecord);
 
-	pRec->Do(game, controller);
-	game.PushRecord(pRec);
+	Record::DoAndPush(std::move(pRec), game, controller);
 	m_bHasRecord = true;
 }
 
-void Cmd::PopRecord(const Controller& controller, LiveGame& game)
+void Cmd::PopRecord(const Controller& controller, const LiveGame& game)
 {
 	AssertThrow("Cmd::PopRecord", m_bHasRecord);
-	game.PopRecord()->Undo(game, controller);
+	Record::PopAndUndo(game, controller);
 	m_bHasRecord = false;
 }
 

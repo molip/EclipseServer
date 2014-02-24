@@ -23,7 +23,7 @@ public:
 	LiveGame(int id, const std::string& name, const Player& owner);
 	virtual ~LiveGame();
 
-	void AddPlayer(Player& player);
+	void AddPlayer(const Player& player);
 
 	void StartChooseTeamGamePhase();
 	void StartMainGamePhase();
@@ -37,10 +37,10 @@ public:
 
 	const ActionPhase& GetActionPhase() const { return const_cast<LiveGame*>(this)->GetActionPhase(); };
 	ActionPhase& GetActionPhase();
+	const ChooseTeamPhase& GetChooseTeamPhase() const { return const_cast<LiveGame*>(this)->GetChooseTeamPhase(); };
 	ChooseTeamPhase& GetChooseTeamPhase();
 	UpkeepPhase& GetUpkeepPhase();
 
-	// Only call from Cmd::DoRecord/PopRecord.
 	void PushRecord(std::unique_ptr<Record>& pRec);
 	std::unique_ptr<Record> PopRecord();
 

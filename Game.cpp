@@ -32,7 +32,7 @@ Game::Game(int id, const std::string& name, const Player& owner, const Game& rhs
 	m_iRound(rhs.m_iRound)
 {
 	for (auto& t : rhs.m_teams)
-		m_teams.push_back(TeamPtr(new Team(*t, id)));
+		m_teams.push_back(TeamPtr(new Team(*t)));
 
 	for (int i = 0; i < (int)HexRing::_Count; ++i)
 		m_hexBag[i] = rhs.m_hexBag[i];
@@ -114,9 +114,6 @@ void Game::Load(const Serial::LoadNode& node)
 	node.LoadClass("disc_bag", m_discBag);
 	node.LoadArray("hex_bags", m_hexBag, Serial::ClassLoader());
 	node.LoadType("round", m_iRound);
-
-	for (auto& t : m_teams)
-		t->SetGameID(m_id);
 }
 
-DEFINE_ENUM_NAMES(HexRing) { "Inner", "Middle", "Outer", "" };
+DEFINE_ENUM_NAMES2(HexRing, -1) { "None", "Inner", "Middle", "Outer", "" };

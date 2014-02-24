@@ -13,10 +13,10 @@ class InfluenceCmd : public PhaseCmd
 {
 public:
 	InfluenceCmd() {}
-	InfluenceCmd(Colour colour, LiveGame& game, int iPhase = 0);
+	InfluenceCmd(Colour colour, const LiveGame& game, int iPhase = 0);
 
 	virtual void UpdateClient(const Controller& controller, const LiveGame& game) const override;
-	virtual CmdPtr Process(const Input::CmdMessage& msg, const Controller& controller, LiveGame& game) override;
+	virtual CmdPtr Process(const Input::CmdMessage& msg, const Controller& controller, const LiveGame& game) override;
 	virtual bool IsAction() const override { return true; } 
 
 	virtual void Save(Serial::SaveNode& node) const override;
@@ -30,10 +30,10 @@ class InfluenceDstCmd : public PhaseCmd
 {
 public:
 	InfluenceDstCmd() : m_discovery(DiscoveryType::None) {}
-	InfluenceDstCmd(Colour colour, LiveGame& game, const MapPos* pSrcPos, int iPhase = 0);
+	InfluenceDstCmd(Colour colour, const LiveGame& game, const MapPos* pSrcPos, int iPhase = 0);
 
 	virtual void UpdateClient(const Controller& controller, const LiveGame& game) const override;
-	virtual CmdPtr Process(const Input::CmdMessage& msg, const Controller& controller, LiveGame& game) override;
+	virtual CmdPtr Process(const Input::CmdMessage& msg, const Controller& controller, const LiveGame& game) override;
 	virtual bool CanUndo() const override { return m_discovery == DiscoveryType::None; }
 
 	virtual void Save(Serial::SaveNode& node) const override;

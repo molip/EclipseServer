@@ -10,10 +10,10 @@ class ResearchCmd : public PhaseCmd
 {
 public:
 	ResearchCmd() {}
-	ResearchCmd(Colour colour, LiveGame& game, int iPhase = 0);
+	ResearchCmd(Colour colour, const LiveGame& game, int iPhase = 0);
 
 	virtual void UpdateClient(const Controller& controller, const LiveGame& game) const override;
-	virtual CmdPtr Process(const Input::CmdMessage& msg, const Controller& controller, LiveGame& game) override;
+	virtual CmdPtr Process(const Input::CmdMessage& msg, const Controller& controller, const LiveGame& game) override;
 	virtual bool IsAction() const { return m_iPhase == 0; } 
 
 	virtual void Save(Serial::SaveNode& node) const override;
@@ -27,10 +27,10 @@ class ResearchArtifactCmd : public PhaseCmd
 {
 public:
 	ResearchArtifactCmd() : m_nArtifacts(0) {}
-	ResearchArtifactCmd(Colour colour, LiveGame& game, int iPhase);
+	ResearchArtifactCmd(Colour colour, const LiveGame& game, int iPhase);
 
 	virtual void UpdateClient(const Controller& controller, const LiveGame& game) const override;
-	virtual CmdPtr Process(const Input::CmdMessage& msg, const Controller& controller, LiveGame& game) override;
+	virtual CmdPtr Process(const Input::CmdMessage& msg, const Controller& controller, const LiveGame& game) override;
 
 	virtual void Save(Serial::SaveNode& node) const override;
 	virtual void Load(const Serial::LoadNode& node) override;

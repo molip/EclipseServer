@@ -23,6 +23,7 @@
 #include "ChooseTeamPhase.h"
 #include "UpkeepPhase.h"
 #include "Json.h"
+#include "Record.h"
 
 #include <sstream>
 
@@ -110,9 +111,9 @@ MessagePtr CreateMessage(const std::string& msg)
 	return CreateCommand(jsonDoc);
 }
 
-LiveGame& Message::GetLiveGame(Player& player) const
+const LiveGame& Message::GetLiveGame(const Player& player) const
 {
-	LiveGame* pGame = player.GetCurrentLiveGame();
+	const LiveGame* pGame = player.GetCurrentLiveGame();
 	AssertThrow("ChooseMessage: player not registered in any game", !!pGame);
 	AssertThrow("ChooseMessage: game not in main phase: " + pGame->GetName(), pGame->GetGamePhase() == LiveGame::GamePhase::Main);
 	AssertThrow("ChooseMessage: player played out of turn", pGame->GetPhase().IsTeamActive(pGame->GetTeam(player).GetColour()));
@@ -135,13 +136,15 @@ JoinGame::JoinGame(const Json::Element& node) : m_idGame(0)
 
 namespace 
 {
-	void DoJoinGame(Controller& controller, Player& player, LiveGame& game)
+	void DoJoinGame(Controller& controller, Player& player, const LiveGame& game)
 	{
 		AssertThrow("DoJoinGame: Player already in a game: " + player.GetName(), !player.GetCurrentGame());
 		player.SetCurrentGame(&game);
 		if (!game.HasStarted())
 		{
-			game.AddPlayer(player); // Might already have joined,  doesn't matter.
+			// Might already have joined,  doesn't matter.
+			Record::DoImmediate(game, [&](LiveGame& game) { game.AddPlayer(player); });
+			
 			controller.SendMessage(Output::UpdateLobby(game), game);
 			controller.SendUpdateGameList();
 		}
@@ -157,7 +160,7 @@ bool JoinGame::Process(Controller& controller, Player& player) const
 
 bool ExitGame::Process(Controller& controller, Player& player) const 
 {
-	Game* pGame = player.GetCurrentGame();
+	const Game* pGame = player.GetCurrentGame();
 	AssertThrow("ExitGame: Player not in any game: " + player.GetName(), !!pGame);
 
 	player.SetCurrentGame(nullptr);
@@ -168,7 +171,7 @@ bool ExitGame::Process(Controller& controller, Player& player) const
 
 bool StartReview::Process(Controller& controller, Player& player) const 
 {
-	LiveGame* pLive = player.GetCurrentLiveGame();
+	const LiveGame* pLive = player.GetCurrentLiveGame();
 	AssertThrow("ExitGame: Player not in live game: " + player.GetName(), !!pLive);
 
 	ReviewGame& review = Games::AddReview(player, *pLive);
@@ -180,10 +183,10 @@ bool StartReview::Process(Controller& controller, Player& player) const
 
 bool ExitReview::Process(Controller& controller, Player& player) const 
 {
-	ReviewGame* pReview = player.GetCurrentReviewGame();
+	const ReviewGame* pReview = player.GetCurrentReviewGame();
 	AssertThrow("ExitGame: Player not in review game: " + player.GetName(), !!pReview);
 
-	LiveGame& live = Games::GetLive(pReview->GetLiveGameID());
+	const LiveGame& live = Games::GetLive(pReview->GetLiveGameID());
 	player.SetCurrentGame(&live);
 
 	Games::DeleteReview(pReview->GetID());
@@ -194,9 +197,10 @@ bool ExitReview::Process(Controller& controller, Player& player) const
 
 bool AdvanceReview::Process(Controller& controller, Player& player) const 
 {
-	ReviewGame* pReview = player.GetCurrentReviewGame();
+	const ReviewGame* pReview = player.GetCurrentReviewGame();
 	AssertThrow("AdvanceReview: Player not in review game: " + player.GetName(), !!pReview);
-	pReview->Advance(controller);
+
+	Record::DoImmediate(*pReview, [&](ReviewGame& game) { game.Advance(controller); });
 
 	controller.SendMessage(Output::UpdateReviewUI(*pReview), player);
 	return true;
@@ -204,10 +208,10 @@ bool AdvanceReview::Process(Controller& controller, Player& player) const
 
 bool RetreatReview::Process(Controller& controller, Player& player) const 
 {
-	ReviewGame* pReview = player.GetCurrentReviewGame();
+	const ReviewGame* pReview = player.GetCurrentReviewGame();
 	AssertThrow("RetreatReview: Player not in review game: " + player.GetName(), !!pReview);
-	pReview->Retreat(controller);
-	
+	Record::DoImmediate(*pReview, [&](ReviewGame& game) { game.Retreat(controller); });
+
 	controller.SendMessage(Output::UpdateReviewUI(*pReview), player);
 	return true;
 }
@@ -225,13 +229,13 @@ bool CreateGame::Process(Controller& controller, Player& player) const
 
 bool StartGame::Process(Controller& controller, Player& player) const 
 {
-	LiveGame* pGame = player.GetCurrentLiveGame();
+	const LiveGame* pGame = player.GetCurrentLiveGame();
 
 	AssertThrow("StartGame: player not registered in any game", !!pGame);
 	AssertThrow("StartGame: player isn't the owner of game: " + pGame->GetName(), &player == &pGame->GetOwner());
 	AssertThrow("StartGame: game already started: " + pGame->GetName(), !pGame->HasStarted());
 	
-	pGame->StartChooseTeamGamePhase();
+	Record::DoImmediate(*pGame, [](LiveGame& game) { game.StartChooseTeamGamePhase(); });
 
 	controller.SendUpdateGameList();
 	controller.SendUpdateGame(*pGame);
@@ -247,7 +251,7 @@ ChooseTeam::ChooseTeam(const Json::Element& node)
 
 bool ChooseTeam::Process(Controller& controller, Player& player) const 
 {
-	LiveGame* pGame = player.GetCurrentLiveGame();
+	const LiveGame* pGame = player.GetCurrentLiveGame();
 	AssertThrow("ChooseTeam: player not registered in any game", !!pGame);
 	AssertThrow("ChooseMessage: player played out of turn", 
 		pGame->GetChooseTeamPhase().GetCurrentTeam().GetColour() == player.GetCurrentTeam()->GetColour());
@@ -262,7 +266,7 @@ bool ChooseTeam::Process(Controller& controller, Player& player) const
 	if (race != RaceType::Human)
 		AssertThrowXML("ChooseTeam: colour doesn't match race", colour == Race(race).GetColour());
 
-	pGame->GetChooseTeamPhase().AssignTeam(controller, player, race, colour);
+	Record::DoImmediate(*pGame, [&](LiveGame& game) { game.GetChooseTeamPhase().AssignTeam(controller, player, race, colour); });
 
 	return true;	
 }
@@ -274,7 +278,7 @@ StartAction::StartAction(const Json::Element& node)
 
 bool StartAction::Process(Controller& controller, Player& player) const 
 {
-	LiveGame& game = GetLiveGame(player);
+	const LiveGame& game = GetLiveGame(player);
 	Colour colour = game.GetTeam(player).GetColour();
 
 	Cmd* pCmd = nullptr;
@@ -302,26 +306,26 @@ bool StartAction::Process(Controller& controller, Player& player) const
 
 	AssertThrow("StartAction::Process: No command created", !!pCmd);
 	
-	game.GetPhase().StartCmd(CmdPtr(pCmd), controller);
+	Record::DoImmediate(game, [&](LiveGame& game) { game.GetPhase().StartCmd(CmdPtr(pCmd), controller); });
 
 	return true;	
 }
 
 bool Undo::Process(Controller& controller, Player& player) const 
 {
-	GetLiveGame(player).GetPhase().UndoCmd(controller, player); 
+	Record::DoImmediate(GetLiveGame(player), [&](LiveGame& game) { game.GetPhase().UndoCmd(controller, player); });
 	return true;	
 }
 
 bool Commit::Process(Controller& controller, Player& player) const 
 {
-	GetLiveGame(player).GetActionPhase().FinishTurn(controller);
+	Record::DoImmediate(GetLiveGame(player), [&](LiveGame& game) { game.GetActionPhase().FinishTurn(controller); });
 	return true;
 }
 
 bool FinishUpkeep::Process(Controller& controller, Player& player) const
 {
-	GetLiveGame(player).GetUpkeepPhase().FinishTurn(controller, player);
+	Record::DoImmediate(GetLiveGame(player), [&](LiveGame& game) { game.GetUpkeepPhase().FinishTurn(controller, player); });
 	return true;
 }
 
@@ -329,7 +333,7 @@ bool FinishUpkeep::Process(Controller& controller, Player& player) const
 
 bool CmdMessage::Process(Controller& controller, Player& player) const
 {
-	GetLiveGame(player).GetPhase().ProcessCmdMessage(*this, controller, player);
+	Record::DoImmediate(GetLiveGame(player), [&](LiveGame& game) { game.GetPhase().ProcessCmdMessage(*this, controller, player); });
 	return true;
 }
 

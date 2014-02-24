@@ -18,13 +18,13 @@ public:
 	const std::string& GetName() const { return m_name; }
 	const std::string& GetPassword() const { return m_password; }
 
-	LiveGame* GetCurrentLiveGame() const;
-	ReviewGame* GetCurrentReviewGame() const;
-	Game* GetCurrentGame() const;
-	void SetCurrentGame(Game* pGame);
+	const LiveGame* GetCurrentLiveGame() const;
+	const ReviewGame* GetCurrentReviewGame() const;
+	const Game* GetCurrentGame() const;
+	void SetCurrentGame(const Game* pGame);
 
-	Team* GetCurrentTeam();
-	const Team* GetCurrentTeam() const { return const_cast<Player*>(this)->GetCurrentTeam(); }
+	const Team* GetCurrentTeam() const;
+	//const Team* GetCurrentTeam() const { return const_cast<Player*>(this)->GetCurrentTeam(); }
 
 private:
 	int m_id;

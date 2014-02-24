@@ -10,9 +10,9 @@
 #include "DiscoverCmd.h"
 #include "Record.h"
 
-InfluenceCmd::InfluenceCmd(Colour colour, LiveGame& game, int iPhase) : PhaseCmd(colour, iPhase)
+InfluenceCmd::InfluenceCmd(Colour colour, const LiveGame& game, int iPhase) : PhaseCmd(colour, iPhase)
 {
-	Team& team = GetTeam(game);
+	const Team& team = GetTeam(game);
 	AssertThrow("InfluenceCmd::InfluenceCmd", !team.HasPassed());
 
 	const Map& map = game.GetMap();
@@ -27,7 +27,7 @@ void InfluenceCmd::UpdateClient(const Controller& controller, const LiveGame& ga
 	controller.SendMessage(Output::ChooseInfluenceSrc(m_srcs, GetTeam(game).GetInfluenceTrack().GetDiscCount() > 0), GetPlayer(game));
 }
 
-CmdPtr InfluenceCmd::Process(const Input::CmdMessage& msg, const Controller& controller, LiveGame& game)
+CmdPtr InfluenceCmd::Process(const Input::CmdMessage& msg, const Controller& controller, const LiveGame& game)
 {
 	// TODO: Flip colony ships.
 
@@ -56,13 +56,13 @@ REGISTER_DYNAMIC(InfluenceCmd)
 
 //-----------------------------------------------------------------------------
 
-class InfluenceRecord : public Record
+class InfluenceRecord : public TeamRecord
 {
 public:
 	InfluenceRecord() : m_discovery(DiscoveryType::None) {}
 
 	InfluenceRecord(Colour colour, const MapPos* pSrcPos, const MapPos* pDstPos) : 
-		Record(colour), m_discovery(DiscoveryType::None) 
+		TeamRecord(colour), m_discovery(DiscoveryType::None) 
 	{
 		m_pSrcPos.reset(pSrcPos ? new MapPos(*pSrcPos) : nullptr);
 		m_pDstPos.reset(pDstPos ? new MapPos(*pDstPos) : nullptr);
@@ -151,16 +151,16 @@ class DiscoverAndInfluenceCmd : public DiscoverCmd
 {
 public:
 	DiscoverAndInfluenceCmd() {}
-	DiscoverAndInfluenceCmd(Colour colour, LiveGame& game, DiscoveryType discovery) : DiscoverCmd(colour, game, discovery){}
+	DiscoverAndInfluenceCmd(Colour colour, const LiveGame& game, DiscoveryType discovery) : DiscoverCmd(colour, game, discovery){}
 private:
-	virtual CmdPtr GetNextCmd(LiveGame& game) const override { return CmdPtr(new InfluenceCmd(m_colour, game, 1)); }
+	virtual CmdPtr GetNextCmd(const LiveGame& game) const override { return CmdPtr(new InfluenceCmd(m_colour, game, 1)); }
 };
 
 REGISTER_DYNAMIC(DiscoverAndInfluenceCmd)
 
 //-----------------------------------------------------------------------------
 
-InfluenceDstCmd::InfluenceDstCmd(Colour colour, LiveGame& game, const MapPos* pSrcPos, int iPhase) : PhaseCmd(colour, iPhase),
+InfluenceDstCmd::InfluenceDstCmd(Colour colour, const LiveGame& game, const MapPos* pSrcPos, int iPhase) : PhaseCmd(colour, iPhase),
 	m_discovery(DiscoveryType::None)
 {
 	auto& team = GetTeam(game);
@@ -192,7 +192,7 @@ void InfluenceDstCmd::UpdateClient(const Controller& controller, const LiveGame&
 	controller.SendMessage(Output::ChooseInfluenceDst(m_dsts, !!m_pSrcPos), GetPlayer(game));
 }
 
-CmdPtr InfluenceDstCmd::Process(const Input::CmdMessage& msg, const Controller& controller, LiveGame& game)
+CmdPtr InfluenceDstCmd::Process(const Input::CmdMessage& msg, const Controller& controller, const LiveGame& game)
 {
 	auto& m = CastThrow<const Input::CmdInfluenceDst>(msg);
 	AssertThrow("InfluenceDstCmd::Process: invalid pos index", m.m_iPos == -1 || InRange(m_dsts, m.m_iPos));

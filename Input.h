@@ -25,7 +25,7 @@ public:
 	virtual bool Process(Controller& controller, Player& player) const { return true; }
 
 protected:
-	LiveGame& GetLiveGame(Player& player) const;
+	const LiveGame& GetLiveGame(const Player& player) const;
 };
 
 typedef std::unique_ptr<Message> MessagePtr;

@@ -26,11 +26,11 @@ LiveGame::~LiveGame()
 {
 }
 
-void LiveGame::AddPlayer(Player& player)
+void LiveGame::AddPlayer(const Player& player)
 {
 	AssertThrow("LiveGame::AddTeam: Game already started: " + m_name, !HasStarted());
 	if (!FindTeam(player))
-		m_teams.push_back(TeamPtr(new Team(m_id, player.GetID())));
+		m_teams.push_back(TeamPtr(new Team(player.GetID())));
 	Save();
 }
 

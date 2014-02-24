@@ -6,13 +6,13 @@
 #include "LiveGame.h"
 #include "Record.h"
 
-class TradeRecord : public Record
+class TradeRecord : public TeamRecord
 {
 public:
 	typedef std::pair<Resource, int> Pair;
 	typedef std::vector<Pair> PairVec;
 	TradeRecord() {}
-	TradeRecord(Colour colour, const PairVec& srcs, const Pair& dst) : Record(colour), m_srcs(srcs), m_dst(dst) {}
+	TradeRecord(Colour colour, const PairVec& srcs, const Pair& dst) : TeamRecord(colour), m_srcs(srcs), m_dst(dst) {}
 
 	virtual void Save(Serial::SaveNode& node) const override
 	{
@@ -49,7 +49,7 @@ REGISTER_DYNAMIC(TradeRecord)
 
 //-----------------------------------------------------------------------------
 
-TradeCmd::TradeCmd(Colour colour, LiveGame& game) : Cmd(colour)
+TradeCmd::TradeCmd(Colour colour, const LiveGame& game) : Cmd(colour)
 {
 }
 
@@ -58,7 +58,7 @@ void TradeCmd::UpdateClient(const Controller& controller, const LiveGame& game) 
 	controller.SendMessage(Output::ChooseTrade(GetTeam(game)), GetPlayer(game));
 }
 
-CmdPtr TradeCmd::Process(const Input::CmdMessage& msg, const Controller& controller, LiveGame& game)
+CmdPtr TradeCmd::Process(const Input::CmdMessage& msg, const Controller& controller, const LiveGame& game)
 {
 	const Team& team = game.GetTeam(m_colour);
 	auto& storage = team.GetStorage();

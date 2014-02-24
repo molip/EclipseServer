@@ -12,27 +12,27 @@ Player::Player(int id, const std::string& name, const std::string& password) :
 {
 }
 
-void Player::SetCurrentGame(Game* pGame)
+void Player::SetCurrentGame(const Game* pGame)
 {
 	m_idCurrentGame = pGame ? pGame->GetID() : 0;
 }
 
-Game* Player::GetCurrentGame() const
+const Game* Player::GetCurrentGame() const
 {
 	return m_idCurrentGame ? &Games::Get(m_idCurrentGame) : nullptr;
 }
 
-LiveGame* Player::GetCurrentLiveGame() const
+const LiveGame* Player::GetCurrentLiveGame() const
 {
 	return m_idCurrentGame ? &Games::GetLive(m_idCurrentGame) : nullptr;
 }
 
-ReviewGame* Player::GetCurrentReviewGame() const
+const ReviewGame* Player::GetCurrentReviewGame() const
 {
 	return m_idCurrentGame ? &Games::GetReview(m_idCurrentGame) : nullptr;
 }
 
-Team* Player::GetCurrentTeam()
+const Team* Player::GetCurrentTeam() const
 {
 	return m_idCurrentGame ? &GetCurrentGame()->GetTeam(*this) : nullptr;
 }

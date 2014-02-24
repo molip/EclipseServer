@@ -18,7 +18,7 @@ void ChooseTeamPhase::AssignTeam(Controller& controller, Player& player, RaceTyp
 {
 	LiveGame& game = GetGame();
 	
-	game.GetTeam(player).Assign(race, colour);
+	game.GetTeam(player).Assign(race, colour, game);
 
 	AdvanceTurn();
 
@@ -30,7 +30,7 @@ void ChooseTeamPhase::AssignTeam(Controller& controller, Player& player, RaceTyp
 	
 	if (allAssigned)
 	{
-		StartRoundRecord().Do(game, controller);
+		Record::Do(RecordPtr(new StartRoundRecord), game, controller);
 		game.StartMainGamePhase(); // Deletes this.
 	}
 

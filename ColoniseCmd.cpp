@@ -9,9 +9,9 @@
 #include "Map.h"
 #include "Record.h"
 
-ColoniseCmd::ColoniseCmd(Colour colour, LiveGame& game) : Cmd(colour)
+ColoniseCmd::ColoniseCmd(Colour colour, const LiveGame& game) : Cmd(colour)
 {
-	Team& team = GetTeam(game);
+	const Team& team = GetTeam(game);
 	for (auto& h : game.GetMap().GetHexes())
 		if (h.second->IsOwnedBy(team))
 			if (!h.second->GetAvailableSquares(team).empty()) // TODO: Check pop cubes
@@ -23,7 +23,7 @@ void ColoniseCmd::UpdateClient(const Controller& controller, const LiveGame& gam
 	controller.SendMessage(Output::ChooseColonisePos(m_positions), GetPlayer(game));
 }
 
-CmdPtr ColoniseCmd::Process(const Input::CmdMessage& msg, const Controller& controller, LiveGame& game)
+CmdPtr ColoniseCmd::Process(const Input::CmdMessage& msg, const Controller& controller, const LiveGame& game)
 {
 	auto& m = CastThrow<const Input::CmdColonisePos>(msg);
 	AssertThrow("ColoniseCmd::Process: invalid pos index", m.m_iPos == -1 || InRange(m_positions, m.m_iPos));
@@ -47,11 +47,11 @@ REGISTER_DYNAMIC(ColoniseCmd)
 
 //-----------------------------------------------------------------------------
 
-class ColoniseRecord : public Record
+class ColoniseRecord : public TeamRecord
 {
 public:
 	ColoniseRecord() {}
-	ColoniseRecord(Colour colour, const MapPos& pos) : Record(colour), m_pos(pos) {}
+	ColoniseRecord(Colour colour, const MapPos& pos) : TeamRecord(colour), m_pos(pos) {}
 	void AddMove(SquareType st, Resource r) { m_moves.push_back(std::make_pair(st, r)); }
 
 	virtual void Save(Serial::SaveNode& node) const override 
@@ -99,9 +99,9 @@ REGISTER_DYNAMIC(ColoniseRecord)
 
 //-----------------------------------------------------------------------------
 
-ColoniseSquaresCmd::ColoniseSquaresCmd(Colour colour, LiveGame& game, const MapPos& pos) : Cmd(colour), m_pos(pos)
+ColoniseSquaresCmd::ColoniseSquaresCmd(Colour colour, const LiveGame& game, const MapPos& pos) : Cmd(colour), m_pos(pos)
 {
-	Hex& hex = game.GetMap().GetHex(pos);
+	const Hex& hex = game.GetMap().GetHex(pos);
 	
 	auto squares = hex.GetAvailableSquares(GetTeam(game));
 	AssertThrow("ColoniseSquaresCmd: no squares available", !squares.empty());
@@ -124,7 +124,7 @@ void ColoniseSquaresCmd::UpdateClient(const Controller& controller, const LiveGa
 	controller.SendMessage(Output::ChooseColoniseSquares(m_squareCounts, pop, nShips), GetPlayer(game));
 }
 
-CmdPtr ColoniseSquaresCmd::Process(const Input::CmdMessage& msg, const Controller& controller, LiveGame& game)
+CmdPtr ColoniseSquaresCmd::Process(const Input::CmdMessage& msg, const Controller& controller, const LiveGame& game)
 {
 	auto& m = CastThrow<const Input::CmdColoniseSquares>(msg);
 

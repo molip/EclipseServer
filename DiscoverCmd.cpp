@@ -9,7 +9,7 @@
 #include "LiveGame.h"
 #include "ActionPhase.h"
 
-DiscoverCmd::DiscoverCmd(Colour colour, LiveGame& game, DiscoveryType discovery) : 
+DiscoverCmd::DiscoverCmd(Colour colour, const LiveGame& game, DiscoveryType discovery) : 
 	Cmd(colour), m_discovery(discovery)
 {
 }
@@ -20,7 +20,7 @@ void DiscoverCmd::UpdateClient(const Controller& controller, const LiveGame& gam
 	controller.SendMessage(msg, GetPlayer(game));
 }
 
-CmdPtr DiscoverCmd::Process(const Input::CmdMessage& msg, const Controller& controller, LiveGame& game)
+CmdPtr DiscoverCmd::Process(const Input::CmdMessage& msg, const Controller& controller, const LiveGame& game)
 {
 	auto& m = CastThrow<const Input::CmdExploreDiscovery>(msg);
 

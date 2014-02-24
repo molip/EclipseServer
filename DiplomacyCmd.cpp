@@ -6,7 +6,7 @@
 #include "LiveGame.h"
 #include "Record.h"
 
-DiplomacyCmd::DiplomacyCmd(Colour colour, LiveGame& game) : Cmd(colour)
+DiplomacyCmd::DiplomacyCmd(Colour colour, const LiveGame& game) : Cmd(colour)
 {
 }
 
@@ -15,7 +15,7 @@ void DiplomacyCmd::UpdateClient(const Controller& controller, const LiveGame& ga
 	controller.SendMessage(Output::ChooseDiplomacy(), GetPlayer(game));
 }
 
-CmdPtr DiplomacyCmd::Process(const Input::CmdMessage& msg, const Controller& controller, LiveGame& game)
+CmdPtr DiplomacyCmd::Process(const Input::CmdMessage& msg, const Controller& controller, const LiveGame& game)
 {
 	auto& m = CastThrow<const Input::CmdDiplomacy>(msg);
 	
@@ -36,11 +36,11 @@ REGISTER_DYNAMIC(DiplomacyCmd)
 
 //-----------------------------------------------------------------------------
 
-class DiplomacyRecord : public Record
+class DiplomacyRecord : public TeamRecord
 {
 public:
 	DiplomacyRecord() {}
-	DiplomacyRecord(Colour colour) : Record(colour) {}
+	DiplomacyRecord(Colour colour) : TeamRecord(colour) {}
 
 	virtual void Save(Serial::SaveNode& node) const override 
 	{

@@ -6,7 +6,7 @@
 #include "LiveGame.h"
 #include "Record.h"
 
-UpgradeCmd::UpgradeCmd(Colour colour, LiveGame& game) : Cmd(colour)
+UpgradeCmd::UpgradeCmd(Colour colour, const LiveGame& game) : Cmd(colour)
 {
 }
 
@@ -15,7 +15,7 @@ void UpgradeCmd::UpdateClient(const Controller& controller, const LiveGame& game
 	controller.SendMessage(Output::ChooseUpgrade(), GetPlayer(game));
 }
 
-CmdPtr UpgradeCmd::Process(const Input::CmdMessage& msg, const Controller& controller, LiveGame& game)
+CmdPtr UpgradeCmd::Process(const Input::CmdMessage& msg, const Controller& controller, const LiveGame& game)
 {
 	auto& m = CastThrow<const Input::CmdUpgrade>(msg);
 	
@@ -38,11 +38,11 @@ REGISTER_DYNAMIC(UpgradeCmd)
 
 //-----------------------------------------------------------------------------
 
-class UpgradeRecord : public Record
+class UpgradeRecord : public TeamRecord
 {
 public:
 	UpgradeRecord() {}
-	UpgradeRecord(Colour colour) : Record(colour) {}
+	UpgradeRecord(Colour colour) : TeamRecord(colour) {}
 
 	virtual void Save(Serial::SaveNode& node) const override 
 	{

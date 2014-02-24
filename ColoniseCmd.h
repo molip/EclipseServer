@@ -14,10 +14,10 @@ class ColoniseCmd : public Cmd
 {
 public:
 	ColoniseCmd() {}
-	ColoniseCmd(Colour colour, LiveGame& game);
+	ColoniseCmd(Colour colour, const LiveGame& game);
 
 	virtual void UpdateClient(const Controller& controller, const LiveGame& game) const override;
-	virtual CmdPtr Process(const Input::CmdMessage& msg, const Controller& controller, LiveGame& game) override;
+	virtual CmdPtr Process(const Input::CmdMessage& msg, const Controller& controller, const LiveGame& game) override;
 
 	virtual void Save(Serial::SaveNode& node) const override;
 	virtual void Load(const Serial::LoadNode& node) override;
@@ -30,10 +30,10 @@ class ColoniseSquaresCmd : public Cmd
 {
 public:
 	ColoniseSquaresCmd() {}
-	ColoniseSquaresCmd(Colour colour, LiveGame& game, const MapPos& pos);
+	ColoniseSquaresCmd(Colour colour, const LiveGame& game, const MapPos& pos);
 
 	virtual void UpdateClient(const Controller& controller, const LiveGame& game) const override;
-	virtual CmdPtr Process(const Input::CmdMessage& msg, const Controller& controller, LiveGame& game) override;
+	virtual CmdPtr Process(const Input::CmdMessage& msg, const Controller& controller, const LiveGame& game) override;
 
 	virtual void Save(Serial::SaveNode& node) const override;
 	virtual void Load(const Serial::LoadNode& node) override;

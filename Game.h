@@ -12,7 +12,7 @@
 #include <deque>
 #include <list>
 
-enum class HexRing { Inner, Middle, Outer, _Count };
+enum class HexRing { None = -1, Inner, Middle, Outer, _Count };
 
 class CmdStack;
 class Record;

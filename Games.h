@@ -21,9 +21,9 @@ public:
 	static void DeleteReview(int idGame);
 	static const std::vector<LiveGamePtr>& GetLiveGames() { return s_liveGames; }
 	static const std::vector<ReviewGamePtr>& GetReviewGames() { return s_reviewGames; }
-	static Game& Get(int idGame);
-	static LiveGame& GetLive(int idGame);
-	static ReviewGame& GetReview(int idGame);
+	static const Game& Get(int idGame);
+	static const LiveGame& GetLive(int idGame);
+	static const ReviewGame& GetReview(int idGame);
 
 private:
 	static std::vector<LiveGamePtr> s_liveGames;

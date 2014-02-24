@@ -37,11 +37,11 @@ namespace
 
 //-----------------------------------------------------------------------------
 
-class BuildRecord : public Record
+class BuildRecord : public TeamRecord
 {
 public:
 	BuildRecord() : m_buildable(Buildable::None) {}
-	BuildRecord(Colour colour, const MapPos& pos, Buildable buildable) : Record(colour), m_pos(pos), m_buildable(buildable) {}
+	BuildRecord(Colour colour, const MapPos& pos, Buildable buildable) : TeamRecord(colour), m_pos(pos), m_buildable(buildable) {}
 
 	virtual void Save(Serial::SaveNode& node) const override 
 	{
@@ -94,7 +94,7 @@ REGISTER_DYNAMIC(BuildRecord)
 
 //-----------------------------------------------------------------------------
 
-BuildCmd::BuildCmd(Colour colour, LiveGame& game, int iPhase) : PhaseCmd(colour, iPhase)
+BuildCmd::BuildCmd(Colour colour, const LiveGame& game, int iPhase) : PhaseCmd(colour, iPhase)
 {
 }
 
@@ -122,7 +122,7 @@ void BuildCmd::UpdateClient(const Controller& controller, const LiveGame& game) 
 	controller.SendMessage(Output::ChooseBuild(ships, hexes, m_iPhase > 0), GetPlayer(game));
 }
 
-CmdPtr BuildCmd::Process(const Input::CmdMessage& msg, const Controller& controller, LiveGame& game)
+CmdPtr BuildCmd::Process(const Input::CmdMessage& msg, const Controller& controller, const LiveGame& game)
 {
 	if (dynamic_cast<const Input::CmdAbort*>(&msg))
 		return nullptr;
@@ -132,8 +132,8 @@ CmdPtr BuildCmd::Process(const Input::CmdMessage& msg, const Controller& control
 	bool bOrbital = m.m_buildable == Buildable::Orbital;
 	bool bMonolith = m.m_buildable == Buildable::Monolith;
 
-	Team& team = GetTeam(game);
-	Hex& hex = game.GetMap().GetHex(pos);
+	const Team& team = GetTeam(game);
+	const Hex& hex = game.GetMap().GetHex(pos);
 	AssertThrow("BuildCmd::Process: invalid hex", hex.GetColour() == m_colour);
 	AssertThrow("BuildCmd::Process: not enough materials", CanAfford(game, m.m_buildable));
 	AssertThrow("BuildCmd::Process: already got orbital", !bOrbital || !hex.HasOrbital());

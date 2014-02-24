@@ -50,9 +50,8 @@ Cmd* ActionPhase::RemoveCmd(const Controller& controller, Colour c)
 
 		if (bCostsInfluence)
 		{
-			RecordPtr pRec = GetGame().PopRecord();
+			RecordPtr pRec = Record::PopAndUndo(GetGame(), controller);
 			AssertThrow("ActionPhase::RemoveCmd: current record not ActionRecord", !!dynamic_cast<ActionRecord*>(pRec.get()));
-			pRec->Undo(GetGame(), controller);
 		}
 	}
 
@@ -99,9 +98,7 @@ void ActionPhase::StartCmd(CmdPtr pCmd, Controller& controller)
 
 	if (pCmd->CostsInfluence())
 	{
-		RecordPtr pRec = std::make_unique<ActionRecord>(GetCurrentTeam().GetColour());
-		pRec->Do(GetGame(), controller);
-		GetGame().PushRecord(pRec);
+		Record::DoAndPush(RecordPtr(new ActionRecord(GetCurrentTeam().GetColour())), GetGame(), controller);
 	}
 	
 	m_pCmdStack->StartCmd(pCmd);

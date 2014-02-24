@@ -6,7 +6,7 @@
 #include "LiveGame.h"
 #include "Record.h"
 
-MoveCmd::MoveCmd(Colour colour, LiveGame& game, int iPhase) : PhaseCmd(colour, iPhase)
+MoveCmd::MoveCmd(Colour colour, const LiveGame& game, int iPhase) : PhaseCmd(colour, iPhase)
 {
 }
 
@@ -30,7 +30,7 @@ void MoveCmd::UpdateClient(const Controller& controller, const LiveGame& game) c
 	controller.SendMessage(Output::ChooseMoveSrc(srcs, m_iPhase > 0), GetPlayer(game));
 }
 
-CmdPtr MoveCmd::Process(const Input::CmdMessage& msg, const Controller& controller, LiveGame& game)
+CmdPtr MoveCmd::Process(const Input::CmdMessage& msg, const Controller& controller, const LiveGame& game)
 {
 	if (dynamic_cast<const Input::CmdAbort*>(&msg))
 		return nullptr;
@@ -38,7 +38,7 @@ CmdPtr MoveCmd::Process(const Input::CmdMessage& msg, const Controller& controll
 	auto& m = CastThrow<const Input::CmdMoveSrc>(msg);
 	MapPos pos(m.m_x, m.m_y);
 	
-	Hex& hex = game.GetMap().GetHex(pos);
+	const Hex& hex = game.GetMap().GetHex(pos);
 	AssertThrow("MoveCmd::Process: invalid hex", CanMoveFrom(hex, game));
 	AssertThrow("MoveCmd::Process: invalid ship", hex.HasShip(m_colour, m.m_ship));
 
@@ -59,12 +59,12 @@ REGISTER_DYNAMIC(MoveCmd)
 
 //-----------------------------------------------------------------------------
 
-class MoveRecord : public Record
+class MoveRecord : public TeamRecord
 {
 public:
 	MoveRecord() {}
 	MoveRecord(Colour colour, ShipType ship, const MapPos& src, const MapPos& dst) : 
-		Record(colour), m_ship(ship), m_src(src), m_dst(dst) {}
+		TeamRecord(colour), m_ship(ship), m_src(src), m_dst(dst) {}
 
 	virtual void Save(Serial::SaveNode& node) const override 
 	{
@@ -102,7 +102,7 @@ REGISTER_DYNAMIC(MoveRecord)
 
 //-----------------------------------------------------------------------------
 
-MoveDstCmd::MoveDstCmd(Colour colour, LiveGame& game, const MapPos& src, ShipType ship, int iPhase) : 
+MoveDstCmd::MoveDstCmd(Colour colour, const LiveGame& game, const MapPos& src, ShipType ship, int iPhase) : 
 	PhaseCmd(colour, iPhase), m_src(src), m_ship(ship)
 {
 }
@@ -134,7 +134,7 @@ void MoveDstCmd::UpdateClient(const Controller& controller, const LiveGame& game
 	controller.SendMessage(Output::ChooseMoveDst(dsts), GetPlayer(game));
 }
 
-CmdPtr MoveDstCmd::Process(const Input::CmdMessage& msg, const Controller& controller, LiveGame& game)
+CmdPtr MoveDstCmd::Process(const Input::CmdMessage& msg, const Controller& controller, const LiveGame& game)
 {
 	auto& m = CastThrow<const Input::CmdMoveDst>(msg);
 	MapPos dst(m.m_x, m.m_y);
@@ -145,7 +145,7 @@ CmdPtr MoveDstCmd::Process(const Input::CmdMessage& msg, const Controller& contr
 	MoveRecord* pRec = new MoveRecord(m_colour, m_ship, m_src, dst);
 	DoRecord(RecordPtr(pRec), controller, game);
 
-	Team& team = GetTeam(game);
+	const Team& team = GetTeam(game);
 	if (!team.HasPassed() && m_iPhase + 1 < Race(team.GetRace()).GetMoves())
 		return CmdPtr(new MoveCmd(m_colour, game, m_iPhase + 1));
 

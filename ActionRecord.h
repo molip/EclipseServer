@@ -2,7 +2,7 @@
 
 #include "Record.h"
 
-class ActionRecord : public Record
+class ActionRecord : public TeamRecord
 {
 public:
 	ActionRecord();

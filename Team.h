@@ -24,23 +24,22 @@ namespace Serial { class SaveNode; class LoadNode; }
 class Game;
 class Hex;
 class Player;
+class LiveGame;
 
 class Team
 {
 public:
 	Team();
-	Team(int idGame, int idPlayer);
-	Team(const Team& rhs, int idGame);
+	Team(int idPlayer);
+	Team(const Team& rhs);
 	~Team();
 
-	void Assign(RaceType race, Colour colour);
+	void Assign(RaceType race, Colour colour, LiveGame& game);
 
 	const int GetPlayerID() const { return m_idPlayer; }
 	const Player& GetPlayer() const;
 	Player& GetPlayer();
-	const Game& GetGame() const;
-
-	void SetGameID(int id) { m_idGame = id; }
+	//const Game& GetGame() const;
 
 	const RaceType& GetRace() const { return m_race; }
 	Colour GetColour() const { return m_colour; }
@@ -94,7 +93,7 @@ public:
 	void Load(const Serial::LoadNode& node);
 
 private:
-	int m_idGame, m_idPlayer;
+	int m_idPlayer;
 	RaceType m_race;
 	Colour m_colour;
 

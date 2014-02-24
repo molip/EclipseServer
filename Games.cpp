@@ -52,7 +52,7 @@ void Games::DeleteReview(int idGame)
 	AssertThrow("Games::DeleteReview", false);
 }
 
-LiveGame& Games::GetLive(int idGame)
+const LiveGame& Games::GetLive(int idGame)
 {
 	for (auto& g : s_liveGames)
 		if (g->GetID() == idGame)
@@ -62,7 +62,7 @@ LiveGame& Games::GetLive(int idGame)
 	return *(LiveGame*)nullptr;
 }
 
-ReviewGame& Games::GetReview(int idGame)
+const ReviewGame& Games::GetReview(int idGame)
 {
 	for (auto& g : s_reviewGames)
 		if (g->GetID() == idGame)
@@ -72,7 +72,7 @@ ReviewGame& Games::GetReview(int idGame)
 	return *(ReviewGame*)nullptr;
 }
 
-Game& Games::Get(int idGame)
+const Game& Games::Get(int idGame)
 {
 	for (auto& g : s_liveGames)
 		if (g->GetID() == idGame)

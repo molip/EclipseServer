@@ -57,7 +57,7 @@ bool Controller::SendMessage(const Output::Message& msg, const Game& game, const
 
 void Controller::OnPlayerConnected(Player& player)
 {
-	if (Game* pGame = player.GetCurrentGame())
+	if (const Game* pGame = player.GetCurrentGame())
 		SendUpdateGame(*pGame, &player);
 	else
 	{

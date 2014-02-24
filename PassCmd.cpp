@@ -6,11 +6,11 @@
 #include "LiveGame.h"
 #include "Record.h"
 
-class PassRecord : public Record
+class PassRecord : public TeamRecord
 {
 public:
 	PassRecord() {}
-	PassRecord(Colour colour) : Record(colour) {}
+	PassRecord(Colour colour) : TeamRecord(colour) {}
 
 private:
 	virtual void Apply(bool bDo, Game& game, const Controller& controller) override
@@ -25,11 +25,11 @@ REGISTER_DYNAMIC(PassRecord)
 
 //-----------------------------------------------------------------------------
 
-PassCmd::PassCmd(Colour colour, LiveGame& game) : Cmd(colour)
+PassCmd::PassCmd(Colour colour, const LiveGame& game) : Cmd(colour)
 {
 }
 
-CmdPtr PassCmd::Process(const Input::CmdMessage& msg, const Controller& controller, LiveGame& game)
+CmdPtr PassCmd::Process(const Input::CmdMessage& msg, const Controller& controller, const LiveGame& game)
 {	
 	AssertThrow("PassCmd::Process", !GetTeam(game).HasPassed());
 

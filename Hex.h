@@ -76,6 +76,8 @@ public:
 	bool HasWormhole(Edge e) const;
 
 	std::vector<Square*> GetAvailableSquares(const Team& team);
+	const std::vector<Square*> GetAvailableSquares(const Team& team) const { return const_cast<Hex*>(this)->GetAvailableSquares(team); }
+
 	Colour GetColour() const { return m_colour; }
 	void SetColour(Colour c);
 	bool IsOwned() const;
