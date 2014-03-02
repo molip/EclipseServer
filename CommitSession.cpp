@@ -43,7 +43,7 @@ RecordPtr CommitSession::PopAndUndoRecord()
 {
 	m_bOpened = true;
 	RecordPtr pRec = m_game.PopRecord();
-	pRec->Do(m_game, m_controller);
+	pRec->Undo(m_game, m_controller);
 	return pRec;
 }
 
