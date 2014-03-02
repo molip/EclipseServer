@@ -22,7 +22,7 @@ void DiscoverCmd::UpdateClient(const Controller& controller, const LiveGame& gam
 
 CmdPtr DiscoverCmd::Process(const Input::CmdMessage& msg, const Controller& controller, const LiveGame& game)
 {
-	auto& m = CastThrow<const Input::CmdExploreDiscovery>(msg);
+	auto& m = VerifyCastInput<const Input::CmdExploreDiscovery>(msg);
 
 	return GetNextCmd(game);
 }

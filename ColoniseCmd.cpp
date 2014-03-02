@@ -25,8 +25,8 @@ void ColoniseCmd::UpdateClient(const Controller& controller, const LiveGame& gam
 
 CmdPtr ColoniseCmd::Process(const Input::CmdMessage& msg, const Controller& controller, const LiveGame& game)
 {
-	auto& m = CastThrow<const Input::CmdColonisePos>(msg);
-	AssertThrow("ColoniseCmd::Process: invalid pos index", m.m_iPos == -1 || InRange(m_positions, m.m_iPos));
+	auto& m = VerifyCastInput<const Input::CmdColonisePos>(msg);
+	VerifyInput("ColoniseCmd::Process: invalid pos index", m.m_iPos == -1 || InRange(m_positions, m.m_iPos));
 	
 	return CmdPtr(new ColoniseSquaresCmd(m_colour, game, m_positions[m.m_iPos]));
 }
@@ -78,7 +78,7 @@ private:
 			if (move.second != Resource::None)
 			{
 				Square* pSquare = hex.FindSquare(move.first, !bDo);
-				AssertThrow("ColoniseRecord::Apply: square not found", !!pSquare);
+				VerifyModel("ColoniseRecord::Apply: square not found", !!pSquare);
 				pSquare->SetOccupied(bDo);
 				team.GetPopulationTrack().Add(move.second, bDo ? -1 : 1);
 			}
@@ -104,7 +104,7 @@ ColoniseSquaresCmd::ColoniseSquaresCmd(Colour colour, const LiveGame& game, cons
 	const Hex& hex = game.GetMap().GetHex(pos);
 	
 	auto squares = hex.GetAvailableSquares(GetTeam(game));
-	AssertThrow("ColoniseSquaresCmd: no squares available", !squares.empty());
+	VerifyInput("ColoniseSquaresCmd: no squares available", !squares.empty());
 
 	for (int i = 0; i < (int)SquareType::_Count; ++i)
 		m_squareCounts[i] = 0;
@@ -126,12 +126,12 @@ void ColoniseSquaresCmd::UpdateClient(const Controller& controller, const LiveGa
 
 CmdPtr ColoniseSquaresCmd::Process(const Input::CmdMessage& msg, const Controller& controller, const LiveGame& game)
 {
-	auto& m = CastThrow<const Input::CmdColoniseSquares>(msg);
+	auto& m = VerifyCastInput<const Input::CmdColoniseSquares>(msg);
 
 	Population fixed = m.m_fixed, grey = m.m_grey, orbital = m.m_orbital;
 
-	AssertThrow("ColoniseSquaresCmd::Process: no cubes specified", !fixed.IsEmpty() || !grey.IsEmpty() || !orbital.IsEmpty());
-	AssertThrow("ColoniseSquaresCmd::Process: not enough ships", 
+	VerifyInput("ColoniseSquaresCmd::Process: no cubes specified", !fixed.IsEmpty() || !grey.IsEmpty() || !orbital.IsEmpty());
+	VerifyInput("ColoniseSquaresCmd::Process: not enough ships",
 		fixed.GetTotal() + grey.GetTotal() + orbital.GetTotal() <= GetTeam(game).GetUnusedColonyShips());
 
 	ColoniseRecord* pRec = new ColoniseRecord(m_colour, m_pos);
@@ -165,7 +165,7 @@ CmdPtr ColoniseSquaresCmd::Process(const Input::CmdMessage& msg, const Controlle
 			pRec->AddMove(s, res);
 	}
 
-	AssertThrow("ColoniseSquaresCmd::Process: not enough squares", fixed.IsEmpty() || grey.IsEmpty() || orbital.IsEmpty());
+	VerifyInput("ColoniseSquaresCmd::Process: not enough squares", fixed.IsEmpty() || grey.IsEmpty() || orbital.IsEmpty());
 
 	DoRecord(RecordPtr(pRec), controller, game);
 

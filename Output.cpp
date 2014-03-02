@@ -115,14 +115,14 @@ UpdateChoose::UpdateChoose(const LiveGame& game) : Update("choose_team")
 
 UpdateTeams::UpdateTeams(const Game& game) : Update("teams")
 {
-	AssertThrow("UpdateTeams: Game not started yet: " + game.GetName(), game.HasStarted());
+	VerifyModel("UpdateTeams: Game not started yet: " + game.GetName(), game.HasStarted());
 
 	m_root.SetAttribute("game_type", game.IsLive() ? "live" : "review");
 
 	auto teamsNode = m_root.AddArray("teams");
 	for (auto& pTeam : game.GetTeams())
 	{
-		AssertThrow("UpdateTeams: Team not chosen yet: " + pTeam->GetPlayer().GetName(), pTeam->GetRace() != RaceType::None);
+		VerifyModel("UpdateTeams: Team not chosen yet: " + pTeam->GetPlayer().GetName(), pTeam->GetRace() != RaceType::None);
 
 		auto teamNode = teamsNode.AppendElement();
 		teamNode.SetAttribute("name", pTeam->GetPlayer().GetName());
@@ -313,7 +313,7 @@ ChooseAction::ChooseAction(const LiveGame& game) : Choose("action")
 {
 	const ActionPhase& phase = game.GetActionPhase();
 
-	AssertThrow("ChooseAction::ChooseAction", !phase.GetCurrentCmd());
+	VerifyModel("ChooseAction::ChooseAction", !phase.GetCurrentCmd());
 
 	bool bCanDoAction = phase.CanDoAction();
 	bool bPassed = phase.GetCurrentTeam().HasPassed();

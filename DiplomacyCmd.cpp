@@ -17,7 +17,7 @@ void DiplomacyCmd::UpdateClient(const Controller& controller, const LiveGame& ga
 
 CmdPtr DiplomacyCmd::Process(const Input::CmdMessage& msg, const Controller& controller, const LiveGame& game)
 {
-	auto& m = CastThrow<const Input::CmdDiplomacy>(msg);
+	auto& m = VerifyCastInput<const Input::CmdDiplomacy>(msg);
 	
 	return nullptr;
 }

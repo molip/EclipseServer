@@ -37,7 +37,7 @@ void WSServer::OnMessage(ClientID client, const std::string& message)
 			}
 		}
 		else
-			AssertThrow("OnMessage");
+			VerifyInput("OnMessage");
 	}
 	catch (Exception& e)
 	{

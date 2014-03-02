@@ -56,7 +56,7 @@ REGISTER_DYNAMIC(ExploreRecord)
 ExploreCmd::ExploreCmd(Colour colour, const LiveGame& game, int iPhase) : PhaseCmd(colour, iPhase), m_idHex(-1), m_iPos(-1)
 {
 	const Team& team = GetTeam(game);
-	AssertThrow("ExploreCmd::ExploreCmd", !team.HasPassed());
+	VerifyInput("ExploreCmd::ExploreCmd", !team.HasPassed());
 
 	std::set<MapPos> positions;
 	const Map::HexMap& hexes = game.GetMap().GetHexes();
@@ -77,8 +77,8 @@ CmdPtr ExploreCmd::Process(const Input::CmdMessage& msg, const Controller& contr
 	if (dynamic_cast<const Input::CmdAbort*>(&msg))
 		return nullptr;
 
-	auto& m = CastThrow<const Input::CmdExplorePos>(msg);
-	AssertThrow("ExploreCmd::Process: invalid pos index", InRange(m_positions, m.m_iPos));
+	auto& m = VerifyCastInput<const Input::CmdExplorePos>(msg);
+	VerifyInput("ExploreCmd::Process: invalid pos index", InRange(m_positions, m.m_iPos));
 	m_iPos = m.m_iPos;
 
 	const MapPos& pos = m_positions[m_iPos];
@@ -270,8 +270,8 @@ CmdPtr ExploreHexCmd::Process(const Input::CmdMessage& msg, const Controller& co
 	if (dynamic_cast<const Input::CmdExploreHexTake*>(&msg))
 	{
 		const HexBag& bag = game.GetHexBag(m_pos.GetRing());
-		AssertThrow("ExploreHexCmd::Process: no tiles left in bag", !bag.IsEmpty());
-		AssertThrow("ExploreHexCmd::Process: too many tiles taken", Race(GetTeam(game).GetRace()).GetExploreChoices() > (int)m_hexIDs.size());
+		VerifyInput("ExploreHexCmd::Process: no tiles left in bag", !bag.IsEmpty());
+		VerifyInput("ExploreHexCmd::Process: too many tiles taken", Race(GetTeam(game).GetRace()).GetExploreChoices() > (int)m_hexIDs.size());
 
 		ExploreRecord* pRec = new ExploreRecord(m_colour, m_pos.GetRing());
 		DoRecord(RecordPtr(pRec), controller, game);
@@ -290,14 +290,14 @@ CmdPtr ExploreHexCmd::Process(const Input::CmdMessage& msg, const Controller& co
 	}
 	else
 	{
-		auto& m = CastThrow<const Input::CmdExploreHex>(msg);
+		auto& m = VerifyCastInput<const Input::CmdExploreHex>(msg);
 
-		AssertThrowXML("ExploreHexCmd::AcceptMessage", InRange(m_hexChoices, m.m_iHex));
+		VerifyInput("ExploreHexCmd::AcceptMessage", InRange(m_hexChoices, m.m_iHex));
 		m_iHex = m.m_iHex;
 
 		auto& hc = m_hexChoices[m_iHex];
 	
-		AssertThrowXML("ExploreHexCmd: rotation index", InRange(hc.m_rotations, m.m_iRot));
+		VerifyInput("ExploreHexCmd: rotation index", InRange(hc.m_rotations, m.m_iRot));
 		m_iRot = m.m_iRot;
 
 		ExploreHexRecord* pRec = new ExploreHexRecord(m_colour, m_pos, m_hexChoices[m_iHex].m_idHex, hc.m_rotations[m_iRot], m.m_bInfluence);

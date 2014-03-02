@@ -18,8 +18,8 @@ ActionPhase::~ActionPhase()
 
 void ActionPhase::AddCmd(CmdPtr pCmd)
 {
-	AssertThrow("ActionPhase::AddCmd: Team not active", IsTeamActive(pCmd->GetColour()));
-	AssertThrow("ActionPhase::AddCmd: pCmd is null",  !!pCmd);
+	VerifyModel("ActionPhase::AddCmd: Team not active", IsTeamActive(pCmd->GetColour()));
+	VerifyModel("ActionPhase::AddCmd: pCmd is null", !!pCmd);
 
 	m_pCmdStack->AddCmd(pCmd);
 	SaveGame();
@@ -27,7 +27,7 @@ void ActionPhase::AddCmd(CmdPtr pCmd)
 
 void ActionPhase::FinishCmd(Colour c)
 {
-	AssertThrow("ActionPhase::FinishCmd", IsTeamActive(c));
+	VerifyModel("ActionPhase::FinishCmd", IsTeamActive(c));
 
 	m_pCmdStack->AddCmd(CmdPtr());
 	SaveGame();
@@ -35,7 +35,7 @@ void ActionPhase::FinishCmd(Colour c)
 
 Cmd* ActionPhase::RemoveCmd(const Controller& controller, Colour c)
 {
-	AssertThrow("ActionPhase::RemoveCmd", IsTeamActive(c));
+	VerifyModel("ActionPhase::RemoveCmd", IsTeamActive(c));
 
 	const Cmd* pCmd = GetCurrentCmd(c);
 	bool bAction = pCmd && pCmd->IsAction();
@@ -45,13 +45,13 @@ Cmd* ActionPhase::RemoveCmd(const Controller& controller, Colour c)
 
 	if (bAction && !pUndo) // It's a start cmd.
 	{
-		AssertThrow("Phase::RemoveCmd",  m_bDoneAction);
+		VerifyModel("Phase::RemoveCmd", m_bDoneAction);
 		m_bDoneAction = false;
 
 		if (bCostsInfluence)
 		{
 			RecordPtr pRec = Record::PopAndUndo(GetGame(), controller);
-			AssertThrow("ActionPhase::RemoveCmd: current record not ActionRecord", !!dynamic_cast<ActionRecord*>(pRec.get()));
+			VerifyModel("ActionPhase::RemoveCmd: current record not ActionRecord", !!dynamic_cast<ActionRecord*>(pRec.get()));
 		}
 	}
 
@@ -61,7 +61,7 @@ Cmd* ActionPhase::RemoveCmd(const Controller& controller, Colour c)
 
 bool ActionPhase::CanRemoveCmd(Colour c) const
 {
-	AssertThrow("ActionPhase::CanRemoveCmd", IsTeamActive(c));
+	VerifyModel("ActionPhase::CanRemoveCmd", IsTeamActive(c));
 	return CanRemoveCmd();
 }
 
@@ -72,7 +72,7 @@ bool ActionPhase::IsTeamActive(Colour c) const
 
 Cmd* ActionPhase::GetCurrentCmd(Colour c)
 {
-	AssertThrow("ActionPhase::GetCurrentCmd", IsTeamActive(c));
+	VerifyModel("ActionPhase::GetCurrentCmd", IsTeamActive(c));
 	return GetCurrentCmd();
 }
 
@@ -88,11 +88,11 @@ bool ActionPhase::CanRemoveCmd() const
 
 void ActionPhase::StartCmd(CmdPtr pCmd, Controller& controller)
 {
-	AssertThrow("ActionPhase::StartCmd: Team not active", IsTeamActive(pCmd->GetColour()));
+	VerifyModel("ActionPhase::StartCmd: Team not active", IsTeamActive(pCmd->GetColour()));
 
 	if (pCmd->IsAction()) // Includes PassCmd.
 	{
-		AssertThrow("ActionPhasePhase::StartCmd: Already done an action",  !m_bDoneAction);
+		VerifyModel("ActionPhasePhase::StartCmd: Already done an action", !m_bDoneAction);
 		m_bDoneAction = true;
 	}
 

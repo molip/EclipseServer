@@ -29,10 +29,10 @@ extern std::string FormatInt(int n);
 
 extern int Mod(int a, int b);
 
-extern void AssertThrow(const std::string& msg, bool b = false);
-extern void AssertThrowXML(const std::string& msg, bool b = false);
-extern void AssertThrowModel(const std::string& msg, bool b = false);
-extern void AssertThrowSerial(const std::string& msg, bool b = false);
+extern void Verify(const std::string& msg, bool b = false);
+extern void VerifyInput(const std::string& msg, bool b = false);
+extern void VerifyModel(const std::string& msg, bool b = false);
+extern void VerifySerial(const std::string& msg, bool b = false);
 
 class Exception : public std::runtime_error
 {
@@ -70,10 +70,10 @@ public:
 };
 
 template <typename T2, typename T1>
-T2& CastThrow(const T1& obj)
+T2& VerifyCastInput(const T1& obj)
 {
 	T2* pObj = dynamic_cast<T2*>(&obj);
-	AssertThrow(std::string("CastThrow: Expected ") + typeid(T2).name() + ", got " + typeid(T1).name(), !!pObj);
+	Verify(std::string("VerifyCastInput: Expected ") + typeid(T2).name() + ", got " + typeid(T1).name(), !!pObj);
 	return *pObj;
 }
 

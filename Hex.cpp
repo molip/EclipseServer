@@ -72,7 +72,7 @@ Hex::Hex(int id, const MapPos& pos, int nRotation) :
 	m_id(id), m_pos(pos), m_nRotation(nRotation), m_discovery(DiscoveryType::None), m_colour(Colour::None), m_pDef(&HexDefs::Get(id)),
 	m_bOrbital(false), m_bMonolith(false)
 {
-	AssertThrow("Hex::Hex: Invalid rotation", nRotation >= 0 && nRotation < 6);
+	VerifyModel("Hex::Hex: Invalid rotation", nRotation >= 0 && nRotation < 6);
 
 	for (int i = 0; i < GetDef().GetAncients(); ++i)
 		AddShip(ShipType::Ancient, Colour::None);
@@ -90,14 +90,14 @@ Hex::Hex(const Hex& rhs) :
 
 void Hex::InitSquares()
 {
-	AssertThrow("Hex::InitSquares", m_squares.empty());
+	VerifyModel("Hex::InitSquares", m_squares.empty());
 	for (int i = 0; i < GetDef().GetSquareCount(); ++i)
 		m_squares.push_back(Square(*this, i));
 }
 
 void Hex::SetSquareOccupied(int i, bool b) 
 {
-	AssertThrow("Hex::SetSquareOccupied", InRange(m_squares, i));
+	VerifyModel("Hex::SetSquareOccupied", InRange(m_squares, i));
 	if (b)
 		m_occupied.insert(i);
 	else
@@ -106,7 +106,7 @@ void Hex::SetSquareOccupied(int i, bool b)
 
 bool Hex::IsSquareOccupied(int i) const 
 {
-	AssertThrow("Hex::IsSquareOccupied", InRange(m_squares, i));
+	VerifyModel("Hex::IsSquareOccupied", InRange(m_squares, i));
 	return m_occupied.find(i) != m_occupied.end(); 
 }
 
@@ -117,7 +117,7 @@ bool Hex::HasWormhole(Edge e) const
 
 std::vector<Square*> Hex::GetAvailableSquares(const Team& team) 
 {
-	AssertThrow("Hex::GetAvailableSquares", m_colour == team.GetColour());
+	VerifyModel("Hex::GetAvailableSquares", m_colour == team.GetColour());
 	
 	std::vector<Square*> squares;
 
@@ -140,7 +140,7 @@ void Hex::RemoveShip(ShipType type, Colour owner)
 			m_ships.erase(s);
 			return;
 		}
-	AssertThrow("Hex::RemoveShip");
+	VerifyModel("Hex::RemoveShip");
 }
 
 bool Hex::HasShip(const Colour& c, ShipType ship) const
@@ -189,7 +189,7 @@ bool Hex::HasForeignShip(const Game& game, const Team* pTeam) const
 
 int Hex::GetPinnage(const Colour& c) const
 {
-	AssertThrowModel("Hex::GetPinnage", c != Colour::None);
+	VerifyModel("Hex::GetPinnage", c != Colour::None);
 	
 	int nPinnage = 0;
 	for (auto& s : m_ships)
@@ -213,7 +213,7 @@ bool Hex::CanMoveThrough(Colour c) const
 
 void Hex::SetColour(Colour c)
 {
-	AssertThrowModel("Hex::SetOwner", (c == Colour::None) != (m_colour == Colour::None));
+	VerifyModel("Hex::SetOwner", (c == Colour::None) != (m_colour == Colour::None));
 	m_colour = c;
 }
 
@@ -234,13 +234,13 @@ bool Hex::HasNeighbour(const Map& map, bool bWormholeGen) const
 
 void Hex::RemoveDiscoveryTile()
 {
-	AssertThrowModel("Hex::RemoveDiscoveryTile", m_discovery != DiscoveryType::None);
+	VerifyModel("Hex::RemoveDiscoveryTile", m_discovery != DiscoveryType::None);
 	m_discovery = DiscoveryType::None;
 }
 
 void Hex::SetDiscoveryTile(DiscoveryType type)
 {
-	AssertThrowModel("Hex::SetDiscoveryTile", m_discovery == DiscoveryType::None);
+	VerifyModel("Hex::SetDiscoveryTile", m_discovery == DiscoveryType::None);
 	m_discovery = type;
 }
 

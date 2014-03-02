@@ -35,7 +35,7 @@ const BlueprintDef& BlueprintDefs::Get(RaceType r, ShipType s)
 		r = RaceType::Human;
 
 	auto it = Instance().m_map.find(BlueprintID(r,  s));
-	AssertThrow("BlueprintDefs::Get", it != Instance().m_map.end());
+	VerifyModel("BlueprintDefs::Get", it != Instance().m_map.end());
 	return *it->second;
 }
 

@@ -18,25 +18,25 @@ int Mod(int a, int b)
 	return a % b + (a < 0 ? b : 0);
 }
 
-void AssertThrow(const std::string& msg, bool b)
+void Verify(const std::string& msg, bool b)
 {
 	if (!ASSERT(b))
 		throw GenericException(msg);
 }
 
-void AssertThrowXML(const std::string& msg, bool b)
+void VerifyInput(const std::string& msg, bool b)
 {
 	if (!ASSERT(b))
 		throw XMLException(msg);
 }
 
-void AssertThrowModel(const std::string& msg, bool b)
+void VerifyModel(const std::string& msg, bool b)
 {
 	if (!ASSERT(b))
 		throw ModelException(msg);
 }
 
-void AssertThrowSerial(const std::string& msg, bool b)
+void VerifySerial(const std::string& msg, bool b)
 {
 	if (!ASSERT(b))
 		throw SerialException(msg);
@@ -50,7 +50,7 @@ Resource SquareTypeToResource(SquareType t)
 	case SquareType::Science: return Resource::Science;
 	case SquareType::Materials: return Resource::Materials;
 	}
-	AssertThrow("SquareTypeToResource");
+	Verify("SquareTypeToResource");
 	return Resource::_Count;
 }
 
@@ -62,7 +62,7 @@ SquareType ResourceToSquareType(Resource t)
 	case Resource::Science: return SquareType::Science;
 	case Resource::Materials: return SquareType::Materials;
 	}
-	AssertThrow("ResourceToSquareType");
+	Verify("ResourceToSquareType");
 	return SquareType::_Count;
 }
 

@@ -49,7 +49,7 @@ bool Controller::SendMessage(const Output::Message& msg, const Game& game, const
 	}
 	else
 	{
-		AssertThrow("Controller::SendMessage: Player not in game: " + pPlayer->GetName(), pPlayer->GetCurrentGame() == &game);
+		VerifyModel("Controller::SendMessage: Player not in game: " + pPlayer->GetName(), pPlayer->GetCurrentGame() == &game);
 		m_pServer->SendMessage(str, *pPlayer);
 	}
 	return true;
@@ -102,7 +102,7 @@ void Controller::SendUpdateGame(const Game& game, const Player* pPlayer) const
 		for (auto& pInfoTeam : game.GetTeams())
 		{
 			const Player& infoPlayer = pInfoTeam->GetPlayer();
-			AssertThrow("Controller::SendUpdateGame: Team not chosen yet: " + infoPlayer.GetName(), !!pInfoTeam);
+			VerifyModel("Controller::SendUpdateGame: Team not chosen yet: " + infoPlayer.GetName(), !!pInfoTeam);
 			SendMessage(Output::UpdateTeam(*pInfoTeam), game, pPlayer);
 			SendMessage(Output::UpdateInfluenceTrack(*pInfoTeam), game, pPlayer);
 			SendMessage(Output::UpdateTechnologyTrack(*pInfoTeam), game, pPlayer);

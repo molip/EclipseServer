@@ -5,7 +5,7 @@
 void DiscTrack::AddDiscs(int nDiscs)
 {
 	int n = m_nDiscs + nDiscs;
-	AssertThrowModel("DiscTrack::AddDiscs", n >= 0 && n <= 16);
+	VerifyModel("DiscTrack::AddDiscs", n >= 0 && n <= 16);
 	m_nDiscs = n; 
 }
 

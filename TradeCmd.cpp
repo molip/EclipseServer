@@ -63,12 +63,12 @@ CmdPtr TradeCmd::Process(const Input::CmdMessage& msg, const Controller& control
 	const Team& team = game.GetTeam(m_colour);
 	auto& storage = team.GetStorage();
 
-	auto& m = CastThrow<const Input::CmdTrade>(msg);
+	auto& m = VerifyCastInput<const Input::CmdTrade>(msg);
 
 	const int fromCount = m.m_count * Race(team.GetRace()).GetTradeRate();
-	AssertThrow("TradeCmd::Process: no count", m.m_count > 0);
-	AssertThrow("TradeCmd::Process: to == from", m.m_from != m.m_to);
-	AssertThrow("TradeCmd::Process: can't afford trade", fromCount <= storage[m.m_from]);
+	VerifyInput("TradeCmd::Process: no count", m.m_count > 0);
+	VerifyInput("TradeCmd::Process: to == from", m.m_from != m.m_to);
+	VerifyInput("TradeCmd::Process: can't afford trade", fromCount <= storage[m.m_from]);
 
 	TradeRecord::PairVec srcs{ { m.m_from, fromCount } };
 	TradeRecord::Pair dst(m.m_to, m.m_count);

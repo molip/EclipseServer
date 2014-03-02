@@ -31,7 +31,7 @@ Team::Team(const Team& rhs) :
 
 void Team::Assign(RaceType race, Colour colour, LiveGame& game)
 {
-	AssertThrowModel("Team::Assign", m_race == RaceType::None);
+	VerifyModel("Team::Assign", m_race == RaceType::None);
 	m_race = race;
 	m_colour = colour;
 
@@ -76,13 +76,13 @@ Player& Team::GetPlayer()
 void Team::AddShips(ShipType type, int nShips)
 {
 	// TODO: Check max count not exceeded.
-	AssertThrow("Team::AddShips: invalid ship type", int(type) >= 0);
+	VerifyModel("Team::AddShips: invalid ship type", int(type) >= 0);
 	m_nShips[(int)type] += nShips;
 }
 
 int Team::GetUnusedShips(ShipType type) const 
 {
-	AssertThrow("Team::GetUnusedShips", int(type) >= 0);
+	VerifyModel("Team::GetUnusedShips", int(type) >= 0);
 	return m_nShips[(int)type]; 
 }
 
@@ -111,7 +111,7 @@ void Team::PopulateStartHex(Hex& hex)
 
 void Team::UseColonyShips(int nShips)
 {
-	AssertThrowModel("Team::UseColonyShips", m_nColonyShipsUsed + nShips <= GetColonyShips());
+	VerifyModel("Team::UseColonyShips", m_nColonyShipsUsed + nShips <= GetColonyShips());
 	m_nColonyShipsUsed += nShips;
 }
 
@@ -127,13 +127,13 @@ int Team::GetColonyShips() const
 
 const Blueprint& Team::GetBlueprint(ShipType s) const
 {
-	AssertThrowModel("Team::GetBlueprint", int(s) >= 0 && s!= ShipType::_Count);
+	VerifyModel("Team::GetBlueprint", int(s) >= 0 && s != ShipType::_Count);
 	return *m_blueprints[int(s)];
 }
 
 bool Team::IsAncientAlliance(const Team* pTeam1, const Team* pTeam2)
 {
-	AssertThrowModel("Team::IsAncientAlliance", pTeam1 != pTeam2);
+	VerifyModel("Team::IsAncientAlliance", pTeam1 != pTeam2);
 	return (!pTeam1 || !pTeam2) && Race((pTeam1 ? pTeam1 : pTeam2)->GetRace()).IsAncientsAlly();
 }
 

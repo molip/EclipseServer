@@ -35,12 +35,12 @@ CmdPtr MoveCmd::Process(const Input::CmdMessage& msg, const Controller& controll
 	if (dynamic_cast<const Input::CmdAbort*>(&msg))
 		return nullptr;
 
-	auto& m = CastThrow<const Input::CmdMoveSrc>(msg);
+	auto& m = VerifyCastInput<const Input::CmdMoveSrc>(msg);
 	MapPos pos(m.m_x, m.m_y);
 	
 	const Hex& hex = game.GetMap().GetHex(pos);
-	AssertThrow("MoveCmd::Process: invalid hex", CanMoveFrom(hex, game));
-	AssertThrow("MoveCmd::Process: invalid ship", hex.HasShip(m_colour, m.m_ship));
+	VerifyInput("MoveCmd::Process: invalid hex", CanMoveFrom(hex, game));
+	VerifyInput("MoveCmd::Process: invalid ship", hex.HasShip(m_colour, m.m_ship));
 
 	return CmdPtr(new MoveDstCmd(m_colour, game, pos, m.m_ship, m_iPhase));
 }
@@ -136,11 +136,11 @@ void MoveDstCmd::UpdateClient(const Controller& controller, const LiveGame& game
 
 CmdPtr MoveDstCmd::Process(const Input::CmdMessage& msg, const Controller& controller, const LiveGame& game)
 {
-	auto& m = CastThrow<const Input::CmdMoveDst>(msg);
+	auto& m = VerifyCastInput<const Input::CmdMoveDst>(msg);
 	MapPos dst(m.m_x, m.m_y);
 
 	std::set<MapPos> dsts = GetDsts(game);
-	AssertThrow("MoveDstCmd::Process: invalid hex", dsts.find(dst) != dsts.end());
+	VerifyInput("MoveDstCmd::Process: invalid hex", dsts.find(dst) != dsts.end());
 
 	MoveRecord* pRec = new MoveRecord(m_colour, m_ship, m_src, dst);
 	DoRecord(RecordPtr(pRec), controller, game);

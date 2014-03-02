@@ -28,7 +28,7 @@ LiveGame::~LiveGame()
 
 void LiveGame::AddPlayer(const Player& player)
 {
-	AssertThrow("LiveGame::AddTeam: Game already started: " + m_name, !HasStarted());
+	VerifyModel("LiveGame::AddTeam: Game already started: " + m_name, !HasStarted());
 	if (!FindTeam(player))
 		m_teams.push_back(TeamPtr(new Team(player.GetID())));
 	Save();
@@ -36,8 +36,8 @@ void LiveGame::AddPlayer(const Player& player)
 
 void LiveGame::StartChooseTeamGamePhase()
 {
-	AssertThrow("LiveGame::Start: Game already started: " + m_name, !HasStarted());
-	AssertThrow("LiveGame::Start: Game has no players: " + m_name, !m_teams.empty());
+	VerifyModel("LiveGame::Start: Game already started: " + m_name, !HasStarted());
+	VerifyModel("LiveGame::Start: Game has no players: " + m_name, !m_teams.empty());
 	
 	m_gamePhase = GamePhase::ChooseTeam;
 	m_pPhase = PhasePtr(new ChooseTeamPhase(this));
@@ -69,7 +69,7 @@ void LiveGame::StartChooseTeamGamePhase()
 
 void LiveGame::StartMainGamePhase()
 {
-	AssertThrowModel("LiveGame::StartMainGamePhase", m_gamePhase == GamePhase::ChooseTeam);
+	VerifyModel("LiveGame::StartMainGamePhase", m_gamePhase == GamePhase::ChooseTeam);
 
 	m_gamePhase = GamePhase::Main;
 
@@ -94,25 +94,25 @@ void LiveGame::StartMainGamePhase()
 
 Phase& LiveGame::GetPhase()
 {
-	AssertThrow("LiveGame::GetPhase", !!m_pPhase);
+	VerifyModel("LiveGame::GetPhase", !!m_pPhase);
 	return *m_pPhase;
 }
 
 ActionPhase& LiveGame::GetActionPhase()
 {
-	AssertThrow("LiveGame::GetActionPhase", m_pPhase && dynamic_cast<ActionPhase*>(m_pPhase.get()));
+	VerifyModel("LiveGame::GetActionPhase", m_pPhase && dynamic_cast<ActionPhase*>(m_pPhase.get()));
 	return static_cast<ActionPhase&>(*m_pPhase);
 }
 
 ChooseTeamPhase& LiveGame::GetChooseTeamPhase()
 {
-	AssertThrow("LiveGame::GetChooseTeamPhase", m_pPhase && dynamic_cast<ChooseTeamPhase*>(m_pPhase.get()));
+	VerifyModel("LiveGame::GetChooseTeamPhase", m_pPhase && dynamic_cast<ChooseTeamPhase*>(m_pPhase.get()));
 	return static_cast<ChooseTeamPhase&>(*m_pPhase);
 }
 
 UpkeepPhase& LiveGame::GetUpkeepPhase()
 {
-	AssertThrow("LiveGame::GetUpkeepPhase", m_pPhase && dynamic_cast<UpkeepPhase*>(m_pPhase.get()));
+	VerifyModel("LiveGame::GetUpkeepPhase", m_pPhase && dynamic_cast<UpkeepPhase*>(m_pPhase.get()));
 	return static_cast<UpkeepPhase&>(*m_pPhase);
 }
 
@@ -130,7 +130,7 @@ void LiveGame::StartActionPhase()
 
 void LiveGame::FinishActionPhase(std::vector<Colour>& passOrder)
 {
-	AssertThrow("LiveGame::FinishActionPhase", passOrder.size() == m_teams.size());
+	VerifyModel("LiveGame::FinishActionPhase", passOrder.size() == m_teams.size());
 	
 #if 0	// Special passing rule.
 	std::map<Colour, TeamPtr> map;
@@ -161,7 +161,7 @@ void LiveGame::PushRecord(std::unique_ptr<Record>& pRec)
 
 RecordPtr LiveGame::PopRecord()
 {
-	AssertThrow("LiveGame::PopRecord", !m_records.empty());
+	VerifyModel("LiveGame::PopRecord", !m_records.empty());
 	RecordPtr pRec = std::move(m_records.back());
 	m_records.pop_back();
 	Save();

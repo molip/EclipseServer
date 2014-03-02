@@ -18,7 +18,7 @@ public:
 		for (int i = 0; i < *names[i] != 0; ++i)
 			if (strcmp(names[i], s) == 0)
 				return T(i + base);
-		AssertThrow("EnumTraits::FromString", false);
+		Verify("EnumTraits::FromString", false);
 		return T(0);
 	}
 
@@ -27,7 +27,7 @@ public:
 		int i = int(t) - base;
 		int n = 0;
 		for ( ; *names[n] != 0; ++n);
-		AssertThrow("EnumTraits::ToString", i >= 0 && i < n);
+		Verify("EnumTraits::ToString", i >= 0 && i < n);
 		return names[i];
 	}
 private:

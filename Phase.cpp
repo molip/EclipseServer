@@ -31,11 +31,11 @@ void Phase::SaveGame()
 void Phase::ProcessCmdMessage(const Input::CmdMessage& msg, Controller& controller, Player& player) 
 {
 	LiveGame& game = GetGame();
-	AssertThrow("Phase::ProcessCmdMessage: Player not in game", &game == player.GetCurrentLiveGame());
+	VerifyModel("Phase::ProcessCmdMessage: Player not in game", &game == player.GetCurrentLiveGame());
 
 	const Colour colour = game.GetTeam(player).GetColour();
 	Cmd* pCmd = GetCurrentCmd(colour);
-	AssertThrow("Phase::ProcessCmdMessage: No current command", !!pCmd);
+	VerifyModel("Phase::ProcessCmdMessage: No current command", !!pCmd);
 
 	CmdPtr pNext = pCmd->Process(msg, controller, game); // Might be null.
 	if (pNext)
@@ -54,7 +54,7 @@ void Phase::ProcessCmdMessage(const Input::CmdMessage& msg, Controller& controll
 void Phase::UndoCmd(Controller& controller, Player& player) 
 {
 	LiveGame& game = GetGame();
-	AssertThrow("Phase::UndoCmd: Player not in game", &game == player.GetCurrentLiveGame());
+	VerifyModel("Phase::UndoCmd: Player not in game", &game == player.GetCurrentLiveGame());
 
 	const Colour colour = game.GetTeam(player).GetColour();
 	const Cmd* pCmd = GetCurrentCmd(colour);

@@ -98,7 +98,7 @@ MessagePtr CreateCommand(const Json::Element& root)
 	if (type == "cmd_trade")
 		return MessagePtr(new CmdTrade(root));
 	
-	AssertThrow("Input command not recognised: " + type);
+	VerifyInput("Input command not recognised: " + type);
 	return nullptr;
 }
 
@@ -114,9 +114,9 @@ MessagePtr CreateMessage(const std::string& msg)
 const LiveGame& Message::GetLiveGame(const Player& player) const
 {
 	const LiveGame* pGame = player.GetCurrentLiveGame();
-	AssertThrow("ChooseMessage: player not registered in any game", !!pGame);
-	AssertThrow("ChooseMessage: game not in main phase: " + pGame->GetName(), pGame->GetGamePhase() == LiveGame::GamePhase::Main);
-	AssertThrow("ChooseMessage: player played out of turn", pGame->GetPhase().IsTeamActive(pGame->GetTeam(player).GetColour()));
+	VerifyInput("ChooseMessage: player not registered in any game", !!pGame);
+	VerifyInput("ChooseMessage: game not in main phase: " + pGame->GetName(), pGame->GetGamePhase() == LiveGame::GamePhase::Main);
+	VerifyInput("ChooseMessage: player played out of turn", pGame->GetPhase().IsTeamActive(pGame->GetTeam(player).GetColour()));
 	return *pGame;
 }
 
@@ -125,20 +125,20 @@ const LiveGame& Message::GetLiveGame(const Player& player) const
 Register::Register(const Json::Element& node) : m_idPlayer(0)
 {
 	node.GetAttribute("player", m_idPlayer);
-	AssertThrowXML("Register", m_idPlayer > 0);
+	VerifyInput("Register", m_idPlayer > 0);
 }
 
 JoinGame::JoinGame(const Json::Element& node) : m_idGame(0)
 {
 	node.GetAttribute("game", m_idGame);
-	AssertThrowXML("JoinGame", m_idGame > 0);
+	VerifyInput("JoinGame", m_idGame > 0);
 }
 
 namespace 
 {
 	void DoJoinGame(Controller& controller, Player& player, const LiveGame& game)
 	{
-		AssertThrow("DoJoinGame: Player already in a game: " + player.GetName(), !player.GetCurrentGame());
+		VerifyInput("DoJoinGame: Player already in a game: " + player.GetName(), !player.GetCurrentGame());
 		player.SetCurrentGame(&game);
 		if (!game.HasStarted())
 		{
@@ -161,7 +161,7 @@ bool JoinGame::Process(Controller& controller, Player& player) const
 bool ExitGame::Process(Controller& controller, Player& player) const 
 {
 	const Game* pGame = player.GetCurrentGame();
-	AssertThrow("ExitGame: Player not in any game: " + player.GetName(), !!pGame);
+	VerifyInput("ExitGame: Player not in any game: " + player.GetName(), !!pGame);
 
 	player.SetCurrentGame(nullptr);
 	controller.SendMessage(Output::ShowGameList(), player);
@@ -172,7 +172,7 @@ bool ExitGame::Process(Controller& controller, Player& player) const
 bool StartReview::Process(Controller& controller, Player& player) const 
 {
 	const LiveGame* pLive = player.GetCurrentLiveGame();
-	AssertThrow("ExitGame: Player not in live game: " + player.GetName(), !!pLive);
+	VerifyInput("ExitGame: Player not in live game: " + player.GetName(), !!pLive);
 
 	ReviewGame& review = Games::AddReview(player, *pLive);
 	
@@ -184,7 +184,7 @@ bool StartReview::Process(Controller& controller, Player& player) const
 bool ExitReview::Process(Controller& controller, Player& player) const 
 {
 	const ReviewGame* pReview = player.GetCurrentReviewGame();
-	AssertThrow("ExitGame: Player not in review game: " + player.GetName(), !!pReview);
+	VerifyInput("ExitGame: Player not in review game: " + player.GetName(), !!pReview);
 
 	const LiveGame& live = Games::GetLive(pReview->GetLiveGameID());
 	player.SetCurrentGame(&live);
@@ -198,7 +198,7 @@ bool ExitReview::Process(Controller& controller, Player& player) const
 bool AdvanceReview::Process(Controller& controller, Player& player) const 
 {
 	const ReviewGame* pReview = player.GetCurrentReviewGame();
-	AssertThrow("AdvanceReview: Player not in review game: " + player.GetName(), !!pReview);
+	VerifyInput("AdvanceReview: Player not in review game: " + player.GetName(), !!pReview);
 
 	Record::DoImmediate(*pReview, [&](ReviewGame& game) { game.Advance(controller); });
 
@@ -209,7 +209,7 @@ bool AdvanceReview::Process(Controller& controller, Player& player) const
 bool RetreatReview::Process(Controller& controller, Player& player) const 
 {
 	const ReviewGame* pReview = player.GetCurrentReviewGame();
-	AssertThrow("RetreatReview: Player not in review game: " + player.GetName(), !!pReview);
+	VerifyInput("RetreatReview: Player not in review game: " + player.GetName(), !!pReview);
 	Record::DoImmediate(*pReview, [&](ReviewGame& game) { game.Retreat(controller); });
 
 	controller.SendMessage(Output::UpdateReviewUI(*pReview), player);
@@ -231,9 +231,9 @@ bool StartGame::Process(Controller& controller, Player& player) const
 {
 	const LiveGame* pGame = player.GetCurrentLiveGame();
 
-	AssertThrow("StartGame: player not registered in any game", !!pGame);
-	AssertThrow("StartGame: player isn't the owner of game: " + pGame->GetName(), &player == &pGame->GetOwner());
-	AssertThrow("StartGame: game already started: " + pGame->GetName(), !pGame->HasStarted());
+	VerifyInput("StartGame: player not registered in any game", !!pGame);
+	VerifyInput("StartGame: player isn't the owner of game: " + pGame->GetName(), &player == &pGame->GetOwner());
+	VerifyInput("StartGame: game already started: " + pGame->GetName(), !pGame->HasStarted());
 	
 	Record::DoImmediate(*pGame, [](LiveGame& game) { game.StartChooseTeamGamePhase(); });
 
@@ -252,19 +252,19 @@ ChooseTeam::ChooseTeam(const Json::Element& node)
 bool ChooseTeam::Process(Controller& controller, Player& player) const 
 {
 	const LiveGame* pGame = player.GetCurrentLiveGame();
-	AssertThrow("ChooseTeam: player not registered in any game", !!pGame);
-	AssertThrow("ChooseMessage: player played out of turn", 
+	VerifyInput("ChooseTeam: player not registered in any game", !!pGame);
+	VerifyInput("ChooseMessage: player played out of turn",
 		pGame->GetChooseTeamPhase().GetCurrentTeam().GetColour() == player.GetCurrentTeam()->GetColour());
 
 	RaceType race = EnumTraits<RaceType>::FromString(m_race);
 	Colour colour = EnumTraits<Colour>::FromString(m_colour);
 
-	AssertThrowXML("ChooseTeam:race", race != RaceType::None);
-	AssertThrowXML("ChooseTeam:colour", colour != Colour::None);
-	AssertThrowXML("ChooseTeam: colour already taken", !pGame->FindTeam(colour));
+	VerifyInput("ChooseTeam:race", race != RaceType::None);
+	VerifyInput("ChooseTeam:colour", colour != Colour::None);
+	VerifyInput("ChooseTeam: colour already taken", !pGame->FindTeam(colour));
 
 	if (race != RaceType::Human)
-		AssertThrowXML("ChooseTeam: colour doesn't match race", colour == Race(race).GetColour());
+		VerifyInput("ChooseTeam: colour doesn't match race", colour == Race(race).GetColour());
 
 	Record::DoImmediate(*pGame, [&](LiveGame& game) { game.GetChooseTeamPhase().AssignTeam(controller, player, race, colour); });
 
@@ -304,7 +304,7 @@ bool StartAction::Process(Controller& controller, Player& player) const
 	else if (m_action == "pass") 
 		pCmd = new PassCmd(colour, game);
 
-	AssertThrow("StartAction::Process: No command created", !!pCmd);
+	VerifyInput("StartAction::Process: No command created", !!pCmd);
 	
 	Record::DoImmediate(game, [&](LiveGame& game) { game.GetPhase().StartCmd(CmdPtr(pCmd), controller); });
 
@@ -363,7 +363,7 @@ CmdColoniseSquares::CmdColoniseSquares(const Json::Element& node)
 	auto Read = [&] (const std::string& type, Population& pops)
 	{
 		auto el = node.GetFirstChild(type);
-		AssertThrowXML("CmdColoniseSquares: child not found", !el.IsNull());
+		VerifyInput("CmdColoniseSquares: child not found", !el.IsNull());
 		for (auto r : EnumRange<Resource>())
 			pops[r] = el.GetAttributeInt(EnumTraits<Resource>::ToString(r));
 	};
@@ -372,7 +372,7 @@ CmdColoniseSquares::CmdColoniseSquares(const Json::Element& node)
 	Read("Grey", m_grey);
 	Read("Orbital", m_orbital);
 
-	AssertThrowXML("CmdColonise: trying to add materials to orbital", m_orbital[Resource::Materials] == 0);
+	VerifyInput("CmdColonise: trying to add materials to orbital", m_orbital[Resource::Materials] == 0);
 }
 
 CmdInfluenceSrc::CmdInfluenceSrc(const Json::Element& node)

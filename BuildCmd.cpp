@@ -17,7 +17,7 @@ namespace
 		case ShipType::Dreadnought:	return Buildable::Dreadnought;
 		case ShipType::Starbase:	return Buildable::Starbase;
 		}
-		AssertThrow("ShipToBuildable", false);
+		VerifyModel("ShipToBuildable", false);
 		return Buildable::None;
 	}
 
@@ -30,7 +30,7 @@ namespace
 		case Buildable::Dreadnought:	return ShipType::Dreadnought;
 		case Buildable::Starbase:		return ShipType::Starbase;
 		}
-		AssertThrow("BuildableToShip", false);
+		VerifyModel("BuildableToShip", false);
 		return ShipType::None;
 	}
 }
@@ -127,20 +127,20 @@ CmdPtr BuildCmd::Process(const Input::CmdMessage& msg, const Controller& control
 	if (dynamic_cast<const Input::CmdAbort*>(&msg))
 		return nullptr;
 
-	auto& m = CastThrow<const Input::CmdBuild>(msg);
+	auto& m = VerifyCastInput<const Input::CmdBuild>(msg);
 	MapPos pos(m.m_x, m.m_y);
 	bool bOrbital = m.m_buildable == Buildable::Orbital;
 	bool bMonolith = m.m_buildable == Buildable::Monolith;
 
 	const Team& team = GetTeam(game);
 	const Hex& hex = game.GetMap().GetHex(pos);
-	AssertThrow("BuildCmd::Process: invalid hex", hex.GetColour() == m_colour);
-	AssertThrow("BuildCmd::Process: not enough materials", CanAfford(game, m.m_buildable));
-	AssertThrow("BuildCmd::Process: already got orbital", !bOrbital || !hex.HasOrbital());
-	AssertThrow("BuildCmd::Process: already got monolith", !bMonolith || !hex.HasMonolith());
-	AssertThrow("BuildCmd::Process: can't build orbitals", !bOrbital || team.HasTech(TechType::Orbital));
-	AssertThrow("BuildCmd::Process: can't build monoliths", !bMonolith || team.HasTech(TechType::Monolith));
-	AssertThrow("BuildCmd::Process: no ships left", bMonolith || bOrbital || 
+	VerifyInput("BuildCmd::Process: invalid hex", hex.GetColour() == m_colour);
+	VerifyInput("BuildCmd::Process: not enough materials", CanAfford(game, m.m_buildable));
+	VerifyInput("BuildCmd::Process: already got orbital", !bOrbital || !hex.HasOrbital());
+	VerifyInput("BuildCmd::Process: already got monolith", !bMonolith || !hex.HasMonolith());
+	VerifyInput("BuildCmd::Process: can't build orbitals", !bOrbital || team.HasTech(TechType::Orbital));
+	VerifyInput("BuildCmd::Process: can't build monoliths", !bMonolith || team.HasTech(TechType::Monolith));
+	VerifyInput("BuildCmd::Process: no ships left", bMonolith || bOrbital ||
 		GetTeam(game).GetUnusedShips(BuildableToShip(m.m_buildable)) > 0);
 
 	BuildRecord* pRec = new BuildRecord(m_colour, pos, m.m_buildable);

@@ -13,7 +13,7 @@ public:
 	
 	T TakeTile()
 	{
-		AssertThrowModel("Bag::GetTile", !m_vec.empty());
+		VerifyModel("Bag::GetTile", !m_vec.empty());
 		T t = m_vec.back();
 		m_vec.pop_back();
 		return t;

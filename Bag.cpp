@@ -63,7 +63,7 @@ void TechnologyBag::Init()
 
 HexBag::HexBag(HexRing r, int nPlayers)
 {
-	AssertThrowModel("HexBag::HexBag", nPlayers > 0 && nPlayers < 7);
+	VerifyModel("HexBag::HexBag", nPlayers > 0 && nPlayers < 7);
 
 	int start = 0, count = 0;
 	switch (r)

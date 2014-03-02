@@ -17,7 +17,7 @@ void UpgradeCmd::UpdateClient(const Controller& controller, const LiveGame& game
 
 CmdPtr UpgradeCmd::Process(const Input::CmdMessage& msg, const Controller& controller, const LiveGame& game)
 {
-	auto& m = CastThrow<const Input::CmdUpgrade>(msg);
+	auto& m = VerifyCastInput<const Input::CmdUpgrade>(msg);
 	
 	// TODO: Reaction
 

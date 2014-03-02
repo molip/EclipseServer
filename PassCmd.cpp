@@ -31,7 +31,7 @@ PassCmd::PassCmd(Colour colour, const LiveGame& game) : Cmd(colour)
 
 CmdPtr PassCmd::Process(const Input::CmdMessage& msg, const Controller& controller, const LiveGame& game)
 {	
-	AssertThrow("PassCmd::Process", !GetTeam(game).HasPassed());
+	VerifyInput("PassCmd::Process", !GetTeam(game).HasPassed());
 
 	Record* pRec = new PassRecord(m_colour);
 	DoRecord(RecordPtr(pRec), controller, game);

@@ -44,7 +44,7 @@ bool MapPos::operator <(const MapPos& rhs) const
 
 HexRing MapPos::GetRing() const
 {
-	AssertThrow("MapPos::GetRing", !IsCentre());
+	VerifyModel("MapPos::GetRing", !IsCentre());
 
 	switch (GetDist(MapPos(0, 0)))
 	{

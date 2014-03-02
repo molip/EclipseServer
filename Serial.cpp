@@ -8,14 +8,12 @@ namespace Serial
 
 SaveNode::SaveNode(Xml::Element elem) : m_elem(elem) 
 {
-	AssertThrow("SaveNode::SaveNode", !m_elem.IsNull());
+	VerifySerial("SaveNode::SaveNode", !m_elem.IsNull());
 }
-
-
 
 LoadNode::LoadNode(Xml::Element elem) : m_elem(elem) 
 {
-	AssertThrow("LoadNode::LoadNode", !m_elem.IsNull());
+	VerifySerial("LoadNode::LoadNode", !m_elem.IsNull());
 }
 
 template <> std::string FromString<std::string>(const std::string& s)

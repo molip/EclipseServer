@@ -33,7 +33,7 @@ private:
 		// Add/remove tech from supply board.
 		if (bDo)
 		{
-			AssertThrow("ResearchRecord::Apply", it != techs.end());
+			VerifyModel("ResearchRecord::Apply", it != techs.end());
 			if (--it->second == 0)
 				techs.erase(it);
 		}
@@ -82,7 +82,7 @@ REGISTER_DYNAMIC(ResearchRecord)
 ResearchCmd::ResearchCmd(Colour colour, const LiveGame& game, int iPhase) : PhaseCmd(colour, iPhase)
 {
 	const Team& team = GetTeam(game);
-	AssertThrow("ResearchCmd::ResearchCmd", !team.HasPassed());
+	VerifyInput("ResearchCmd::ResearchCmd", !team.HasPassed());
 }
 
 void ResearchCmd::UpdateClient(const Controller& controller, const LiveGame& game) const
@@ -111,8 +111,8 @@ CmdPtr ResearchCmd::Process(const Input::CmdMessage& msg, const Controller& cont
 	if (dynamic_cast<const Input::CmdAbort*>(&msg))
 		return nullptr;
 
-	auto& m = CastThrow<const Input::CmdResearch>(msg);
-	AssertThrow("ResearchCmd::Process: invalid tech index", InRange(m_techs, m.m_iTech));
+	auto& m = VerifyCastInput<const Input::CmdResearch>(msg);
+	VerifyInput("ResearchCmd::Process: invalid tech index", InRange(m_techs, m.m_iTech));
 
 	ResearchRecord* pRec = new ResearchRecord(m_colour, m_techs[m.m_iTech].first);
 	DoRecord(RecordPtr(pRec), controller, game);
@@ -193,7 +193,7 @@ void ResearchArtifactCmd::UpdateClient(const Controller& controller, const LiveG
 
 CmdPtr ResearchArtifactCmd::Process(const Input::CmdMessage& msg, const Controller& controller, const LiveGame& game)
 {
-	auto& m = CastThrow<const Input::CmdResearchArtifact>(msg);
+	auto& m = VerifyCastInput<const Input::CmdResearchArtifact>(msg);
 
 	ResearchArtifactRecord* pRec = new ResearchArtifactRecord(m_colour, m.m_artifacts);
 	DoRecord(RecordPtr(pRec), controller, game);

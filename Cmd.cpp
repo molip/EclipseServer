@@ -33,7 +33,7 @@ const Player& Cmd::GetPlayer(const LiveGame& game) const
 
 void Cmd::DoRecord(RecordPtr pRec, const Controller& controller, const LiveGame& game)
 {
-	AssertThrow("Cmd::DoRecord", !m_bHasRecord);
+	VerifyModel("Cmd::DoRecord", !m_bHasRecord);
 
 	Record::DoAndPush(std::move(pRec), game, controller);
 	m_bHasRecord = true;
@@ -41,7 +41,7 @@ void Cmd::DoRecord(RecordPtr pRec, const Controller& controller, const LiveGame&
 
 void Cmd::PopRecord(const Controller& controller, const LiveGame& game)
 {
-	AssertThrow("Cmd::PopRecord", m_bHasRecord);
+	VerifyModel("Cmd::PopRecord", m_bHasRecord);
 	Record::PopAndUndo(game, controller);
 	m_bHasRecord = false;
 }

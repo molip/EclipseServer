@@ -16,7 +16,7 @@ Player& Players::Add(const std::string& name, const std::string& password)
 Player& Players::Get(int idPlayer) 
 {
 	auto i = s_map.find(idPlayer);
-	AssertThrow("Players::FindPlayer", i != s_map.end());
+	VerifyModel("Players::FindPlayer", i != s_map.end());
 	return *i->second;
 }
 

@@ -11,7 +11,7 @@ std::vector<ReviewGamePtr> Games::s_reviewGames;
 
 void Games::Load()
 {
-	AssertThrow("Games::Load", s_liveGames.empty() && s_reviewGames.empty());
+	VerifySerial("Games::Load", s_liveGames.empty() && s_reviewGames.empty());
 	
 	std::string dir = "data/games/live/";
 	auto files = OS::FindFilesInDir(dir, "*.xml");
@@ -49,7 +49,7 @@ void Games::DeleteReview(int idGame)
 			s_reviewGames.erase(i);
 			return;
 		}
-	AssertThrow("Games::DeleteReview", false);
+	VerifyModel("Games::DeleteReview", false);
 }
 
 const LiveGame& Games::GetLive(int idGame)
@@ -58,7 +58,7 @@ const LiveGame& Games::GetLive(int idGame)
 		if (g->GetID() == idGame)
 			return *g;
 
-	AssertThrow("Games::GetLive", false);
+	VerifyModel("Games::GetLive", false);
 	return *(LiveGame*)nullptr;
 }
 
@@ -68,7 +68,7 @@ const ReviewGame& Games::GetReview(int idGame)
 		if (g->GetID() == idGame)
 			return *g;
 
-	AssertThrow("Games::GetReview", false);
+	VerifyModel("Games::GetReview", false);
 	return *(ReviewGame*)nullptr;
 }
 
@@ -81,6 +81,6 @@ const Game& Games::Get(int idGame)
 		if (g->GetID() == idGame)
 			return *g;
 
-	AssertThrow("Games::Get", false);
+	VerifyModel("Games::Get", false);
 	return *(Game*)nullptr;
 }

@@ -58,7 +58,7 @@ Team* Game::FindTeam(const Player& player)
 Team& Game::GetTeam(const Player& player)
 {
 	Team* pTeam = FindTeam(player);
-	AssertThrow("Game::GetTeam: player not in game: " + player.GetName(), !!pTeam);
+	VerifyModel("Game::GetTeam: player not in game: " + player.GetName(), !!pTeam);
 	return *pTeam;
 }
 
@@ -73,7 +73,7 @@ Team* Game::FindTeam(Colour c)
 Team& Game::GetTeam(Colour c) 
 {
 	Team* pTeam = FindTeam(c);
-	AssertThrow("Game::GetTeam: colour not in game: ", !!pTeam);
+	VerifyModel("Game::GetTeam: colour not in game: ", !!pTeam);
 	return *pTeam;
 }
 

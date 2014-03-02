@@ -13,7 +13,7 @@
 InfluenceCmd::InfluenceCmd(Colour colour, const LiveGame& game, int iPhase) : PhaseCmd(colour, iPhase)
 {
 	const Team& team = GetTeam(game);
-	AssertThrow("InfluenceCmd::InfluenceCmd", !team.HasPassed());
+	VerifyModel("InfluenceCmd::InfluenceCmd", !team.HasPassed());
 
 	const Map& map = game.GetMap();
 	const Map::HexMap& hexes = map.GetHexes();
@@ -34,8 +34,8 @@ CmdPtr InfluenceCmd::Process(const Input::CmdMessage& msg, const Controller& con
 	if (dynamic_cast<const Input::CmdAbort*>(&msg))
 		return nullptr;
 
-	auto& m = CastThrow<const Input::CmdInfluenceSrc>(msg);
-	AssertThrow("InfluenceCmd::Process: invalid pos index", m.m_iPos == -1 || InRange(m_srcs, m.m_iPos));
+	auto& m = VerifyCastInput<const Input::CmdInfluenceSrc>(msg);
+	VerifyInput("InfluenceCmd::Process: invalid pos index", m.m_iPos == -1 || InRange(m_srcs, m.m_iPos));
 
 	return CmdPtr(new InfluenceDstCmd(m_colour, game, m.m_iPos < 0 ? nullptr : &m_srcs[m.m_iPos], m_iPhase));
 }
@@ -111,13 +111,13 @@ public:
 private:
 	Hex* TransferDisc(const MapPosPtr& pSrcPos, const MapPosPtr& pDstPos, Game& game, const Controller& controller)
 	{
-		AssertThrowModel("InfluenceRecord::TransferDisc: no op", pSrcPos != pDstPos && !(pSrcPos && pDstPos && *pSrcPos == *pDstPos));
+		VerifyModel("InfluenceRecord::TransferDisc: no op", pSrcPos != pDstPos && !(pSrcPos && pDstPos && *pSrcPos == *pDstPos));
 		Team& team = game.GetTeam(m_colour);
 
 		if (pSrcPos)
 		{
 			Hex& hex = game.GetMap().GetHex(*pSrcPos);
-			AssertThrowModel("InfluenceCmd::TransferDisc: Src not owned", hex.IsOwnedBy(team));
+			VerifyModel("InfluenceCmd::TransferDisc: Src not owned", hex.IsOwnedBy(team));
 			hex.SetColour(Colour::None);
 		}
 		else
@@ -127,7 +127,7 @@ private:
 		if (pDstPos)
 		{
 			pDstHex = &game.GetMap().GetHex(*pDstPos);
-			AssertThrowModel("InfluenceCmd::TransferDisc: Dst already owned", !pDstHex->IsOwned());
+			VerifyModel("InfluenceCmd::TransferDisc: Dst already owned", !pDstHex->IsOwned());
 			pDstHex->SetColour(m_colour);
 		}
 		else
@@ -194,8 +194,8 @@ void InfluenceDstCmd::UpdateClient(const Controller& controller, const LiveGame&
 
 CmdPtr InfluenceDstCmd::Process(const Input::CmdMessage& msg, const Controller& controller, const LiveGame& game)
 {
-	auto& m = CastThrow<const Input::CmdInfluenceDst>(msg);
-	AssertThrow("InfluenceDstCmd::Process: invalid pos index", m.m_iPos == -1 || InRange(m_dsts, m.m_iPos));
+	auto& m = VerifyCastInput<const Input::CmdInfluenceDst>(msg);
+	VerifyInput("InfluenceDstCmd::Process: invalid pos index", m.m_iPos == -1 || InRange(m_dsts, m.m_iPos));
 	
 	const MapPos* pDstPos = m.m_iPos >= 0 ? &m_dsts[m.m_iPos] : nullptr;
 	
