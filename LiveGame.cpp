@@ -31,7 +31,6 @@ void LiveGame::AddPlayer(const Player& player)
 	VerifyModel("LiveGame::AddTeam: Game already started: " + m_name, !HasStarted());
 	if (!FindTeam(player))
 		m_teams.push_back(TeamPtr(new Team(player.GetID())));
-	Save();
 }
 
 void LiveGame::StartChooseTeamGamePhase()
@@ -63,8 +62,6 @@ void LiveGame::StartChooseTeamGamePhase()
 	m_repBag.Init();
 	m_techBag.Init();
 	m_discBag.Init();
-
-	Save();
 }
 
 void LiveGame::StartMainGamePhase()
@@ -124,8 +121,6 @@ bool LiveGame::NeedCombat() const
 void LiveGame::StartActionPhase()
 {
 	m_pPhase = PhasePtr(new ActionPhase(this));
-
-	Save();
 }
 
 void LiveGame::FinishActionPhase(std::vector<Colour>& passOrder)
@@ -150,13 +145,11 @@ void LiveGame::FinishActionPhase(std::vector<Colour>& passOrder)
 #endif
 
 	m_pPhase = PhasePtr(new UpkeepPhase(this));
-	Save();
 }
 
 void LiveGame::PushRecord(std::unique_ptr<Record>& pRec)
 {
 	m_records.push_back(std::move(pRec));
-	Save();
 }
 
 RecordPtr LiveGame::PopRecord()
@@ -164,7 +157,6 @@ RecordPtr LiveGame::PopRecord()
 	VerifyModel("LiveGame::PopRecord", !m_records.empty());
 	RecordPtr pRec = std::move(m_records.back());
 	m_records.pop_back();
-	Save();
 	return pRec;
 }
 

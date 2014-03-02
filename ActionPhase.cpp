@@ -23,7 +23,6 @@ void ActionPhase::AddCmd(CmdPtr pCmd)
 	VerifyModel("ActionPhase::AddCmd: pCmd is null", !!pCmd);
 
 	m_pCmdStack->AddCmd(pCmd);
-	SaveGame();
 }
 
 void ActionPhase::FinishCmd(Colour c)
@@ -31,7 +30,6 @@ void ActionPhase::FinishCmd(Colour c)
 	VerifyModel("ActionPhase::FinishCmd", IsTeamActive(c));
 
 	m_pCmdStack->AddCmd(CmdPtr());
-	SaveGame();
 }
 
 Cmd* ActionPhase::RemoveCmd(CommitSession& session, Colour c)
@@ -56,7 +54,6 @@ Cmd* ActionPhase::RemoveCmd(CommitSession& session, Colour c)
 		}
 	}
 
-	SaveGame();
 	return pUndo;
 }
 
@@ -105,8 +102,6 @@ void ActionPhase::StartCmd(CmdPtr pCmd, CommitSession& session)
 	}
 	
 	m_pCmdStack->StartCmd(pCmd);
-
-	SaveGame();
 
 	Cmd* pStartedCmd = GetCurrentCmd();
 

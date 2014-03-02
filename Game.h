@@ -65,8 +65,6 @@ public:
 	virtual void Load(const Serial::LoadNode& node);
 
 protected:
-	virtual void Save() const {}
-	
 	int m_id; 
 	std::string m_name;
 	int m_idOwner;

@@ -33,8 +33,6 @@ void UpkeepPhase::StartCmd(CmdPtr pCmd, CommitSession& session)
 	Colour c = pCmd->GetColour();
 	GetCmdStack(c).StartCmd(pCmd);
 
-	SaveGame();
-
 	GetCurrentCmd(c)->UpdateClient(session.GetController(), GetGame());
 }
 
@@ -43,13 +41,11 @@ void UpkeepPhase::AddCmd(CmdPtr pCmd)
 	VerifyModel("Phase::UpkeepPhase", (bool)pCmd);
 
 	GetCmdStack(pCmd->GetColour()).AddCmd(pCmd);
-	SaveGame();
 }
 
 void UpkeepPhase::FinishCmd(Colour c)
 {
 	GetCmdStack(c).AddCmd(CmdPtr());
-	SaveGame();
 }
 
 Cmd* UpkeepPhase::RemoveCmd(CommitSession& session, Colour c)
@@ -58,7 +54,6 @@ Cmd* UpkeepPhase::RemoveCmd(CommitSession& session, Colour c)
 
 	Cmd* pUndo = GetCmdStack(c).RemoveCmd();
 
-	SaveGame();
 	return pUndo;
 }
 

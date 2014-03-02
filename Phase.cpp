@@ -24,11 +24,6 @@ void Phase::Load(const Serial::LoadNode& node)
 	__super::Load(node);
 }
 
-void Phase::SaveGame()
-{
-	m_pGame->Save();
-}
-
 void Phase::ProcessCmdMessage(const Input::CmdMessage& msg, CommitSession& session, Player& player)
 {
 	LiveGame& game = GetGame();
@@ -109,7 +104,6 @@ Team& TurnPhase::GetCurrentTeam()
 void TurnPhase::AdvanceTurn()
 {
 	++m_iTurn;
-	SaveGame();
 }
 
 void TurnPhase::Save(Serial::SaveNode& node) const 

@@ -28,8 +28,11 @@ void CommitSession::Commit()
 	Verify("CommitSession::Commit", !m_bCommitted);
 	m_bCommitted = true;
 
-	//if (m_bOpened)
-		//TODO: Save game.
+	if (m_bOpened)
+	{
+		m_game.Save();
+		std::cout << "Saved game: " << m_game.GetName() << std::endl;
+	}
 }
 
 void CommitSession::DoAndPushRecord(RecordPtr pRec)

@@ -54,9 +54,9 @@ public:
 	virtual void Save(Serial::SaveNode& node) const override;
 	virtual void Load(const Serial::LoadNode& node) override;
 
-private:
-	virtual void Save() const override;
+	void Save() const;
 
+private:
 	std::vector<RecordPtr> m_records;
 	GamePhase m_gamePhase;
 	PhasePtr m_pPhase;

@@ -47,7 +47,6 @@ public:
 	virtual void Load(const Serial::LoadNode& node) override;
 
 protected:
-	void SaveGame();
 	const LiveGame& GetGame() const { return *m_pGame; }
 	LiveGame& GetGame() { return *m_pGame; }
 
