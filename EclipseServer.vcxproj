@@ -89,6 +89,7 @@
     <ClInclude Include="Cmd.h" />
     <ClInclude Include="CmdStack.h" />
     <ClInclude Include="ColoniseCmd.h" />
+    <ClInclude Include="CommitSession.h" />
     <ClInclude Include="Controller.h" />
     <ClInclude Include="DiplomacyCmd.h" />
     <ClInclude Include="DiscoverCmd.h" />
@@ -164,6 +165,7 @@
     <ClCompile Include="Cmd.cpp" />
     <ClCompile Include="CmdStack.cpp" />
     <ClCompile Include="ColoniseCmd.cpp" />
+    <ClCompile Include="CommitSession.cpp" />
     <ClCompile Include="Controller.cpp" />
     <ClCompile Include="DiplomacyCmd.cpp" />
     <ClCompile Include="DiscoverCmd.cpp" />

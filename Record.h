@@ -22,15 +22,14 @@ public:
 	Record();
 	virtual ~Record();
 	
-	static void DoAndPush(RecordPtr pRec, const LiveGame& game, const Controller& controller);
-	static RecordPtr PopAndUndo(const LiveGame& game, const Controller& controller);
-	static void Do(RecordPtr pRec, const LiveGame& game, const Controller& controller);
-	static void DoImmediate(const LiveGame& game, const std::function<void(LiveGame&)>& fn);
 	static void DoImmediate(const ReviewGame& game, const std::function<void(ReviewGame&)>& fn);
 
 	void Do(const ReviewGame& game, const Controller& controller);
 	void Undo(const ReviewGame& game, const Controller& controller);
-	
+
+	void Do(LiveGame& game, const Controller& controller);
+	void Undo(LiveGame& game, const Controller& controller);
+
 	virtual bool WantMergeNext() const { return false; }
 
 private:

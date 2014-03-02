@@ -11,7 +11,7 @@ public:
 
 	virtual void AddCmd(CmdPtr pCmd) override {}
 	virtual void FinishCmd(Colour c) override {}
-	virtual Cmd* RemoveCmd(const Controller& controller, Colour c) override { return nullptr; }; // Returns cmd to undo.
+	virtual Cmd* RemoveCmd(CommitSession& session, Colour c) override { return nullptr; }; // Returns cmd to undo.
 	virtual bool CanRemoveCmd(Colour c) const override { return false; }
 	virtual bool IsTeamActive(Colour c) const override;
 
@@ -19,7 +19,7 @@ public:
 
 	virtual void UpdateClient(const Controller& controller, const Player* pPlayer) const override;
 
-	void AssignTeam(Controller& controller, Player& player, RaceType race, Colour colour);
+	void AssignTeam(CommitSession& session, Player& player, RaceType race, Colour colour);
 
 	virtual void Save(Serial::SaveNode& node) const override {}
 	virtual void Load(const Serial::LoadNode& node) override {}

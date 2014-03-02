@@ -11,31 +11,6 @@ Record::Record() {}
 
 Record::~Record() {}
 
-RecordPtr Record::PopAndUndo(const LiveGame& game, const Controller& controller)
-{
-	LiveGame& game2 = const_cast<LiveGame&>(game);
-	RecordPtr pRec = game2.PopRecord();
-	pRec->Apply(false, game2, controller);
-	return pRec;
-}
-
-void Record::DoAndPush(RecordPtr pRec, const LiveGame& game, const Controller& controller)
-{
-	LiveGame& game2 = const_cast<LiveGame&>(game);
-	pRec->Apply(true, game2, controller);
-	game2.PushRecord(pRec);
-}
-
-void Record::Do(RecordPtr pRec, const LiveGame& game, const Controller& controller)
-{
-	pRec->Apply(true, const_cast<LiveGame&>(game), controller);
-}
-
-void Record::DoImmediate(const LiveGame& game, const std::function<void(LiveGame&)>& fn)
-{
-	fn(const_cast<LiveGame&>(game));
-}
-
 void Record::DoImmediate(const ReviewGame& game, const std::function<void(ReviewGame&)>& fn)
 {
 	fn(const_cast<ReviewGame&>(game));
@@ -51,6 +26,16 @@ void Record::Undo(const ReviewGame& game, const Controller& controller)
 {
 	Game& game2 = const_cast<ReviewGame&>(game);
 	Apply(false, game2, controller);
+}
+
+void Record::Do(LiveGame& game, const Controller& controller) 
+{
+	Apply(true, game, controller); 
+}
+
+void Record::Undo(LiveGame& game, const Controller& controller) 
+{
+	Apply(false, game, controller); 
 }
 
 //-----------------------------------------------------------------------------

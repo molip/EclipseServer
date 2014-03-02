@@ -9,6 +9,7 @@
 #include "Map.h"
 #include "DiscoverCmd.h"
 #include "Record.h"
+#include "CommitSession.h"
 
 InfluenceCmd::InfluenceCmd(Colour colour, const LiveGame& game, int iPhase) : PhaseCmd(colour, iPhase)
 {
@@ -27,7 +28,7 @@ void InfluenceCmd::UpdateClient(const Controller& controller, const LiveGame& ga
 	controller.SendMessage(Output::ChooseInfluenceSrc(m_srcs, GetTeam(game).GetInfluenceTrack().GetDiscCount() > 0), GetPlayer(game));
 }
 
-CmdPtr InfluenceCmd::Process(const Input::CmdMessage& msg, const Controller& controller, const LiveGame& game)
+CmdPtr InfluenceCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
 {
 	// TODO: Flip colony ships.
 
@@ -37,6 +38,7 @@ CmdPtr InfluenceCmd::Process(const Input::CmdMessage& msg, const Controller& con
 	auto& m = VerifyCastInput<const Input::CmdInfluenceSrc>(msg);
 	VerifyInput("InfluenceCmd::Process: invalid pos index", m.m_iPos == -1 || InRange(m_srcs, m.m_iPos));
 
+	const LiveGame& game = session.GetGame();
 	return CmdPtr(new InfluenceDstCmd(m_colour, game, m.m_iPos < 0 ? nullptr : &m_srcs[m.m_iPos], m_iPhase));
 }
 
@@ -192,7 +194,7 @@ void InfluenceDstCmd::UpdateClient(const Controller& controller, const LiveGame&
 	controller.SendMessage(Output::ChooseInfluenceDst(m_dsts, !!m_pSrcPos), GetPlayer(game));
 }
 
-CmdPtr InfluenceDstCmd::Process(const Input::CmdMessage& msg, const Controller& controller, const LiveGame& game)
+CmdPtr InfluenceDstCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
 {
 	auto& m = VerifyCastInput<const Input::CmdInfluenceDst>(msg);
 	VerifyInput("InfluenceDstCmd::Process: invalid pos index", m.m_iPos == -1 || InRange(m_dsts, m.m_iPos));
@@ -200,12 +202,13 @@ CmdPtr InfluenceDstCmd::Process(const Input::CmdMessage& msg, const Controller& 
 	const MapPos* pDstPos = m.m_iPos >= 0 ? &m_dsts[m.m_iPos] : nullptr;
 	
 	InfluenceRecord* pRec = new InfluenceRecord(m_colour, m_pSrcPos.get(), pDstPos);
-	DoRecord(RecordPtr(pRec), controller, game);
+	DoRecord(RecordPtr(pRec), session);
 
 	m_discovery = pRec->GetDiscovery();
 
 	const bool bFinish = m_iPhase == 1;
 
+	const LiveGame& game = session.GetGame();
 	if (m_discovery != DiscoveryType::None)
 		return CmdPtr(bFinish ? new DiscoverCmd(m_colour, game, m_discovery) : new DiscoverAndInfluenceCmd(m_colour, game, m_discovery));
 

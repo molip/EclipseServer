@@ -7,6 +7,7 @@
 #include "Output.h"
 #include "Games.h"
 #include "ReviewGame.h"
+#include "CommitSession.h"
 
 Phase::Phase(LiveGame* pGame) : m_pGame(pGame)
 {
@@ -28,7 +29,7 @@ void Phase::SaveGame()
 	m_pGame->Save();
 }
 
-void Phase::ProcessCmdMessage(const Input::CmdMessage& msg, Controller& controller, Player& player) 
+void Phase::ProcessCmdMessage(const Input::CmdMessage& msg, CommitSession& session, Player& player)
 {
 	LiveGame& game = GetGame();
 	VerifyModel("Phase::ProcessCmdMessage: Player not in game", &game == player.GetCurrentLiveGame());
@@ -37,12 +38,13 @@ void Phase::ProcessCmdMessage(const Input::CmdMessage& msg, Controller& controll
 	Cmd* pCmd = GetCurrentCmd(colour);
 	VerifyModel("Phase::ProcessCmdMessage: No current command", !!pCmd);
 
-	CmdPtr pNext = pCmd->Process(msg, controller, game); // Might be null.
+	CmdPtr pNext = pCmd->Process(msg, session); // Might be null.
 	if (pNext)
 		AddCmd(std::move(pNext)); 
 	else
 		FinishCmd(colour);
 
+	const Controller& controller = session.GetController();
 	UpdateClient(controller, &player);
 
 	if (pCmd->HasRecord()) 
@@ -51,7 +53,7 @@ void Phase::ProcessCmdMessage(const Input::CmdMessage& msg, Controller& controll
 				controller.SendMessage(Output::UpdateReviewUI(*g), *g);
 }
 
-void Phase::UndoCmd(Controller& controller, Player& player) 
+void Phase::UndoCmd(CommitSession& session, Player& player)
 {
 	LiveGame& game = GetGame();
 	VerifyModel("Phase::UndoCmd: Player not in game", &game == player.GetCurrentLiveGame());
@@ -59,7 +61,8 @@ void Phase::UndoCmd(Controller& controller, Player& player)
 	const Colour colour = game.GetTeam(player).GetColour();
 	const Cmd* pCmd = GetCurrentCmd(colour);
 
-	if (Cmd* pUndo = RemoveCmd(controller, colour))
+	const Controller& controller = session.GetController();
+	if (Cmd* pUndo = RemoveCmd(session, colour))
 	{
 		if (pUndo->HasRecord())
 		{
@@ -68,7 +71,7 @@ void Phase::UndoCmd(Controller& controller, Player& player)
 				if (g->GetLiveGameID() == game.GetID())
 					g->OnPreRecordPop(controller);
 
-			pUndo->PopRecord(controller, game);
+			pUndo->PopRecord(session);
 
 			for (auto& g : Games::GetReviewGames())
 				if (g->GetLiveGameID() == game.GetID())
@@ -76,7 +79,7 @@ void Phase::UndoCmd(Controller& controller, Player& player)
 		}
 
 		if (pUndo->IsAutoProcess()) // Also undo the command start. 
-			RemoveCmd(controller, colour);
+			RemoveCmd(session, colour);
 	}
 
 	UpdateClient(controller, &player);

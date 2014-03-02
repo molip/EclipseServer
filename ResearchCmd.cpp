@@ -5,6 +5,7 @@
 #include "Controller.h"
 #include "LiveGame.h"
 #include "Record.h"
+#include "CommitSession.h"
 
 class ResearchRecord : public TeamRecord
 {
@@ -106,7 +107,7 @@ void ResearchCmd::UpdateClient(const Controller& controller, const LiveGame& gam
 	controller.SendMessage(Output::ChooseResearch(m_techs, m_iPhase > 0), GetPlayer(game));
 }
 
-CmdPtr ResearchCmd::Process(const Input::CmdMessage& msg, const Controller& controller, const LiveGame& game)
+CmdPtr ResearchCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
 {
 	if (dynamic_cast<const Input::CmdAbort*>(&msg))
 		return nullptr;
@@ -115,7 +116,9 @@ CmdPtr ResearchCmd::Process(const Input::CmdMessage& msg, const Controller& cont
 	VerifyInput("ResearchCmd::Process: invalid tech index", InRange(m_techs, m.m_iTech));
 
 	ResearchRecord* pRec = new ResearchRecord(m_colour, m_techs[m.m_iTech].first);
-	DoRecord(RecordPtr(pRec), controller, game);
+	DoRecord(RecordPtr(pRec), session);
+	
+	const LiveGame& game = session.GetGame();
 
 	if (m_techs[m.m_iTech].first == TechType::ArtifactKey)
 		return CmdPtr(new ResearchArtifactCmd(m_colour, game, m_iPhase));
@@ -191,13 +194,14 @@ void ResearchArtifactCmd::UpdateClient(const Controller& controller, const LiveG
 	controller.SendMessage(Output::ChooseResearchArtifact(m_nArtifacts), GetPlayer(game));
 }
 
-CmdPtr ResearchArtifactCmd::Process(const Input::CmdMessage& msg, const Controller& controller, const LiveGame& game)
+CmdPtr ResearchArtifactCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
 {
 	auto& m = VerifyCastInput<const Input::CmdResearchArtifact>(msg);
 
 	ResearchArtifactRecord* pRec = new ResearchArtifactRecord(m_colour, m.m_artifacts);
-	DoRecord(RecordPtr(pRec), controller, game);
+	DoRecord(RecordPtr(pRec), session);
 
+	const LiveGame& game = session.GetGame();
 	if (m_iPhase + 1 < Race(GetTeam(game).GetRace()).GetResearchRate())
 		return CmdPtr(new ResearchCmd(m_colour, game, m_iPhase + 1));
 

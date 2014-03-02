@@ -5,6 +5,7 @@
 #include "Controller.h"
 #include "LiveGame.h"
 #include "Record.h"
+#include "CommitSession.h"
 
 class TradeRecord : public TeamRecord
 {
@@ -58,9 +59,9 @@ void TradeCmd::UpdateClient(const Controller& controller, const LiveGame& game) 
 	controller.SendMessage(Output::ChooseTrade(GetTeam(game)), GetPlayer(game));
 }
 
-CmdPtr TradeCmd::Process(const Input::CmdMessage& msg, const Controller& controller, const LiveGame& game)
+CmdPtr TradeCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
 {
-	const Team& team = game.GetTeam(m_colour);
+	const Team& team = session.GetGame().GetTeam(m_colour);
 	auto& storage = team.GetStorage();
 
 	auto& m = VerifyCastInput<const Input::CmdTrade>(msg);
@@ -74,7 +75,7 @@ CmdPtr TradeCmd::Process(const Input::CmdMessage& msg, const Controller& control
 	TradeRecord::Pair dst(m.m_to, m.m_count);
 
 	TradeRecord* pRec = new TradeRecord(m_colour, srcs, dst);
-	DoRecord(RecordPtr(pRec), controller, game);
+	DoRecord(RecordPtr(pRec), session);
 
 	return nullptr;
 }

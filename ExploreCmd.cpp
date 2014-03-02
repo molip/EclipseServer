@@ -11,6 +11,7 @@
 #include "Record.h"
 #include "EdgeSet.h"
 #include "ActionPhase.h"
+#include "CommitSession.h"
 
 class ExploreRecord : public TeamRecord
 {
@@ -72,7 +73,7 @@ void ExploreCmd::UpdateClient(const Controller& controller, const LiveGame& game
 	controller.SendMessage(Output::ChooseExplorePos(m_positions, m_iPhase > 0), GetPlayer(game));
 }
 
-CmdPtr ExploreCmd::Process(const Input::CmdMessage& msg, const Controller& controller, const LiveGame& game)
+CmdPtr ExploreCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
 {
 	if (dynamic_cast<const Input::CmdAbort*>(&msg))
 		return nullptr;
@@ -84,12 +85,12 @@ CmdPtr ExploreCmd::Process(const Input::CmdMessage& msg, const Controller& contr
 	const MapPos& pos = m_positions[m_iPos];
 
 	ExploreRecord* pRec = new ExploreRecord(m_colour, pos.GetRing());
-	DoRecord(RecordPtr(pRec), controller, game);
+	DoRecord(RecordPtr(pRec), session);
 	m_idHex = pRec->GetHexID();
 
 	std::vector<int> hexIDs;
 	hexIDs.push_back(m_idHex);
-	return CmdPtr(new ExploreHexCmd(m_colour, game, pos, hexIDs, m_iPhase));
+	return CmdPtr(new ExploreHexCmd(m_colour, session.GetGame(), pos, hexIDs, m_iPhase));
 }
 
 void ExploreCmd::Save(Serial::SaveNode& node) const 
@@ -263,9 +264,11 @@ void ExploreHexCmd::UpdateClient(const Controller& controller, const LiveGame& g
 }
 
 
-CmdPtr ExploreHexCmd::Process(const Input::CmdMessage& msg, const Controller& controller, const LiveGame& game)
+CmdPtr ExploreHexCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
 {
 	m_discovery = DiscoveryType::None;
+
+	const LiveGame& game = session.GetGame();
 
 	if (dynamic_cast<const Input::CmdExploreHexTake*>(&msg))
 	{
@@ -274,7 +277,7 @@ CmdPtr ExploreHexCmd::Process(const Input::CmdMessage& msg, const Controller& co
 		VerifyInput("ExploreHexCmd::Process: too many tiles taken", Race(GetTeam(game).GetRace()).GetExploreChoices() > (int)m_hexIDs.size());
 
 		ExploreRecord* pRec = new ExploreRecord(m_colour, m_pos.GetRing());
-		DoRecord(RecordPtr(pRec), controller, game);
+		DoRecord(RecordPtr(pRec), session);
 		int idHex = pRec->GetHexID();
 
 		std::vector<int> hexIDs = m_hexIDs;
@@ -301,7 +304,7 @@ CmdPtr ExploreHexCmd::Process(const Input::CmdMessage& msg, const Controller& co
 		m_iRot = m.m_iRot;
 
 		ExploreHexRecord* pRec = new ExploreHexRecord(m_colour, m_pos, m_hexChoices[m_iHex].m_idHex, hc.m_rotations[m_iRot], m.m_bInfluence);
-		DoRecord(RecordPtr(pRec), controller, game);
+		DoRecord(RecordPtr(pRec), session);
 
 		m_discovery = pRec->GetDiscovery();
 	}

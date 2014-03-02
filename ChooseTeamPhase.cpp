@@ -4,6 +4,7 @@
 #include "Output.h"
 #include "Controller.h"
 #include "StartRoundRecord.h"
+#include "CommitSession.h"
 
 ChooseTeamPhase::ChooseTeamPhase(LiveGame* pGame) : TurnPhase(pGame)
 {
@@ -14,7 +15,7 @@ bool ChooseTeamPhase::IsTeamActive(Colour c) const
 	return c == GetCurrentTeam().GetColour();
 }
 
-void ChooseTeamPhase::AssignTeam(Controller& controller, Player& player, RaceType race, Colour colour)
+void ChooseTeamPhase::AssignTeam(CommitSession& session, Player& player, RaceType race, Colour colour)
 {
 	LiveGame& game = GetGame();
 	
@@ -22,7 +23,7 @@ void ChooseTeamPhase::AssignTeam(Controller& controller, Player& player, RaceTyp
 
 	AdvanceTurn();
 
-	controller.SendMessage(Output::ChooseTeam(game, false), player);
+	session.GetController().SendMessage(Output::ChooseTeam(game, false), player);
 
 	bool allAssigned = true;
 	for (auto& team : game.GetTeams())
@@ -30,11 +31,11 @@ void ChooseTeamPhase::AssignTeam(Controller& controller, Player& player, RaceTyp
 	
 	if (allAssigned)
 	{
-		Record::Do(RecordPtr(new StartRoundRecord), game, controller);
+		session.DoRecord(RecordPtr(new StartRoundRecord));
 		game.StartMainGamePhase(); // Deletes this.
 	}
 
-	controller.SendUpdateGame(game);
+	session.GetController().SendUpdateGame(game);
 }
 
 void ChooseTeamPhase::UpdateClient(const Controller& controller, const Player* pPlayer) const

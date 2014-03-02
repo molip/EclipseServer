@@ -4,6 +4,7 @@
 #include "Team.h"
 #include "LiveGame.h"
 #include "Record.h"
+#include "CommitSession.h"
 
 Cmd::Cmd() : m_colour(Colour::None), m_bHasRecord(false) {}
 
@@ -31,18 +32,18 @@ const Player& Cmd::GetPlayer(const LiveGame& game) const
 	return GetTeam(game).GetPlayer(); 
 }
 
-void Cmd::DoRecord(RecordPtr pRec, const Controller& controller, const LiveGame& game)
+void Cmd::DoRecord(RecordPtr pRec, CommitSession& session)
 {
 	VerifyModel("Cmd::DoRecord", !m_bHasRecord);
 
-	Record::DoAndPush(std::move(pRec), game, controller);
+	session.DoAndPushRecord(std::move(pRec));
 	m_bHasRecord = true;
 }
 
-void Cmd::PopRecord(const Controller& controller, const LiveGame& game)
+void Cmd::PopRecord(CommitSession& session)
 {
 	VerifyModel("Cmd::PopRecord", m_bHasRecord);
-	Record::PopAndUndo(game, controller);
+	session.PopAndUndoRecord();
 	m_bHasRecord = false;
 }
 

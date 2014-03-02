@@ -6,6 +6,7 @@
 #include "Output.h"
 #include "Player.h"
 #include "StartRoundRecord.h"
+#include "CommitSession.h"
 
 UpkeepPhase::UpkeepPhase(LiveGame* pGame) : Phase(pGame)
 {
@@ -25,7 +26,7 @@ CmdStack& UpkeepPhase::GetCmdStack(Colour c)
 	return *it->second;
 }
 
-void UpkeepPhase::StartCmd(CmdPtr pCmd, Controller& controller)
+void UpkeepPhase::StartCmd(CmdPtr pCmd, CommitSession& session)
 {
 	VerifyModel("UpkeepPhase::StartCmd", !pCmd->IsAction());
 
@@ -34,7 +35,7 @@ void UpkeepPhase::StartCmd(CmdPtr pCmd, Controller& controller)
 
 	SaveGame();
 
-	GetCurrentCmd(c)->UpdateClient(controller, GetGame());
+	GetCurrentCmd(c)->UpdateClient(session.GetController(), GetGame());
 }
 
 void UpkeepPhase::AddCmd(CmdPtr pCmd)
@@ -51,7 +52,7 @@ void UpkeepPhase::FinishCmd(Colour c)
 	SaveGame();
 }
 
-Cmd* UpkeepPhase::RemoveCmd(const Controller& controller, Colour c)
+Cmd* UpkeepPhase::RemoveCmd(CommitSession& session, Colour c)
 {
 	const Cmd* pCmd = GetCurrentCmd(c);
 
@@ -95,7 +96,7 @@ void UpkeepPhase::UpdateClient(const Controller& controller, const Player* pPlay
 	}
 }
 
-void UpkeepPhase::FinishTurn(Controller& controller, const Player& player)
+void UpkeepPhase::FinishTurn(CommitSession& session, const Player& player)
 {
 	LiveGame& game = GetGame();
 	
@@ -106,11 +107,13 @@ void UpkeepPhase::FinishTurn(Controller& controller, const Player& player)
 	bool bOK = m_finished.insert(c).second;
 	VerifyModel("UpkeepPhase::FinishTurn", bOK);
 
+	const Controller& controller = session.GetController();
+
 	UpdateClient(controller, &player);
 
 	if (m_finished.size() == game.GetTeams().size())
 	{
-		Record::DoAndPush(RecordPtr(new StartRoundRecord), game, controller);
+		session.DoAndPushRecord(RecordPtr(new StartRoundRecord));
 
 		game.StartActionPhase(); // Deletes this.
 		game.GetPhase().UpdateClient(controller, nullptr);

@@ -5,6 +5,7 @@
 #include "Controller.h"
 #include "Output.h"
 #include "ActionRecord.h"
+#include "CommitSession.h"
 
 ActionPhase::ActionPhase(LiveGame* pGame) : TurnPhase(pGame), m_bDoneAction(false)
 {
@@ -33,7 +34,7 @@ void ActionPhase::FinishCmd(Colour c)
 	SaveGame();
 }
 
-Cmd* ActionPhase::RemoveCmd(const Controller& controller, Colour c)
+Cmd* ActionPhase::RemoveCmd(CommitSession& session, Colour c)
 {
 	VerifyModel("ActionPhase::RemoveCmd", IsTeamActive(c));
 
@@ -50,7 +51,7 @@ Cmd* ActionPhase::RemoveCmd(const Controller& controller, Colour c)
 
 		if (bCostsInfluence)
 		{
-			RecordPtr pRec = Record::PopAndUndo(GetGame(), controller);
+			RecordPtr pRec = session.PopAndUndoRecord();
 			VerifyModel("ActionPhase::RemoveCmd: current record not ActionRecord", !!dynamic_cast<ActionRecord*>(pRec.get()));
 		}
 	}
@@ -86,7 +87,7 @@ bool ActionPhase::CanRemoveCmd() const
 	return m_pCmdStack->CanRemoveCmd();
 }
 
-void ActionPhase::StartCmd(CmdPtr pCmd, Controller& controller)
+void ActionPhase::StartCmd(CmdPtr pCmd, CommitSession& session)
 {
 	VerifyModel("ActionPhase::StartCmd: Team not active", IsTeamActive(pCmd->GetColour()));
 
@@ -96,9 +97,11 @@ void ActionPhase::StartCmd(CmdPtr pCmd, Controller& controller)
 		m_bDoneAction = true;
 	}
 
+	const Controller& controller = session.GetController();
+
 	if (pCmd->CostsInfluence())
 	{
-		Record::DoAndPush(RecordPtr(new ActionRecord(GetCurrentTeam().GetColour())), GetGame(), controller);
+		session.DoAndPushRecord(RecordPtr(new ActionRecord(GetCurrentTeam().GetColour())));
 	}
 	
 	m_pCmdStack->StartCmd(pCmd);
@@ -108,7 +111,7 @@ void ActionPhase::StartCmd(CmdPtr pCmd, Controller& controller)
 	Cmd* pStartedCmd = GetCurrentCmd();
 
 	if (pStartedCmd->IsAutoProcess())
-		ProcessCmdMessage(Input::CmdMessage(), controller, GetCurrentPlayer());
+		ProcessCmdMessage(Input::CmdMessage(), session, GetCurrentPlayer());
 	else
 		pStartedCmd->UpdateClient(controller, GetGame());
 }
@@ -121,8 +124,9 @@ bool ActionPhase::CanDoAction() const
 	return !m_bDoneAction; // Only one action per turn.
 }
 
-void ActionPhase::FinishTurn(Controller& controller)
+void ActionPhase::FinishTurn(CommitSession& session)
 {
+	const Controller& controller = session.GetController();
 	controller.SendMessage(Output::ChooseFinished(), GetCurrentPlayer());
 
 	Colour c = GetCurrentTeam().GetColour();

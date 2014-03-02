@@ -5,6 +5,7 @@
 #include "Controller.h"
 #include "LiveGame.h"
 #include "Record.h"
+#include "CommitSession.h"
 
 class PassRecord : public TeamRecord
 {
@@ -29,12 +30,12 @@ PassCmd::PassCmd(Colour colour, const LiveGame& game) : Cmd(colour)
 {
 }
 
-CmdPtr PassCmd::Process(const Input::CmdMessage& msg, const Controller& controller, const LiveGame& game)
+CmdPtr PassCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
 {	
-	VerifyInput("PassCmd::Process", !GetTeam(game).HasPassed());
+	VerifyInput("PassCmd::Process", !GetTeam(session.GetGame()).HasPassed());
 
 	Record* pRec = new PassRecord(m_colour);
-	DoRecord(RecordPtr(pRec), controller, game);
+	DoRecord(RecordPtr(pRec), session);
 
 	return nullptr;
 }

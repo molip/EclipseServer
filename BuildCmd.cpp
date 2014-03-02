@@ -5,6 +5,7 @@
 #include "Controller.h"
 #include "LiveGame.h"
 #include "Record.h"
+#include "CommitSession.h"
 
 namespace
 {
@@ -122,7 +123,7 @@ void BuildCmd::UpdateClient(const Controller& controller, const LiveGame& game) 
 	controller.SendMessage(Output::ChooseBuild(ships, hexes, m_iPhase > 0), GetPlayer(game));
 }
 
-CmdPtr BuildCmd::Process(const Input::CmdMessage& msg, const Controller& controller, const LiveGame& game)
+CmdPtr BuildCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
 {
 	if (dynamic_cast<const Input::CmdAbort*>(&msg))
 		return nullptr;
@@ -132,6 +133,7 @@ CmdPtr BuildCmd::Process(const Input::CmdMessage& msg, const Controller& control
 	bool bOrbital = m.m_buildable == Buildable::Orbital;
 	bool bMonolith = m.m_buildable == Buildable::Monolith;
 
+	const LiveGame& game = session.GetGame();
 	const Team& team = GetTeam(game);
 	const Hex& hex = game.GetMap().GetHex(pos);
 	VerifyInput("BuildCmd::Process: invalid hex", hex.GetColour() == m_colour);
@@ -144,7 +146,7 @@ CmdPtr BuildCmd::Process(const Input::CmdMessage& msg, const Controller& control
 		GetTeam(game).GetUnusedShips(BuildableToShip(m.m_buildable)) > 0);
 
 	BuildRecord* pRec = new BuildRecord(m_colour, pos, m.m_buildable);
-	DoRecord(RecordPtr(pRec), controller, game);
+	DoRecord(RecordPtr(pRec), session);
 
 	if (!team.HasPassed() && m_iPhase + 1 < Race(team.GetRace()).GetBuildRate())
 		return CmdPtr(new BuildCmd(m_colour, game, m_iPhase + 1));

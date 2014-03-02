@@ -8,6 +8,7 @@
 #include "LiveGame.h"
 #include "Map.h"
 #include "Record.h"
+#include "CommitSession.h"
 
 ColoniseCmd::ColoniseCmd(Colour colour, const LiveGame& game) : Cmd(colour)
 {
@@ -23,12 +24,12 @@ void ColoniseCmd::UpdateClient(const Controller& controller, const LiveGame& gam
 	controller.SendMessage(Output::ChooseColonisePos(m_positions), GetPlayer(game));
 }
 
-CmdPtr ColoniseCmd::Process(const Input::CmdMessage& msg, const Controller& controller, const LiveGame& game)
+CmdPtr ColoniseCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
 {
 	auto& m = VerifyCastInput<const Input::CmdColonisePos>(msg);
 	VerifyInput("ColoniseCmd::Process: invalid pos index", m.m_iPos == -1 || InRange(m_positions, m.m_iPos));
 	
-	return CmdPtr(new ColoniseSquaresCmd(m_colour, game, m_positions[m.m_iPos]));
+	return CmdPtr(new ColoniseSquaresCmd(m_colour, session.GetGame(), m_positions[m.m_iPos]));
 }
 
 void ColoniseCmd::Save(Serial::SaveNode& node) const 
@@ -124,7 +125,7 @@ void ColoniseSquaresCmd::UpdateClient(const Controller& controller, const LiveGa
 	controller.SendMessage(Output::ChooseColoniseSquares(m_squareCounts, pop, nShips), GetPlayer(game));
 }
 
-CmdPtr ColoniseSquaresCmd::Process(const Input::CmdMessage& msg, const Controller& controller, const LiveGame& game)
+CmdPtr ColoniseSquaresCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
 {
 	auto& m = VerifyCastInput<const Input::CmdColoniseSquares>(msg);
 
@@ -132,7 +133,7 @@ CmdPtr ColoniseSquaresCmd::Process(const Input::CmdMessage& msg, const Controlle
 
 	VerifyInput("ColoniseSquaresCmd::Process: no cubes specified", !fixed.IsEmpty() || !grey.IsEmpty() || !orbital.IsEmpty());
 	VerifyInput("ColoniseSquaresCmd::Process: not enough ships",
-		fixed.GetTotal() + grey.GetTotal() + orbital.GetTotal() <= GetTeam(game).GetUnusedColonyShips());
+		fixed.GetTotal() + grey.GetTotal() + orbital.GetTotal() <= GetTeam(session.GetGame()).GetUnusedColonyShips());
 
 	ColoniseRecord* pRec = new ColoniseRecord(m_colour, m_pos);
 
@@ -167,7 +168,7 @@ CmdPtr ColoniseSquaresCmd::Process(const Input::CmdMessage& msg, const Controlle
 
 	VerifyInput("ColoniseSquaresCmd::Process: not enough squares", fixed.IsEmpty() || grey.IsEmpty() || orbital.IsEmpty());
 
-	DoRecord(RecordPtr(pRec), controller, game);
+	DoRecord(RecordPtr(pRec), session);
 
 	return nullptr;
 }

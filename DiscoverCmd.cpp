@@ -8,6 +8,7 @@
 #include "Team.h"
 #include "LiveGame.h"
 #include "ActionPhase.h"
+#include "CommitSession.h"
 
 DiscoverCmd::DiscoverCmd(Colour colour, const LiveGame& game, DiscoveryType discovery) : 
 	Cmd(colour), m_discovery(discovery)
@@ -20,11 +21,11 @@ void DiscoverCmd::UpdateClient(const Controller& controller, const LiveGame& gam
 	controller.SendMessage(msg, GetPlayer(game));
 }
 
-CmdPtr DiscoverCmd::Process(const Input::CmdMessage& msg, const Controller& controller, const LiveGame& game)
+CmdPtr DiscoverCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
 {
 	auto& m = VerifyCastInput<const Input::CmdExploreDiscovery>(msg);
 
-	return GetNextCmd(game);
+	return GetNextCmd(session.GetGame());
 }
 
 void DiscoverCmd::Save(Serial::SaveNode& node) const 

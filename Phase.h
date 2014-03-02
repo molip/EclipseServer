@@ -8,6 +8,7 @@ class CmdStack;
 class Cmd;
 class Player;
 class Team;
+class CommitSession;
 
 enum class Colour;
 
@@ -26,14 +27,14 @@ public:
 
 	void SetGame(LiveGame& game) { m_pGame = &game; }
 	
-	void ProcessCmdMessage(const Input::CmdMessage& msg, Controller& controller, Player& player);
-	void UndoCmd(Controller& controller, Player& player);
+	void ProcessCmdMessage(const Input::CmdMessage& msg, CommitSession& session, Player& player);
+	void UndoCmd(CommitSession& session, Player& player);
 	
-	virtual void StartCmd(CmdPtr pCmd, Controller& controller) { ASSERT(false); }
+	virtual void StartCmd(CmdPtr pCmd, CommitSession& session) { ASSERT(false); }
 
 	virtual void AddCmd(CmdPtr pCmd) = 0;
 	virtual void FinishCmd(Colour c) = 0;
-	virtual Cmd* RemoveCmd(const Controller& controller, Colour c) = 0; // Returns cmd to undo.
+	virtual Cmd* RemoveCmd(CommitSession& session, Colour c) = 0; // Returns cmd to undo.
 	virtual bool CanRemoveCmd(Colour c) const = 0;
 	virtual bool IsTeamActive(Colour c) const = 0;
 

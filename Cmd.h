@@ -8,6 +8,8 @@ class Controller;
 class Player;
 class Team;
 class LiveGame;
+class CommitSession;
+
 enum class Colour;
 
 namespace Input { class CmdMessage; }
@@ -26,7 +28,7 @@ public:
 	virtual ~Cmd() {}
 	
 	virtual void UpdateClient(const Controller& controller, const LiveGame& game) const {}
-	virtual CmdPtr Process(const Input::CmdMessage& msg, const Controller& controller, const LiveGame& game) = 0;
+	virtual CmdPtr Process(const Input::CmdMessage& msg, CommitSession& session) = 0;
 	
 	virtual bool IsAutoProcess() const { return false; } 
 	virtual bool IsAction() const { return false; } 
@@ -37,7 +39,7 @@ public:
 	virtual void Save(Serial::SaveNode& node) const override;
 	virtual void Load(const Serial::LoadNode& node) override;
 
-	void PopRecord(const Controller& controller, const LiveGame& game);
+	void PopRecord(CommitSession& session);
 	Colour GetColour() const { return m_colour; }
 
 protected:
@@ -47,7 +49,7 @@ protected:
 	Player& GetPlayer(LiveGame& game);
 	const Player& GetPlayer(const LiveGame& game) const;
 
-	void DoRecord(RecordPtr pRec, const Controller& controller, const LiveGame& game);
+	void DoRecord(RecordPtr pRec, CommitSession& session);
 
 	Colour m_colour;
 	bool m_bHasRecord;

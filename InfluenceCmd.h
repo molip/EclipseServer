@@ -16,7 +16,7 @@ public:
 	InfluenceCmd(Colour colour, const LiveGame& game, int iPhase = 0);
 
 	virtual void UpdateClient(const Controller& controller, const LiveGame& game) const override;
-	virtual CmdPtr Process(const Input::CmdMessage& msg, const Controller& controller, const LiveGame& game) override;
+	virtual CmdPtr Process(const Input::CmdMessage& msg, CommitSession& session) override;
 	virtual bool IsAction() const override { return true; } 
 
 	virtual void Save(Serial::SaveNode& node) const override;
@@ -33,7 +33,7 @@ public:
 	InfluenceDstCmd(Colour colour, const LiveGame& game, const MapPos* pSrcPos, int iPhase = 0);
 
 	virtual void UpdateClient(const Controller& controller, const LiveGame& game) const override;
-	virtual CmdPtr Process(const Input::CmdMessage& msg, const Controller& controller, const LiveGame& game) override;
+	virtual CmdPtr Process(const Input::CmdMessage& msg, CommitSession& session) override;
 	virtual bool CanUndo() const override { return m_discovery == DiscoveryType::None; }
 
 	virtual void Save(Serial::SaveNode& node) const override;

@@ -24,6 +24,7 @@
 #include "UpkeepPhase.h"
 #include "Json.h"
 #include "Record.h"
+#include "CommitSession.h"
 
 #include <sstream>
 
@@ -143,7 +144,9 @@ namespace
 		if (!game.HasStarted())
 		{
 			// Might already have joined,  doesn't matter.
-			Record::DoImmediate(game, [&](LiveGame& game) { game.AddPlayer(player); });
+			CommitSession session(game, controller);
+			session.Open().AddPlayer(player);
+			session.Commit();
 			
 			controller.SendMessage(Output::UpdateLobby(game), game);
 			controller.SendUpdateGameList();
@@ -235,7 +238,9 @@ bool StartGame::Process(Controller& controller, Player& player) const
 	VerifyInput("StartGame: player isn't the owner of game: " + pGame->GetName(), &player == &pGame->GetOwner());
 	VerifyInput("StartGame: game already started: " + pGame->GetName(), !pGame->HasStarted());
 	
-	Record::DoImmediate(*pGame, [](LiveGame& game) { game.StartChooseTeamGamePhase(); });
+	CommitSession session(*pGame, controller);
+	session.Open().StartChooseTeamGamePhase();
+	session.Commit();
 
 	controller.SendUpdateGameList();
 	controller.SendUpdateGame(*pGame);
@@ -266,7 +271,9 @@ bool ChooseTeam::Process(Controller& controller, Player& player) const
 	if (race != RaceType::Human)
 		VerifyInput("ChooseTeam: colour doesn't match race", colour == Race(race).GetColour());
 
-	Record::DoImmediate(*pGame, [&](LiveGame& game) { game.GetChooseTeamPhase().AssignTeam(controller, player, race, colour); });
+	CommitSession session(*pGame, controller);
+	session.Open().GetChooseTeamPhase().AssignTeam(session, player, race, colour);
+	session.Commit();
 
 	return true;	
 }
@@ -306,26 +313,34 @@ bool StartAction::Process(Controller& controller, Player& player) const
 
 	VerifyInput("StartAction::Process: No command created", !!pCmd);
 	
-	Record::DoImmediate(game, [&](LiveGame& game) { game.GetPhase().StartCmd(CmdPtr(pCmd), controller); });
+	CommitSession session(game, controller);
+	session.Open().GetPhase().StartCmd(CmdPtr(pCmd), session);
+	session.Commit();
 
 	return true;	
 }
 
 bool Undo::Process(Controller& controller, Player& player) const 
 {
-	Record::DoImmediate(GetLiveGame(player), [&](LiveGame& game) { game.GetPhase().UndoCmd(controller, player); });
+	CommitSession session(GetLiveGame(player), controller);
+	session.Open().GetPhase().UndoCmd(session, player);
+	session.Commit();
 	return true;	
 }
 
 bool Commit::Process(Controller& controller, Player& player) const 
 {
-	Record::DoImmediate(GetLiveGame(player), [&](LiveGame& game) { game.GetActionPhase().FinishTurn(controller); });
+	CommitSession session(GetLiveGame(player), controller);
+	session.Open().GetActionPhase().FinishTurn(session);
+	session.Commit();
 	return true;
 }
 
 bool FinishUpkeep::Process(Controller& controller, Player& player) const
 {
-	Record::DoImmediate(GetLiveGame(player), [&](LiveGame& game) { game.GetUpkeepPhase().FinishTurn(controller, player); });
+	CommitSession session(GetLiveGame(player), controller);
+	session.Open().GetUpkeepPhase().FinishTurn(session, player);
+	session.Commit();
 	return true;
 }
 
@@ -333,7 +348,9 @@ bool FinishUpkeep::Process(Controller& controller, Player& player) const
 
 bool CmdMessage::Process(Controller& controller, Player& player) const
 {
-	Record::DoImmediate(GetLiveGame(player), [&](LiveGame& game) { game.GetPhase().ProcessCmdMessage(*this, controller, player); });
+	CommitSession session(GetLiveGame(player), controller);
+	session.Open().GetPhase().ProcessCmdMessage(*this, session, player);
+	session.Commit();
 	return true;
 }
 
