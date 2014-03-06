@@ -55,11 +55,13 @@ public:
 	virtual void Load(const Serial::LoadNode& node) override;
 
 	void Save() const;
+	std::mutex& GetMutex() const { return m_mutex; }
 
 private:
 	std::vector<RecordPtr> m_records;
 	GamePhase m_gamePhase;
 	PhasePtr m_pPhase;
+	mutable std::mutex m_mutex;
 };
 
 DEFINE_UNIQUE_PTR(LiveGame)

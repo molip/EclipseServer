@@ -3,6 +3,7 @@
 #include "Controller.h"
 #include "Players.h"
 #include "Games.h"
+#include "SaveThread.h"
 
 int main(void) 
 {
@@ -12,6 +13,7 @@ int main(void)
 
 	Games::Load();
 
+	SaveThread savethread;
 	Controller controller;
 	WSServer serverWS(controller);
 	HTMLServer serverHTML;

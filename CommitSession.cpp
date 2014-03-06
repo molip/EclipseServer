@@ -1,6 +1,7 @@
 #include "CommitSession.h"
 #include "Record.h"
 #include "LiveGame.h"
+#include "SaveThread.h"
 
 // All non-const LiveGame access should be performed during a CommitSession. 
 // If an exception occurs between opening and committing the session, the game may be in an invalid state and should be locked. 
@@ -9,7 +10,7 @@
 CommitSession* CommitSession::s_pInstance;
 
 CommitSession::CommitSession(const LiveGame& game, const Controller& controller) : 
-m_game(const_cast<LiveGame&>(game)), m_controller(controller), m_bCommitted()
+m_game(const_cast<LiveGame&>(game)), m_controller(controller), m_bCommitted(), m_lock(game.GetMutex(), std::defer_lock)
 {
 	Verify("CommitSession::CommitSession", !s_pInstance);
 	s_pInstance = this;
@@ -19,8 +20,19 @@ CommitSession::~CommitSession()
 {
 	s_pInstance = nullptr;
 
-	//if (m_bOpened && !m_bCommitted)
+	//if (m_lock && !m_bCommitted)
 	//	TODO: Lock game.
+}
+
+LiveGame& CommitSession::Open() 
+{
+	if (!m_lock)
+		if (!m_lock.try_lock())
+		{
+			std::cout << "Waiting for game mutex..." << std::endl;
+			m_lock.lock();
+		}
+	return m_game; 
 }
 
 void CommitSession::Commit()
@@ -28,23 +40,23 @@ void CommitSession::Commit()
 	Verify("CommitSession::Commit", !m_bCommitted);
 	m_bCommitted = true;
 
-	if (m_bOpened)
+	if (m_lock)
 	{
-		m_game.Save();
-		std::cout << "Saved game: " << m_game.GetName() << std::endl;
+		m_lock.unlock();
+		SaveThread::Instance()->Push(m_game);
 	}
 }
 
 void CommitSession::DoAndPushRecord(RecordPtr pRec)
 {
-	m_bOpened = true;
+	Open();
 	pRec->Do(m_game, m_controller);
 	m_game.PushRecord(pRec);
 }
 
 RecordPtr CommitSession::PopAndUndoRecord()
 {
-	m_bOpened = true;
+	Open();
 	RecordPtr pRec = m_game.PopRecord();
 	pRec->Undo(m_game, m_controller);
 	return pRec;
@@ -52,7 +64,7 @@ RecordPtr CommitSession::PopAndUndoRecord()
 
 void CommitSession::DoRecord(RecordPtr pRec)
 {
-	m_bOpened = true;
+	Open();
 	pRec->Do(m_game, m_controller);
 }
 

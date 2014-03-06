@@ -19,7 +19,7 @@ public:
 	~CommitSession();
 
 	const LiveGame& GetGame() const { return m_game; }
-	LiveGame& Open() { m_bOpened = true;  return m_game; }
+	LiveGame& Open();
 	const Controller& GetController() const { return m_controller; }
 
 	void DoAndPushRecord(RecordPtr pRec);
@@ -34,4 +34,5 @@ private:
 	const Controller& m_controller;
 	static CommitSession* s_pInstance;
 	bool m_bOpened, m_bCommitted;
+	std::unique_lock<std::mutex> m_lock;
 };
