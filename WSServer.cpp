@@ -60,6 +60,7 @@ void WSServer::RegisterPlayer(ClientID client, Player& player)
 		
 	m_mapPlayerToClient[&player] = client;
 	m_mapClientToPlayer[client] = &player;
+	m_players.insert(&player);
 
 	std::cout << "INFO: Client registered: " << client << " -> " << player.GetName() << std::endl;
 	m_controller.OnPlayerConnected(player);
@@ -73,10 +74,12 @@ void WSServer::UnregisterPlayer(ClientID client)
 		std::cerr << "ERROR: Unregistered client disconnected: " << client << std::endl;
 	else
 	{
+		Player* pPlayer = i->second;
 		std::cout << "INFO: Client disconnected: " << client << std::endl;
-		m_controller.OnPlayerDisconnected(*i->second);
-		m_mapPlayerToClient.erase(i->second);
+		m_controller.OnPlayerDisconnected(*pPlayer);
+		m_mapPlayerToClient.erase(pPlayer);
 		m_mapClientToPlayer.erase(client);
+		m_players.erase(pPlayer);
 	}
 }
 

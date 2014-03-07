@@ -22,6 +22,8 @@ public:
 	void BroadcastMessage(const Output::Message& msg) const;
 	void BroadcastMessage(const std::string& msg) const;
 
+	const std::set<Player*>& GetPlayers() const { return m_players; }
+
 private:
 	void RegisterPlayer(ClientID client, Player& player);
 	void UnregisterPlayer(ClientID client);
@@ -29,6 +31,7 @@ private:
 
 	std::map<ClientID, Player*> m_mapClientToPlayer;
 	std::map<Player*, ClientID> m_mapPlayerToClient;
+	std::set<Player*> m_players;
 	mutable std::mutex m_mutex;
 
 	Controller& m_controller;

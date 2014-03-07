@@ -18,11 +18,13 @@ Controller::Controller()
 
 void Controller::SendUpdateGameList(const Player* pPlayer) const
 {
-	Output::UpdateGameList msg;
+	StringPtr msg = std::make_shared<std::string>(Output::UpdateGameList().GetXML());
+
 	if (pPlayer)
-		m_pServer->SendMessage(msg, *pPlayer);
+		SendMessage(msg, *pPlayer);
 	else
-		m_pServer->BroadcastMessage(msg);
+		for (auto& player : m_pServer->GetPlayers())
+			SendMessage(msg, *player);
 }
 
 void Controller::OnMessage(const Input::MessagePtr& pMsg, Player& player)
@@ -30,29 +32,42 @@ void Controller::OnMessage(const Input::MessagePtr& pMsg, Player& player)
 	bool bOK = pMsg->Process(*this, player);
 	ASSERT(bOK);
 
-	SendMessage(Output::Response(), player);
+	SendQueuedMessages();
+	m_pServer->SendMessage(Output::Response(), player);
 }
 
-bool Controller::SendMessage(const Output::Message& msg, const Player& player) const
+void Controller::SendMessage(const Output::Message& msg, const Player& player) const
 {
-	return m_pServer->SendMessage(msg, player);
+	SendMessage(std::make_shared<std::string>(msg.GetXML()), player);
 }
 
-bool Controller::SendMessage(const Output::Message& msg, const Game& game, const Player* pPlayer) const
+void Controller::SendMessage(StringPtr msg, const Player& player) const
 {
-	std::string str = msg.GetXML();
+	m_messages[&player].push_back(msg);
+}
+
+void Controller::SendMessage(const Output::Message& msg, const Game& game, const Player* pPlayer) const
+{
+	StringPtr str = std::make_shared<std::string>(msg.GetXML());
 	if (!pPlayer)
 	{
 		for (auto& t : game.GetTeams())
 			if (t->GetPlayer().GetCurrentGame() == &game)
-				m_pServer->SendMessage(str, t->GetPlayer());
+				SendMessage(str, t->GetPlayer());
 	}
 	else
 	{
 		VerifyModel("Controller::SendMessage: Player not in game: " + pPlayer->GetName(), pPlayer->GetCurrentGame() == &game);
-		m_pServer->SendMessage(str, *pPlayer);
+		SendMessage(str, *pPlayer);
 	}
-	return true;
+}
+
+void Controller::SendQueuedMessages()
+{
+	for (auto& playerMsgs : m_messages)
+		for (auto& msg : playerMsgs.second)
+			m_pServer->SendMessage(*msg, *playerMsgs.first);
+	m_messages.clear();
 }
 
 void Controller::OnPlayerConnected(Player& player)
@@ -61,9 +76,11 @@ void Controller::OnPlayerConnected(Player& player)
 		SendUpdateGame(*pGame, &player);
 	else
 	{
-		m_pServer->SendMessage(Output::ShowGameList(), player);
+		SendMessage(Output::ShowGameList(), player);
 		SendUpdateGameList(&player);
 	}
+
+	SendQueuedMessages();
 }
 
 void Controller::OnPlayerDisconnected(Player& player)

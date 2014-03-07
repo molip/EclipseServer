@@ -5,6 +5,7 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 
 class WSServer;
 class Game;
@@ -21,12 +22,18 @@ public:
 	void OnPlayerConnected(Player& player);
 	void OnPlayerDisconnected(Player& player);
 
-	bool SendMessage(const Output::Message& msg, const Player& player) const;
-	bool SendMessage(const Output::Message& msg, const Game& game, const Player* pPlayer = nullptr) const;
+	void SendMessage(const Output::Message& msg, const Player& player) const;
+	void SendMessage(const Output::Message& msg, const Game& game, const Player* pPlayer = nullptr) const;
 	
 	void SendUpdateGameList(const Player* pPlayer = nullptr) const;
 	void SendUpdateGame(const Game& game, const Player* pPlayer = nullptr) const;
 
 private:
+	typedef std::shared_ptr<std::string> StringPtr;
+
+	void SendMessage(StringPtr msg, const Player& player) const;
+	void SendQueuedMessages();
+
 	WSServer* m_pServer;
+	mutable std::map<const Player*, std::vector<StringPtr>> m_messages;
 };
