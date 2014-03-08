@@ -88,7 +88,7 @@ HexDefs::HexDefs()
 	p->AddSquare(195, 271, SquareType::Money, true);
 	p->AddSquare(286, 293, SquareType::Any);
 
-	p = AddHex(104, "101101", 2);
+	p = AddHex(104, "110110", 2);
 	p->SetAncients(2);
 	p->AddSquare(322, 104, SquareType::Money);
 	p->AddSquare(275, 104, SquareType::Money, true);
