@@ -144,6 +144,50 @@ void ActionPhase::FinishTurn(CommitSession& session)
 	UpdateClient(controller, &GetCurrentPlayer());
 }
 
+void ActionPhase::ShipMovedFrom(const Hex& hex, Colour colour)
+{
+	if (!hex.HasShip(colour, false)) // The last ship of /colour/ has left.
+	{
+		auto itMap = m_hexArrivalOrder.find(hex.GetID());
+		if (itMap != m_hexArrivalOrder.end()) // Hex is/was contended.
+		{
+			// This should only happen when undoing a move/build record.
+			// Otherwise the ship should have been pinned. 
+			
+			auto& vec = itMap->second;
+			auto itVec = std::find(vec.begin(), vec.end(), colour);
+			VerifyModel("ActionPhase::ShipMovedFrom 1", itVec != vec.end());
+			
+			vec.erase(itVec);
+			VerifyModel("ActionPhase::ShipMovedFrom 2", std::find(vec.begin(), vec.end(), colour) == vec.end());
+
+			if (vec.size() == 1) // Forget hexes with only one colour ship.
+			{
+				VerifyModel("ActionPhase::ShipMovedFrom 3", !hex.HasForeignShip(vec.front(), true));
+				m_hexArrivalOrder.erase(itMap);
+			}
+		}
+	}
+}
+
+void ActionPhase::ShipMovedTo(const Hex& hex, Colour colour)
+{
+	std::set<Colour> colours = hex.GetShipColours(true);
+	VerifyModel("ActionPhase::ShipMovedTo 1", colours.erase(colour) == 1);
+
+	if (colours.empty()) // No contention.
+		return;
+
+	auto& vec = m_hexArrivalOrder[hex.GetID()];
+	if (vec.empty()) // Add the colour that was there first.
+	{
+		VerifyModel("ActionPhase::ShipMovedTo 2", colours.size() == 1); // Should already be in vec!
+		vec.push_back(*colours.begin());
+	}
+	if (std::find(vec.begin(), vec.end(), colour) == vec.end())
+		vec.push_back(colour);
+}
+
 void ActionPhase::UpdateClient(const Controller& controller, const Player* pPlayer) const
 {
 	if (pPlayer && pPlayer != &GetCurrentPlayer())

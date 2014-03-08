@@ -28,7 +28,9 @@ public:
 	void StartChooseTeamGamePhase();
 	void StartMainGamePhase();
 	virtual bool HasStarted() const override { return m_gamePhase != GamePhase::Lobby; }
-	virtual bool IsLive() const { return true; }
+	virtual bool IsLive() const override { return true; }
+	virtual void ShipMovedFrom(const Hex& hex, Colour colour) override;
+	virtual void ShipMovedTo(const Hex& hex, Colour colour) override;
 
 	GamePhase GetGamePhase() const { return m_gamePhase; }
 	

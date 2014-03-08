@@ -93,6 +93,9 @@ private:
 		srcHex.RemoveShip(m_ship, m_colour);
 		dstHex.AddShip(m_ship, m_colour);
 
+		game.ShipMovedFrom(srcHex, m_colour);
+		game.ShipMovedTo(dstHex, m_colour);
+
 		controller.SendMessage(Output::UpdateMap(game), game);
 	}
 

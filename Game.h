@@ -45,6 +45,8 @@ public:
 
 	virtual bool HasStarted() const = 0;
 	virtual bool IsLive() const { return false; }
+	virtual void ShipMovedFrom(const Hex& hex, Colour colour) {}
+	virtual void ShipMovedTo(const Hex& hex, Colour colour) {}
 
 	ReputationBag& GetReputationBag() { return m_repBag; }
 	TechnologyBag& GetTechnologyBag() { return m_techBag; }

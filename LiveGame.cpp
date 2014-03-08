@@ -160,6 +160,16 @@ RecordPtr LiveGame::PopRecord()
 	return pRec;
 }
 
+void LiveGame::ShipMovedFrom(const Hex& hex, Colour colour)
+{
+	GetActionPhase().ShipMovedFrom(hex, colour);
+}
+
+void LiveGame::ShipMovedTo(const Hex& hex, Colour colour) 
+{
+	GetActionPhase().ShipMovedTo(hex, colour);
+}
+
 void LiveGame::Save() const
 {
 	std::ostringstream ss;

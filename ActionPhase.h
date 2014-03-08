@@ -2,6 +2,8 @@
 
 #include "Phase.h"
 
+class Hex;
+
 class ActionPhase : public TurnPhase
 {
 public:
@@ -29,6 +31,9 @@ public:
 	const Cmd* GetCurrentPlayerCmd() const { return const_cast<ActionPhase*>(this)->GetCurrentPlayerCmd(); }
 	void FinishTurn(CommitSession& session);
 
+	void ShipMovedFrom(const Hex& hex, Colour colour);
+	void ShipMovedTo(const Hex& hex, Colour colour);
+
 	virtual void UpdateClient(const Controller& controller, const Player* pPlayer) const override;
 
 	virtual void Save(Serial::SaveNode& node) const override;
@@ -36,6 +41,7 @@ public:
 
 private:
 	std::vector<Colour> m_passOrder;
+	std::map<int, std::vector<Colour>> m_hexArrivalOrder;
 
 	CmdStack* m_pCmdStack;
 	bool m_bDoneAction;
