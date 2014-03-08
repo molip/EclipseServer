@@ -86,10 +86,10 @@ public:
 	void AddShip(ShipType type, Colour owner);
 	void RemoveShip(ShipType type, Colour owner);
 	bool HasShip(const Colour& c, ShipType ship) const;
-	bool HasShip(const Colour& c, bool bMoveableOnly) const;
-	bool HasShip(const Team* pTeam) const;
+	bool HasShip(const Colour& c, bool bMoveableOnly = false) const;
 	bool HasEnemyShip(const Game& game, const Team* pTeam) const; // Ancients and their allies are not enemies.
-	bool HasForeignShip(const Game& game, const Team* pTeam) const; // Ancients and their allies are foreign.
+	bool HasForeignShip(const Colour& c, bool bPlayerShipsOnly = false) const; // Ancients and their allies are foreign.
+	std::set<Colour> GetShipColours(bool bPlayerShipsOnly = false) const;
 	bool AreAllShipsPinned(const Colour& c) const;
 
 	int GetID() const { return m_id; }

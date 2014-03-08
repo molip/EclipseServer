@@ -179,10 +179,10 @@ InfluenceDstCmd::InfluenceDstCmd(Colour colour, const LiveGame& game, const MapP
 	for (auto& h : hexes)
 	{
 		if (!h.second->IsOwned())
-			if (h.second->HasShip(&team) && !h.second->HasForeignShip(game, &team)) // "a hex where only you have a Ship"
+			if (h.second->HasShip(team.GetColour()) && !h.second->HasForeignShip(team.GetColour())) // "a hex where only you have a Ship"
 				dsts.insert(h.first);
 		if (!pSrcPos || h.first != *pSrcPos) // Would break the wormhole, see FAQ.
-			if (h.second->IsOwnedBy(team) || h.second->HasShip(&team)) // "adjacent to a hex where you have a disc or a Ship"
+			if (h.second->IsOwnedBy(team) || h.second->HasShip(team.GetColour())) // "adjacent to a hex where you have a disc or a Ship"
 				map.GetInfluencableNeighbours(h.first, team, dsts);
 	}
 

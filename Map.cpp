@@ -98,7 +98,7 @@ void Map::GetInfluencableNeighbours(const MapPos& pos, const Team& team, std::se
 			if (const Hex* pHex2 = FindHex(pos2))
 				if (!pHex2->IsOwned()) // "a hex that does not contain an Influence Disc..."
 					if (nWormholes + pHex2->HasWormhole(ReverseEdge(e)) >= 2)
-						if (!pHex2->HasForeignShip(m_game, &team)) // "...or an enemy Ship"
+						if (!pHex2->HasForeignShip(team.GetColour())) // "...or an enemy Ship"
 							neighbours.insert(pos2);
 		}
 }

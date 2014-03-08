@@ -159,11 +159,6 @@ bool Hex::HasShip(const Colour& c, bool bMoveableOnly) const
 	return false;
 }
 
-bool Hex::HasShip(const Team* pTeam) const
-{
-	return HasShip(pTeam ? pTeam->GetColour() : Colour::None, false);
-}
-
 bool Hex::HasEnemyShip(const Game& game, const Team* pTeam) const
 {
 	Colour c = pTeam ? pTeam->GetColour() : Colour::None;
@@ -176,15 +171,22 @@ bool Hex::HasEnemyShip(const Game& game, const Team* pTeam) const
 	return false;
 }
 
-bool Hex::HasForeignShip(const Game& game, const Team* pTeam) const
+bool Hex::HasForeignShip(const Colour& c, bool bPlayerShipsOnly) const
 {
 	for (auto& s : m_ships)
-	{
-		auto pShipOwner = s.GetOwner(game);
-		if (pShipOwner != pTeam)
-			return true;
-	}
+		if (s.GetColour() != c)
+			if (!bPlayerShipsOnly || s.GetColour() != Colour::None)
+				return true;
 	return false;
+}
+
+std::set<Colour> Hex::GetShipColours(bool bPlayerShipsOnly) const
+{
+	std::set<Colour> set;
+	for (auto& s : m_ships)
+		if (!bPlayerShipsOnly || s.GetColour() != Colour::None)
+			set.insert(s.GetColour());
+	return set;
 }
 
 int Hex::GetPinnage(const Colour& c) const
