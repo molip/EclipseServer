@@ -351,7 +351,7 @@ template <typename T> bool LoadNode::LoadEnum(const std::string& name, T& val) c
 
 template <typename T> bool LoadNode::LoadClass(const std::string& name, T& obj) const
 {
-	Xml::Element e = m_elem.GetFirstChild(name);
+	const Xml::Element e = m_elem.GetFirstChild(name);
 	if (e.IsNull())
 		return false;
 
@@ -361,7 +361,7 @@ template <typename T> bool LoadNode::LoadClass(const std::string& name, T& obj) 
 
 template <typename T> bool LoadNode::LoadClassPtr(const std::string& name, T& pObj) const
 {
-	Xml::Element e = m_elem.GetFirstChild(name);
+	const Xml::Element e = m_elem.GetFirstChild(name);
 	if (e.IsNull())
 		return false;
 
@@ -379,7 +379,7 @@ template <typename T> bool LoadNode::LoadClassPtr(const std::string& name, std::
 
 template <typename T> bool LoadNode::LoadTypePtr(const std::string& name, T& pObj) const
 {
-	Xml::Element e = m_elem.GetFirstChild(name);
+	const Xml::Element e = m_elem.GetFirstChild(name);
 	if (e.IsNull())
 		return false;
 
@@ -399,7 +399,7 @@ template <typename T> bool LoadNode::LoadObject(const std::string& name, T& pObj
 {
 	pObj = nullptr;
 
-	Xml::Element e = m_elem.GetFirstChild(name);
+	const Xml::Element e = m_elem.GetFirstChild(name);
 	if (e.IsNull())
 		return false;
 
@@ -418,11 +418,11 @@ template <typename T, typename L> bool LoadNode::LoadCntr(const std::string& nam
 {
 	ASSERT(cntr.empty());
 	
-	Xml::Element e = m_elem.GetFirstChild(name);
+	const Xml::Element e = m_elem.GetFirstChild(name);
 	if (e.IsNull())
 		return false;
 
-	for (auto i : Xml::ElementRange(e, "_item"))
+	for (const auto i : Xml::ElementRange(e, "_item"))
 	{
 		T::value_type v = T::value_type();
 		loader(i, v);
@@ -435,17 +435,17 @@ template <typename T, typename L1, typename L2> bool LoadNode::LoadPairs(const s
 {
 	ASSERT(cntr.empty());
 	
-	Xml::Element e = m_elem.GetFirstChild(name);
+	const Xml::Element e = m_elem.GetFirstChild(name);
 	if (e.IsNull())
 		return false;
 
-	for (auto i : Xml::ElementRange(e, "_item"))
+	for (const auto i : Xml::ElementRange(e, "_item"))
 	{
-		Xml::Element e1 = i.GetFirstChild("_first");
+		const Xml::Element e1 = i.GetFirstChild("_first");
 		T::value_type::first_type v1 = T::value_type::first_type();
 		loader1(e1, v1);
 
-		Xml::Element e2 = i.GetFirstChild("_second");
+		const Xml::Element e2 = i.GetFirstChild("_second");
 		T::value_type::second_type v2 = T::value_type::second_type();
 		loader2(e2, v2);
 
@@ -456,14 +456,14 @@ template <typename T, typename L1, typename L2> bool LoadNode::LoadPairs(const s
 
 template <typename T, typename L1, typename L2> bool LoadNode::LoadPair(const std::string& name, T& pair, L1 loader1, L2 loader2) const
 {
-	Xml::Element e = m_elem.GetFirstChild(name);
+	const Xml::Element e = m_elem.GetFirstChild(name);
 	if (e.IsNull())
 		return false;
 
-	Xml::Element e1 = e.GetFirstChild("_first");
+	const Xml::Element e1 = e.GetFirstChild("_first");
 	loader1(e1, pair.first);
 
-	Xml::Element e2 = e.GetFirstChild("_second");
+	const Xml::Element e2 = e.GetFirstChild("_second");
 	loader2(e2, pair.second);
 
 	return true;
@@ -471,12 +471,12 @@ template <typename T, typename L1, typename L2> bool LoadNode::LoadPair(const st
 
 template <typename T, typename L> bool LoadNode::LoadArray(const std::string& name, T& cntr, L loader) const
 {
-	Xml::Element e = m_elem.GetFirstChild(name);
+	const Xml::Element e = m_elem.GetFirstChild(name);
 	if (e.IsNull())
 		return false;
 
 	int i = 0;
-	for (auto item : Xml::ElementRange(e, "_item"))
+	for (const auto item : Xml::ElementRange(e, "_item"))
 	{
 		loader(item, cntr[i++]);
 	}
@@ -487,7 +487,7 @@ template <typename T, typename LK, typename LV> bool LoadNode::LoadMap(const std
 {
 	ASSERT(map.empty());
 	
-	Xml::Element e = m_elem.GetFirstChild(name);
+	const Xml::Element e = m_elem.GetFirstChild(name);
 	if (e.IsNull())
 		return false;
 
@@ -496,8 +496,8 @@ template <typename T, typename LK, typename LV> bool LoadNode::LoadMap(const std
 		T::key_type key = T::key_type();
 		T::mapped_type val = T::mapped_type();
 
-		Xml::Element k = item.GetFirstChild("_k");
-		Xml::Element v = item.GetFirstChild("_v");
+		const Xml::Element k = item.GetFirstChild("_k");
+		const Xml::Element v = item.GetFirstChild("_v");
 		VerifySerial("LoadNode::LoadMap", !k.IsNull() && !v.IsNull());
 
 		keyLoader(k, key);
@@ -512,7 +512,7 @@ template <typename T> bool LoadClass(const std::string& path, T& obj)
 	Xml::Document doc;
 	if (doc.LoadFromFile(path))
 	{
-		Xml::Element root = doc.GetRoot();
+		const Xml::Element root = doc.GetRoot();
 		if (!root.IsNull() && root.GetName() == "class")
 		{
 			try
@@ -534,7 +534,7 @@ template <typename T> bool LoadObject(const std::string& path, T& pObj)
 	Xml::Document doc;
 	if (doc.LoadFromFile(path))
 	{
-		Xml::Element root = doc.GetRoot();
+		const Xml::Element root = doc.GetRoot();
 		if (!root.IsNull() && root.GetName() == "object")
 			try
 			{

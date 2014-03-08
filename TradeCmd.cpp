@@ -25,8 +25,8 @@ public:
 	virtual void Load(const Serial::LoadNode& node) override
 	{
 		__super::Load(node);
-		node.LoadPairs("srcs", m_srcs, Serial::EnumSaver(), Serial::TypeSaver());
-		node.LoadPair("dst", m_dst, Serial::EnumSaver(), Serial::TypeSaver());
+		node.LoadPairs("srcs", m_srcs, Serial::EnumLoader(), Serial::TypeLoader());
+		node.LoadPair("dst", m_dst, Serial::EnumLoader(), Serial::TypeLoader());
 	}
 
 private:
@@ -43,7 +43,7 @@ private:
 	}
 
 	PairVec m_srcs;
-	const Pair m_dst;
+	Pair m_dst;
 };
 
 REGISTER_DYNAMIC(TradeRecord)
