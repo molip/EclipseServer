@@ -100,6 +100,7 @@
     <ClInclude Include="EnumRange.h" />
     <ClInclude Include="EnumTraits.h" />
     <ClInclude Include="ExploreCmd.h" />
+    <ClInclude Include="FormatString.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Hex.h" />
     <ClInclude Include="HexDefs.h" />

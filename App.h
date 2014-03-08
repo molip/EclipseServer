@@ -25,6 +25,8 @@ extern bool _DebugBreak();
 	#define ASSERT(f) (f)
 #endif
 
+#include "FormatString.h"
+
 extern std::string FormatInt(int n);
 
 extern int Mod(int a, int b);
