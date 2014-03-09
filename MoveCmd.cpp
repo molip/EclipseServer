@@ -99,6 +99,11 @@ private:
 		controller.SendMessage(Output::UpdateMap(game), game);
 	}
 
+	virtual std::string GetTeamMessage(bool bUndo) const
+	{
+		return FormatString("Move");
+	}
+
 	ShipType m_ship;
 	MapPos m_src, m_dst;
 };

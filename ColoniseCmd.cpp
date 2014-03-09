@@ -51,14 +51,15 @@ REGISTER_DYNAMIC(ColoniseCmd)
 class ColoniseRecord : public TeamRecord
 {
 public:
-	ColoniseRecord() {}
-	ColoniseRecord(Colour colour, const MapPos& pos) : TeamRecord(colour), m_pos(pos) {}
+	ColoniseRecord() : m_hexId(0) {}
+	ColoniseRecord(Colour colour, const MapPos& pos) : TeamRecord(colour), m_pos(pos), m_hexId(0) {}
 	void AddMove(SquareType st, Resource r) { m_moves.push_back(std::make_pair(st, r)); }
 
 	virtual void Save(Serial::SaveNode& node) const override 
 	{
 		__super::Save(node);
 		node.SaveType("pos", m_pos);
+		node.SaveType("hex_id", m_hexId);
 		node.SavePairs("moves", m_moves, Serial::EnumSaver(), Serial::EnumSaver());
 	}
 	
@@ -66,6 +67,7 @@ public:
 	{
 		__super::Load(node);
 		node.LoadType("pos", m_pos);
+		node.LoadType("hex_id", m_hexId);
 		node.LoadPairs("moves", m_moves, Serial::EnumLoader(), Serial::EnumLoader());
 	}
 
@@ -73,6 +75,7 @@ private:
 	virtual void Apply(bool bDo, Game& game, const Controller& controller) override
 	{
 		Hex& hex = game.GetMap().GetHex(m_pos);
+		m_hexId = hex.GetID();
 
 		Team& team = game.GetTeam(m_colour);
 		for (auto& move : m_moves)
@@ -92,8 +95,14 @@ private:
 		controller.SendMessage(Output::UpdateColonyShips(team), game);
 	}
 
+	virtual std::string GetTeamMessage(bool bUndo) const
+	{
+		return FormatString("Colonise hex %0", m_hexId);
+	}
+
 	MapPos m_pos;
 	std::vector<std::pair<SquareType, Resource>> m_moves;
+	int m_hexId;
 };
 
 REGISTER_DYNAMIC(ColoniseRecord)

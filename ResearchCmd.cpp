@@ -73,6 +73,11 @@ private:
 		controller.SendMessage(Output::UpdateStorageTrack(team), game);
 	}
 
+	virtual std::string GetTeamMessage(bool bUndo) const
+	{
+		return FormatString("Research");
+	}
+
 	TechType m_tech;
 };
 
@@ -170,6 +175,11 @@ private:
 			team.GetStorage()[r] += m_artifacts[r] * (bDo ? 5 : -5);
 
 		controller.SendMessage(Output::UpdateStorageTrack(team), game);
+	}
+
+	virtual std::string GetTeamMessage(bool bUndo) const
+	{
+		return FormatString("Research artifacts");
 	}
 
 	Storage m_artifacts;

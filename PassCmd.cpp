@@ -20,6 +20,11 @@ private:
 		team.SetPassed(bDo);
 		controller.SendMessage(Output::UpdatePassed(team), game);
 	}
+
+	virtual std::string GetTeamMessage(bool bUndo) const
+	{
+		return FormatString("Pass");
+	}
 };
 
 REGISTER_DYNAMIC(PassRecord)

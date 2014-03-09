@@ -56,6 +56,11 @@ private:
 	virtual void Apply(bool bDo, Game& game, const Controller& controller) override
 	{
 	}
+
+	virtual std::string GetTeamMessage(bool bUndo) const
+	{
+		return FormatString("Diplomacy");
+	}
 };
 
 REGISTER_DYNAMIC(DiplomacyRecord)

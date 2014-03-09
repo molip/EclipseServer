@@ -141,6 +141,11 @@ private:
 		return pDstHex;
 	}
 
+	virtual std::string GetTeamMessage(bool bUndo) const
+	{
+		return FormatString("Influence");
+	}
+
 	MapPosPtr m_pSrcPos, m_pDstPos;
 	DiscoveryType m_discovery;
 };

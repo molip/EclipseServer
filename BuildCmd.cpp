@@ -92,6 +92,11 @@ private:
 		controller.SendMessage(Output::UpdateStorageTrack(team), game);
 	}
 
+	virtual std::string GetTeamMessage(bool bUndo) const 
+	{
+		return FormatString("Build %0", EnumTraits<Buildable>::ToString(m_buildable));
+	}
+
 	Buildable m_buildable;
 	MapPos m_pos;
 };

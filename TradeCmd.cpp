@@ -42,6 +42,11 @@ private:
 		controller.SendMessage(Output::UpdateStorageTrack(team), game);
 	}
 
+	virtual std::string GetTeamMessage(bool bUndo) const
+	{
+		return FormatString("Trade");
+	}
+
 	PairVec m_srcs;
 	Pair m_dst;
 };
