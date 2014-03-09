@@ -77,6 +77,7 @@ struct UpdateMap : Update { UpdateMap(const Game& game); };
 struct UpdateReviewUI : Update { UpdateReviewUI(const ReviewGame& game); };
 struct UpdateTechnologies : Update { UpdateTechnologies(const Game& game); };
 struct UpdateRound : Update { UpdateRound(const Game& game); };
+struct UpdateLog : Update { UpdateLog(const std::string& msg); };
 //struct UpdateUndo : Update { UpdateUndo(bool bEnable); };
 
 struct ChooseTeam : Choose { ChooseTeam(const Game& game, bool bActive); };

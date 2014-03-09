@@ -6,7 +6,6 @@ function CreateCommandJSON(type)
 function SendJSON(json, noBlanket)
 {
 	var str = JSON.stringify(json)
-	writeToScreen("Sending: " + str + "\n")
 	ws.send(str)
 
 	if (!noBlanket)

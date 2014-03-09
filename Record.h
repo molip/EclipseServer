@@ -32,6 +32,8 @@ public:
 
 	virtual bool WantMergeNext() const { return false; }
 
+	virtual std::string GetMessage(const Game& game, bool bUndo) const { return std::string(); }
+
 private:
 	virtual void Apply(bool bDo, Game& game, const Controller& controller) = 0;
 
@@ -45,7 +47,12 @@ public:
 
 	virtual void Save(Serial::SaveNode& node) const override;
 	virtual void Load(const Serial::LoadNode& node) override;
+
+	virtual std::string GetMessage(const Game& game, bool bUndo) const override;
+
 protected:
+	virtual std::string GetTeamMessage(bool bUndo) const { return std::string(); }
+	
 	Colour m_colour;
 };
 

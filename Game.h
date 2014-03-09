@@ -47,6 +47,7 @@ public:
 	virtual bool IsLive() const { return false; }
 	virtual void ShipMovedFrom(const Hex& hex, Colour colour) {}
 	virtual void ShipMovedTo(const Hex& hex, Colour colour) {}
+	virtual std::string GetLog() const = 0;
 
 	ReputationBag& GetReputationBag() { return m_repBag; }
 	TechnologyBag& GetTechnologyBag() { return m_techBag; }

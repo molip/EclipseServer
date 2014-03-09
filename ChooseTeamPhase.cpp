@@ -31,7 +31,7 @@ void ChooseTeamPhase::AssignTeam(CommitSession& session, Player& player, RaceTyp
 	
 	if (allAssigned)
 	{
-		session.DoRecord(RecordPtr(new StartRoundRecord));
+		session.DoAndPushRecord(RecordPtr(new StartRoundRecord));
 		game.StartMainGamePhase(); // Deletes this.
 	}
 

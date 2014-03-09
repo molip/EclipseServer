@@ -170,6 +170,18 @@ void LiveGame::ShipMovedTo(const Hex& hex, Colour colour)
 	GetActionPhase().ShipMovedTo(hex, colour);
 }
 
+std::string LiveGame::GetLog() const
+{
+	std::string log;
+	for (auto& rec : m_records)
+	{
+		std::string msg = rec->GetMessage(*this, false);
+		if (!msg.empty())
+			log += msg + '\n';
+	}
+	return log;
+}
+
 void LiveGame::Save() const
 {
 	std::ostringstream ss;

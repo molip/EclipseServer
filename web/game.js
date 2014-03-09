@@ -80,12 +80,6 @@ function Assert(test, msg)
 		alert(msg)
 }
 
-function writeToScreen(message)
-{
-	document.getElementById("output").innerText += message
-	//document.getElementById("output").innerHTML += '<br/>'
-}
-
 function IsTrue(str)
 {
 	return str == '1' || str == 'true';
@@ -116,8 +110,6 @@ function ClearSelect(select_elem)
 
 function OnMessage(msg)
 {
-	writeToScreen(msg.data)
-	
 	var obj = JSON.parse(msg.data);
 	
 	if (obj.command)

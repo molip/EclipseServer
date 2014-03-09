@@ -54,3 +54,12 @@ void TeamRecord::Load(const Serial::LoadNode& node)
 	__super::Load(node);
 	node.LoadEnum("colour", m_colour);
 }
+
+std::string TeamRecord::GetMessage(const Game& game, bool bUndo) const
+{ 
+	std::string msg = GetTeamMessage(bUndo);
+	if (!msg.empty())
+		return FormatString("%0 %1: %2", EnumTraits<Colour>::ToString(m_colour), bUndo ? "undid" : "did", msg);
+
+	return __super::GetMessage(game, bUndo);
+}

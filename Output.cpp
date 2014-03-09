@@ -270,6 +270,11 @@ UpdateRound::UpdateRound(const Game& game) : Update("round")
 	m_root.SetAttribute("round", game.GetRound() + 1);
 }
 
+UpdateLog::UpdateLog(const std::string& msg) : Update("log")
+{
+	m_root.SetAttribute("message", msg);
+}
+
 //UpdateUndo::UpdateUndo(bool bEnable) : Update("undo")
 //{
 //	m_root.SetAttribute("enable", bEnable);

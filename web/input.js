@@ -14,7 +14,7 @@ function OnCommand(elem)
 	else if (type == 'choose')
 		OnCommandChoose(elem)
 	else
-		writeToScreen('OnCommand: unknown command: ' + type)
+		alert('OnCommand: unknown command: ' + type)
 }
 
 function OnCommandShow(elem)
@@ -28,18 +28,16 @@ function OnCommandShow(elem)
 		var div = document.getElementById(panels[i])
 		if (panel == panels[i])
 		{
-			//writeToScreen('OnCmdShow: showing ' + panels[i])
 		    div.style.display = "block"
 		    found = true
 		}
 		else
 		{
-			//writeToScreen('OnCmdShow: hiding ' + panels[i])
 		    div.style.display = "none" 
 		} 
 	}
     if (!found)
-        writeToScreen('OnCommandShow: unknown element: ' + panel)
+        alert('OnCommandShow: unknown element: ' + panel)
 		
 	if (panel == 'choose_panel')
 	{
@@ -54,6 +52,8 @@ function OnCommandShow(elem)
 		ShowActionElement(null)
 		
 		ShowElementById('choose_upkeep', false)
+
+		document.getElementById('output').innerText = ''
 	}
 }
 
@@ -97,8 +97,10 @@ function OnCommandUpdate(elem)
 		OnCommandUpdateTechnologies(elem)
 	else if (param == "round")
 		OnCommandUpdateRound(elem)
+	else if (param == "log")
+		OnCommandUpdateLog(elem)
 	else
-        writeToScreen('OnCommandUpdate: unknown param: ' + param)
+        alert('OnCommandUpdate: unknown param: ' + param)
 }
 
 function OnCommandChoose(elem)
@@ -144,7 +146,7 @@ function OnCommandChoose(elem)
 	else if (param == "trade")
 		Trade.OnCommand(elem)
 	else
-		writeToScreen('OnCommandChoose: unknown param: ' + param)
+		alert('OnCommandChoose: unknown param: ' + param)
 
 	if (data.action)
 	{
@@ -342,6 +344,11 @@ function OnCommandUpdateTechnologies(elem)
 function OnCommandUpdateRound(elem)
 {
 	document.getElementById('round_count').innerHTML = elem.round
+}
+
+function OnCommandUpdateLog(elem)
+{
+	document.getElementById('output').innerText += elem.message
 }
 
 function OnCommandChooseTeam(elem)

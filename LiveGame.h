@@ -31,6 +31,7 @@ public:
 	virtual bool IsLive() const override { return true; }
 	virtual void ShipMovedFrom(const Hex& hex, Colour colour) override;
 	virtual void ShipMovedTo(const Hex& hex, Colour colour) override;
+	virtual std::string GetLog() const override;
 
 	GamePhase GetGamePhase() const { return m_gamePhase; }
 	

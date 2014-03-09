@@ -22,6 +22,11 @@ const std::vector<RecordPtr>& ReviewGame::GetRecords() const
 	return Games::GetLive(m_idLive).GetRecords();
 }
 
+std::string ReviewGame::GetLog() const
+{
+	return Games::GetLive(m_idLive).GetLog();
+}
+
 void ReviewGame::Advance(const Controller& controller)
 {
 	VerifyModel("ReviewGame::Advance: Already at end", CanAdvance());
@@ -46,12 +51,12 @@ bool ReviewGame::CanAdvance() const
 
 bool ReviewGame::CanRetreat() const
 {
-	return m_iRecord > 0;
+	return m_iRecord > 1;
 }
 
 void ReviewGame::OnPreRecordPop(const Controller& controller)
 {
-	VerifyModel("ReviewGame::OnPreRecordPop", m_iRecord > 0 && m_iRecord <= (int)GetRecords().size());
+	VerifyModel("ReviewGame::OnPreRecordPop", CanRetreat() && m_iRecord <= (int)GetRecords().size());
 	if (m_iRecord == GetRecords().size())
 		GetRecords()[--m_iRecord]->Undo(*this, controller); // Don't retreat merged.
 }

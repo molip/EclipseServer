@@ -2,6 +2,8 @@
 #include "Record.h"
 #include "LiveGame.h"
 #include "SaveThread.h"
+#include "Controller.h"
+#include "Output.h"
 
 // All non-const LiveGame access should be performed during a CommitSession. 
 // If an exception occurs between opening and committing the session, the game may be in an invalid state and should be locked. 
@@ -51,7 +53,16 @@ void CommitSession::DoAndPushRecord(RecordPtr pRec)
 {
 	Open();
 	pRec->Do(m_game, m_controller);
+	SendRecordMessage(*pRec, false);
+
 	m_game.PushRecord(pRec);
+}
+
+void CommitSession::SendRecordMessage(const Record& rec, bool bUndo)
+{
+	std::string msg = rec.GetMessage(m_game, bUndo);
+	if (!msg.empty())
+		m_controller.SendMessage(Output::UpdateLog(msg + '\n'), m_game);
 }
 
 RecordPtr CommitSession::PopAndUndoRecord()
@@ -59,18 +70,6 @@ RecordPtr CommitSession::PopAndUndoRecord()
 	Open();
 	RecordPtr pRec = m_game.PopRecord();
 	pRec->Undo(m_game, m_controller);
+	SendRecordMessage(*pRec, true);
 	return pRec;
-}
-
-void CommitSession::DoRecord(RecordPtr pRec)
-{
-	Open();
-	pRec->Do(m_game, m_controller);
-}
-
-void CommitSession::DoSession(const LiveGame& game, const Controller& controller, const std::function<void(CommitSession&)>& fn)
-{
-	CommitSession session(game, controller);
-	fn(session);
-	session.Commit();
 }

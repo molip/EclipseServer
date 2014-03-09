@@ -5,7 +5,7 @@
 #include "Player.h"
 #include "LiveGame.h"
 
-StartRoundRecord::StartRoundRecord()
+StartRoundRecord::StartRoundRecord() : m_round(0)
 {
 }
 
@@ -13,12 +13,16 @@ void StartRoundRecord::Save(Serial::SaveNode& node) const
 {
 	__super::Save(node);
 	node.SaveCntr("techs", m_techs, Serial::EnumSaver());
+	node.SaveCntr("team_data", m_teamData, Serial::ClassSaver());
+	node.SaveType("round", m_round);
 }
 	
 void StartRoundRecord::Load(const Serial::LoadNode& node) 
 {
 	__super::Load(node);
 	node.LoadCntr("techs", m_techs, Serial::EnumLoader());
+	node.LoadCntr("team_data", m_teamData, Serial::ClassLoader());
+	node.LoadType("round", m_round);
 }
 
 void StartRoundRecord::Apply(bool bDo, Game& game, const Controller& controller) 
@@ -34,6 +38,8 @@ void StartRoundRecord::Apply(bool bDo, Game& game, const Controller& controller)
 	
 	if (bDo)
 	{
+		m_round = game.GetRound();
+
 		if (!bFirstRound)
 		{
 			for (auto& team : game.GetTeams())
@@ -98,6 +104,25 @@ void StartRoundRecord::Apply(bool bDo, Game& game, const Controller& controller)
 
 	controller.SendMessage(Output::UpdateRound(game), game);
 	controller.SendMessage(Output::UpdateTechnologies(game), game);
+}
+
+std::string StartRoundRecord::GetMessage(const Game& game, bool bUndo) const
+{
+	return FormatString("Starting round %0", m_round + 1);
+}
+
+void StartRoundRecord::TeamData::Save(Serial::SaveNode& node) const
+{
+	node.SaveType("actions", actions);
+	node.SaveType("colony_ships", colonyShips);
+	node.SaveClass("income", income);
+}
+
+void StartRoundRecord::TeamData::Load(const Serial::LoadNode& node)
+{
+	node.LoadType("actions", actions);
+	node.LoadType("colony_ships", colonyShips);
+	node.LoadClass("income", income);
 }
 
 REGISTER_DYNAMIC(StartRoundRecord)

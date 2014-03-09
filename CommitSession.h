@@ -24,12 +24,12 @@ public:
 
 	void DoAndPushRecord(RecordPtr pRec);
 	RecordPtr PopAndUndoRecord();
-	void DoRecord(RecordPtr pRec);
-	static void DoSession(const LiveGame& game, const Controller& controller, const std::function<void(CommitSession&)>& fn);
-	
+
 	void Commit();
 
 private:
+	void SendRecordMessage(const Record& rec, bool bUndo);
+
 	LiveGame& m_game;
 	const Controller& m_controller;
 	static CommitSession* s_pInstance;

@@ -17,13 +17,18 @@ public:
 
 private:
 	virtual void Apply(bool bDo, Game& game, const Controller& controller) override;
+	virtual std::string GetMessage(const Game& game, bool bUndo) const;
 
 	struct TeamData
 	{
 		int actions, colonyShips;
 		Storage income;
+
+		void Save(Serial::SaveNode& node) const;
+		void Load(const Serial::LoadNode& node);
 	};
 
 	std::vector<TechType> m_techs;
 	std::vector<TeamData> m_teamData;
+	int m_round;
 };
