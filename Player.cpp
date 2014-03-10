@@ -14,7 +14,16 @@ Player::Player(int id, const std::string& name, const std::string& password) :
 
 void Player::SetCurrentGame(const Game* pGame)
 {
+	if (m_idCurrentGame == pGame->GetID())
+		return;
+
+	if (const Game* oldGame = GetCurrentGame())
+		oldGame->RemovePlayer(this);
+
 	m_idCurrentGame = pGame ? pGame->GetID() : 0;
+
+	if (pGame)
+		pGame->AddPlayer(this);
 }
 
 const Game* Player::GetCurrentGame() const

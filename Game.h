@@ -67,6 +67,10 @@ public:
 	virtual void Save(Serial::SaveNode& node) const;
 	virtual void Load(const Serial::LoadNode& node);
 
+	std::set<const Player*> GetCurrentPlayers() const { return m_players; }
+	void AddPlayer(const Player* player) const { m_players.insert(player); }
+	void RemovePlayer(const Player* player) const { m_players.erase(player); }
+
 protected:
 	int m_id; 
 	std::string m_name;
@@ -84,6 +88,8 @@ protected:
 	Map	m_map; // After m_discBag
 
 	int m_iRound;
+
+	mutable std::set<const Player*> m_players; // Not saved. Includes observers.
 };
 
 typedef std::unique_ptr<Game> GamePtr;

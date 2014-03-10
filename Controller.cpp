@@ -51,9 +51,8 @@ void Controller::SendMessage(const Output::Message& msg, const Game& game, const
 	StringPtr str = std::make_shared<std::string>(msg.GetXML());
 	if (!pPlayer)
 	{
-		for (auto& t : game.GetTeams())
-			if (t->GetPlayer().GetCurrentGame() == &game)
-				SendMessage(str, t->GetPlayer());
+		for (auto& player : game.GetCurrentPlayers())
+			SendMessage(str, *player);
 	}
 	else
 	{
@@ -130,13 +129,11 @@ void Controller::SendUpdateGame(const Game& game, const Player* pPlayer) const
 			SendMessage(Output::UpdatePassed(*pInfoTeam), game, pPlayer);
 
 			// Reputation tile values are secret, so only send them to the relevant player. 
-			for (auto& pDstTeam : game.GetTeams())
-			{
-				const Player& dstPlayer = pDstTeam->GetPlayer();
-				if (dstPlayer.GetCurrentGame() == &game)
-					if (!pPlayer || pPlayer == &dstPlayer)
-						SendMessage(Output::UpdateReputationTrack(*pInfoTeam, &dstPlayer == &infoPlayer), game, &dstPlayer);
-			}
+			if (pPlayer)
+				SendMessage(Output::UpdateReputationTrack(*pInfoTeam, pPlayer == &infoPlayer), game, pPlayer);
+			else
+				for (auto& dstPlayer : game.GetCurrentPlayers())
+					SendMessage(Output::UpdateReputationTrack(*pInfoTeam, dstPlayer == &infoPlayer), game, dstPlayer);
 		}
 		SendMessage(Output::UpdateMap(game), game, pPlayer);
 		SendMessage(Output::UpdateTechnologies(game), game, pPlayer);
