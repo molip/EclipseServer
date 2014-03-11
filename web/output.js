@@ -109,3 +109,14 @@ function SendAbort()
 
 	SendJSON(CreateCommandJSON('cmd_abort'))
 }
+
+function SendChat()
+{
+	var json = CreateCommandJSON('chat')
+
+	var input = document.getElementById('chat')
+	json.message = input.value
+	input.value = ''
+
+	SendJSON(json, true)
+}

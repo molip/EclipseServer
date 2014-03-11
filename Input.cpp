@@ -25,6 +25,7 @@
 #include "Json.h"
 #include "Record.h"
 #include "CommitSession.h"
+#include "MessageRecord.h"
 
 #include <sstream>
 
@@ -63,6 +64,8 @@ MessagePtr CreateCommand(const Json::Element& root)
 		return MessagePtr(new Commit);
 	if (type == "finish_upkeep")
 		return MessagePtr(new FinishUpkeep);
+	if (type == "chat")
+		return MessagePtr(new Chat(root));
 
 	if (type == "cmd_explore_pos")
 		return MessagePtr(new CmdExplorePos(root));
@@ -117,7 +120,6 @@ const LiveGame& Message::GetLiveGame(const Player& player) const
 	const LiveGame* pGame = player.GetCurrentLiveGame();
 	VerifyInput("ChooseMessage: player not registered in any game", !!pGame);
 	VerifyInput("ChooseMessage: game not in main phase: " + pGame->GetName(), pGame->GetGamePhase() == LiveGame::GamePhase::Main);
-	VerifyInput("ChooseMessage: player played out of turn", pGame->GetPhase().IsTeamActive(pGame->GetTeam(player).GetColour()));
 	return *pGame;
 }
 
@@ -340,6 +342,24 @@ bool FinishUpkeep::Process(Controller& controller, Player& player) const
 {
 	CommitSession session(GetLiveGame(player), controller);
 	session.Open().GetUpkeepPhase().FinishTurn(session, player);
+	session.Commit();
+	return true;
+}
+
+Chat::Chat(const Json::Element& node)
+{
+	m_msg = node.GetAttributeStr("message");
+}
+
+bool Chat::Process(Controller& controller, Player& player) const
+{
+	CommitSession session(GetLiveGame(player), controller);
+	
+	Colour colour = Colour::None;
+	if (const Team* team = player.GetCurrentTeam())
+		colour = team->GetColour();
+
+	session.DoAndPushRecord(RecordPtr(new MessageRecord(player.GetName(), colour, m_msg)));
 	session.Commit();
 	return true;
 }

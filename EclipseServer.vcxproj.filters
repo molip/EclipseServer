@@ -242,6 +242,9 @@
     <ClInclude Include="FormatString.h">
       <Filter>General</Filter>
     </ClInclude>
+    <ClInclude Include="MessageRecord.h">
+      <Filter>Model</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -453,6 +456,9 @@
     </ClCompile>
     <ClCompile Include="SaveThread.cpp">
       <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="MessageRecord.cpp">
+      <Filter>Model</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

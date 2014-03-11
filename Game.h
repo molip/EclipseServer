@@ -40,6 +40,7 @@ public:
 	Team& GetTeam(const Player& player);
 
 	const Team* FindTeam(Colour c) const			{ return const_cast<Game*>(this)->FindTeam(c); }
+	const Team* FindTeam(const Player& player) const{ return const_cast<Game*>(this)->FindTeam(player); }
 	const Team& GetTeam(Colour c) const				{ return const_cast<Game*>(this)->GetTeam(c); }
 	const Team& GetTeam(const Player& player) const	{ return const_cast<Game*>(this)->GetTeam(player); }
 

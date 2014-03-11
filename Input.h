@@ -112,6 +112,13 @@ struct FinishUpkeep : Message
 	virtual bool Process(Controller& controller, Player& player) const override;
 };
 
+struct Chat : Message
+{
+	Chat(const Json::Element& node);
+	virtual bool Process(Controller& controller, Player& player) const override;
+	std::string m_msg;
+};
+
 //-----------------------------------------------------------------------------
 
 class CmdMessage : public Message

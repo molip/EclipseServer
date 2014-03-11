@@ -83,6 +83,7 @@
     <ClInclude Include="Blueprint.h" />
     <ClInclude Include="BlueprintDefs.h" />
     <ClInclude Include="BuildCmd.h" />
+    <ClInclude Include="MessageRecord.h" />
     <ClInclude Include="ChooseTeamPhase.h" />
     <ClInclude Include="civetweb.h" />
     <ClInclude Include="cJSON.h" />
@@ -158,6 +159,7 @@
     <ClCompile Include="Blueprint.cpp" />
     <ClCompile Include="BlueprintDefs.cpp" />
     <ClCompile Include="BuildCmd.cpp" />
+    <ClCompile Include="MessageRecord.cpp" />
     <ClCompile Include="ChooseTeamPhase.cpp" />
     <ClCompile Include="civetweb.c" />
     <ClCompile Include="cJSON.c">

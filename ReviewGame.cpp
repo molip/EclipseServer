@@ -32,6 +32,11 @@ void ReviewGame::Advance(const Controller& controller)
 	VerifyModel("ReviewGame::Advance: Already at end", CanAdvance());
 	Record& rec = *GetRecords()[m_iRecord++];
 	rec.Do(*this, controller);
+
+	// Skip messages.
+	while (CanAdvance() && GetRecords()[m_iRecord]->IsMessageRecord())
+		++m_iRecord;
+
 	if (CanAdvance() && rec.WantMergeNext())
 		Advance(controller);
 }
@@ -39,9 +44,24 @@ void ReviewGame::Advance(const Controller& controller)
 void ReviewGame::Retreat(const Controller& controller)
 {
 	VerifyModel("ReviewGame::Retreat: Already at start", CanRetreat());
-	GetRecords()[--m_iRecord]->Undo(*this, controller);
-	if (CanRetreat() && GetRecords()[m_iRecord - 1]->WantMergeNext())
-		Retreat(controller);
+
+	// Skip messages.
+	while (CanRetreat() && GetRecords()[m_iRecord - 1]->IsMessageRecord())
+		--m_iRecord;
+
+	if (CanRetreat())
+		GetRecords()[--m_iRecord]->Undo(*this, controller);
+	
+	if (CanRetreat())
+	{
+		// Look past messages to see if we need to merge. 
+		int i = m_iRecord;
+		while (i > 0 && GetRecords()[i - 1]->IsMessageRecord())
+			--i;
+
+		if (i > 0 && GetRecords()[i - 1]->WantMergeNext())
+			Retreat(controller);
+	}
 }
 
 bool ReviewGame::CanAdvance() const
@@ -58,5 +78,5 @@ void ReviewGame::OnPreRecordPop(const Controller& controller)
 {
 	VerifyModel("ReviewGame::OnPreRecordPop", CanRetreat() && m_iRecord <= (int)GetRecords().size());
 	if (m_iRecord == GetRecords().size())
-		GetRecords()[--m_iRecord]->Undo(*this, controller); // Don't retreat merged.
+		GetRecords()[--m_iRecord]->Undo(*this, controller); // Don't retreat merged or messages.
 }

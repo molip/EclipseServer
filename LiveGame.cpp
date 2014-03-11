@@ -154,10 +154,18 @@ void LiveGame::PushRecord(std::unique_ptr<Record>& pRec)
 
 RecordPtr LiveGame::PopRecord()
 {
-	VerifyModel("LiveGame::PopRecord", !m_records.empty());
-	RecordPtr pRec = std::move(m_records.back());
-	m_records.pop_back();
-	return pRec;
+	VerifyModel("LiveGame::PopRecord 1", !m_records.empty());
+
+	// Ignore non-command records (e.g. chat)
+	for (auto rec = m_records.rbegin(); rec != m_records.rend(); ++rec)
+		if (!(*rec)->IsMessageRecord())
+		{
+			RecordPtr pRec = std::move(*rec);
+			m_records.erase(rec.base() - 1);
+			return pRec;
+		}
+	VerifyModel("LiveGame::PopRecord 2", false);
+	return nullptr;
 }
 
 void LiveGame::ShipMovedFrom(const Hex& hex, Colour colour)

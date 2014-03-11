@@ -31,6 +31,7 @@ public:
 	void Undo(LiveGame& game, const Controller& controller);
 
 	virtual bool WantMergeNext() const { return false; }
+	virtual bool IsMessageRecord() const { return false; }
 
 	virtual std::string GetMessage(const Game& game, bool bUndo) const { return std::string(); }
 

@@ -43,5 +43,5 @@ const ReviewGame* Player::GetCurrentReviewGame() const
 
 const Team* Player::GetCurrentTeam() const
 {
-	return m_idCurrentGame ? &GetCurrentGame()->GetTeam(*this) : nullptr;
+	return m_idCurrentGame ? GetCurrentGame()->FindTeam(*this) : nullptr;
 }
