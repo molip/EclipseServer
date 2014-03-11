@@ -49,6 +49,11 @@ private:
 
 	virtual bool WantMergeNext() const { return true; }
 
+	virtual std::string GetTeamMessage() const
+	{
+		return FormatString("received hex %0", m_idHex);
+	}
+
 	int m_idHex;
 	HexRing m_hexRing;
 };
@@ -97,7 +102,7 @@ void ExploreCmd::Save(Serial::SaveNode& node) const
 {
 	__super::Save(node);
 	node.SaveCntr("positions", m_positions, Serial::TypeSaver());
-	node.SaveType("hex_index", m_idHex);
+	node.SaveType("hex_id", m_idHex);
 	node.SaveType("pos_index", m_iPos);
 }
 
@@ -105,7 +110,7 @@ void ExploreCmd::Load(const Serial::LoadNode& node)
 {
 	__super::Load(node);
 	node.LoadCntr("positions", m_positions, Serial::TypeLoader());
-	node.LoadType("hex_index", m_idHex);
+	node.LoadType("hex_id", m_idHex);
 	node.LoadType("pos_index", m_iPos);
 }
 
@@ -181,7 +186,8 @@ public:
 
 	virtual std::string GetTeamMessage() const
 	{
-		return FormatString("Explore hex %0", m_idHex);
+		const char* format = m_bInfluence ? "placed and influenced hex %0" : "placed hex %0";
+		return FormatString(format, m_idHex);
 	}
 
 private:

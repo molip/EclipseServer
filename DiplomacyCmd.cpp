@@ -59,7 +59,7 @@ private:
 
 	virtual std::string GetTeamMessage() const
 	{
-		return FormatString("Diplomacy");
+		return FormatString("did some diplomacy");
 	}
 };
 

@@ -60,7 +60,7 @@ private:
 	}
 	virtual std::string GetTeamMessage() const
 	{
-		return FormatString("Upgrade");
+		return FormatString("upgraded");
 	}
 };
 

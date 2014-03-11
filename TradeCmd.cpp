@@ -44,7 +44,7 @@ private:
 
 	virtual std::string GetTeamMessage() const
 	{
-		return FormatString("Trade");
+		return FormatString("traded");
 	}
 
 	PairVec m_srcs;

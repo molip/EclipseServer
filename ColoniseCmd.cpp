@@ -97,7 +97,7 @@ private:
 
 	virtual std::string GetTeamMessage() const
 	{
-		return FormatString("Colonise hex %0", m_hexId);
+		return FormatString("colonised hex %0", m_hexId);
 	}
 
 	MapPos m_pos;

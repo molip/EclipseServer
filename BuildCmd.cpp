@@ -41,14 +41,15 @@ namespace
 class BuildRecord : public TeamRecord
 {
 public:
-	BuildRecord() : m_buildable(Buildable::None) {}
-	BuildRecord(Colour colour, const MapPos& pos, Buildable buildable) : TeamRecord(colour), m_pos(pos), m_buildable(buildable) {}
+	BuildRecord() : m_buildable(Buildable::None), m_idHex(0){}
+	BuildRecord(Colour colour, const MapPos& pos, Buildable buildable) : TeamRecord(colour), m_pos(pos), m_buildable(buildable), m_idHex(0){}
 
 	virtual void Save(Serial::SaveNode& node) const override 
 	{
 		__super::Save(node);
 		node.SaveEnum("buildable", m_buildable);
 		node.SaveType("pos", m_pos);
+		node.SaveType("hex_id", m_idHex);
 	}
 	
 	virtual void Load(const Serial::LoadNode& node) override 
@@ -56,6 +57,7 @@ public:
 		__super::Load(node);
 		node.LoadEnum("buildable", m_buildable);
 		node.LoadType("pos", m_pos);
+		node.LoadType("hex_id", m_idHex);
 	}
 
 private:
@@ -64,6 +66,8 @@ private:
 		Team& team = game.GetTeam(m_colour);
 
 		Hex& hex = game.GetMap().GetHex(m_pos);
+		m_idHex = hex.GetID();
+
 		if (m_buildable == Buildable::Orbital)
 			hex.SetOrbital(bDo);
 		else if (m_buildable == Buildable::Monolith)
@@ -94,11 +98,12 @@ private:
 
 	virtual std::string GetTeamMessage() const 
 	{
-		return FormatString("Build %0", EnumTraits<Buildable>::ToString(m_buildable));
+		return FormatString("built %0 in hex %1", EnumTraits<Buildable>::ToString(m_buildable), m_idHex);
 	}
 
 	Buildable m_buildable;
 	MapPos m_pos;
+	int m_idHex;
 };
 
 REGISTER_DYNAMIC(BuildRecord)

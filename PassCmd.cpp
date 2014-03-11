@@ -23,7 +23,7 @@ private:
 
 	virtual std::string GetTeamMessage() const
 	{
-		return FormatString("Pass");
+		return FormatString("passed");
 	}
 };
 

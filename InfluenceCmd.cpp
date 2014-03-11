@@ -61,7 +61,7 @@ REGISTER_DYNAMIC(InfluenceCmd)
 class InfluenceRecord : public TeamRecord
 {
 public:
-	InfluenceRecord() : m_discovery(DiscoveryType::None) {}
+	InfluenceRecord() : m_discovery(DiscoveryType::None), m_srcID(0), m_dstID(0){}
 
 	InfluenceRecord(Colour colour, const MapPos* pSrcPos, const MapPos* pDstPos) : 
 		TeamRecord(colour), m_discovery(DiscoveryType::None) 
@@ -76,6 +76,9 @@ public:
 	{
 		if (bDo)
 		{
+			m_srcID = m_pSrcPos ? game.GetMap().GetHex(*m_pSrcPos).GetID() : 0;
+			m_dstID = m_pDstPos ? game.GetMap().GetHex(*m_pDstPos).GetID() : 0;
+			
 			Hex* pDstHex = TransferDisc(m_pSrcPos, m_pDstPos, game, controller);
 
 			if (pDstHex && pDstHex->GetDiscoveryTile() != DiscoveryType::None)
@@ -100,6 +103,8 @@ public:
 		node.SaveEnum("discovery", m_discovery);
 		node.SaveTypePtr("src_pos", m_pSrcPos);
 		node.SaveTypePtr("dst_pos", m_pDstPos);
+		node.SaveType("src_id", m_srcID);
+		node.SaveType("dst_id", m_dstID);
 	}
 	
 	virtual void Load(const Serial::LoadNode& node) override 
@@ -108,6 +113,8 @@ public:
 		node.LoadEnum("discovery", m_discovery);
 		node.LoadTypePtr("src_pos", m_pSrcPos);
 		node.LoadTypePtr("dst_pos", m_pDstPos);
+		node.LoadType("src_id", m_srcID);
+		node.LoadType("dst_id", m_dstID);
 	}
 
 private:
@@ -143,9 +150,15 @@ private:
 
 	virtual std::string GetTeamMessage() const
 	{
-		return FormatString("Influence");
+		auto getDesc = [&](int id)
+		{
+			return id ? FormatString("hex %0", id) : "influence track";
+		};
+
+		return FormatString("moved an influence disc from %0 to %1", getDesc(m_srcID), getDesc(m_dstID));
 	}
 
+	int m_srcID, m_dstID;
 	MapPosPtr m_pSrcPos, m_pDstPos;
 	DiscoveryType m_discovery;
 };

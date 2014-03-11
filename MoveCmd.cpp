@@ -101,7 +101,7 @@ private:
 
 	virtual std::string GetTeamMessage() const
 	{
-		return FormatString("Move");
+		return FormatString("moved a ship");
 	}
 
 	ShipType m_ship;

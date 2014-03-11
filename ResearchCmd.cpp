@@ -75,7 +75,7 @@ private:
 
 	virtual std::string GetTeamMessage() const
 	{
-		return FormatString("Research");
+		return FormatString("researched %0", EnumTraits<TechType>::ToString(m_tech));
 	}
 
 	TechType m_tech;
@@ -179,7 +179,7 @@ private:
 
 	virtual std::string GetTeamMessage() const
 	{
-		return FormatString("Research artifacts");
+		return FormatString("used the artifact key");
 	}
 
 	Storage m_artifacts;
