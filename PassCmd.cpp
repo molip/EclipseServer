@@ -21,7 +21,7 @@ private:
 		controller.SendMessage(Output::UpdatePassed(team), game);
 	}
 
-	virtual std::string GetTeamMessage(bool bUndo) const
+	virtual std::string GetTeamMessage() const
 	{
 		return FormatString("Pass");
 	}

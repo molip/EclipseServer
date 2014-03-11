@@ -141,7 +141,7 @@ private:
 		return pDstHex;
 	}
 
-	virtual std::string GetTeamMessage(bool bUndo) const
+	virtual std::string GetTeamMessage() const
 	{
 		return FormatString("Influence");
 	}

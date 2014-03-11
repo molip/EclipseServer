@@ -92,7 +92,7 @@ private:
 		controller.SendMessage(Output::UpdateStorageTrack(team), game);
 	}
 
-	virtual std::string GetTeamMessage(bool bUndo) const 
+	virtual std::string GetTeamMessage() const 
 	{
 		return FormatString("Build %0", EnumTraits<Buildable>::ToString(m_buildable));
 	}

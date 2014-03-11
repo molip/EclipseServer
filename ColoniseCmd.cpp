@@ -95,7 +95,7 @@ private:
 		controller.SendMessage(Output::UpdateColonyShips(team), game);
 	}
 
-	virtual std::string GetTeamMessage(bool bUndo) const
+	virtual std::string GetTeamMessage() const
 	{
 		return FormatString("Colonise hex %0", m_hexId);
 	}

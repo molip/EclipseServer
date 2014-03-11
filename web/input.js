@@ -97,8 +97,10 @@ function OnCommandUpdate(elem)
 		OnCommandUpdateTechnologies(elem)
 	else if (param == "round")
 		OnCommandUpdateRound(elem)
-	else if (param == "log")
-		OnCommandUpdateLog(elem)
+	else if (param == "add_log")
+		OnCommandAddLog(elem)
+	else if (param == "remove_log")
+		OnCommandRemoveLog(elem)
 	else
         alert('OnCommandUpdate: unknown param: ' + param)
 }
@@ -346,9 +348,23 @@ function OnCommandUpdateRound(elem)
 	document.getElementById('round_count').innerHTML = elem.round
 }
 
-function OnCommandUpdateLog(elem)
+function OnCommandAddLog(elem)
 {
-	document.getElementById('output').innerText += elem.message
+	var div = document.getElementById('output')
+	for (var i = 0, item; item = elem.items[i]; ++i)
+	{
+		var html = '<span id="log_item_{0}">'.format(item.id) + item.message + '<br></span>'
+		div.innerHTML += html
+	}
+	
+	div.scrollTop = div.scrollHeight;
+}
+
+function OnCommandRemoveLog(elem)
+{
+	var span = document.getElementById('log_item_{0}'.format(elem.id))
+	if (span)
+		span.style.textDecoration = 'line-through'
 }
 
 function OnCommandChooseTeam(elem)

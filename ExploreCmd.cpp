@@ -179,7 +179,7 @@ public:
 		node.LoadType("influence", m_bInfluence);
 	}
 
-	virtual std::string GetTeamMessage(bool bUndo) const
+	virtual std::string GetTeamMessage() const
 	{
 		return FormatString("Explore hex %0", m_idHex);
 	}

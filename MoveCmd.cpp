@@ -99,7 +99,7 @@ private:
 		controller.SendMessage(Output::UpdateMap(game), game);
 	}
 
-	virtual std::string GetTeamMessage(bool bUndo) const
+	virtual std::string GetTeamMessage() const
 	{
 		return FormatString("Move");
 	}

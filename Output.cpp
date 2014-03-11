@@ -270,9 +270,24 @@ UpdateRound::UpdateRound(const Game& game) : Update("round")
 	m_root.SetAttribute("round", game.GetRound() + 1);
 }
 
-UpdateLog::UpdateLog(const std::string& msg) : Update("log")
+AddLog::AddLog(int id, const std::string& msg) : AddLog(Vec { Vec::value_type(id, msg) } )
 {
-	m_root.SetAttribute("message", msg);
+}
+
+AddLog::AddLog(const Vec& msgs) : Update("add_log")
+{
+	auto msgsNode = m_root.AddArray("items");
+	for (auto& msg : msgs)
+	{
+		auto msgNode = msgsNode.AppendElement();
+		msgNode.SetAttribute("id", msg.first);
+		msgNode.SetAttribute("message", msg.second);
+	}
+}
+
+RemoveLog::RemoveLog(int id) : Update("remove_log")
+{
+	m_root.SetAttribute("id", id);
 }
 
 //UpdateUndo::UpdateUndo(bool bEnable) : Update("undo")

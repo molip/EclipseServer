@@ -58,7 +58,7 @@ private:
 	virtual void Apply(bool bDo, Game& game, const Controller& controller) override
 	{
 	}
-	virtual std::string GetTeamMessage(bool bUndo) const
+	virtual std::string GetTeamMessage() const
 	{
 		return FormatString("Upgrade");
 	}

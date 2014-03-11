@@ -22,9 +22,9 @@ const std::vector<RecordPtr>& ReviewGame::GetRecords() const
 	return Games::GetLive(m_idLive).GetRecords();
 }
 
-std::string ReviewGame::GetLog() const
+std::vector<std::pair<int, std::string>> ReviewGame::GetLogs() const
 {
-	return Games::GetLive(m_idLive).GetLog();
+	return Games::GetLive(m_idLive).GetLogs();
 }
 
 void ReviewGame::Advance(const Controller& controller)

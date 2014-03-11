@@ -13,12 +13,12 @@
 
 #include <algorithm>
 
-LiveGame::LiveGame() : m_gamePhase(GamePhase::Lobby)
+LiveGame::LiveGame() : m_gamePhase(GamePhase::Lobby), m_nextRecordID(0)
 {
 }
 
 LiveGame::LiveGame(int id, const std::string& name, const Player& owner) : 
-	Game(id, name, owner), m_gamePhase(GamePhase::Lobby)
+Game(id, name, owner), m_gamePhase(GamePhase::Lobby), m_nextRecordID(0)
 {
 }
 
@@ -147,9 +147,12 @@ void LiveGame::FinishActionPhase(std::vector<Colour>& passOrder)
 	m_pPhase = PhasePtr(new UpkeepPhase(this));
 }
 
-void LiveGame::PushRecord(std::unique_ptr<Record>& pRec)
+int LiveGame::PushRecord(std::unique_ptr<Record> pRec)
 {
+	int id = m_nextRecordID++;
+	pRec->SetID(id);
 	m_records.push_back(std::move(pRec));
+	return id;
 }
 
 RecordPtr LiveGame::PopRecord()
@@ -178,16 +181,16 @@ void LiveGame::ShipMovedTo(const Hex& hex, Colour colour)
 	GetActionPhase().ShipMovedTo(hex, colour);
 }
 
-std::string LiveGame::GetLog() const
+LiveGame::LogVec LiveGame::GetLogs() const
 {
-	std::string log;
+	LogVec logs;
 	for (auto& rec : m_records)
 	{
-		std::string msg = rec->GetMessage(*this, false);
+		std::string msg = rec->GetMessage(*this);
 		if (!msg.empty())
-			log += msg + '\n';
+			logs.push_back(LogVec::value_type(rec->GetID(), msg));
 	}
-	return log;
+	return logs;
 }
 
 void LiveGame::Save() const
@@ -203,6 +206,7 @@ void LiveGame::Save(Serial::SaveNode& node) const
 	node.SaveCntr("records", m_records, Serial::ObjectSaver());
 	node.SaveObject("phase", m_pPhase);
 	node.SaveEnum("game_phase", m_gamePhase);
+	node.SaveType("next_record_id", m_nextRecordID);
 	__super::Save(node);
 }
 
@@ -211,6 +215,7 @@ void LiveGame::Load(const Serial::LoadNode& node)
 	node.LoadCntr("records", m_records, Serial::ObjectLoader());
 	node.LoadObject("phase", m_pPhase);
 	node.LoadEnum("game_phase", m_gamePhase);
+	node.LoadType("next_record_id", m_nextRecordID);
 	__super::Load(node);
 
 	if (m_pPhase)

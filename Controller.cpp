@@ -138,7 +138,7 @@ void Controller::SendUpdateGame(const Game& game, const Player* pPlayer) const
 		SendMessage(Output::UpdateMap(game), game, pPlayer);
 		SendMessage(Output::UpdateTechnologies(game), game, pPlayer);
 		SendMessage(Output::UpdateRound(game), game, pPlayer);
-		SendMessage(Output::UpdateLog(game.GetLog()), game, pPlayer);
+		SendMessage(Output::AddLog(game.GetLogs()), game, pPlayer);
 	}
 
 	if (pLive)

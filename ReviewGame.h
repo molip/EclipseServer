@@ -18,7 +18,7 @@ public:
 	int GetLiveGameID() const { return m_idLive; }
 
 	virtual bool HasStarted() const override { return true; }
-	virtual std::string GetLog() const override;
+	virtual std::vector<std::pair<int, std::string>> GetLogs() const override;
 
 	void Advance(const Controller& controller);
 	void Retreat(const Controller& controller);

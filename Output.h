@@ -77,7 +77,14 @@ struct UpdateMap : Update { UpdateMap(const Game& game); };
 struct UpdateReviewUI : Update { UpdateReviewUI(const ReviewGame& game); };
 struct UpdateTechnologies : Update { UpdateTechnologies(const Game& game); };
 struct UpdateRound : Update { UpdateRound(const Game& game); };
-struct UpdateLog : Update { UpdateLog(const std::string& msg); };
+
+struct AddLog : Update 
+{
+	typedef std::vector<std::pair<int, std::string>> Vec;
+	AddLog(int id, const std::string& msg);
+	AddLog(const Vec& msgs);
+};
+struct RemoveLog : Update { RemoveLog(int id); };
 //struct UpdateUndo : Update { UpdateUndo(bool bEnable); };
 
 struct ChooseTeam : Choose { ChooseTeam(const Game& game, bool bActive); };

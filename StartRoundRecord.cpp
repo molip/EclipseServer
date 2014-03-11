@@ -106,7 +106,7 @@ void StartRoundRecord::Apply(bool bDo, Game& game, const Controller& controller)
 	controller.SendMessage(Output::UpdateTechnologies(game), game);
 }
 
-std::string StartRoundRecord::GetMessage(const Game& game, bool bUndo) const
+std::string StartRoundRecord::GetMessage(const Game& game) const
 {
 	return FormatString("Starting round %0", m_round + 1);
 }

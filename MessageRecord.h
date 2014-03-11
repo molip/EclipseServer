@@ -20,7 +20,7 @@ public:
 
 private:
 	virtual void Apply(bool bDo, Game& game, const Controller& controller) override;
-	virtual std::string GetMessage(const Game& game, bool bUndo) const;
+	virtual std::string GetMessage(const Game& game) const;
 
 	std::string m_player, m_msg;
 };

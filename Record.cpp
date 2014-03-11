@@ -7,7 +7,7 @@
 #include "Controller.h"
 #include "Output.h"
 
-Record::Record() {}
+Record::Record() : m_id(-1) {}
 
 Record::~Record() {}
 
@@ -38,6 +38,18 @@ void Record::Undo(LiveGame& game, const Controller& controller)
 	Apply(false, game, controller); 
 }
 
+void Record::Save(Serial::SaveNode& node) const
+{
+	__super::Save(node);
+	node.SaveType("id", m_id);
+}
+
+void Record::Load(const Serial::LoadNode& node) 
+{
+	__super::Load(node);
+	node.LoadType("id", m_id);
+}
+
 //-----------------------------------------------------------------------------
 
 TeamRecord::TeamRecord() : m_colour(Colour::None) {}
@@ -55,11 +67,11 @@ void TeamRecord::Load(const Serial::LoadNode& node)
 	node.LoadEnum("colour", m_colour);
 }
 
-std::string TeamRecord::GetMessage(const Game& game, bool bUndo) const
+std::string TeamRecord::GetMessage(const Game& game) const
 { 
-	std::string msg = GetTeamMessage(bUndo);
+	std::string msg = GetTeamMessage();
 	if (!msg.empty())
-		return FormatString("%0 %1: %2", EnumTraits<Colour>::ToString(m_colour), bUndo ? "undid" : "did", msg);
+		return FormatString("%0 did: %2", EnumTraits<Colour>::ToString(m_colour), msg);
 
-	return __super::GetMessage(game, bUndo);
+	return __super::GetMessage(game);
 }

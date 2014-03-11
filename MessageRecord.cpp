@@ -30,10 +30,8 @@ void MessageRecord::Apply(bool bDo, Game& game, const Controller& controller)
 {
 }
 
-std::string MessageRecord::GetMessage(const Game& game, bool bUndo) const
+std::string MessageRecord::GetMessage(const Game& game) const
 {
-	Verify("MessageRecord::GetMessage", !bUndo);
-
 	std::string prefix;
 	if (!m_player.empty())
 	{

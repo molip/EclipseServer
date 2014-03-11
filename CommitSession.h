@@ -28,8 +28,6 @@ public:
 	void Commit();
 
 private:
-	void SendRecordMessage(const Record& rec, bool bUndo);
-
 	LiveGame& m_game;
 	const Controller& m_controller;
 	static CommitSession* s_pInstance;

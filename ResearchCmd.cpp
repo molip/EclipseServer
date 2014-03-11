@@ -73,7 +73,7 @@ private:
 		controller.SendMessage(Output::UpdateStorageTrack(team), game);
 	}
 
-	virtual std::string GetTeamMessage(bool bUndo) const
+	virtual std::string GetTeamMessage() const
 	{
 		return FormatString("Research");
 	}
@@ -177,7 +177,7 @@ private:
 		controller.SendMessage(Output::UpdateStorageTrack(team), game);
 	}
 
-	virtual std::string GetTeamMessage(bool bUndo) const
+	virtual std::string GetTeamMessage() const
 	{
 		return FormatString("Research artifacts");
 	}

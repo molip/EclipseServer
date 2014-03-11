@@ -53,16 +53,13 @@ void CommitSession::DoAndPushRecord(RecordPtr pRec)
 {
 	Open();
 	pRec->Do(m_game, m_controller);
-	SendRecordMessage(*pRec, false);
 
-	m_game.PushRecord(pRec);
-}
+	std::string msg = pRec->GetMessage(m_game);
 
-void CommitSession::SendRecordMessage(const Record& rec, bool bUndo)
-{
-	std::string msg = rec.GetMessage(m_game, bUndo);
+	int id = m_game.PushRecord(std::move(pRec));
+
 	if (!msg.empty())
-		m_controller.SendMessage(Output::UpdateLog(msg + '\n'), m_game);
+		m_controller.SendMessage(Output::AddLog(id, msg), m_game);
 }
 
 RecordPtr CommitSession::PopAndUndoRecord()
@@ -70,6 +67,8 @@ RecordPtr CommitSession::PopAndUndoRecord()
 	Open();
 	RecordPtr pRec = m_game.PopRecord();
 	pRec->Undo(m_game, m_controller);
-	SendRecordMessage(*pRec, true);
+
+	m_controller.SendMessage(Output::RemoveLog(pRec->GetID()), m_game);
+
 	return pRec;
 }

@@ -18,6 +18,7 @@ class LiveGame : public Game
 
 public:
 	enum class GamePhase { Lobby, ChooseTeam, Main };
+	typedef std::vector<std::pair<int, std::string>> LogVec;
 
 	LiveGame();
 	LiveGame(int id, const std::string& name, const Player& owner);
@@ -31,7 +32,7 @@ public:
 	virtual bool IsLive() const override { return true; }
 	virtual void ShipMovedFrom(const Hex& hex, Colour colour) override;
 	virtual void ShipMovedTo(const Hex& hex, Colour colour) override;
-	virtual std::string GetLog() const override;
+	virtual LogVec GetLogs() const override;
 
 	GamePhase GetGamePhase() const { return m_gamePhase; }
 	
@@ -44,8 +45,8 @@ public:
 	ChooseTeamPhase& GetChooseTeamPhase();
 	UpkeepPhase& GetUpkeepPhase();
 
-	void PushRecord(std::unique_ptr<Record>& pRec);
-	std::unique_ptr<Record> PopRecord();
+	int PushRecord(RecordPtr pRec); // Returns record id.
+	RecordPtr PopRecord();
 
 	const std::vector<RecordPtr>& GetRecords() const { return m_records; }
 
@@ -65,6 +66,7 @@ private:
 	GamePhase m_gamePhase;
 	PhasePtr m_pPhase;
 	mutable std::mutex m_mutex;
+	int m_nextRecordID;
 };
 
 DEFINE_UNIQUE_PTR(LiveGame)
