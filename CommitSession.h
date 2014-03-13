@@ -25,6 +25,8 @@ public:
 	void DoAndPushRecord(RecordPtr pRec);
 	RecordPtr PopAndUndoRecord();
 
+	void UpdateReviewGames();
+		
 	void Commit();
 
 private:

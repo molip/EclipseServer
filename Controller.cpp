@@ -111,9 +111,6 @@ void Controller::SendUpdateGame(const Game& game, const Player* pPlayer) const
 		SendMessage(Output::ShowGame(), game, pPlayer);
 		SendMessage(Output::UpdateTeams(game), game, pPlayer);
 
-		if (auto pReview = dynamic_cast<const ReviewGame*>(&game))
-			SendMessage(Output::UpdateReviewUI(*pReview), game, pPlayer);
-
 		// Send info about each team.
 		for (auto& pInfoTeam : game.GetTeams())
 		{
@@ -141,6 +138,11 @@ void Controller::SendUpdateGame(const Game& game, const Player* pPlayer) const
 		SendMessage(Output::AddLog(game.GetLogs()), game, pPlayer);
 	}
 
+
 	if (pLive)
 		pLive->GetPhase().UpdateClient(*this, pPlayer);
+	else if (auto pReview = dynamic_cast<const ReviewGame*>(&game))
+		SendMessage(Output::UpdateReviewUI(*pReview), game, pPlayer); // After AddLog.
+	else
+		ASSERT(false);
 }

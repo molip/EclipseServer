@@ -176,6 +176,12 @@ function ShowElement(e, show, inline)
 		e.style.display = show ? inline ? "inline" : "block" : "none"
 }
 
+function IsElementVisible(id)
+{
+	var e = document.getElementById(id)
+	return e.style.display != "none"
+}
+
 function ShowActionElement(id)
 {
 	ShowElement(data.current_action_elem, false)

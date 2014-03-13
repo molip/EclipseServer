@@ -51,6 +51,8 @@ Cmd* ActionPhase::RemoveCmd(CommitSession& session, Colour c)
 		{
 			RecordPtr pRec = session.PopAndUndoRecord();
 			VerifyModel("ActionPhase::RemoveCmd: current record not ActionRecord", !!dynamic_cast<ActionRecord*>(pRec.get()));
+
+			session.UpdateReviewGames();
 		}
 	}
 
@@ -99,6 +101,7 @@ void ActionPhase::StartCmd(CmdPtr pCmd, CommitSession& session)
 	if (pCmd->CostsInfluence())
 	{
 		session.DoAndPushRecord(RecordPtr(new ActionRecord(pCmd->GetActionName(), GetCurrentTeam().GetColour())));
+		session.UpdateReviewGames();
 	}
 	
 	m_pCmdStack->StartCmd(pCmd);

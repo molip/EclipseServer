@@ -6,6 +6,7 @@ class Phase;
 class ActionPhase;
 class ChooseTeamPhase;
 class UpkeepPhase;
+class ReviewGame;
 
 DEFINE_UNIQUE_PTR(Record)
 DEFINE_UNIQUE_PTR(CmdStack)
@@ -49,6 +50,11 @@ public:
 	RecordPtr PopRecord();
 
 	const std::vector<RecordPtr>& GetRecords() const { return m_records; }
+	int GetLastPoppableRecord() const; 
+
+	const std::set<ReviewGame*> GetReviewGames() const { return m_reviewGames; }
+	void AddReviewGame(ReviewGame& game) const { m_reviewGames.insert(&game); }
+	void RemoveReviewGame(ReviewGame& game) const { m_reviewGames.erase(&game); }
 
 	bool NeedCombat() const;
 
@@ -65,8 +71,11 @@ private:
 	std::vector<RecordPtr> m_records;
 	GamePhase m_gamePhase;
 	PhasePtr m_pPhase;
-	mutable std::mutex m_mutex;
 	int m_nextRecordID;
+
+	// Not saved.
+	mutable std::mutex m_mutex;
+	mutable std::set<ReviewGame*> m_reviewGames;
 };
 
 DEFINE_UNIQUE_PTR(LiveGame)

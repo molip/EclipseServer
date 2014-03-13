@@ -38,7 +38,8 @@ LiveGame& Games::Add(const std::string& name, Player& owner)
 ReviewGame& Games::AddReview(Player& owner, const LiveGame& live)
 {
 	s_reviewGames.push_back(ReviewGamePtr(new ReviewGame(s_nNextGameID++, owner, live)));
-	return *s_reviewGames.back().get();
+	live.AddReviewGame(*s_reviewGames.back());
+	return *s_reviewGames.back();
 }
 
 void Games::DeleteReview(int idGame)
@@ -46,6 +47,7 @@ void Games::DeleteReview(int idGame)
 	for (auto i = s_reviewGames.begin(); i != s_reviewGames.end(); ++i)
 		if ((*i)->GetID() == idGame)
 		{
+			GetLive((*i)->GetLiveGameID()).RemoveReviewGame(**i);
 			s_reviewGames.erase(i);
 			return;
 		}

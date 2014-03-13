@@ -248,6 +248,7 @@ UpdateReviewUI::UpdateReviewUI(const ReviewGame& game) : Update("review_ui")
 {
 	m_root.SetAttribute("can_advance", game.CanAdvance());
 	m_root.SetAttribute("can_retreat", game.CanRetreat());
+	m_root.SetAttribute("next_record_id", game.GetNextRecordID());
 }
 
 UpdateTechnologies::UpdateTechnologies(const Game& game) : Update("technologies")

@@ -331,6 +331,17 @@ function OnCommandUpdateReviewUI(elem)
 {
 	document.getElementById('retreat_review').disabled = !elem.can_retreat
 	document.getElementById('advance_review').disabled = !elem.can_advance
+	
+	var next_record_id = elem.next_record_id ? 'log_item_{0}'.format(elem.next_record_id) : null
+
+	var div = document.getElementById('output')
+	var colour = "black"
+	for (var e = div.firstChild; e; e = e.nextSibling)
+	{
+		if (e.id == next_record_id)
+			colour = "gray"
+		e.style.color = colour
+	}
 }
 
 function OnCommandUpdateTechnologies(elem)
@@ -350,10 +361,12 @@ function OnCommandUpdateRound(elem)
 
 function OnCommandAddLog(elem)
 {
+	var colour = IsElementVisible('review_ui') ? 'gray' : 'black'
+
 	var div = document.getElementById('output')
 	for (var i = 0, item; item = elem.items[i]; ++i)
 	{
-		var html = '<span id="log_item_{0}">'.format(item.id) + item.message + '<br></span>'
+		var html = '<span id="log_item_{0}" style="color:{1}">'.format(item.id, colour) + item.message + '<br></span>'
 		div.innerHTML += html
 	}
 	
@@ -364,7 +377,10 @@ function OnCommandRemoveLog(elem)
 {
 	var span = document.getElementById('log_item_{0}'.format(elem.id))
 	if (span)
-		span.style.textDecoration = 'line-through'
+		if (IsElementVisible('review_ui'))
+			span.parentNode.removeChild(span)
+		else
+			span.style.textDecoration = 'line-through'
 }
 
 function OnCommandChooseTeam(elem)

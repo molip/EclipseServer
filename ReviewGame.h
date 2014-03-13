@@ -25,6 +25,7 @@ public:
 
 	bool CanAdvance() const;
 	bool CanRetreat() const;
+	int GetNextRecordID() const;
 
 	void OnPreRecordPop(const Controller& controller);
 

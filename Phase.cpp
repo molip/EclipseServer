@@ -39,13 +39,10 @@ void Phase::ProcessCmdMessage(const Input::CmdMessage& msg, CommitSession& sessi
 	else
 		FinishCmd(colour);
 
-	const Controller& controller = session.GetController();
-	UpdateClient(controller, &player);
+	UpdateClient(session.GetController(), &player);
 
 	if (pCmd->HasRecord()) 
-		for (auto& g : Games::GetReviewGames())
-			if (g->GetLiveGameID() == game.GetID())
-				controller.SendMessage(Output::UpdateReviewUI(*g), *g);
+		session.UpdateReviewGames();
 }
 
 void Phase::UndoCmd(CommitSession& session, Player& player)
@@ -62,15 +59,12 @@ void Phase::UndoCmd(CommitSession& session, Player& player)
 		if (pUndo->HasRecord())
 		{
 			// Update review games before record gets popped. 
-			for (auto& g : Games::GetReviewGames())
-				if (g->GetLiveGameID() == game.GetID())
-					g->OnPreRecordPop(controller);
+			for (auto& g : game.GetReviewGames())
+				g->OnPreRecordPop(controller);
 
 			pUndo->PopRecord(session);
 
-			for (auto& g : Games::GetReviewGames())
-				if (g->GetLiveGameID() == game.GetID())
-					controller.SendMessage(Output::UpdateReviewUI(*g), *g);
+			session.UpdateReviewGames();
 		}
 
 		if (pUndo->IsAutoProcess()) // Also undo the command start. 

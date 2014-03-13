@@ -4,6 +4,7 @@
 #include "SaveThread.h"
 #include "Controller.h"
 #include "Output.h"
+#include "ReviewGame.h"
 
 // All non-const LiveGame access should be performed during a CommitSession. 
 // If an exception occurs between opening and committing the session, the game may be in an invalid state and should be locked. 
@@ -58,8 +59,13 @@ void CommitSession::DoAndPushRecord(RecordPtr pRec)
 
 	int id = m_game.PushRecord(std::move(pRec));
 
-	if (!msg.empty())
-		m_controller.SendMessage(Output::AddLog(id, msg), m_game);
+	ASSERT(!msg.empty());
+
+	Output::AddLog output(id, msg);
+	m_controller.SendMessage(output, m_game);
+	
+	for (auto& g : m_game.GetReviewGames())
+		m_controller.SendMessage(output, *g);
 }
 
 RecordPtr CommitSession::PopAndUndoRecord()
@@ -68,7 +74,17 @@ RecordPtr CommitSession::PopAndUndoRecord()
 	RecordPtr pRec = m_game.PopRecord();
 	pRec->Undo(m_game, m_controller);
 
-	m_controller.SendMessage(Output::RemoveLog(pRec->GetID()), m_game);
+	Output::RemoveLog output(pRec->GetID());
+	m_controller.SendMessage(output, m_game);
+
+	for (auto& g : m_game.GetReviewGames())
+		m_controller.SendMessage(output, *g);
 
 	return pRec;
+}
+
+void CommitSession::UpdateReviewGames()
+{
+	for (auto& g : m_game.GetReviewGames())
+		m_controller.SendMessage(Output::UpdateReviewUI(*g), *g);
 }

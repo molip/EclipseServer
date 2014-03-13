@@ -60,9 +60,19 @@ bool ReviewGame::CanRetreat() const
 	return m_iRecord > 1;
 }
 
+int ReviewGame::GetNextRecordID() const
+{
+	return CanAdvance() ? GetRecords()[m_iRecord]->GetID() : 0;
+}
+
 void ReviewGame::OnPreRecordPop(const Controller& controller)
 {
-	VerifyModel("ReviewGame::OnPreRecordPop", CanRetreat() && m_iRecord <= (int)GetRecords().size());
-	if (m_iRecord == GetRecords().size())
-		GetRecords()[--m_iRecord]->Undo(*this, controller); // Don't retreat merged or messages.
+	int pop = Games::GetLive(m_idLive).GetLastPoppableRecord();
+	VerifyModel("ReviewGame::OnPreRecordPop", CanRetreat() && m_iRecord <= (int)GetRecords().size() && pop >= 0);
+
+	if (m_iRecord > pop)
+		GetRecords()[pop]->Undo(*this, controller);
+
+	if (m_iRecord >= pop) // Skip trailing messages. 
+		m_iRecord = GetRecords().size() - 1;
 }

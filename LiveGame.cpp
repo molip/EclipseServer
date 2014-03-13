@@ -13,12 +13,12 @@
 
 #include <algorithm>
 
-LiveGame::LiveGame() : m_gamePhase(GamePhase::Lobby), m_nextRecordID(0)
+LiveGame::LiveGame() : m_gamePhase(GamePhase::Lobby), m_nextRecordID(1)
 {
 }
 
 LiveGame::LiveGame(int id, const std::string& name, const Player& owner) : 
-Game(id, name, owner), m_gamePhase(GamePhase::Lobby), m_nextRecordID(0)
+Game(id, name, owner), m_gamePhase(GamePhase::Lobby), m_nextRecordID(1)
 {
 }
 
@@ -157,18 +157,22 @@ int LiveGame::PushRecord(std::unique_ptr<Record> pRec)
 
 RecordPtr LiveGame::PopRecord()
 {
-	VerifyModel("LiveGame::PopRecord 1", !m_records.empty());
+	size_t pop = GetLastPoppableRecord();
 
-	// Ignore non-command records (e.g. chat)
-	for (auto rec = m_records.rbegin(); rec != m_records.rend(); ++rec)
-		if (!(*rec)->IsMessageRecord())
-		{
-			RecordPtr pRec = std::move(*rec);
-			m_records.erase(rec.base() - 1);
-			return pRec;
-		}
-	VerifyModel("LiveGame::PopRecord 2", false);
-	return nullptr;
+	VerifyModel("LiveGame::PopRecord 1", pop >= 0);
+
+	RecordPtr pRec = std::move(m_records[pop]);
+	m_records.erase(m_records.begin() + pop);
+	return pRec;
+}
+
+int LiveGame::GetLastPoppableRecord() const
+{
+	int lastPoppable = (int)m_records.size() - 1;
+	for (auto rec = m_records.rbegin(); rec != m_records.rend() && (*rec)->IsMessageRecord(); ++rec)
+		--lastPoppable;
+
+	return lastPoppable;
 }
 
 void LiveGame::ShipMovedFrom(const Hex& hex, Colour colour)
