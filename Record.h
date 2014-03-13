@@ -38,7 +38,7 @@ public:
 
 	virtual bool IsMessageRecord() const { return false; }
 
-	virtual std::string GetMessage(const Game& game) const { return std::string(); }
+	virtual std::string GetMessage(const Game& game) const = 0;
 
 private:
 	virtual void Apply(bool bDo, Game& game, const Controller& controller) = 0;
@@ -58,7 +58,7 @@ public:
 	virtual std::string GetMessage(const Game& game) const override;
 
 protected:
-	virtual std::string GetTeamMessage() const { return std::string(); }
+	virtual std::string GetTeamMessage() const { return ""; }
 	
 	Colour m_colour;
 };
