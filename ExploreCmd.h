@@ -21,6 +21,7 @@ public:
 	virtual void UpdateClient(const Controller& controller, const LiveGame& game) const override;
 	virtual CmdPtr Process(const Input::CmdMessage& msg, CommitSession& session) override;
 	virtual bool IsAction() const override { return true; } 
+	virtual std::string GetActionName() const override { return "Explore"; }
 	virtual bool CanUndo() const override { return m_idHex < 0; }
 
 	virtual void Save(Serial::SaveNode& node) const override;

@@ -36,7 +36,6 @@ public:
 	void SetID(int id) { m_id = id; }
 	int GetID() const { return m_id; }
 
-	virtual bool WantMergeNext() const { return false; }
 	virtual bool IsMessageRecord() const { return false; }
 
 	virtual std::string GetMessage(const Game& game) const { return std::string(); }

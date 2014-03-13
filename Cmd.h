@@ -33,7 +33,8 @@ public:
 	virtual bool IsAutoProcess() const { return false; } 
 	virtual bool IsAction() const { return false; } 
 	virtual bool CostsInfluence() const { return IsAction(); } 
-	virtual bool HasRecord() const { return m_bHasRecord; } 
+	virtual std::string GetActionName() const;
+	virtual bool HasRecord() const { return m_bHasRecord; }
 	virtual bool CanUndo() const { return true; } 
 	
 	virtual void Save(Serial::SaveNode& node) const override;

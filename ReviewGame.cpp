@@ -36,9 +36,6 @@ void ReviewGame::Advance(const Controller& controller)
 	// Skip messages.
 	while (CanAdvance() && GetRecords()[m_iRecord]->IsMessageRecord())
 		++m_iRecord;
-
-	if (CanAdvance() && rec.WantMergeNext())
-		Advance(controller);
 }
 
 void ReviewGame::Retreat(const Controller& controller)
@@ -51,17 +48,6 @@ void ReviewGame::Retreat(const Controller& controller)
 
 	if (CanRetreat())
 		GetRecords()[--m_iRecord]->Undo(*this, controller);
-	
-	if (CanRetreat())
-	{
-		// Look past messages to see if we need to merge. 
-		int i = m_iRecord;
-		while (i > 0 && GetRecords()[i - 1]->IsMessageRecord())
-			--i;
-
-		if (i > 0 && GetRecords()[i - 1]->WantMergeNext())
-			Retreat(controller);
-	}
 }
 
 bool ReviewGame::CanAdvance() const

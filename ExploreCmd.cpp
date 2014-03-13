@@ -47,8 +47,6 @@ private:
 		node.LoadEnum("hex_ring", m_hexRing);
 	}
 
-	virtual bool WantMergeNext() const { return true; }
-
 	virtual std::string GetTeamMessage() const
 	{
 		return FormatString("received hex %0", m_idHex);

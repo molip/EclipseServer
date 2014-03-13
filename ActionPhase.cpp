@@ -98,7 +98,7 @@ void ActionPhase::StartCmd(CmdPtr pCmd, CommitSession& session)
 
 	if (pCmd->CostsInfluence())
 	{
-		session.DoAndPushRecord(RecordPtr(new ActionRecord(GetCurrentTeam().GetColour())));
+		session.DoAndPushRecord(RecordPtr(new ActionRecord(pCmd->GetActionName(), GetCurrentTeam().GetColour())));
 	}
 	
 	m_pCmdStack->StartCmd(pCmd);

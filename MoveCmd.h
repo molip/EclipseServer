@@ -17,6 +17,7 @@ public:
 	virtual void UpdateClient(const Controller& controller, const LiveGame& game) const override;
 	virtual CmdPtr Process(const Input::CmdMessage& msg, CommitSession& session) override;
 	virtual bool IsAction() const { return m_iPhase == 0; } 
+	virtual std::string GetActionName() const override { return "Move"; }
 
 	virtual void Save(Serial::SaveNode& node) const override;
 	virtual void Load(const Serial::LoadNode& node) override;

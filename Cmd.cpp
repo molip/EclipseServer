@@ -32,6 +32,12 @@ const Player& Cmd::GetPlayer(const LiveGame& game) const
 	return GetTeam(game).GetPlayer(); 
 }
 
+std::string Cmd::GetActionName() const
+{
+	Verify("Cmd::GetActionName", false);
+	return "";
+}
+
 void Cmd::DoRecord(RecordPtr pRec, CommitSession& session)
 {
 	VerifyModel("Cmd::DoRecord", !m_bHasRecord);
