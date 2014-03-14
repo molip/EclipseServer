@@ -16,8 +16,5 @@ public:
 	virtual CmdPtr Process(const Input::CmdMessage& msg, CommitSession& session) override;
 	virtual bool IsAction() const { return m_iPhase == 0; }
 	virtual std::string GetActionName() const override { return "Build"; }
-
-private:
-	bool CanAfford(const LiveGame& game, Buildable b) const;
 };
 

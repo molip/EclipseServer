@@ -34,6 +34,19 @@ namespace
 		VerifyModel("BuildableToShip", false);
 		return ShipType::None;
 	}
+
+	bool CanBuild(const Team& team, Buildable b)
+	{
+		if (b != Buildable::Orbital && b != Buildable::Monolith && team.GetUnusedShips(BuildableToShip(b)) < 1)
+			return false;
+
+		if (b == Buildable::Starbase && !team.HasTech(TechType::StarBase) ||
+			b == Buildable::Orbital && !team.HasTech(TechType::Orbital) ||
+			b == Buildable::Monolith && !team.HasTech(TechType::StarBase))
+			return false;
+
+		return Race(team.GetRace()).GetBuildCost(b) <= team.GetStorage()[Resource::Materials];
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -114,26 +127,21 @@ BuildCmd::BuildCmd(Colour colour, const LiveGame& game, int iPhase) : PhaseCmd(c
 {
 }
 
-bool BuildCmd::CanAfford(const LiveGame& game, Buildable b) const
-{
-	return Race(GetTeam(game).GetRace()).GetBuildCost(b) <= GetTeam(game).GetStorage()[Resource::Materials];
-}
-
 void BuildCmd::UpdateClient(const Controller& controller, const LiveGame& game) const
 {
 	const Team& team = GetTeam(game);
 
 	std::set<ShipType> ships;
 	for (auto s : EnumRange<ShipType>())
-		if (CanAfford(game, ShipToBuildable(s)) && team.GetUnusedShips(s) > 0)
+		if (CanBuild(team, ShipToBuildable(s)))
 			ships.insert(s);
 
 	std::map<MapPos, std::pair<bool, bool>> hexes; // (orbital, monolith)
 
 	for (auto& h : game.GetMap().GetHexes()) // Pos, hex.
 		if (h.second->GetColour() == m_colour)
-			hexes[h.first] = std::make_pair(!h.second->HasOrbital() && CanAfford(game, Buildable::Orbital) && team.HasTech(TechType::Orbital), 
-											!h.second->HasMonolith() && CanAfford(game, Buildable::Monolith) && team.HasTech(TechType::Monolith));
+			hexes[h.first] = std::make_pair(!h.second->HasOrbital() && CanBuild(team, Buildable::Orbital),
+											!h.second->HasMonolith() && CanBuild(team, Buildable::Monolith));
 
 	controller.SendMessage(Output::ChooseBuild(ships, hexes, m_iPhase > 0), GetPlayer(game));
 }
@@ -152,13 +160,9 @@ CmdPtr BuildCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
 	const Team& team = GetTeam(game);
 	const Hex& hex = game.GetMap().GetHex(pos);
 	VerifyInput("BuildCmd::Process: invalid hex", hex.GetColour() == m_colour);
-	VerifyInput("BuildCmd::Process: not enough materials", CanAfford(game, m.m_buildable));
+	VerifyInput("BuildCmd::Process: team can't build this", CanBuild(team, m.m_buildable));
 	VerifyInput("BuildCmd::Process: already got orbital", !bOrbital || !hex.HasOrbital());
 	VerifyInput("BuildCmd::Process: already got monolith", !bMonolith || !hex.HasMonolith());
-	VerifyInput("BuildCmd::Process: can't build orbitals", !bOrbital || team.HasTech(TechType::Orbital));
-	VerifyInput("BuildCmd::Process: can't build monoliths", !bMonolith || team.HasTech(TechType::Monolith));
-	VerifyInput("BuildCmd::Process: no ships left", bMonolith || bOrbital ||
-		GetTeam(game).GetUnusedShips(BuildableToShip(m.m_buildable)) > 0);
 
 	BuildRecord* pRec = new BuildRecord(m_colour, pos, m.m_buildable);
 	DoRecord(RecordPtr(pRec), session);
