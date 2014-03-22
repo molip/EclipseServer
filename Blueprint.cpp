@@ -4,9 +4,6 @@
 #include "ShipLayout.h"
 #include "Ship.h"
 #include "Serial.h"
-#include "IndexRange.h"
-
-DEFINE_INDEXRANGE(SlotRange, Blueprint, ShipPart, GetSlot, GetSlotCount)
 
 Blueprint::Blueprint() : m_pDef(nullptr)
 {
@@ -16,9 +13,17 @@ Blueprint::Blueprint(RaceType r, ShipType s) : m_pDef(nullptr)
 {
 	Init(r, s);
 	m_overlay.SetType(s);
+
+	for (int i = 0; i < GetSlotCount(); ++i)
+		if (GetBaseLayout().GetSlot(i) == ShipPart::Blocked)
+			m_overlay.SetSlot(i, ShipPart::Blocked);
 }
 
 Blueprint::Blueprint(const BlueprintDef& def) : m_pDef(&def), m_overlay(m_pDef->GetBaseLayout().GetType())
+{
+}
+
+Blueprint::Blueprint(const Blueprint& rhs) : m_pDef(rhs.m_pDef), m_overlay(rhs.m_overlay)
 {
 }
 

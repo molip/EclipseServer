@@ -124,9 +124,22 @@ UpdateTeams::UpdateTeams(const Game& game) : Update("teams")
 	{
 		VerifyModel("UpdateTeams: Team not chosen yet: " + pTeam->GetPlayer().GetName(), pTeam->GetRace() != RaceType::None);
 
+		std::string blueprints;
+		switch (pTeam->GetRace())
+		{
+		case RaceType::Eridani:
+		case RaceType::Planta:
+		case RaceType::Orion:
+			blueprints = EnumTraits<RaceType>::ToString(pTeam->GetRace());
+			break;
+		default:
+			blueprints = "normal";
+		}
+
 		auto teamNode = teamsNode.AppendElement();
 		teamNode.SetAttribute("name", pTeam->GetPlayer().GetName());
 		teamNode.SetAttribute("id", pTeam->GetPlayerID());
+		teamNode.SetAttribute("blueprints", blueprints);
 	}
 }
 
@@ -198,6 +211,20 @@ UpdatePassed::UpdatePassed(const Team& team) : Update("passed")
 	m_root.SetAttribute("id", team.GetPlayer().GetID());
 	m_root.SetAttribute("has_passed", team.HasPassed());
 }
+
+UpdateBlueprints::UpdateBlueprints(const Team& team) : Update("blueprints")
+{
+	m_root.SetAttribute("id", team.GetPlayer().GetID());
+
+	auto blueprintsNode = m_root.AddArray("blueprints");
+	for (auto type : EnumRange<ShipType>())
+	{
+		auto partsNode = blueprintsNode.AppendArray();
+		for (ShipPart part : team.GetBlueprint(type).GetOverlay().GetSlotRange())
+			partsNode.Append(EnumTraits<ShipPart>::ToString(part));
+	}
+}
+
 
 UpdateMap::UpdateMap(const Game& game) : Update("map")
 {
@@ -496,8 +523,40 @@ ChooseMoveDst::ChooseMoveDst(const std::set<MapPos>& dsts) : Choose("move_dst")
 		AppendPointElement(h.GetX(), h.GetY(), hexesNode);
 }
 
-ChooseUpgrade::ChooseUpgrade() : Choose("upgrade")
+ChooseUpgrade::ChooseUpgrade(const Team& team) : Choose("upgrade")
 {
+	auto appendPart = [](Json::Element& array, ShipPart part)
+	{
+		auto partNode = array.AppendElement();
+		partNode.SetAttribute("name", EnumTraits<ShipPart>::ToString(part));
+		partNode.SetAttribute("power_source", ShipLayout::GetPowerSource(part));
+		partNode.SetAttribute("power_drain", ShipLayout::GetPowerDrain(part));
+		partNode.SetAttribute("is_drive", ShipLayout::IsDrive(part));
+	};
+
+	m_root.SetAttribute("max_upgrades", team.HasPassed() ? 1 : Race(team.GetRace()).GetUpgradeRate());
+
+	auto partsNode = m_root.AddArray("parts");
+	for (auto part : EnumRange<ShipPart>())
+		if (team.CanUseShipPart(part))
+			appendPart(partsNode, part);
+
+	auto blueprintsNode = m_root.AddArray("blueprints");
+	for (auto type : EnumRange<ShipType>())
+	{
+		auto& bp = team.GetBlueprint(type);
+
+		auto blueprintNode = blueprintsNode.AppendElement();
+		blueprintNode.SetAttribute("fixed_power", bp.GetFixedPower());
+
+		auto baseLayoutNode = blueprintNode.AddArray("base_layout");
+		for (ShipPart part : bp.GetBaseLayout().GetSlotRange())
+			appendPart(baseLayoutNode, part);
+
+		auto overlayNode = blueprintNode.AddArray("overlay");
+		for (ShipPart part : bp.GetOverlay().GetSlotRange())
+			appendPart(overlayNode, part);
+	}
 }
 
 ChooseTrade::ChooseTrade(const Team& team) : Choose("trade")

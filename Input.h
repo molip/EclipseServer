@@ -12,6 +12,7 @@ class LiveGame;
 
 enum class ShipType;
 enum class Buildable;
+enum class ShipPart;
 
 namespace Json { class Element; }
 
@@ -119,6 +120,24 @@ struct Chat : Message
 	std::string m_msg;
 };
 
+struct SlotChange
+{
+	ShipType ship;
+	int slot;
+	ShipPart part;
+};
+struct SlotChanges : std::vector<SlotChange>
+{
+	SlotChanges() {}
+	SlotChanges(const Json::Element& node);
+};
+struct QueryBlueprintStats : Message
+{
+	QueryBlueprintStats(const Json::Element& node);
+	virtual bool Process(Controller& controller, Player& player) const override;
+	SlotChanges m_changes;
+};
+
 //-----------------------------------------------------------------------------
 
 class CmdMessage : public Message
@@ -217,6 +236,7 @@ struct CmdDiplomacy : CmdMessage
 struct CmdUpgrade : CmdMessage
 {
 	CmdUpgrade(const Json::Element& node);
+	SlotChanges m_changes;
 };
 
 struct CmdTrade : CmdMessage

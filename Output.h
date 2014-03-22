@@ -73,6 +73,7 @@ struct UpdatePopulationTrack : Update { UpdatePopulationTrack(const Team& team);
 struct UpdateReputationTrack : Update { UpdateReputationTrack(const Team& team, bool bSendValues); };
 struct UpdateColonyShips : Update { UpdateColonyShips(const Team& team); };
 struct UpdatePassed : Update { UpdatePassed(const Team& team); };
+struct UpdateBlueprints : Update { UpdateBlueprints(const Team& team); };
 struct UpdateMap : Update { UpdateMap(const Game& game); };
 struct UpdateReviewUI : Update { UpdateReviewUI(const ReviewGame& game); };
 struct UpdateTechnologies : Update { UpdateTechnologies(const Game& game); };
@@ -114,7 +115,7 @@ struct ChooseBuild : Choose { ChooseBuild(const std::set<ShipType>& ships, const
 struct ChooseDiplomacy : Choose { ChooseDiplomacy(); };
 struct ChooseMoveSrc : Choose { ChooseMoveSrc(std::map<MapPos, std::set<ShipType>>& srcs, bool bCanSkip); };
 struct ChooseMoveDst : Choose { ChooseMoveDst(const std::set<MapPos>& dsts); };
-struct ChooseUpgrade : Choose { ChooseUpgrade(); };
+struct ChooseUpgrade : Choose { ChooseUpgrade(const Team& team); };
 struct ChooseTrade : Choose { ChooseTrade(const Team& team); };
 
 struct ChooseUpkeep : Choose { ChooseUpkeep(const Team& team, bool canUndo); };

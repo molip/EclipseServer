@@ -1,5 +1,7 @@
 #pragma once
 
+#include <functional>
+
 template <typename T> class IndexIter
 {
 public:

@@ -26,6 +26,7 @@ function SendCreateGame()
 
 function SendExitGame()
 {
+	ExitAction()
 	SendJSON(CreateCommandJSON('exit_game'))
 }
 

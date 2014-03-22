@@ -77,7 +77,7 @@ if(!String.prototype.format) {
 function Assert(test, msg)
 {
 	if (!test)
-		alert(msg)
+		alert('Assert: ' + msg)
 }
 
 function IsTrue(str)
@@ -152,15 +152,15 @@ function load()
 function GetTeamDivIDFromName(team, div)
 {
 	var index = data.team_pages[team]
-	var id =  GetTeamPageIDFromIndex(index)
+	return GetTeamPageIDFromIndex(index, div)
+}
+
+function GetTeamPageIDFromIndex(index, div)
+{
+	var id = 'teampage_{0}'.format(index)
 	if (div)	
 		id += '_' + div
 	return id
-}
-
-function GetTeamPageIDFromIndex(index)
-{
-	return 'teampage_{0}'.format(index)
 }
 
 function ShowElementById(id, show, inline)
@@ -196,6 +196,24 @@ function ShowTeamPage(player_id)
 
 	ShowElementById('game_pages', true)
 	ShowElementById('supply_page', false)
+}
+
+function ShowTeamGeneral()
+{
+    for (var i = 0; i < data.team_count; ++i)
+	{
+		ShowElementById(GetTeamPageIDFromIndex(i, 'general'), true)
+		ShowElementById(GetTeamPageIDFromIndex(i, 'blueprints'), false)
+	}
+}
+
+function ShowTeamBlueprints()
+{
+    for (var i = 0; i < data.team_count; ++i)
+	{
+		ShowElementById(GetTeamPageIDFromIndex(i, 'general'), false)
+		ShowElementById(GetTeamPageIDFromIndex(i, 'blueprints'), true)
+	}
 }
 
 function ShowSupplyPage()

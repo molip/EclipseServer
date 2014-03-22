@@ -97,6 +97,8 @@ function OnCommandUpdate(elem)
 		OnCommandUpdateTechnologies(elem)
 	else if (param == "round")
 		OnCommandUpdateRound(elem)
+	else if (param == "blueprints")
+		OnCommandUpdateBlueprints(elem)
 	else if (param == "add_log")
 		OnCommandAddLog(elem)
 	else if (param == "remove_log")
@@ -223,33 +225,49 @@ function OnCommandUpdateTeams(elem)
 	var fmt_tab = '<button type="button" onclick="ShowTeamPage(\'{0}\')">{1}</button>'
 	var fmt_page = '\
 					<div id="{0}">\
-						<div id="{0}_summary"></div>\
-						<div id="{0}_storage"></div>\
-						<div id="{0}_population"></div>\
-						<div id="{0}_technology"></div>\
-						<div id="{0}_reputation"></div>\
-						<div id="{0}_influence" onclick="if (data.action && data.action.OnClickInfluenceTrack) data.action.OnClickInfluenceTrack()"></div>\
-						<div id="{0}_actions"></div>\
-						<div id="{0}_colony_ships"></div>\
-						<div id="{0}_passed"></div>\
+						<div id="{0}_general">\
+							<div id="{0}_summary"></div>\
+							<div id="{0}_storage"></div>\
+							<div id="{0}_population"></div>\
+							<div id="{0}_technology"></div>\
+							<div id="{0}_reputation"></div>\
+							<div id="{0}_influence" onclick="if (data.action && data.action.OnClickInfluenceTrack) data.action.OnClickInfluenceTrack()"></div>\
+							<div id="{0}_actions"></div>\
+							<div id="{0}_colony_ships"></div>\
+							<div id="{0}_passed"></div>\
+						</div>\
+						<div id="{0}_blueprints" style="display:none; position:relative; overflow:auto">\
+							<img src="images/blueprints/{1}.png" height="320">\
+							<div id="{0}_blueprints_overlay" style="position:absolute; left:0px; top:0px; width:378px; height:320px">\
+							</div>\
+						</div>\
 					</div>'
 	
+//								<img src="images/ship_parts/gluon computer.png" style="position:absolute; left:138px; top:76px">
 	var html_tabs = '', html_pages = ''
 
 	for (var i = 0, team; team = elem.teams[i]; ++i)
 	{
 		html_tabs += fmt_tab.format(team.id, team.name)
-		html_pages += fmt_page.format(GetTeamPageIDFromIndex(data.team_count))
+		html_pages += fmt_page.format(GetTeamPageIDFromIndex(data.team_count), team.blueprints)
 
 		data.team_pages[team.id] = data.team_count++
 	}
 
-	html_tabs += '<button type="button" onclick="ShowSupplyPage()">Supply</button>'
-	
+	html_tabs +='	<button type="button" onclick="ShowSupplyPage()">Supply</button>\
+					<div style="float:right">\
+						<button type="button" onclick="ShowTeamGeneral()">General</button>\
+						<button type="button" onclick="ShowTeamBlueprints()">Blueprints</button>\
+					</div>'
+					
 	document.getElementById('game_tabs').innerHTML = html_tabs
 	document.getElementById('game_pages').innerHTML = html_pages
 	
+	for (var i = 0, team; team = elem.teams[i]; ++i)
+		Blueprints.Init(team.id)
+
 	ShowTeamPage(data.playerID)
+	ShowTeamGeneral()
 
 	ShowElementById('live_ui', elem.game_type == "live")
 	ShowElementById('review_ui', elem.game_type == "review")
@@ -257,7 +275,7 @@ function OnCommandUpdateTeams(elem)
 
 function OnCommandUpdateTeam(elem)
 {		
-	var html = '<b>Team:</b> {0}<br/><b>Race:</b> {1}<br/><b>Colour:</b> {2}<br/><br/>'.format(elem.name, elem.race, elem.colour)
+	var html = '<b>Team:</b> {0}, <b>Race:</b> {1}, <b>Colour:</b> {2}<br/><br/>'.format(elem.name, elem.race, elem.colour)
 	SetTeamDivHTML(elem.id, 'summary', html)
 }
 
@@ -357,6 +375,15 @@ function OnCommandUpdateTechnologies(elem)
 function OnCommandUpdateRound(elem)
 {
 	document.getElementById('round_count').innerHTML = elem.round
+}
+
+function OnCommandUpdateBlueprints(elem)
+{
+	Assert(elem.blueprints.length == 4)
+
+	for (var ship = 0; ship < 4; ++ship)
+		for (var slot = 0, part; part = elem.blueprints[ship][slot]; ++slot)
+			Blueprints.SetPart(elem.id, ship, slot, part)
 }
 
 function OnCommandAddLog(elem)

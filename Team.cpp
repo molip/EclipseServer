@@ -125,10 +125,44 @@ int Team::GetColonyShips() const
 	return Race(m_race).GetStartColonyShips();
 }
 
-const Blueprint& Team::GetBlueprint(ShipType s) const
+Blueprint& Team::GetBlueprint(ShipType s) 
 {
 	VerifyModel("Team::GetBlueprint", int(s) >= 0 && s != ShipType::_Count);
 	return *m_blueprints[int(s)];
+}
+
+bool Team::CanUseShipPart(ShipPart part) const
+{
+	VerifyModel("Team::CanUseShipPart", int(part) >= 0);
+
+	if (m_discoveredShipParts.find(part) != m_discoveredShipParts.end())
+		return true;
+
+	static ShipPart free[] = { ShipPart::ElectronComp, ShipPart::Hull, ShipPart::IonCannon, ShipPart::NuclearDrive, ShipPart::NuclearSource };
+	if (std::find(std::begin(free), std::end(free), part) != std::end(free))
+		return true;
+
+	static std::pair<ShipPart, TechType> partTechs[] = 
+	{
+		{ ShipPart::PlasmaCannon,		TechType::PlasmaCannon },
+		{ ShipPart::AntimatterCannon,	TechType::AntimatterCannon },
+		{ ShipPart::PlasmaMissile,		TechType::PlasmaMissile },
+		{ ShipPart::GluonComp,			TechType::GluonComp },
+		{ ShipPart::PositronComp,		TechType::PositronComp },
+		{ ShipPart::TachyonDrive,		TechType::TachyonDrive },
+		{ ShipPart::FusionDrive,		TechType::FusionDrive },
+		{ ShipPart::TachyonSource,		TechType::TachyonSource },
+		{ ShipPart::FusionSource,		TechType::FusionSource },
+		{ ShipPart::PhaseShield,		TechType::PhaseShield },
+		{ ShipPart::GaussShield,		TechType::GaussShield },
+		{ ShipPart::ImprovedHull,		TechType::ImprovedHull }
+	};
+
+	for (auto pt : partTechs)
+		if (part == pt.first && HasTech(pt.second))
+			return true;
+
+	return false;
 }
 
 bool Team::IsAncientAlliance(const Team* pTeam1, const Team* pTeam2)
@@ -150,6 +184,7 @@ void Team::Save(Serial::SaveNode& node) const
 	node.SaveClass("rep_track", m_repTrack);
 	node.SaveClass("tech_track", m_techTrack);
 	node.SaveClass("storage", m_storage);
+	node.SaveCntr("discovered_ship_parts", m_discoveredShipParts, Serial::EnumSaver());
 
 	node.SaveArray("blueprints", m_blueprints, Serial::ClassPtrSaver());
 	node.SaveArray("ships", m_nShips, Serial::TypeSaver());
@@ -171,6 +206,7 @@ void Team::Load(const Serial::LoadNode& node)
 	node.LoadClass("rep_track", m_repTrack);
 	node.LoadClass("tech_track", m_techTrack);
 	node.LoadClass("storage", m_storage);
+	node.LoadCntr("discovered_ship_parts", m_discoveredShipParts, Serial::EnumLoader());
 
 	node.LoadArray("blueprints", m_blueprints, Serial::ClassPtrLoader());
 	node.LoadArray("ships", m_nShips, Serial::TypeLoader());

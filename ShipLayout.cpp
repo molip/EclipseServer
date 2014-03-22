@@ -4,6 +4,13 @@
 #include "EnumTraits.h"
 #include "Serial.h"
 
+SlotRange ISlots::GetSlotRange() const
+{
+	return SlotRange(*this);
+}
+
+//-----------------------------------------------------------------------------
+
 ShipLayout::ShipLayout() : m_type(ShipType::None)
 {
 }
@@ -15,9 +22,15 @@ ShipLayout::ShipLayout(ShipType type) : m_type(ShipType::None)
 
 void ShipLayout::SetType(ShipType t) 
 {
-	ASSERT(m_slots.empty());
+	Verify("ShipLayout::SetType", m_slots.empty() && m_type == ShipType::None);
 	m_type = t;
-	m_slots.resize(GetSlotCount(t));
+	m_slots.resize(GetSlotCount(t), ShipPart::Empty);
+}
+
+void ShipLayout::SetSlot(int i, ShipPart part) 
+{
+	Verify("ShipLayout::SetSlot", i >= 0 && i < (int)m_slots.size());
+	m_slots[i] = part;
 }
 
 int ShipLayout::GetInitiative(ShipPart p)
@@ -138,12 +151,12 @@ void ShipLayout::Load(const Serial::LoadNode& node)
 	node.LoadCntr("slots", m_slots, Serial::EnumLoader());
 }
 
-DEFINE_ENUM_NAMES(ShipPart) {	"Empty", "Blocked", 
-								"IonCannon", "PlasmaCannon", "AntimatterCannon", 
-								"PlasmaMissile", "IonMissile",
-								"IonTurret",
-								"ElectronComp", "GluonComp", "PositronComp", "AxionComp",
-								"NuclearDrive", "TachyonDrive", "FusionDrive", "ConformalDrive"
-								"NuclearSource", "TachyonSource", "FusionSource", "HypergridSource",
-								"PhaseShield", "GaussShield", "FluxShield",
-								"Hull", "ImprovedHull", "" };
+DEFINE_ENUM_NAMES2(ShipPart, -2) {	"Empty", "Blocked", 
+								"Ion cannon", "Plasma cannon", "Antimatter cannon", 
+								"Plasma missile", "Ion missile",
+								"Ion turret",
+								"Electron computer", "Gluon computer", "Positron computer", "Axion computer",
+								"Nuclear drive", "Tachyon drive", "Fusion drive", "Conformal drive",
+								"Nuclear source", "Tachyon source", "Fusion source", "Hypergrid source",
+								"Phase shield", "Gauss shield", "Flux shield",
+								"Hull", "Improved hull", "" };

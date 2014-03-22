@@ -82,6 +82,15 @@ Element Element::AppendElement()
 	return Element(pElem);
 }
 
+Element Element::AppendArray()
+{
+	VerifySerial("Element::AppendArray", !!m_pElem);
+	VerifySerial("Element::AppendArray", m_pElem->type == cJSON_Array);
+	cJSON* pElem = cJSON_CreateArray();
+	cJSON_AddItemToArray(m_pElem, pElem);
+	return Element(pElem);
+}
+
 void Element::SetAttribute(const std::string& name, const std::string& val)
 {
 	SetAttribute(name, val.c_str());
@@ -184,29 +193,28 @@ bool Element::GetAttributeBool(const std::string& name) const
 	return b;
 }
 
-Element Element::GetFirstChild(const std::string& name) const
+Element Element::GetChild(const std::string& name) const
 {
-	VerifySerial("Element::GetFirstChild: null element", !!m_pElem);
+	VerifySerial("Element::GetChild: null element", !!m_pElem);
 	for (cJSON* p = m_pElem->child; p; p = p->next)
-		if (p->string == name)
+		if (name.empty() || p->string == name)
 			return Element(p);
 
 	return Element();
 }
 
-Element Element::GetNextSibling(const std::string& name) const
+Element Element::GetNextSibling() const
 {
-	VerifySerial("Element::GetFirstChild: null element", !!m_pElem);
-	for (cJSON* p = m_pElem->next; p; p = p->next)
-		if (p->string == name)
-			return Element(p);
-
-	return Element();
+	VerifySerial("Element::GetNextSibling: null element", !!m_pElem);
+	return Element(m_pElem->next);
 }
 
 bool Element::HasChild(const std::string& name) const
 {
 	return m_pElem && !!cJSON_GetObjectItem(m_pElem, name.c_str());
 }
+
+ElementIter Element::begin() const { return ElementIter(m_pElem ? m_pElem->child : nullptr); }
+ElementIter Element::end() const { return ElementIter(); }
 
 }

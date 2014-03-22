@@ -66,6 +66,8 @@ MessagePtr CreateCommand(const Json::Element& root)
 		return MessagePtr(new FinishUpkeep);
 	if (type == "chat")
 		return MessagePtr(new Chat(root));
+	if (type == "query_blueprint_stats")
+		return MessagePtr(new QueryBlueprintStats(root));
 
 	if (type == "cmd_explore_pos")
 		return MessagePtr(new CmdExplorePos(root));
@@ -364,6 +366,27 @@ bool Chat::Process(Controller& controller, Player& player) const
 	return true;
 }
 
+SlotChanges::SlotChanges(const Json::Element& node)
+{
+	for (Json::Element child : node)
+	{
+		ShipType ship = ShipType(child.GetAttributeInt("ship"));
+		int slot = child.GetAttributeInt("slot");
+		ShipPart part = EnumTraits<ShipPart>::FromString(child.GetAttributeStr("part"));
+
+		push_back(SlotChange{ ship, slot, part });
+	}
+}
+
+QueryBlueprintStats::QueryBlueprintStats(const Json::Element& node) : m_changes(node.GetChild("changes"))
+{
+}
+
+bool QueryBlueprintStats::Process(Controller& controller, Player& player) const
+{
+	return true;
+}
+
 //-----------------------------------------------------------------------------
 
 bool CmdMessage::Process(Controller& controller, Player& player) const
@@ -399,7 +422,7 @@ CmdColoniseSquares::CmdColoniseSquares(const Json::Element& node)
 {
 	auto Read = [&] (const std::string& type, Population& pops)
 	{
-		auto el = node.GetFirstChild(type);
+		auto el = node.GetChild(type);
 		VerifyInput("CmdColoniseSquares: child not found", !el.IsNull());
 		for (auto r : EnumRange<Resource>())
 			pops[r] = el.GetAttributeInt(EnumTraits<Resource>::ToString(r));
@@ -457,7 +480,7 @@ CmdDiplomacy::CmdDiplomacy(const Json::Element& node)
 {
 }
 
-CmdUpgrade::CmdUpgrade(const Json::Element& node)
+CmdUpgrade::CmdUpgrade(const Json::Element& node) : m_changes(node.GetChild("changes"))
 {
 }
 

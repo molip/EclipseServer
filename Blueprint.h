@@ -5,22 +5,24 @@
 #include <memory>
 
 class BlueprintDef;
-
+class SlotRange;
 enum class RaceType;
 
 namespace Serial { class SaveNode; class LoadNode; }
 
-class Blueprint
+class Blueprint : public ISlots
 {
 public:
 	Blueprint();
 	Blueprint(RaceType r, ShipType s);
 	Blueprint(const BlueprintDef& def);
+	Blueprint(const Blueprint& rhs);
 
 	void Init(RaceType r, ShipType s);
 
 	ShipType GetType() const;
 	const ShipLayout& GetBaseLayout() const;
+	const ShipLayout& GetOverlay() const { return m_overlay; }
 	
 	int GetFixedInitiative() const;
 	int GetFixedPower() const;
@@ -34,9 +36,9 @@ public:
 	int GetMovement() const;
 	int GetHulls() const;
 
-	int GetSlotCount() const { return m_overlay.GetSlotCount(); }
+	virtual int GetSlotCount() const override { return m_overlay.GetSlotCount(); }
 	void SetSlot(int i, ShipPart part) { m_overlay.SetSlot(i, part); }
-	ShipPart GetSlot(int i) const;
+	virtual ShipPart GetSlot(int i) const override;
 
 	static const Blueprint& GetAncientShip();
 	static const Blueprint& GetGCDS();

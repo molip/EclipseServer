@@ -124,7 +124,8 @@ void Controller::SendUpdateGame(const Game& game, const Player* pPlayer) const
 			SendMessage(Output::UpdateActionTrack(*pInfoTeam), game, pPlayer);
 			SendMessage(Output::UpdateColonyShips(*pInfoTeam), game, pPlayer);
 			SendMessage(Output::UpdatePassed(*pInfoTeam), game, pPlayer);
-
+			SendMessage(Output::UpdateBlueprints(*pInfoTeam), game, pPlayer);
+			
 			// Reputation tile values are secret, so only send them to the relevant player. 
 			if (pPlayer)
 				SendMessage(Output::UpdateReputationTrack(*pInfoTeam, pPlayer == &infoPlayer), game, pPlayer);

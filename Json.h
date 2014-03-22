@@ -7,6 +7,7 @@ struct cJSON;
 
 namespace Json
 {
+class ElementIter;
 
 class Element
 {
@@ -18,9 +19,10 @@ public:
 	Element AddElement(const std::string& name);
 	Element AddArray(const std::string& name);
 	Element AppendElement();
+	Element AppendArray();
 
-	Element GetFirstChild(const std::string& name) const;
-	Element GetNextSibling(const std::string& name) const;
+	Element GetChild(const std::string& name = "") const;
+	Element GetNextSibling() const;
 
 	void SetAttribute(const std::string& name, const std::string& val);
 	void SetAttribute(const std::string& name, const char* val);
@@ -44,6 +46,9 @@ public:
 
 	bool HasChild(const std::string& name) const;
 
+	ElementIter begin() const;
+	ElementIter end() const;
+
 protected:
 	Element(cJSON* pElem);
 
@@ -65,22 +70,21 @@ public:
 	bool LoadFromString(const std::string str);
 };
 
-//class ElementIter
-//{
-//public:
-//    ElementIter(Element elem, const std::string& name) : m_elem(elem), m_name(name) {}
-//	bool operator !=(const ElementIter& rhs) const { return m_elem != rhs.m_elem; }
-//	Element operator* () const { return m_elem; }
-//    void operator++ () { m_elem = m_elem.GetNextSibling(m_name); }
-//private:
-//    Element m_elem;
-//	std::string m_name;
-//};
-// 
+class ElementIter
+{
+public:
+	ElementIter(Element elem = Element()) : m_elem(elem) {}
+	bool operator !=(const ElementIter& rhs) const { return m_elem != rhs.m_elem; }
+	Element operator* () const { return m_elem; }
+    void operator++ () { m_elem = m_elem.GetNextSibling(); }
+private:
+    Element m_elem;
+};
+ 
 //class ElementRange
 //{
 //public:
-//	ElementRange(Element parent, const std::string& name) : m_begin(parent.GetFirstChild(name), name), m_end(Element(), name) {}
+//	ElementRange(Element parent) : m_begin(parent.GetChild()), m_end(Element()) {}
 //	ElementIter begin() const { return ElementIter(m_begin); }
 //	ElementIter end() const { return ElementIter(m_end); }
 //private:

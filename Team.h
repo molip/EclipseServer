@@ -18,6 +18,7 @@ enum class Colour { None = -1, Red, Blue, Green, Yellow, White, Black, _Count };
 enum class Buildable { None = -1, Interceptor, Cruiser, Dreadnought, Starbase, Orbital, Monolith, _Count };
 
 enum class RaceType;
+enum class ShipPart;
 
 namespace Serial { class SaveNode; class LoadNode; }
 
@@ -85,7 +86,9 @@ public:
 	void SetPassed(bool b) { m_bPassed = b; }
 	bool HasPassed() const { return m_bPassed; }
 
-	const Blueprint& GetBlueprint(ShipType s) const;
+	Blueprint& GetBlueprint(ShipType s);
+	const Blueprint& GetBlueprint(ShipType s) const { return const_cast<Team*>(this)->GetBlueprint(s); }
+	bool CanUseShipPart(ShipPart part) const;
 
 	static bool IsAncientAlliance(const Team* pTeam1, const Team* pTeam2);
 
@@ -108,6 +111,8 @@ private:
 	
 	BlueprintPtr m_blueprints[4];
 	int m_nShips[4];
+
+	std::set<ShipPart> m_discoveredShipParts;
 
 	int m_nColonyShipsUsed;
 	int m_nActions;
