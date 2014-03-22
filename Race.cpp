@@ -151,7 +151,6 @@ BlueprintDefPtr Race::GetBlueprintDef(ShipType type) const
 			layout.SetSlot(6, ShipPart::Blocked);
 			break;
 		case ShipType::Starbase:
-			layout.SetSlot(4, ShipPart::Blocked);
 			fixedInitiative = 2;
 			break;
 		}
