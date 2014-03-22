@@ -10,6 +10,7 @@ int main(void)
 	Players::Add("jon", "noj");	// 1
 	Players::Add("alex", "xela");	// 2
 	Players::Add("ben", "neb");	// 3
+	Players::Add("mark", "kram");	// 4
 
 	Games::Load();
 
