@@ -40,6 +40,8 @@ public:
 	void SetSlot(int i, ShipPart part) { m_overlay.SetSlot(i, part); }
 	virtual ShipPart GetSlot(int i) const override;
 
+	bool IsValid() const;
+
 	static const Blueprint& GetAncientShip();
 	static const Blueprint& GetGCDS();
 

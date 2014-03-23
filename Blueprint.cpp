@@ -93,6 +93,15 @@ ShipPart Blueprint::GetSlot(int i) const
 	return overlay == ShipPart::Empty ? m_pDef->GetBaseLayout().GetSlot(i) : overlay;
 }
 
+bool Blueprint::IsValid() const
+{
+	if (GetPowerDrain() > GetPowerSource())
+		return false;
+
+	int movement = GetMovement();
+	return (GetType() == ShipType::Starbase) == (movement == 0);
+}
+
 const Blueprint& Blueprint::GetAncientShip()
 {
 	static Blueprint blueprint(BlueprintDefs::GetAncientShip());

@@ -5,6 +5,7 @@
 #include "Controller.h"
 #include "LiveGame.h"
 #include "Record.h"
+#include "CommitSession.h"
 
 class UpgradeRecord : public TeamRecord
 {
@@ -97,8 +98,22 @@ CmdPtr UpgradeCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
 {
 	auto& m = VerifyCastInput<const Input::CmdUpgrade>(msg);
 	
-	// TODO: Validate 
-	
+	const Team& team = GetTeam(session.GetGame());
+
+	const int allowedUpgrades = team.HasPassed() ? 1 : Race(team.GetRace()).GetUpgradeRate();
+	VerifyInput("UpgradeCmd::Process: too many upgrades", (int)m.m_changes.size() < allowedUpgrades);
+
+	// Apply changes to temporary blueprints and validate them.
+	std::vector<BlueprintPtr> blueprints;
+	for (ShipType type : EnumRange<ShipType>())
+		blueprints.push_back(BlueprintPtr(new Blueprint(team.GetBlueprint(type))));
+
+	for (auto& c : m.m_changes)
+		blueprints[(int)c.ship]->SetSlot(c.slot, c.part);
+
+	for (auto& bp : blueprints)
+		VerifyInput("UpgradeCmd::Process: invalid blueprint", bp->IsValid());
+
 	UpgradeRecord* pRec = new UpgradeRecord(m_colour, m.m_changes);
 	DoRecord(RecordPtr(pRec), session);
 
