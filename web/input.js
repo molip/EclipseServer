@@ -393,7 +393,7 @@ function OnCommandAddLog(elem)
 	var div = document.getElementById('output')
 	for (var i = 0, item; item = elem.items[i]; ++i)
 	{
-		var html = '<span id="log_item_{0}" style="color:{1}">'.format(item.id, colour) + item.message + '<br></span>'
+		var html = '<span id="log_item_{0}" style="color:{1}">'.format(item.id, item.id == 0 ? 'red' : colour) + item.message + '<br></span>'
 		div.innerHTML += html
 	}
 	

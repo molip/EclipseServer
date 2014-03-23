@@ -21,6 +21,7 @@ void WSServer::OnMessage(ClientID client, const std::string& message)
 {
 	LOCK(m_mutex); // Only process 1 message at a time. 
 
+	Player* player = nullptr;
 	try 
 	{
 		if (const Input::MessagePtr pMsg = Input::CreateMessage(message))
@@ -33,7 +34,10 @@ void WSServer::OnMessage(ClientID client, const std::string& message)
 			{
 				auto i = m_mapClientToPlayer.find(client);
 				if (i != m_mapClientToPlayer.end())
-					m_controller.OnMessage(pMsg, *i->second);
+				{
+					player = i->second;
+					m_controller.OnMessage(pMsg, *player);
+				}
 			}
 		}
 		else
@@ -41,8 +45,23 @@ void WSServer::OnMessage(ClientID client, const std::string& message)
 	}
 	catch (Exception& e)
 	{
-		ReportError(e.GetType(), e.what(), client);
+		std::string error = GetErrorMessage(e.GetType(), e.what(), client);
+		std::cerr << error << std::endl;
+
+		if (player)
+		{
+			if (const Game* game = player->GetCurrentGame())
+			{
+				m_controller.ClearQueuedMessages();
+				m_controller.SendUpdateGame(*game);
+				m_controller.SendMessage(Output::AddLog(0, error), *game);
+				m_controller.SendQueuedMessages();
+			}
+		}
 	}
+
+	if (player)
+		SendMessage(Output::Response(), *player);
 }
 
 void WSServer::OnDisconnect(ClientID client)
@@ -110,19 +129,21 @@ void WSServer::BroadcastMessage(const std::string& msg) const
 		__super::SendMessage(i.first, msg);
 }
 
-void WSServer::ReportError(const std::string& type, const std::string& msg, ClientID client)
+std::string WSServer::GetErrorMessage(const std::string& type, const std::string& msg, ClientID client)
 {
 	std::ostringstream ss;
 	ss << "Exception : " << type << " : " << msg;
 	if (client)
 	{
-		ss << " [" << client;
+		ss << " [";
 
 		auto i = m_mapClientToPlayer.find(client);
 		if (i != m_mapClientToPlayer.end())
-			ss << " " << i->second;
+			ss << i->second->GetName();
+		else
+			ss << client;
 
 		ss << "]";
 	}
-	std::cerr << ss.str() << std::endl;
+	return ss.str();
 }

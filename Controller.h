@@ -14,6 +14,7 @@ namespace Output { class Message; }
 
 class Controller : public Singleton<Controller>
 {
+	friend class WSServer;
 public:
 	Controller();
 	void SetServer(WSServer* p) { m_pServer = p; }
@@ -33,6 +34,7 @@ private:
 
 	void SendMessage(StringPtr msg, const Player& player) const;
 	void SendQueuedMessages();
+	void ClearQueuedMessages();
 
 	WSServer* m_pServer;
 	mutable std::map<const Player*, std::vector<StringPtr>> m_messages;

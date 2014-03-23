@@ -33,7 +33,6 @@ void Controller::OnMessage(const Input::MessagePtr& pMsg, Player& player)
 	ASSERT(bOK);
 
 	SendQueuedMessages();
-	m_pServer->SendMessage(Output::Response(), player);
 }
 
 void Controller::SendMessage(const Output::Message& msg, const Player& player) const
@@ -66,6 +65,11 @@ void Controller::SendQueuedMessages()
 	for (auto& playerMsgs : m_messages)
 		for (auto& msg : playerMsgs.second)
 			m_pServer->SendMessage(*msg, *playerMsgs.first);
+	m_messages.clear();
+}
+
+void Controller::ClearQueuedMessages()
+{
 	m_messages.clear();
 }
 
