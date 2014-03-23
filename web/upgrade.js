@@ -10,7 +10,7 @@ Upgrade.Stage = function(elem)
 	// blueprints[ship_index] { fixed_power, base_layout[slot_index] { name, power_source, power_drain, is_drive }, overlay[slot_index] }
 	this.blueprints = elem.blueprints 
 	
-	this.changes = [] // { ship, slot, name }
+	this.changes = [] // { ship, slot, part }
 	this.added = 0
 	this.max_upgrades = elem.max_upgrades
 	
@@ -50,9 +50,19 @@ Upgrade.Stage.prototype.OnDropPart = function(ship, slot, part_name)
 	this.UpdateRemainingUI();
 }
 
-Upgrade.Stage.prototype.CanDropOn = function(ship, slot)
+Upgrade.Stage.prototype.CanDropPart = function(ship, slot, part_name)
 {
-	return this.added < this.max_upgrades && this.blueprints[ship].base_layout[slot].name != 'Blocked'
+	var base_part = this.blueprints[ship].base_layout[slot].name
+	var overlay_part = this.blueprints[ship].overlay[slot].name
+
+	for (var i = 0, change; change = this.changes[i]; ++i)
+		if (change.ship == ship && change.slot == slot && change.part == part_name)
+			return false;
+	
+	if (this.added >= this.max_upgrades)
+		return false
+	
+	return base_part != 'Blocked' && part_name != overlay_part && part_name != base_part
 }
 
 Upgrade.Stage.prototype.Send = function()

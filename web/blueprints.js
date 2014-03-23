@@ -1,4 +1,5 @@
 var Blueprints = {}
+Blueprints.dragPart = null
 
 Blueprints.IsRealPart = function(part_name)
 {
@@ -21,9 +22,15 @@ Blueprints.SetPart = function(team_id, ship, slot, part_name)
 //		Blueprints.SetPart(team_id, ship_index, j, overlay[j])
 //}
 
+Blueprints.CanDrop = function(ev, ship, slot)
+{
+	var part_name = Blueprints.dragPart
+	return data.action.CanDropPart(ship, slot, part_name)
+}
+
 Blueprints.OnDrop = function(ev, ship, slot)
 {
-	var part_name = ev.dataTransfer.getData("Text")
+	var part_name = Blueprints.dragPart
 	ev.preventDefault()
 	ev.target.src = 'images/ship_parts/{0}.png'.format(part_name)
 	ev.target.style.borderStyle = 'none'
@@ -41,8 +48,8 @@ Blueprints.EnableDrop = function(team_id, enable)
 			{
 				var f = function (i, j) 
 				{
-					image.ondragover = function(ev) { if (data.action.CanDropOn(i, j)) ev.preventDefault() }
-					image.ondragenter = function(ev) { if (data.action.CanDropOn(i, j)) ev.target.style.borderStyle = 'dashed' }
+					image.ondragover = function(ev) { if (Blueprints.CanDrop(ev, i, j)) ev.preventDefault() }
+					image.ondragenter = function(ev) { if (Blueprints.CanDrop(ev, i, j)) ev.target.style.borderStyle = 'dashed' }
 					image.ondragleave = function(ev) { ev.target.style.borderStyle = 'none' }
 					image.ondrop = function(ev) { Blueprints.OnDrop(ev, i, j) } 
 				}
@@ -55,7 +62,7 @@ Blueprints.EnableDrop = function(team_id, enable)
 
 Blueprints.dragStart = function(ev, partName)
 {
-	ev.dataTransfer.setData("Text", partName)
+	Blueprints.dragPart = partName
 }
 
 Blueprints.Init = function(team_id)
