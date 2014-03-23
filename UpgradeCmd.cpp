@@ -101,7 +101,7 @@ CmdPtr UpgradeCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
 	const Team& team = GetTeam(session.GetGame());
 
 	const int allowedUpgrades = team.HasPassed() ? 1 : Race(team.GetRace()).GetUpgradeRate();
-	VerifyInput("UpgradeCmd::Process: too many upgrades", (int)m.m_changes.size() < allowedUpgrades);
+	VerifyInput("UpgradeCmd::Process: too many upgrades", (int)m.m_changes.size() <= allowedUpgrades);
 
 	// Apply changes to temporary blueprints and validate them.
 	std::vector<BlueprintPtr> blueprints;
