@@ -10,11 +10,6 @@ ChooseTeamPhase::ChooseTeamPhase(LiveGame* pGame) : TurnPhase(pGame)
 {
 }
 
-bool ChooseTeamPhase::IsTeamActive(Colour c) const 
-{
-	return c == GetCurrentTeam().GetColour();
-}
-
 void ChooseTeamPhase::AssignTeam(CommitSession& session, Player& player, RaceType race, Colour colour)
 {
 	LiveGame& game = GetGame();

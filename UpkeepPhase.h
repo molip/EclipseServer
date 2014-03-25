@@ -9,11 +9,7 @@ public:
 
 	virtual void StartCmd(CmdPtr pCmd, CommitSession& session) override;
 
-	virtual void AddCmd(CmdPtr pCmd) override;
-	virtual void FinishCmd(Colour c) override;
-	virtual Cmd* RemoveCmd(CommitSession& session, Colour c) override; // Returns cmd to undo.
 	virtual bool CanRemoveCmd(Colour c) const override;
-	virtual bool IsTeamActive(Colour c) const override;
 
 	virtual Cmd* GetCurrentCmd(Colour c) override;
 
@@ -23,6 +19,11 @@ public:
 	virtual void Load(const Serial::LoadNode& node) override;
 
 	void FinishTurn(CommitSession& session, const Player& player);
+
+protected:
+	virtual void AddCmd(CmdPtr pCmd) override;
+	virtual void FinishCmd(Colour c) override;
+	virtual Cmd* RemoveCmd(CommitSession& session, Colour c) override; // Returns cmd to undo.
 
 private:
 	CmdStack& GetCmdStack(Colour c);

@@ -62,11 +62,6 @@ bool UpkeepPhase::CanRemoveCmd(Colour c) const
 	return GetCmdStack(c).CanRemoveCmd();
 }
 
-bool UpkeepPhase::IsTeamActive(Colour c) const 
-{
-	return m_cmdStacks.find(c) != m_cmdStacks.end();
-}
-
 Cmd* UpkeepPhase::GetCurrentCmd(Colour c)
 {
 	return GetCmdStack(c).GetCurrentCmd();

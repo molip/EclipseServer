@@ -92,7 +92,7 @@ void ActionPhase::StartCmd(CmdPtr pCmd, CommitSession& session)
 
 	if (pCmd->IsAction()) // Includes PassCmd.
 	{
-		VerifyModel("ActionPhasePhase::StartCmd: Already done an action", !m_bDoneAction);
+		VerifyModel("ActionPhase::StartCmd: Already done an action", !m_bDoneAction);
 		m_bDoneAction = true;
 	}
 
