@@ -145,6 +145,7 @@
     <ClInclude Include="tinyxml.h" />
     <ClInclude Include="TradeCmd.h" />
     <ClInclude Include="Turn.h" />
+    <ClInclude Include="HexArrivals.h" />
     <ClInclude Include="UpgradeCmd.h" />
     <ClInclude Include="UpkeepPhase.h" />
     <ClInclude Include="Util.h" />
@@ -159,6 +160,7 @@
     <ClCompile Include="Blueprint.cpp" />
     <ClCompile Include="BlueprintDefs.cpp" />
     <ClCompile Include="BuildCmd.cpp" />
+    <ClCompile Include="HexArrivals.cpp" />
     <ClCompile Include="MessageRecord.cpp" />
     <ClCompile Include="ChooseTeamPhase.cpp" />
     <ClCompile Include="civetweb.c" />

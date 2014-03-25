@@ -33,6 +33,8 @@ public:
 	
 	const Hex& GetHex(const MapPos& pos) const { return const_cast<Map*>(this)->GetHex(pos); }
 	const Hex* FindHex(const MapPos& pos) const { return const_cast<Map*>(this)->FindHex(pos); }
+	
+	const Hex* FindHex(int hexId) const;
 
 	void GetInfluencableNeighbours(const MapPos& pos, const Team& team, std::set<MapPos>& neighbours) const;
 	void GetEmptyNeighbours(const MapPos& pos, bool bHasWormholeGen, std::set<MapPos>& neighbours) const;

@@ -245,6 +245,9 @@
     <ClInclude Include="MessageRecord.h">
       <Filter>Model</Filter>
     </ClInclude>
+    <ClInclude Include="HexArrivals.h">
+      <Filter>Model</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -458,6 +461,9 @@
       <Filter>General</Filter>
     </ClCompile>
     <ClCompile Include="MessageRecord.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="HexArrivals.cpp">
       <Filter>Model</Filter>
     </ClCompile>
   </ItemGroup>

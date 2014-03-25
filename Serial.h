@@ -96,6 +96,12 @@ struct ObjectSaver
 	}		
 };
 
+template <typename S>
+struct CntrSaver
+{
+	template <typename T> void operator ()(Xml::Element& e, const T& cntr) { SaveNode(e).SaveCntr("container", cntr, S()); }
+};
+
 template <typename T> void SaveNode::SaveType(const std::string& name, const T& val)
 {
 	m_elem.SetAttribute(name, ToString(val));
@@ -327,6 +333,12 @@ struct ObjectLoader
 		pObj.reset(p);
 		return bOK;
 	}
+};
+
+template <typename L>
+struct CntrLoader
+{
+	template <typename T> void operator ()(const Xml::Element& e, T& cntr) { LoadNode(e).LoadCntr("container", cntr, L()); }
 };
 
 template <typename T> bool LoadNode::LoadType(const std::string& name, T& val) const

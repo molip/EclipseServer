@@ -135,8 +135,8 @@ void ActionPhase::FinishTurn(CommitSession& session)
 		m_passOrder.push_back(c);
 		if (m_passOrder.size() == game.GetTeams().size())
 		{
-			game.FinishActionPhase(m_passOrder); // Deletes this.
-			game.GetPhase().UpdateClient(controller, nullptr); // Show upkeep UI.
+			game.FinishActionPhase(m_passOrder, m_hexArrivalOrder); // Deletes this.
+			game.GetPhase().UpdateClient(controller, nullptr); // Show next phase UI (combat or upkeep).
 			return;
 		}
 	}

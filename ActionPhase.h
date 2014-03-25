@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Phase.h"
+#include "HexArrivals.h"
 
 class Hex;
 
@@ -38,12 +39,11 @@ protected:
 	virtual void FinishCmd(Colour c) override;
 	virtual Cmd* RemoveCmd(CommitSession& session, Colour c) override; // Returns cmd to undo.
 
+
 private:
 	std::vector<Colour> m_passOrder;
-	std::map<int, std::vector<Colour>> m_hexArrivalOrder;
+	HexArrivals m_hexArrivalOrder;
 
 	CmdStack* m_pCmdStack;
 	bool m_bDoneAction;
 };
-
-DEFINE_UNIQUE_PTR(Phase)

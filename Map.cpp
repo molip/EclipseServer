@@ -16,6 +16,14 @@ Map::Map(const Map& rhs, Game& game) : m_game(game)
 		m_hexes.insert(std::make_pair(h.first, HexPtr(new Hex(*h.second))));
 }
 
+const Hex* Map::FindHex(int hexId) const
+{
+	for (auto& h : m_hexes)
+		if (h.second->GetID() == hexId)
+			return h.second.get();
+	return nullptr;
+}
+
 Hex* Map::FindHex(const MapPos& pos)
 {
 	auto h = m_hexes.find(pos);

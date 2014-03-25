@@ -8,6 +8,8 @@ class ChooseTeamPhase;
 class UpkeepPhase;
 class ReviewGame;
 
+class HexArrivals;
+
 DEFINE_UNIQUE_PTR(Record)
 DEFINE_UNIQUE_PTR(CmdStack)
 DEFINE_UNIQUE_PTR(Phase)
@@ -59,7 +61,7 @@ public:
 	bool NeedCombat() const;
 
 	void StartActionPhase();
-	void FinishActionPhase(std::vector<Colour>& passOrder);
+	void FinishActionPhase(const std::vector<Colour>& passOrder, const HexArrivals& hexArrivalOrder);
 
 	virtual void Save(Serial::SaveNode& node) const override;
 	virtual void Load(const Serial::LoadNode& node) override;

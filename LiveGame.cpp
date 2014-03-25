@@ -123,7 +123,7 @@ void LiveGame::StartActionPhase()
 	m_pPhase = PhasePtr(new ActionPhase(this));
 }
 
-void LiveGame::FinishActionPhase(std::vector<Colour>& passOrder)
+void LiveGame::FinishActionPhase(const std::vector<Colour>& passOrder, const HexArrivals& hexArrivalOrder)
 {
 	VerifyModel("LiveGame::FinishActionPhase", passOrder.size() == m_teams.size());
 	
