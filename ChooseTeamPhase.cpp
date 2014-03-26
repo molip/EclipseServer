@@ -5,8 +5,9 @@
 #include "Controller.h"
 #include "StartRoundRecord.h"
 #include "CommitSession.h"
+#include "Players.h"
 
-ChooseTeamPhase::ChooseTeamPhase(LiveGame* pGame) : TurnPhase(pGame)
+ChooseTeamPhase::ChooseTeamPhase(LiveGame* pGame) : Phase(pGame)
 {
 }
 
@@ -33,13 +34,20 @@ void ChooseTeamPhase::AssignTeam(CommitSession& session, Player& player, RaceTyp
 	session.GetController().SendUpdateGame(game);
 }
 
+const Team& ChooseTeamPhase::GetCurrentTeam() const
+{
+	return TurnPhase::GetCurrentTeam(GetGame());
+}
+
 void ChooseTeamPhase::UpdateClient(const Controller& controller, const Player* pPlayer) const
 {
 	controller.SendMessage(Output::ShowChoose(), GetGame(), pPlayer);
 	controller.SendMessage(Output::UpdateChoose(GetGame()), GetGame(), pPlayer);
 
-	if (!pPlayer || pPlayer == &GetCurrentPlayer())
-		controller.SendMessage(Output::ChooseTeam(GetGame(), true), GetCurrentPlayer());
+	const Player& currentPlayer = Players::Get(GetCurrentTeam().GetPlayerID());
+
+	if (!pPlayer || pPlayer == &currentPlayer)
+		controller.SendMessage(Output::ChooseTeam(GetGame(), true), currentPlayer);
 
 	return;
 }

@@ -7,40 +7,26 @@
 #include "ActionRecord.h"
 #include "CommitSession.h"
 
-ActionPhase::ActionPhase(LiveGame* pGame) : TurnPhase(pGame), m_bDoneAction(false)
+ActionPhase::ActionPhase(LiveGame* pGame) : OrderedPhase(pGame), m_bDoneAction(false)
 {
-	m_pCmdStack = new CmdStack;
 }
 
 ActionPhase::~ActionPhase()
 {
-	delete m_pCmdStack;
 }
 
-void ActionPhase::AddCmd(CmdPtr pCmd)
+const Team& ActionPhase::GetCurrentTeam() const 
 {
-	VerifyModel("ActionPhase::AddCmd: Team not active", IsTeamActive(pCmd->GetColour()));
-	VerifyModel("ActionPhase::AddCmd: pCmd is null", !!pCmd);
-
-	m_pCmdStack->AddCmd(pCmd);
-}
-
-void ActionPhase::FinishCmd(Colour c)
-{
-	VerifyModel("ActionPhase::FinishCmd", IsTeamActive(c));
-
-	m_pCmdStack->AddCmd(CmdPtr());
+	return TurnPhase::GetCurrentTeam(GetGame());
 }
 
 Cmd* ActionPhase::RemoveCmd(CommitSession& session, Colour c)
 {
-	VerifyModel("ActionPhase::RemoveCmd", IsTeamActive(c));
-
 	const Cmd* pCmd = GetCurrentCmd(c);
 	bool bAction = pCmd && pCmd->IsAction();
 	bool bCostsInfluence = pCmd && pCmd->CostsInfluence();
 
-	Cmd* pUndo = m_pCmdStack->RemoveCmd();
+	Cmd* pUndo = OrderedPhase::RemoveCmd(session, c);
 
 	if (bAction && !pUndo) // It's a start cmd.
 	{
@@ -59,33 +45,6 @@ Cmd* ActionPhase::RemoveCmd(CommitSession& session, Colour c)
 	return pUndo;
 }
 
-bool ActionPhase::CanRemoveCmd(Colour c) const
-{
-	VerifyModel("ActionPhase::CanRemoveCmd", IsTeamActive(c));
-	return CanRemoveCmd();
-}
-
-bool ActionPhase::IsTeamActive(Colour c) const 
-{
-	return c == GetCurrentTeam().GetColour();
-}
-
-Cmd* ActionPhase::GetCurrentCmd(Colour c)
-{
-	VerifyModel("ActionPhase::GetCurrentCmd", IsTeamActive(c));
-	return GetCurrentCmd();
-}
-
-Cmd* ActionPhase::GetCurrentCmd()
-{
-	return m_pCmdStack->GetCurrentCmd();
-}
-
-bool ActionPhase::CanRemoveCmd() const
-{
-	return m_pCmdStack->CanRemoveCmd();
-}
-
 void ActionPhase::StartCmd(CmdPtr pCmd, CommitSession& session)
 {
 	VerifyModel("ActionPhase::StartCmd: Team not active", IsTeamActive(pCmd->GetColour()));
@@ -96,22 +55,13 @@ void ActionPhase::StartCmd(CmdPtr pCmd, CommitSession& session)
 		m_bDoneAction = true;
 	}
 
-	const Controller& controller = session.GetController();
-
 	if (pCmd->CostsInfluence())
 	{
 		session.DoAndPushRecord(RecordPtr(new ActionRecord(pCmd->GetActionName(), GetCurrentTeam().GetColour())));
 		session.UpdateReviewGames();
 	}
 	
-	m_pCmdStack->StartCmd(pCmd);
-
-	Cmd* pStartedCmd = GetCurrentCmd();
-
-	if (pStartedCmd->IsAutoProcess())
-		ProcessCmdMessage(Input::CmdMessage(), session, GetCurrentPlayer());
-	else
-		pStartedCmd->UpdateClient(controller, GetGame());
+	OrderedPhase::StartCmd(std::move(pCmd), session);
 }
 
 bool ActionPhase::CanDoAction() const
@@ -191,29 +141,18 @@ void ActionPhase::ShipMovedTo(const Hex& hex, Colour colour)
 		vec.push_back(colour);
 }
 
-void ActionPhase::UpdateClient(const Controller& controller, const Player* pPlayer) const
-{
-	if (pPlayer && pPlayer != &GetCurrentPlayer())
-		return; // Nothing to send to this player.
-
-	if (const Cmd* pCmd = GetCurrentCmd())
-		pCmd->UpdateClient(controller, GetGame());
-	else
-		controller.SendMessage(Output::ChooseAction(GetGame()), GetCurrentPlayer());
-}
-
 void ActionPhase::Save(Serial::SaveNode& node) const 
 {
-	__super::Save(node);
-	node.SaveClass("commands", *m_pCmdStack);
+	OrderedPhase::Save(node);
+	TurnPhase::Save(node);
 	node.SaveType("done_action", m_bDoneAction);
 	node.SaveCntr("pass_order", m_passOrder, Serial::EnumSaver());
 }
 
 void ActionPhase::Load(const Serial::LoadNode& node)
 {
-	__super::Load(node);
-	node.LoadClass("commands", *m_pCmdStack);
+	OrderedPhase::Load(node);
+	TurnPhase::Load(node);
 	node.LoadType("done_action", m_bDoneAction);
 	node.LoadCntr("pass_order", m_passOrder, Serial::EnumLoader());
 }

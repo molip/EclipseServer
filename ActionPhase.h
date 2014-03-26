@@ -1,11 +1,11 @@
 #pragma once
 
-#include "Phase.h"
+#include "OrderedPhase.h"
 #include "HexArrivals.h"
 
 class Hex;
 
-class ActionPhase : public TurnPhase
+class ActionPhase : public OrderedPhase, public TurnPhase
 {
 public:
 	ActionPhase(LiveGame* pGame = nullptr);
@@ -13,14 +13,7 @@ public:
 	virtual ~ActionPhase();
 
 	virtual void StartCmd(CmdPtr pCmd, CommitSession& session) override;
-	virtual bool CanRemoveCmd(Colour c) const override;
-	virtual Cmd* GetCurrentCmd(Colour c) override;
-
-	bool IsTeamActive(Colour c) const;
-
-	Cmd* GetCurrentCmd();
-	const Cmd* GetCurrentCmd() const { return const_cast<ActionPhase*>(this)->GetCurrentCmd(); }
-	bool CanRemoveCmd() const;
+	virtual const Team& GetCurrentTeam() const override;
 
 	bool HasDoneAction() const { return m_bDoneAction; }
 	bool CanDoAction() const;
@@ -29,21 +22,14 @@ public:
 	void ShipMovedFrom(const Hex& hex, Colour colour);
 	void ShipMovedTo(const Hex& hex, Colour colour);
 
-	virtual void UpdateClient(const Controller& controller, const Player* pPlayer) const override;
-
 	virtual void Save(Serial::SaveNode& node) const override;
 	virtual void Load(const Serial::LoadNode& node) override;
 
 protected:
-	virtual void AddCmd(CmdPtr pCmd) override;
-	virtual void FinishCmd(Colour c) override;
 	virtual Cmd* RemoveCmd(CommitSession& session, Colour c) override; // Returns cmd to undo.
-
 
 private:
 	std::vector<Colour> m_passOrder;
 	HexArrivals m_hexArrivalOrder;
-
-	CmdStack* m_pCmdStack;
 	bool m_bDoneAction;
 };

@@ -24,7 +24,7 @@ void Phase::Load(const Serial::LoadNode& node)
 	__super::Load(node);
 }
 
-void Phase::ProcessCmdMessage(const Input::CmdMessage& msg, CommitSession& session, Player& player)
+void Phase::ProcessCmdMessage(const Input::CmdMessage& msg, CommitSession& session, const Player& player)
 {
 	LiveGame& game = GetGame();
 	VerifyModel("Phase::ProcessCmdMessage: Player not in game", &game == player.GetCurrentLiveGame());
@@ -76,23 +76,13 @@ void Phase::UndoCmd(CommitSession& session, Player& player)
 
 //-----------------------------------------------------------------------------
 
-TurnPhase::TurnPhase(LiveGame* pGame) : Phase(pGame), m_iTurn(0)
+TurnPhase::TurnPhase() : m_iTurn(0)
 {
 }
 
-const Player& TurnPhase::GetCurrentPlayer() const
+const Team& TurnPhase::GetCurrentTeam(const LiveGame& game) const
 {
-	return Players::Get(GetCurrentTeam().GetPlayerID());
-}
-
-Player& TurnPhase::GetCurrentPlayer() 
-{
-	return Players::Get(GetCurrentTeam().GetPlayerID());
-}
-
-Team& TurnPhase::GetCurrentTeam()
-{
-	return *GetGame().GetTeams()[m_iTurn % GetGame().GetTeams().size()];
+	return *game.GetTeams()[m_iTurn % game.GetTeams().size()];
 }
 
 void TurnPhase::AdvanceTurn()
@@ -102,13 +92,11 @@ void TurnPhase::AdvanceTurn()
 
 void TurnPhase::Save(Serial::SaveNode& node) const 
 {
-	__super::Save(node);
 	node.SaveType("turn", m_iTurn);
 }
 
 void TurnPhase::Load(const Serial::LoadNode& node)
 {
-	__super::Load(node);
 	node.LoadType("turn", m_iTurn);
 }
 

@@ -248,6 +248,9 @@
     <ClInclude Include="HexArrivals.h">
       <Filter>Model</Filter>
     </ClInclude>
+    <ClInclude Include="OrderedPhase.h">
+      <Filter>Model\Phases</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -465,6 +468,9 @@
     </ClCompile>
     <ClCompile Include="HexArrivals.cpp">
       <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="OrderedPhase.cpp">
+      <Filter>Model\Phases</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

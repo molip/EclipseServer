@@ -27,7 +27,7 @@ public:
 
 	void SetGame(LiveGame& game) { m_pGame = &game; }
 	
-	void ProcessCmdMessage(const Input::CmdMessage& msg, CommitSession& session, Player& player);
+	void ProcessCmdMessage(const Input::CmdMessage& msg, CommitSession& session, const Player& player);
 	void UndoCmd(CommitSession& session, Player& player);
 	
 	virtual void StartCmd(CmdPtr pCmd, CommitSession& session) { ASSERT(false); }
@@ -55,16 +55,13 @@ private:
 };
 DEFINE_UNIQUE_PTR(Phase)
 
-class TurnPhase : public Phase
+class TurnPhase
 {
 public:
-	TurnPhase(LiveGame* pGame);
+	TurnPhase();
 	virtual ~TurnPhase() {}
 
-	const Player& GetCurrentPlayer() const;
-	Player& GetCurrentPlayer();
-	const Team& GetCurrentTeam() const { return const_cast<TurnPhase*>(this)->GetCurrentTeam(); }
-	Team& GetCurrentTeam();
+	const Team& GetCurrentTeam(const LiveGame& game) const;
 
 	void Save(Serial::SaveNode& node) const;
 	void Load(const Serial::LoadNode& node);

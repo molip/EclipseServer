@@ -116,6 +116,7 @@
     <ClInclude Include="MongooseServer.h" />
     <ClInclude Include="LiveGame.h" />
     <ClInclude Include="MoveCmd.h" />
+    <ClInclude Include="OrderedPhase.h" />
     <ClInclude Include="OS.h" />
     <ClInclude Include="Output.h" />
     <ClInclude Include="HTMLServer.h" />
@@ -194,6 +195,7 @@
     <ClCompile Include="MongooseServer.cpp" />
     <ClCompile Include="LiveGame.cpp" />
     <ClCompile Include="MoveCmd.cpp" />
+    <ClCompile Include="OrderedPhase.cpp" />
     <ClCompile Include="OS.cpp" />
     <ClCompile Include="Output.cpp" />
     <ClCompile Include="HTMLServer.cpp" />
