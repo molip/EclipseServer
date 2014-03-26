@@ -147,6 +147,7 @@ void ActionPhase::Save(Serial::SaveNode& node) const
 	TurnPhase::Save(node);
 	node.SaveType("done_action", m_bDoneAction);
 	node.SaveCntr("pass_order", m_passOrder, Serial::EnumSaver());
+	node.SaveClass("hex_arrivals", m_hexArrivalOrder);
 }
 
 void ActionPhase::Load(const Serial::LoadNode& node)
@@ -155,6 +156,7 @@ void ActionPhase::Load(const Serial::LoadNode& node)
 	TurnPhase::Load(node);
 	node.LoadType("done_action", m_bDoneAction);
 	node.LoadCntr("pass_order", m_passOrder, Serial::EnumLoader());
+	node.LoadClass("hex_arrivals", m_hexArrivalOrder);
 }
 
 REGISTER_DYNAMIC(ActionPhase)
