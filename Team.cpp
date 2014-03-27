@@ -26,7 +26,10 @@ Team::Team(const Team& rhs) :
 	m_techTrack(rhs.m_techTrack), m_storage(rhs.m_storage), m_nColonyShipsUsed(rhs.m_nColonyShipsUsed), m_bPassed(rhs.m_bPassed)
 {	
 	for (int i = 0; i < 4; ++i)
+	{
 		m_nShips[i] = rhs.m_nShips[i];
+		m_blueprints[i].reset(new Blueprint(*rhs.m_blueprints[i]));
+	}
 }
 
 void Team::Assign(RaceType race, Colour colour, LiveGame& game)
