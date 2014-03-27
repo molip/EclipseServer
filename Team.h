@@ -115,7 +115,6 @@ private:
 	std::set<ShipPart> m_discoveredShipParts;
 
 	int m_nColonyShipsUsed;
-	int m_nActions;
 	bool m_bPassed;
 };
 
