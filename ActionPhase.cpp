@@ -104,9 +104,6 @@ void ActionPhase::ShipMovedFrom(const Hex& hex, Colour colour)
 		auto itMap = m_hexArrivalOrder.find(hex.GetID());
 		if (itMap != m_hexArrivalOrder.end()) // Hex is/was contended.
 		{
-			// This should only happen when undoing a move/build record.
-			// Otherwise the ship should have been pinned. 
-			
 			auto& vec = itMap->second;
 			auto itVec = std::find(vec.begin(), vec.end(), colour);
 			VerifyModel("ActionPhase::ShipMovedFrom 1", itVec != vec.end());
@@ -116,7 +113,7 @@ void ActionPhase::ShipMovedFrom(const Hex& hex, Colour colour)
 
 			if (vec.size() == 1) // Forget hexes with only one colour ship.
 			{
-				VerifyModel("ActionPhase::ShipMovedFrom 3", !hex.HasForeignShip(vec.front(), true));
+				VerifyModel("ActionPhase::ShipMovedFrom 3", !hex.HasForeignShip(vec.front(), false));
 				m_hexArrivalOrder.erase(itMap);
 			}
 		}
@@ -125,7 +122,7 @@ void ActionPhase::ShipMovedFrom(const Hex& hex, Colour colour)
 
 void ActionPhase::ShipMovedTo(const Hex& hex, Colour colour)
 {
-	std::set<Colour> colours = hex.GetShipColours(true);
+	std::set<Colour> colours = hex.GetShipColours(false);
 	VerifyModel("ActionPhase::ShipMovedTo 1", colours.erase(colour) == 1);
 
 	if (colours.empty()) // No contention.
