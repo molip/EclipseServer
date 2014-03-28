@@ -189,28 +189,27 @@ std::set<Colour> Hex::GetShipColours(bool bPlayerShipsOnly) const
 	return set;
 }
 
-int Hex::GetPinnage(const Colour& c) const
+int Hex::GetPinnage(const Team& team) const
 {
-	VerifyModel("Hex::GetPinnage", c != Colour::None);
-	
 	int nPinnage = 0;
 	for (auto& s : m_ships)
 	{
 		if (s.GetType() == ShipType::GCDS)
 			return 1000;
-		nPinnage += s.GetColour() == c ? -1 : 1;
+		if (!(Race(team.GetRace()).IsAncientsAlly() && s.GetType() == ShipType::Ancient))
+			nPinnage += s.GetColour() == team.GetColour() ? -1 : 1;
 	}
 	return nPinnage;
 }
 
-bool Hex::CanMoveOut(Colour c) const
+bool Hex::CanMoveOut(const Team& team) const
 {
-	return GetPinnage(c) < 0;
+	return GetPinnage(team) < 0;
 }
 
-bool Hex::CanMoveThrough(Colour c) const
+bool Hex::CanMoveThrough(const Team& team) const
 {
-	return GetPinnage(c) <= 0;
+	return GetPinnage(team) <= 0;
 }
 
 void Hex::SetColour(Colour c)

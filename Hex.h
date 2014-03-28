@@ -105,8 +105,8 @@ public:
 	bool HasDiscovery() const;
 	void RemoveDiscoveryTile();
 	void SetDiscoveryTile(DiscoveryType type);
-	bool CanMoveOut(Colour c) const;
-	bool CanMoveThrough(Colour c) const;
+	bool CanMoveOut(const Team& team) const;
+	bool CanMoveThrough(const Team& team) const;
 	
 	Square* FindSquare(SquareType type, bool bOccupied);
 
@@ -128,7 +128,7 @@ private:
 	void SetSquareOccupied(int i, bool b);
 	bool IsSquareOccupied(int i) const;
 
-	int GetPinnage(const Colour& c) const;
+	int GetPinnage(const Team& team) const;
 	
 	const HexDef* m_pDef; 
 	int m_id;

@@ -13,7 +13,7 @@ MoveCmd::MoveCmd(Colour colour, const LiveGame& game, int iPhase) : PhaseCmd(col
 
 bool MoveCmd::CanMoveFrom(const Hex& hex, const LiveGame& game) const
 {
-	return hex.HasShip(m_colour, true) && hex.CanMoveOut(m_colour) && 
+	return hex.HasShip(m_colour, true) && hex.CanMoveOut(GetTeam(game)) &&
 		hex.HasNeighbour(game.GetMap(), GetTeam(game).HasTech(TechType::WormholeGen));
 }
 
@@ -124,7 +124,7 @@ void MoveDstCmd::AddNeighbourDsts(const LiveGame& game, const MapPos& pos, int m
 
 	const Map& map = game.GetMap();
 
-	if (map.GetHex(pos).CanMoveThrough(m_colour))
+	if (map.GetHex(pos).CanMoveThrough(GetTeam(game)))
 		for (auto& n : map.GetNeighbours(pos, GetTeam(game).HasTech(TechType::WormholeGen)))
 			if (n != m_src)
 				if (dsts.insert(n).second)
