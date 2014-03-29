@@ -22,6 +22,8 @@ public:
 	void ShipMovedFrom(const Hex& hex, Colour colour);
 	void ShipMovedTo(const Hex& hex, Colour colour);
 
+	virtual void UpdateClient(const Controller& controller, const Player* pPlayer) const override;
+
 	virtual void Save(Serial::SaveNode& node) const override;
 	virtual void Load(const Serial::LoadNode& node) override;
 

@@ -138,6 +138,17 @@ void ActionPhase::ShipMovedTo(const Hex& hex, Colour colour)
 		vec.push_back(colour);
 }
 
+void ActionPhase::UpdateClient(const Controller& controller, const Player* pPlayer) const
+{
+	if (pPlayer && pPlayer != &GetCurrentPlayer())
+		return; // Nothing to send to this player.
+
+	if (const Cmd* pCmd = GetCurrentCmd())
+		pCmd->UpdateClient(controller, GetGame());
+	else
+		controller.SendMessage(Output::ChooseAction(GetGame()), GetCurrentPlayer());
+}
+
 void ActionPhase::Save(Serial::SaveNode& node) const 
 {
 	OrderedPhase::Save(node);

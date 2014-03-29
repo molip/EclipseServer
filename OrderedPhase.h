@@ -19,8 +19,6 @@ public:
 	const Cmd* GetCurrentCmd() const { return const_cast<OrderedPhase*>(this)->GetCurrentCmd(); }
 	bool CanRemoveCmd() const;
 
-	virtual void UpdateClient(const Controller& controller, const Player* pPlayer) const override;
-
 	virtual void Save(Serial::SaveNode& node) const override;
 	virtual void Load(const Serial::LoadNode& node) override;
 

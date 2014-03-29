@@ -86,17 +86,6 @@ void OrderedPhase::StartCmd(CmdPtr pCmd, CommitSession& session)
 		pStartedCmd->UpdateClient(session.GetController(), GetGame());
 }
 
-void OrderedPhase::UpdateClient(const Controller& controller, const Player* pPlayer) const
-{
-	if (pPlayer && pPlayer != &GetCurrentPlayer())
-		return; // Nothing to send to this player.
-
-	if (const Cmd* pCmd = GetCurrentCmd())
-		pCmd->UpdateClient(controller, GetGame());
-	else
-		controller.SendMessage(Output::ChooseAction(GetGame()), GetCurrentPlayer());
-}
-
 void OrderedPhase::Save(Serial::SaveNode& node) const 
 {
 	Phase::Save(node);
