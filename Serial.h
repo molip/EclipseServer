@@ -30,9 +30,12 @@ public:
 	template <typename T> void SaveType(const std::string& name, const T& val);
 	template <typename T> void SaveEnum(const std::string& name, const T& val);
 	template <typename T> void SaveClass(const std::string& name, const T& obj);
-	template <typename T> void SaveClassPtr(const std::string& name, const T& pObj);
-	template <typename T> void SaveTypePtr(const std::string& name, const T& pObj);
-	template <typename T> void SaveObject(const std::string& name, const T& pObj);
+	template <typename T> void SaveClassPtr(const std::string& name, const T* pObj);
+	template <typename T> void SaveTypePtr(const std::string& name, const T* pObj);
+	template <typename T> void SaveObject(const std::string& name, const T* pObj);
+	template <typename T> void SaveClassPtr(const std::string& name, const std::unique_ptr<T>& pObj);
+	template <typename T> void SaveTypePtr(const std::string& name, const std::unique_ptr<T>& pObj);
+	template <typename T> void SaveObject(const std::string& name, const std::unique_ptr<T>& pObj);
 	
 	template <typename T, typename S> void SaveCntr(const std::string& name, const T& cntr, S saver);
 	template <typename T, typename S> void SaveArray(const std::string& name, const T& cntr, S saver);
@@ -61,45 +64,71 @@ struct ClassSaver
 
 struct PtrSaver
 {
-	template <typename T, typename S> void operator ()(Xml::Element& e, const T& pObj, S saver) 
+	template <typename T, typename S> void operator ()(Xml::Element& e, const T* pObj, S saver) 
 	{
 		if (pObj)
 			saver(e, *pObj); 
 		else
 			e.SetAttribute("_null", true);
 	}
+
+	template <typename T, typename S> void operator ()(Xml::Element& e, const std::unique_ptr<T>& pObj, S saver)
+	{
+		operator ()(e, pObj.get(), saver);
+	}
 };
 
 struct ClassPtrSaver
 {
-	template <typename T> void operator ()(Xml::Element& e, const T& pObj) 
+	template <typename T> void operator ()(Xml::Element& e, const T* pObj) 
 	{
 		PtrSaver()(e, pObj, ClassSaver()); 
+	}
+
+	template <typename T> void operator ()(Xml::Element& e, const std::unique_ptr<T>& pObj)
+	{
+		operator ()(e, pObj.get());
 	}
 };
 
 struct TypePtrSaver
 {
-	template <typename T> void operator ()(Xml::Element& e, const T& pObj) 
+	template <typename T> void operator ()(Xml::Element& e, const T* pObj) 
 	{
 		PtrSaver()(e, pObj, TypeSaver()); 
+	}
+
+	template <typename T> void operator ()(Xml::Element& e, const std::unique_ptr<T>& pObj)
+	{
+		operator ()(e, pObj.get());
 	}
 };
 
 struct ObjectSaver
 {
-	template <typename T> void operator ()(Xml::Element& e, const T& pObj) 
+	template <typename T> void operator ()(Xml::Element& e, const T* pObj) 
 	{
 		e.SetAttribute("_class", pObj ? typeid(*pObj).name() : "_null");
 		if (pObj)
 			pObj->Save(SaveNode(e));
 	}		
+
+	template <typename T> void operator ()(Xml::Element& e, const std::unique_ptr<T>& pObj)
+	{
+		operator ()(e, pObj.get());
+	}
 };
 
 template <typename S>
 struct CntrSaver
 {
 	template <typename T> void operator ()(Xml::Element& e, const T& cntr) { SaveNode(e).SaveCntr("container", cntr, S()); }
+};
+
+template <typename S1, typename S2>
+struct PairSaver
+{
+	template <typename T> void operator ()(Xml::Element& e, const T& pair) { SaveNode(e).SavePair("pair", pair, S1(),  S2()); }
 };
 
 template <typename T> void SaveNode::SaveType(const std::string& name, const T& val)
@@ -118,23 +147,37 @@ template <typename T> void SaveNode::SaveClass(const std::string& name, const T&
 	ClassSaver()(elem, obj);
 }
 
-template <typename T> void SaveNode::SaveClassPtr(const std::string& name, const T& pObj)
+template <typename T> void SaveNode::SaveClassPtr(const std::string& name, const T* pObj)
 {
 	Xml::Element elem = m_elem.AddElement(name);
 	ClassPtrSaver()(elem, pObj);
 }
 
-template <typename T> void SaveNode::SaveTypePtr(const std::string& name, const T& pObj)
+template <typename T> void SaveNode::SaveTypePtr(const std::string& name, const T* pObj)
 {
 	Xml::Element elem = m_elem.AddElement(name);
 	TypePtrSaver()(elem, pObj);
 }
 
-
-template <typename T> void SaveNode::SaveObject(const std::string& name, const T& pObj)
+template <typename T> void SaveNode::SaveObject(const std::string& name, const T* pObj)
 {
 	Xml::Element elem = m_elem.AddElement(name);
 	ObjectSaver()(elem, pObj);
+}
+
+template <typename T> void SaveNode::SaveClassPtr(const std::string& name, const std::unique_ptr<T>& pObj)
+{
+	SaveClassPtr(name, pObj.get());
+}
+
+template <typename T> void SaveNode::SaveTypePtr(const std::string& name, const std::unique_ptr<T>& pObj)
+{
+	SaveTypePtr(name, pObj.get());
+}
+
+template <typename T> void SaveNode::SaveObject(const std::string& name, const std::unique_ptr<T>& pObj)
+{
+	SaveObject(name, pObj.get());
 }
 
 template <typename T, typename S> void SaveNode::SaveCntr(const std::string& name, const T& cntr, S saver)
@@ -196,7 +239,7 @@ template <typename T> bool SaveClass(const std::string& path, const T& obj)
 	return doc.SaveToFile(path);
 }
 
-template <typename T> bool SaveObject(const std::string& path, const T& pObj)
+template <typename T> bool SaveObject(const std::string& path, const T* pObj)
 {
 	Xml::Document doc;
 	ObjectSaver()(doc.AddElement("object"), pObj);
@@ -226,11 +269,11 @@ public:
 	template <typename T> bool LoadType(const std::string& name, T& val) const;
 	template <typename T> bool LoadEnum(const std::string& name, T& val) const;
 	template <typename T> bool LoadClass(const std::string& name, T& obj) const;
-	template <typename T> bool LoadClassPtr(const std::string& name, T& pObj) const;
+	template <typename T> bool LoadClassPtr(const std::string& name, T*& pObj) const;
 	template <typename T> bool LoadClassPtr(const std::string& name, std::unique_ptr<T>& pObj) const;
-	template <typename T> bool LoadTypePtr(const std::string& name, T& pObj) const;
+	template <typename T> bool LoadTypePtr(const std::string& name, T*& pObj) const;
 	template <typename T> bool LoadTypePtr(const std::string& name, std::unique_ptr<T>& pObj) const;
-	template <typename T> bool LoadObject(const std::string& name, T& pObj) const;
+	template <typename T> bool LoadObject(const std::string& name, T*& pObj) const;
 	template <typename T> bool LoadObject(const std::string& name, std::unique_ptr<T>& pObj) const;
 
 	template <typename T, typename L> bool LoadCntr(const std::string& name, T& cntr, L loader) const;
@@ -341,6 +384,12 @@ struct CntrLoader
 	template <typename T> void operator ()(const Xml::Element& e, T& cntr) { LoadNode(e).LoadCntr("container", cntr, L()); }
 };
 
+template <typename L1, typename L2>
+struct PairLoader
+{
+	template <typename T> void operator ()(const Xml::Element& e, T& pair) { LoadNode(e).LoadPair("pair", pair, L1(), L2()); }
+};
+
 template <typename T> bool LoadNode::LoadType(const std::string& name, T& val) const
 {
 	std::string attr;
@@ -371,13 +420,13 @@ template <typename T> bool LoadNode::LoadClass(const std::string& name, T& obj) 
 	return true;
 }
 
-template <typename T> bool LoadNode::LoadClassPtr(const std::string& name, T& pObj) const
+template <typename T> bool LoadNode::LoadClassPtr(const std::string& name, T*& pObj) const
 {
 	const Xml::Element e = m_elem.GetFirstChild(name);
 	if (e.IsNull())
 		return false;
 
-	ClassPtrLoader()(e, *pObj);
+	ClassPtrLoader()(e, pObj);
 	return true;
 }
 
@@ -389,7 +438,7 @@ template <typename T> bool LoadNode::LoadClassPtr(const std::string& name, std::
 	return bOK;
 }
 
-template <typename T> bool LoadNode::LoadTypePtr(const std::string& name, T& pObj) const
+template <typename T> bool LoadNode::LoadTypePtr(const std::string& name, T*& pObj) const
 {
 	const Xml::Element e = m_elem.GetFirstChild(name);
 	if (e.IsNull())
@@ -407,7 +456,7 @@ template <typename T> bool LoadNode::LoadTypePtr(const std::string& name, std::u
 	return bOK;
 }
 
-template <typename T> bool LoadNode::LoadObject(const std::string& name, T& pObj) const
+template <typename T> bool LoadNode::LoadObject(const std::string& name, T*& pObj) const
 {
 	pObj = nullptr;
 
