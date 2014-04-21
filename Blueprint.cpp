@@ -87,6 +87,23 @@ int Blueprint::GetHulls() const
 	return n;
 }
 
+bool Blueprint::HasCannon() const
+{
+	for (auto s : SlotRange(*this))
+		if (s == ShipPart::IonCannon || s == ShipPart::PlasmaCannon || 
+			s == ShipPart::AntimatterCannon || s == ShipPart::IonTurret)
+			return true;
+	return false;
+}
+
+bool Blueprint::HasMissiles() const
+{
+	for (auto s : SlotRange(*this))
+		if (s == ShipPart::PlasmaMissile || s == ShipPart::IonMissile)
+			return true;
+	return false;
+}
+
 ShipPart Blueprint::GetSlot(int i) const
 {
 	ShipPart overlay = m_overlay.GetSlot(i);

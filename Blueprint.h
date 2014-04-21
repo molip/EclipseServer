@@ -36,6 +36,9 @@ public:
 	int GetMovement() const;
 	int GetHulls() const;
 
+	bool HasCannon() const;
+	bool HasMissiles() const;
+
 	virtual int GetSlotCount() const override { return m_overlay.GetSlotCount(); }
 	void SetSlot(int i, ShipPart part) { m_overlay.SetSlot(i, part); }
 	virtual ShipPart GetSlot(int i) const override;
