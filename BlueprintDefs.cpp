@@ -60,9 +60,9 @@ const BlueprintDef& BlueprintDefs::GCDS()
 	{
 		ShipLayout layout(ShipType::GCDS);
 		for (int i = 0; i < 4; ++i)
-			layout.SetSlot(1, ShipPart::IonCannon);
+			layout.SetSlot(i, ShipPart::IonCannon);
 		for (int i = 4; i < 11; ++i)
-			layout.SetSlot(1, ShipPart::Hull);
+			layout.SetSlot(i, ShipPart::Hull);
 		p.reset(new BlueprintDef(layout, 0, 4, 1));
 	}
 	return *p;
