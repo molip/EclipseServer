@@ -38,11 +38,6 @@ Combat.Draw = function()
 
 	var drawSide = function(side)
 	{
-		side.ship_groups[0].ships.length = 8
-		side.ship_groups[1].ships.length = 4
-		side.ship_groups[2].ships.length = 2
-		side.ship_groups[3].ships.length = 4
-
 		var gap = 5
 		var totalHeight = gap, maxWidth = 0
 		for (var i = 0, group; group = side.ship_groups[i]; ++i)

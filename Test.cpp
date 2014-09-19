@@ -14,10 +14,10 @@ void Test::AddShipsToCentre(LiveGame& game)
 			int count;
 			switch (type)
 			{
-			case ShipType::Interceptor: count = 8;
-			case ShipType::Cruiser: count = 4;
-			case ShipType::Dreadnought: count = 2;
-			case ShipType::Starbase: count = 4;
+			case ShipType::Interceptor: count = 8; break;
+			case ShipType::Cruiser: count = 4; break;
+			case ShipType::Dreadnought: count = 2; break;
+			case ShipType::Starbase: count = 4; break;
 			}
 
 			for (int i = 0; i < count; ++i)
