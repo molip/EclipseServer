@@ -16,6 +16,7 @@ class ReviewGame;
 class Team;
 class Player;
 class Hex;
+class Battle;
 
 namespace Output
 {
@@ -78,6 +79,8 @@ struct UpdateMap : Update { UpdateMap(const Game& game); };
 struct UpdateReviewUI : Update { UpdateReviewUI(const ReviewGame& game); };
 struct UpdateTechnologies : Update { UpdateTechnologies(const Game& game); };
 struct UpdateRound : Update { UpdateRound(const Game& game); };
+struct UpdateShowCombat : Update { UpdateShowCombat(const Game& game, bool show); };
+struct UpdateCombat : Update { UpdateCombat(const Game& game, const Battle& battle); };
 
 struct AddLog : Update 
 {
@@ -119,6 +122,8 @@ struct ChooseUpgrade : Choose { ChooseUpgrade(const Team& team); };
 struct ChooseTrade : Choose { ChooseTrade(const Team& team); };
 
 struct ChooseUpkeep : Choose { ChooseUpkeep(const Team& team, bool canUndo); };
+
+struct ChooseCombat : Choose { ChooseCombat(const LiveGame& game); };
 
 struct ShowGameList : Show { ShowGameList(); };
 struct ShowLobby : Show { ShowLobby(); };

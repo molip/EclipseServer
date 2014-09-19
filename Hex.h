@@ -85,6 +85,7 @@ public:
 
 	void AddShip(ShipType type, Colour owner);
 	void RemoveShip(ShipType type, Colour owner);
+	int GetShipCount(const Colour& c, ShipType ship) const;
 	bool HasShip(const Colour& c, ShipType ship) const;
 	bool HasShip(const Colour& c, bool bMoveableOnly = false) const;
 	bool HasEnemyShip(const Game& game, const Team* pTeam) const; // Ancients and their allies are not enemies.

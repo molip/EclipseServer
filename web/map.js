@@ -1,5 +1,6 @@
 var Map = {}
-var Map = {}
+Map.prototype = Canvas.prototype 
+
 Map.img = new Image()
 Map.hot = null
 Map.selecting = false
@@ -94,9 +95,9 @@ Map.Init = function()
 	{
 		Map.canvas = document.getElementById('map_canvas')
 
-		Map.layer_action = Map.AddLayer()
-		Map.layer_select = Map.AddLayer()
-		Map.layer_hot = Map.AddLayer()
+		Map.layer_action = Canvas.AddLayer(Map.canvas)
+		Map.layer_select = Canvas.AddLayer(Map.canvas)
+		Map.layer_hot = Canvas.AddLayer(Map.canvas)
 
 		Map.layer_hot.onmousemove = Map.OnMouseMove
 		Map.layer_hot.onmouseout = Map.OnMouseOut
@@ -110,22 +111,6 @@ Map.Init = function()
 	Map.ClearCanvas(Map.layer_action)
 	Map.ClearCanvas(Map.layer_select)
 	Map.ClearCanvas(Map.layer_hot)
-}
-
-Map.AddLayer = function()
-{
-	var layer = document.createElement('canvas');
-	layer.setAttribute('width', Map.canvas.offsetWidth);
-	layer.setAttribute('height', Map.canvas.offsetHeight);
-	layer.style.backgroundColor = "transparent";
-	layer.style.position = "absolute";
-	layer.style.left = Map.canvas.offsetLeft+'px';
-	layer.style.top = Map.canvas.offsetTop+'px';
-	layer.style.width = Map.canvas.offsetWidth+'px';
-	layer.style.height = Map.canvas.offsetHeight+'px';
-
-	Map.canvas.parentNode.appendChild(layer);
-	return layer
 }
 
 Map.ClearCanvas = function(canvas)
@@ -185,27 +170,12 @@ Map.GetHex = function(coords)
 	return null;
 }
 
-Map.RelMouseCoords = function(event, el)
-{
-    var totalOffsetX = 0;
-    var totalOffsetY = 0;
-    var currentElement = el;
-
-    do{
-        totalOffsetX += currentElement.offsetLeft;
-        totalOffsetY += currentElement.offsetTop;
-    }
-    while(currentElement = currentElement.offsetParent)
-
-    return new Point(event.pageX - totalOffsetX, event.pageY - totalOffsetY)
-}
-
 Map.OnMouseMove = function(evt)
 { 
 	//if (!Map.selecting)
 	//	return
 		
-	var pt = Map.RelMouseCoords(evt, Map.canvas)
+	var pt = Canvas.RelMouseCoords(evt, Map.canvas)
 	
 	pt.x = (pt.x - 300) / Map.scale + Map.pan_x
 	pt.y = (pt.y - 300) / Map.scale + Map.pan_y

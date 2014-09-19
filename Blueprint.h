@@ -6,6 +6,7 @@
 
 class BlueprintDef;
 class SlotRange;
+class Dice;
 enum class RaceType;
 
 namespace Serial { class SaveNode; class LoadNode; }
@@ -38,6 +39,7 @@ public:
 
 	bool HasCannon() const;
 	bool HasMissiles() const;
+	void AddDice(Dice& dice, bool missiles) const;
 
 	virtual int GetSlotCount() const override { return m_overlay.GetSlotCount(); }
 	void SetSlot(int i, ShipPart part) { m_overlay.SetSlot(i, part); }

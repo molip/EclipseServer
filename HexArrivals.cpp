@@ -2,29 +2,66 @@
 #include "Serial.h"
 #include "Map.h"
 #include "Team.h"
+#include "LiveGame.h"
+
+CombatSite::CombatSite(int hexId) : m_hexId(hexId)
+{
+}
 
 /* "If the hex already has an Influence Disc and is thus controlled 
 by a player, that player is always considered the defender
 and will fight last regardless of the entry order" */
-void HexArrivals::MoveOwningTeamsToStart(const Map& map)
+void CombatSite::MoveOwningTeamsToStart(const Map& map)
 {
-	for (auto& hexVecPair : *this)
-	{
-		const Hex* hex = map.FindHex(hexVecPair.first);
-		VerifyModel("HexArrivals::MoveOwningTeamsToStart", hex != nullptr);
-		const Colour colour = hex->GetColour();
+	const Hex* hex = map.FindHex(m_hexId);
+	VerifyModel("CombatSite::MoveOwningTeamsToStart", hex != nullptr);
+	const Colour colour = hex->GetColour();
 
-		if (colour != Colour::None)
+	if (colour != Colour::None)
+	{
+		auto it = std::find(begin(), end(), colour);
+		if (it != end())
 		{
-			auto& vec = hexVecPair.second;
-			auto it = std::find(vec.begin(), vec.end(), colour);
-			if (it != vec.end())
-			{
-				vec.erase(it);
-				vec.insert(vec.begin(), colour);
-			}
+			erase(it);
+			insert(begin(), colour);
 		}
 	}
+}
+
+bool CombatSite::IsPeaceful(const LiveGame& game) const
+{
+	if (size() < 2)
+		return true;
+
+	if (size() == 2)
+	{
+		const Hex* hex = game.GetMap().FindHex(m_hexId);
+		VerifyModel("CombatSite::IsPeaceful 1", hex != nullptr);
+		
+		if (Race(game.GetTeam(back()).GetRace()).IsAncientsAlly() && hex->HasShip(Colour::None, ShipType::Ancient))
+		{
+			VerifyModel("CombatSite::IsPeaceful 2", front() == Colour::None); // Ancients should have been there first. 
+			return true;
+		}
+	}
+	return false;
+}
+
+//-----------------------------------------------------------------------------
+
+void HexArrivals::MoveOwningTeamsToStart(const Map& map)
+{
+	for (auto& pair : *this)
+		pair.second.MoveOwningTeamsToStart(map);
+}
+
+void HexArrivals::RemovePeaceful(const LiveGame& game)
+{
+	for (auto it = begin(); it != end();)
+		if (it->second.IsPeaceful(game))
+			it = erase(it);
+		else
+			++it;
 }
 
 void HexArrivals::Save(Serial::SaveNode& node) const
@@ -35,5 +72,8 @@ void HexArrivals::Save(Serial::SaveNode& node) const
 void HexArrivals::Load(const Serial::LoadNode& node)
 {
 	node.LoadMap("map", *this, Serial::TypeLoader(), Serial::CntrLoader<Serial::EnumLoader>());
+
+	for (auto& pair : *this)
+		pair.second.m_hexId = pair.first;
 }
 

@@ -103,7 +103,9 @@ MessagePtr CreateCommand(const Json::Element& root)
 		return MessagePtr(new CmdDiplomacy(root));
 	if (type == "cmd_trade")
 		return MessagePtr(new CmdTrade(root));
-	
+	if (type == "cmd_combat")
+		return MessagePtr(new CmdCombat(root));
+
 	VerifyInput("Input command not recognised: " + type);
 	return nullptr;
 }
@@ -489,6 +491,11 @@ CmdTrade::CmdTrade(const Json::Element& node)
 	m_from = EnumTraits<Resource>::FromString(node.GetAttributeStr("from"));
 	m_to = EnumTraits<Resource>::FromString(node.GetAttributeStr("to"));
 	m_count = node.GetAttributeInt("count");
+}
+
+CmdCombat::CmdCombat(const Json::Element& node)
+{
+	m_fire = node.GetAttributeBool("fire");
 }
 
 } // namespace

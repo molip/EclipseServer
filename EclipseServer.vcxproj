@@ -82,9 +82,13 @@
     <ClInclude Include="ActionRecord.h" />
     <ClInclude Include="App.h" />
     <ClInclude Include="Bag.h" />
+    <ClInclude Include="Battle.h" />
     <ClInclude Include="Blueprint.h" />
     <ClInclude Include="BlueprintDefs.h" />
     <ClInclude Include="BuildCmd.h" />
+    <ClInclude Include="CombatCmd.h" />
+    <ClInclude Include="CombatPhase.h" />
+    <ClInclude Include="Dice.h" />
     <ClInclude Include="MessageRecord.h" />
     <ClInclude Include="ChooseTeamPhase.h" />
     <ClInclude Include="civetweb.h" />
@@ -145,6 +149,7 @@
     <ClInclude Include="Team.h" />
     <ClInclude Include="Technology.h" />
     <ClInclude Include="TechTrack.h" />
+    <ClInclude Include="Test.h" />
     <ClInclude Include="tinyxml.h" />
     <ClInclude Include="TradeCmd.h" />
     <ClInclude Include="Turn.h" />
@@ -160,9 +165,13 @@
     <ClCompile Include="ActionRecord.cpp" />
     <ClCompile Include="App.cpp" />
     <ClCompile Include="Bag.cpp" />
+    <ClCompile Include="Battle.cpp" />
     <ClCompile Include="Blueprint.cpp" />
     <ClCompile Include="BlueprintDefs.cpp" />
     <ClCompile Include="BuildCmd.cpp" />
+    <ClCompile Include="CombatCmd.cpp" />
+    <ClCompile Include="CombatPhase.cpp" />
+    <ClCompile Include="Dice.cpp" />
     <ClCompile Include="HexArrivals.cpp" />
     <ClCompile Include="MessageRecord.cpp" />
     <ClCompile Include="ChooseTeamPhase.cpp" />
@@ -225,6 +234,7 @@
     <ClCompile Include="Team.cpp" />
     <ClCompile Include="Technology.cpp" />
     <ClCompile Include="TechTrack.cpp" />
+    <ClCompile Include="Test.cpp" />
     <ClCompile Include="tinyxml.cpp" />
     <ClCompile Include="tinyxmlerror.cpp" />
     <ClCompile Include="tinyxmlparser.cpp" />

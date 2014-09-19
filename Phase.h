@@ -30,6 +30,8 @@ public:
 	void ProcessCmdMessage(const Input::CmdMessage& msg, CommitSession& session, const Player& player);
 	void UndoCmd(CommitSession& session, Player& player);
 	
+	virtual void Init(CommitSession& session) {}
+
 	virtual void StartCmd(CmdPtr pCmd, CommitSession& session) { ASSERT(false); }
 
 	virtual bool CanRemoveCmd(Colour c) const = 0;

@@ -10,6 +10,8 @@
 #include "ReviewGame.h"
 #include "Games.h"
 #include "ActionPhase.h"
+#include "Battle.h"
+#include "CombatPhase.h"
 
 namespace
 {
@@ -298,6 +300,34 @@ UpdateRound::UpdateRound(const Game& game) : Update("round")
 	m_root.SetAttribute("round", game.GetRound() + 1);
 }
 
+UpdateShowCombat::UpdateShowCombat(const Game& game, bool show) : Update("show_combat")
+{
+
+}
+
+UpdateCombat::UpdateCombat(const Game& game, const Battle& battle) : Update("combat")
+{
+	const Battle::Group& currentGroup = battle.GetCurrentGroup();
+
+	Json::Element elems[] = { m_root.AddElement("defender"), m_root.AddElement("invader") };
+	Json::Element groupsElems[] = { elems[0].AddArray("ship_groups"), elems[1].AddArray("ship_groups") };
+
+	for (int invader = 0; invader < 2; ++invader)
+		elems[invader].SetAttribute("colour", EnumTraits<Colour>::ToString(battle.GetColour(!!invader)));
+
+	for (auto& group : battle.GetGroups())
+	{
+		auto groupElem = groupsElems[group.invader].AppendElement();
+		groupElem.SetAttribute("type", EnumTraits<ShipType>::ToString(group.shipType));
+		groupElem.SetAttribute("lives", battle.GetBlueprint(game, group).GetHulls() + 1);
+		groupElem.SetAttribute("active", group.invader == currentGroup.invader && group.shipType == currentGroup.shipType);
+
+		auto shipsElem = groupElem.AddArray("ships");
+		for (auto& hits : group.ships)
+			shipsElem.Append(hits);
+	}
+}
+
 AddLog::AddLog(int id, const std::string& msg) : AddLog(Vec { Vec::value_type(id, msg) } )
 {
 }
@@ -578,6 +608,16 @@ ChooseUpkeep::ChooseUpkeep(const Team& team, bool canUndo) : Choose("upkeep")
 	m_root.SetAttribute("can_colonise", team.GetUnusedColonyShips() > 0);
 	m_root.SetAttribute("can_trade", true);
 	m_root.SetAttribute("can_bankrupt", false);
+}
+
+ChooseCombat::ChooseCombat(const LiveGame& game) : Choose("combat")
+{
+	const CombatPhase& phase = game.GetCombatPhase();
+
+	const Battle& battle = game.GetCombatPhase().GetBattle();
+	m_root.SetAttribute("missiles", battle.IsMissilePhase());
+	m_root.SetAttribute("can_fire", true); // TODO: Check guns.
+	m_root.SetAttribute("can_retreat", false); // TODO: Check escape routes. 
 }
 
 } // namespace

@@ -226,3 +226,10 @@ function ShowBlanket(show)
 {
 	ShowElementById('blanket', show)
 }
+
+function ShowCombat(show)
+{
+	ShowElementById('combat', show)
+	ShowElementById('map', !show)
+	document.getElementById('map_ctrls').style.visibility = show ? 'hidden' : 'visible'
+}

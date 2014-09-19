@@ -46,6 +46,7 @@ function OnCommandShow(elem)
 	else if (panel == 'game_panel')
 	{
 		Map.Init()
+		Combat.Init()
 
 		ShowElementById('choose_subaction', false)
 		ShowElementById('choose_undo', false)
@@ -99,6 +100,10 @@ function OnCommandUpdate(elem)
 		OnCommandUpdateRound(elem)
 	else if (param == "blueprints")
 		OnCommandUpdateBlueprints(elem)
+	else if (param == "show_combat")
+		OnCommandUpdateShowCombat(elem)
+	else if (param == "combat")
+		OnCommandUpdateCombat(elem)
 	else if (param == "add_log")
 		OnCommandAddLog(elem)
 	else if (param == "remove_log")
@@ -149,6 +154,8 @@ function OnCommandChoose(elem)
 		Diplomacy.OnCommand(elem)
 	else if (param == "trade")
 		Trade.OnCommand(elem)
+	else if (param == "combat")
+		Combat.OnCommand(elem)
 	else
 		alert('OnCommandChoose: unknown param: ' + param)
 
@@ -271,6 +278,8 @@ function OnCommandUpdateTeams(elem)
 
 	ShowElementById('live_ui', elem.game_type == "live")
 	ShowElementById('review_ui', elem.game_type == "review")
+	
+	ShowCombat(false)
 }
 
 function OnCommandUpdateTeam(elem)
@@ -384,6 +393,16 @@ function OnCommandUpdateBlueprints(elem)
 	for (var ship = 0; ship < 4; ++ship)
 		for (var slot = 0, part; part = elem.blueprints[ship][slot]; ++slot)
 			Blueprints.SetPart(elem.id, ship, slot, part)
+}
+
+function OnCommandUpdateShowCombat(elem)
+{
+	ShowCombat(true)
+}
+
+function OnCommandUpdateCombat(elem)
+{
+	Combat.Update(elem.invader, elem.defender)
 }
 
 function OnCommandAddLog(elem)

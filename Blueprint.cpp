@@ -4,6 +4,7 @@
 #include "ShipLayout.h"
 #include "Ship.h"
 #include "Serial.h"
+#include "Dice.h"
 
 Blueprint::Blueprint() : m_pDef(nullptr)
 {
@@ -102,6 +103,31 @@ bool Blueprint::HasMissiles() const
 		if (s == ShipPart::PlasmaMissile || s == ShipPart::IonMissile)
 			return true;
 	return false;
+}
+
+void Blueprint::AddDice(Dice& dice, bool missiles) const
+{
+	for (auto s : SlotRange(*this))
+	{ 
+		if (missiles)
+		{
+			switch (s)
+			{
+			case ShipPart::IonMissile:		dice.Add(DiceColour::Yellow, 3);
+			case ShipPart::PlasmaMissile:	dice.Add(DiceColour::Orange, 2);
+			}
+		}
+		else
+		{
+			switch (s)
+			{
+			case ShipPart::IonCannon:		dice.Add(DiceColour::Yellow, 1);
+			case ShipPart::PlasmaCannon:	dice.Add(DiceColour::Orange, 1);
+			case ShipPart::AntimatterCannon:dice.Add(DiceColour::Red, 1);
+			case ShipPart::IonTurret:		dice.Add(DiceColour::Yellow, 2);
+			}
+		}
+	}
 }
 
 ShipPart Blueprint::GetSlot(int i) const

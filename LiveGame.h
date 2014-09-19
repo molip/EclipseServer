@@ -6,6 +6,7 @@ class Phase;
 class ActionPhase;
 class ChooseTeamPhase;
 class UpkeepPhase;
+class CombatPhase;
 class ReviewGame;
 
 class HexArrivals;
@@ -47,6 +48,7 @@ public:
 	const ChooseTeamPhase& GetChooseTeamPhase() const { return const_cast<LiveGame*>(this)->GetChooseTeamPhase(); };
 	ChooseTeamPhase& GetChooseTeamPhase();
 	UpkeepPhase& GetUpkeepPhase();
+	const CombatPhase& GetCombatPhase() const;
 
 	int PushRecord(RecordPtr pRec); // Returns record id.
 	RecordPtr PopRecord();
@@ -62,6 +64,7 @@ public:
 
 	void StartActionPhase();
 	void FinishActionPhase(const std::vector<Colour>& passOrder, const HexArrivals& hexArrivalOrder);
+	void FinishCombatPhase();
 
 	virtual void Save(Serial::SaveNode& node) const override;
 	virtual void Load(const Serial::LoadNode& node) override;

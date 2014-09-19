@@ -86,6 +86,7 @@ void ActionPhase::FinishTurn(CommitSession& session)
 		if (m_passOrder.size() == game.GetTeams().size())
 		{
 			game.FinishActionPhase(m_passOrder, m_hexArrivalOrder); // Deletes this.
+			game.GetPhase().Init(session);
 			game.GetPhase().UpdateClient(controller, nullptr); // Show next phase UI (combat or upkeep).
 			return;
 		}
@@ -128,14 +129,19 @@ void ActionPhase::ShipMovedTo(const Hex& hex, Colour colour)
 	if (colours.empty()) // No contention.
 		return;
 
-	auto& vec = m_hexArrivalOrder[hex.GetID()];
-	if (vec.empty()) // Add the colour that was there first.
+	auto it = m_hexArrivalOrder.find(hex.GetID());
+	
+	if (it == m_hexArrivalOrder.end())
 	{
-		VerifyModel("ActionPhase::ShipMovedTo 2", colours.size() == 1); // Should already be in vec!
-		vec.push_back(*colours.begin());
+		it = m_hexArrivalOrder.insert(std::make_pair(hex.GetID(), CombatSite(hex.GetID()))).first;
+
+		// Add the colour that was there first.
+		VerifyModel("ActionPhase::ShipMovedTo 2", colours.size() == 1); // Should only be one colour here already.
+		it->second.push_back(*colours.begin());
 	}
-	if (std::find(vec.begin(), vec.end(), colour) == vec.end())
-		vec.push_back(colour);
+	auto& combatSite = it->second;
+	if (std::find(combatSite.begin(), combatSite.end(), colour) == combatSite.end())
+		combatSite.push_back(colour);
 }
 
 void ActionPhase::UpdateClient(const Controller& controller, const Player* pPlayer) const

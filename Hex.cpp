@@ -151,6 +151,14 @@ bool Hex::HasShip(const Colour& c, ShipType ship) const
 	return false;
 }
 
+int Hex::GetShipCount(const Colour& c, ShipType ship) const
+{
+	int count = 0;
+	for (auto& s : m_ships)
+		count += s.GetColour() == c && s.GetType() == ship;
+	return count;
+}
+
 bool Hex::HasShip(const Colour& c, bool bMoveableOnly) const
 {
 	for (auto& s : m_ships)

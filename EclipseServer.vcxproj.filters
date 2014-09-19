@@ -245,11 +245,26 @@
     <ClInclude Include="MessageRecord.h">
       <Filter>Model</Filter>
     </ClInclude>
+    <ClInclude Include="CombatPhase.h">
+      <Filter>Model\Phases</Filter>
+    </ClInclude>
     <ClInclude Include="HexArrivals.h">
       <Filter>Model</Filter>
     </ClInclude>
     <ClInclude Include="OrderedPhase.h">
       <Filter>Model\Phases</Filter>
+    </ClInclude>
+    <ClInclude Include="CombatCmd.h">
+      <Filter>Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="Battle.h">
+      <Filter>Model\Phases</Filter>
+    </ClInclude>
+    <ClInclude Include="Test.h">
+      <Filter>General</Filter>
+    </ClInclude>
+    <ClInclude Include="Dice.h">
+      <Filter>Model</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -466,11 +481,26 @@
     <ClCompile Include="MessageRecord.cpp">
       <Filter>Model</Filter>
     </ClCompile>
+    <ClCompile Include="CombatPhase.cpp">
+      <Filter>Model\Phases</Filter>
+    </ClCompile>
     <ClCompile Include="HexArrivals.cpp">
       <Filter>Model</Filter>
     </ClCompile>
     <ClCompile Include="OrderedPhase.cpp">
       <Filter>Model\Phases</Filter>
+    </ClCompile>
+    <ClCompile Include="CombatCmd.cpp">
+      <Filter>Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="Battle.cpp">
+      <Filter>Model\Phases</Filter>
+    </ClCompile>
+    <ClCompile Include="Test.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="Dice.cpp">
+      <Filter>Model</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

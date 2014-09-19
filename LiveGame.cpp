@@ -8,8 +8,10 @@
 #include "Record.h"
 #include "Serial.h"
 #include "ActionPhase.h"
+#include "CombatPhase.h"
 #include "ChooseTeamPhase.h"
 #include "UpkeepPhase.h"
+#include "Test.h"
 
 #include <algorithm>
 
@@ -113,6 +115,12 @@ UpkeepPhase& LiveGame::GetUpkeepPhase()
 	return static_cast<UpkeepPhase&>(*m_pPhase);
 }
 
+const CombatPhase& LiveGame::GetCombatPhase() const
+{
+	VerifyModel("LiveGame::GetCombatPhase", m_pPhase && dynamic_cast<CombatPhase*>(m_pPhase.get()));
+	return static_cast<CombatPhase&>(*m_pPhase);
+}
+
 bool LiveGame::NeedCombat() const
 {
 	return false;
@@ -144,6 +152,22 @@ void LiveGame::FinishActionPhase(const std::vector<Colour>& passOrder, const Hex
 		}
 #endif
 
+	Test::AddShipsToCentre(*this);
+
+	HexArrivals combatSites = hexArrivalOrder;
+	combatSites.RemovePeaceful(*this);
+
+	if (combatSites.empty())
+		m_pPhase = PhasePtr(new UpkeepPhase(this));
+	else
+	{
+		combatSites.MoveOwningTeamsToStart(m_map);
+		m_pPhase = PhasePtr(new CombatPhase(this, combatSites));
+	}
+}
+
+void LiveGame::FinishCombatPhase()
+{
 	m_pPhase = PhasePtr(new UpkeepPhase(this));
 }
 

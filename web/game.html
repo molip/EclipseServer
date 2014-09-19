@@ -5,6 +5,7 @@
 <script src="game.js"></script>
 <script src="input.js"></script>
 <script src="output.js"></script>
+<script src="canvas.js"></script>
 <script src="map.js"></script>
 <script src="explore.js"></script>
 <script src="influence.js"></script>
@@ -16,6 +17,7 @@
 <script src="diplomacy.js"></script>
 <script src="trade.js"></script>
 <script src="blueprints.js"></script>
+<script src="combat.js"></script>
 
 <script>
     data.playerID = %PLAYER_ID%
@@ -100,6 +102,9 @@
 		</div>
 		<div id="map">
 			<canvas id="map_canvas" width="600" height="600" style="background-color:black"></canvas>
+		</div>
+		<div id="combat">
+			<canvas id="combat_canvas" width="600" height="600" style="background-color:black"></canvas>
 		</div>
 	</div>
 	<div id="players" style="border:1px solid; margin:5px 5px 5px 610px; padding:5px; float:none; height:350px"> <!-- "float:none" uses all remaining width -->
@@ -229,6 +234,11 @@
 				<button id="choose_trade_plus" type="button" onclick="data.action.OnButton(this, 1)">+</button>
 				into <select id="select_trade_to"></select> x <span id="trade_result_content"></span>
 				<button id="choose_trade_finish" type="button" onclick="data.action.Send()">Finish</button>
+			</div>
+			<div id="choose_combat" style="display:none">
+				<button id="choose_combat_missiles" type="button" onclick="data.action.Send(true)">Fire Missiles</button>
+				<button id="choose_combat_cannons" type="button" onclick="data.action.Send(true)">Fire Cannons</button>
+				<button id="choose_combat_retreat" type="button" onclick="data.action.Send(false)">Retreat</button>
 			</div>
 		</div>
 		<div id="review_ui">

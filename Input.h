@@ -246,4 +246,10 @@ struct CmdTrade : CmdMessage
 	int m_count; // Count of "to" resource produced.
 };
 
+struct CmdCombat : CmdMessage
+{
+	CmdCombat(const Json::Element& node);
+	bool m_fire;
+};
+
 }
