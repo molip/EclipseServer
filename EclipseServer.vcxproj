@@ -153,7 +153,6 @@
     <ClInclude Include="tinyxml.h" />
     <ClInclude Include="TradeCmd.h" />
     <ClInclude Include="Turn.h" />
-    <ClInclude Include="HexArrivals.h" />
     <ClInclude Include="UpgradeCmd.h" />
     <ClInclude Include="UpkeepPhase.h" />
     <ClInclude Include="Util.h" />
@@ -172,7 +171,6 @@
     <ClCompile Include="CombatCmd.cpp" />
     <ClCompile Include="CombatPhase.cpp" />
     <ClCompile Include="Dice.cpp" />
-    <ClCompile Include="HexArrivals.cpp" />
     <ClCompile Include="MessageRecord.cpp" />
     <ClCompile Include="ChooseTeamPhase.cpp" />
     <ClCompile Include="civetweb.c" />

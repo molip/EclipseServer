@@ -9,8 +9,6 @@ class UpkeepPhase;
 class CombatPhase;
 class ReviewGame;
 
-class HexArrivals;
-
 DEFINE_UNIQUE_PTR(Record)
 DEFINE_UNIQUE_PTR(CmdStack)
 DEFINE_UNIQUE_PTR(Phase)
@@ -34,8 +32,6 @@ public:
 	void StartMainGamePhase();
 	virtual bool HasStarted() const override { return m_gamePhase != GamePhase::Lobby; }
 	virtual bool IsLive() const override { return true; }
-	virtual void ShipMovedFrom(const Hex& hex, Colour colour) override;
-	virtual void ShipMovedTo(const Hex& hex, Colour colour) override;
 	virtual LogVec GetLogs() const override;
 
 	GamePhase GetGamePhase() const { return m_gamePhase; }
@@ -63,7 +59,7 @@ public:
 	bool NeedCombat() const;
 
 	void StartActionPhase();
-	void FinishActionPhase(const std::vector<Colour>& passOrder, const HexArrivals& hexArrivalOrder);
+	void FinishActionPhase(const std::vector<Colour>& passOrder);
 	void FinishCombatPhase();
 
 	virtual void Save(Serial::SaveNode& node) const override;

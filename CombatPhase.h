@@ -1,7 +1,6 @@
 #pragma once
 
 #include "OrderedPhase.h"
-#include "HexArrivals.h"
 
 class Hex;
 class Battle;
@@ -10,7 +9,7 @@ class CombatPhase : public OrderedPhase
 {
 public:
 	CombatPhase();
-	CombatPhase(LiveGame* pGame, const HexArrivals& hexArrivals);
+	CombatPhase(LiveGame* pGame);
 
 	virtual ~CombatPhase();
 
@@ -31,6 +30,5 @@ protected:
 private:
 	bool StartBattle();
 
-	HexArrivals m_hexArrivals;
 	std::unique_ptr<Battle> m_battle;
 };

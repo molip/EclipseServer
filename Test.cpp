@@ -23,7 +23,5 @@ void Test::AddShipsToCentre(LiveGame& game)
 			for (int i = 0; i < count; ++i)
 				hex->AddShip(type, team->GetColour());
 		}
-
-		game.ShipMovedTo(*hex, team->GetColour());
 	}
 }

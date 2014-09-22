@@ -28,36 +28,105 @@ int Square::GetY() const { return GetDef().GetY(); }
 
 //-----------------------------------------------------------------------------
 
-Ship::Ship() : m_type(ShipType::None), m_colour(Colour::None) 
+const Blueprint& Ship::GetBlueprint(Colour colour, ShipType type, const Game& game)
 {
-}
-
-const Team* Ship::GetOwner(const Game& game) const
-{
-	return m_colour == Colour::None ? nullptr : &game.GetTeam(m_colour);
-}
-
-const Blueprint& Ship::GetBlueprint(const Game& game) const
-{
-	switch (m_type)
+	switch (type)
 	{
 	case ShipType::Ancient:	return Blueprint::GetAncientShip();
 	case ShipType::GCDS:	return Blueprint::GetGCDS();
 	}
 
-	return game.GetTeam(m_colour).GetBlueprint(m_type);
+	return game.GetTeam(colour).GetBlueprint(type);
 }
 
-void Ship::Save(Serial::SaveNode& node) const
+//-----------------------------------------------------------------------------
+
+Squadron::Squadron() : m_type(ShipType::None), m_colour(Colour::None), m_shipCount(0) {}
+Squadron::Squadron(ShipType type) : m_type(type), m_colour(Colour::None), m_shipCount(0) {}
+
+const Blueprint& Squadron::GetBlueprint(const Game& game) const
+{
+	return Ship::GetBlueprint(m_colour, m_type, game);
+}
+
+void Squadron::Save(Serial::SaveNode& node) const
 {
 	node.SaveEnum("type", m_type);
+	node.SaveType("ship_count", m_shipCount);
+}
+
+void Squadron::Load(const Serial::LoadNode& node)
+{
+	node.LoadEnum("type", m_type);
+	node.LoadType("ship_count", m_shipCount);
+}
+
+//-----------------------------------------------------------------------------
+
+Fleet::Fleet() : m_colour(Colour::None) {}
+Fleet::Fleet(Colour colour) : m_colour(colour) {}
+
+const Team* Fleet::GetOwner(const Game& game) const
+{
+	return m_colour == Colour::None ? nullptr : &game.GetTeam(m_colour);
+}
+
+Squadron* Fleet::FindSquadron(ShipType type)
+{
+	for (auto& squadron : m_squadrons)
+		if (type == squadron.GetType())
+			return &squadron;
+	return nullptr;
+}
+
+int Fleet::GetShipCount() const
+{
+	int count = 0;
+	for (auto& squadron : m_squadrons)
+		count += squadron.GetShipCount();
+	return count;
+}
+
+void Fleet::AddShip(ShipType type)
+{
+	auto* squadron = FindSquadron(type);
+	if (!squadron)
+	{
+		m_squadrons.push_back(Squadron(type));
+		squadron = &m_squadrons.back();
+		squadron->m_colour = m_colour;
+	}
+	++squadron->m_shipCount;
+}
+
+void Fleet::RemoveShip(ShipType type)
+{
+	for (auto it = m_squadrons.begin(); it != m_squadrons.end(); ++it)
+		if (it->GetType() == type)
+		{
+			VerifyModel("Fleet::RemoveShip 1", it->m_shipCount > 0);
+			
+			if (--it->m_shipCount == 0)
+				m_squadrons.erase(it);
+			return;
+		}
+
+	VerifyModel("Fleet::RemoveShip 2", false);
+}
+
+void Fleet::Save(Serial::SaveNode& node) const
+{
+	node.SaveCntr("squadrons", m_squadrons, Serial::ClassSaver());
 	node.SaveEnum("colour", m_colour);
 }
 
-void Ship::Load(const Serial::LoadNode& node)
+void Fleet::Load(const Serial::LoadNode& node)
 {
-	node.LoadEnum("type", m_type);
+	node.LoadCntr("squadrons", m_squadrons, Serial::ClassLoader());
 	node.LoadEnum("colour", m_colour);
+
+	for (auto& s : m_squadrons)
+		s.m_colour = m_colour;
 }
 
 //-----------------------------------------------------------------------------
@@ -81,7 +150,7 @@ Hex::Hex(int id, const MapPos& pos, int nRotation) :
 }
 
 Hex::Hex(const Hex& rhs) : 
-	m_id(rhs.m_id), m_pos(rhs.m_pos), m_nRotation(rhs.m_nRotation), m_ships(rhs.m_ships), 
+	m_id(rhs.m_id), m_pos(rhs.m_pos), m_nRotation(rhs.m_nRotation), m_fleets(rhs.m_fleets),
 	m_discovery(rhs.m_discovery), m_colour(rhs.m_colour), m_occupied(rhs.m_occupied), m_pDef(rhs.m_pDef),
 	m_bOrbital(rhs.m_bOrbital), m_bMonolith(rhs.m_bMonolith)
 {
@@ -127,85 +196,131 @@ std::vector<Square*> Hex::GetAvailableSquares(const Team& team)
 	return squares;
 }
 
-void Hex::AddShip(ShipType type, Colour owner)
+Fleet* Hex::FindFleet(Colour c) 
 {
-	m_ships.push_back(Ship(type, owner));
+	for (auto& f : m_fleets)
+		if (f.GetColour() == c)
+			return &f;
+	return nullptr;
 }
 
-void Hex::RemoveShip(ShipType type, Colour owner)
+const Squadron* Hex::FindSquadron(Colour c, ShipType type) const
 {
-	for (auto s = m_ships.begin(); s != m_ships.end(); ++s)
-		if (s->GetType() == type && s->GetColour() == owner)
+	auto fleet = FindFleet(c);
+	return fleet ? fleet->FindSquadron(type) : nullptr;
+}
+
+void Hex::AddShip(ShipType type, Colour colour)
+{
+	auto* fleet = FindFleet(colour);
+	if (!fleet)
+	{
+		m_fleets.push_back(Fleet(colour));
+		fleet = &m_fleets.back();
+	}
+	fleet->AddShip(type);
+}
+
+void Hex::RemoveShip(ShipType type, Colour colour)
+{
+	for (auto fleetIt = m_fleets.begin(); fleetIt != m_fleets.end(); ++fleetIt)
+		if (fleetIt->GetColour() == colour)
 		{
-			m_ships.erase(s);
+			fleetIt->RemoveShip(type);
+			if (fleetIt->GetSquadrons().empty())
+				m_fleets.erase(fleetIt);
 			return;
 		}
-	VerifyModel("Hex::RemoveShip");
+
+	VerifyModel("Hex::RemoveShip", false);
 }
 
-bool Hex::HasShip(const Colour& c, ShipType ship) const
+bool Hex::HasShip(const Colour& c, ShipType type) const
 {
-	for (auto& s : m_ships)
-		if (s.GetColour() == c && s.GetType() == ship)
-			return true;
-	return false;
+	return GetShipCount(c, type) > 0;
 }
 
-int Hex::GetShipCount(const Colour& c, ShipType ship) const
+int Hex::GetShipCount(const Colour& c, ShipType type) const
 {
-	int count = 0;
-	for (auto& s : m_ships)
-		count += s.GetColour() == c && s.GetType() == ship;
-	return count;
+	auto squad = FindSquadron(c, type);
+	return squad ? squad->GetShipCount() : 0;
 }
 
 bool Hex::HasShip(const Colour& c, bool bMoveableOnly) const
 {
-	for (auto& s : m_ships)
-		if (s.GetColour() == c && (!bMoveableOnly || s.GetType() != ShipType::Starbase))
+	if (auto fleet = FindFleet(c))
+		if (bMoveableOnly)
+			return fleet->GetSquadrons().size() > 1 || !fleet->FindSquadron(ShipType::Starbase);
+		else
 			return true;
 	return false;
 }
 
-bool Hex::HasEnemyShip(const Game& game, const Team* pTeam) const
+bool Hex::HasPendingBattle(const Game& game) const
 {
-	Colour c = pTeam ? pTeam->GetColour() : Colour::None;
-	for (auto& s : m_ships)
-	{
-		auto pShipOwner = s.GetOwner(game);
-		if (s.GetColour() != c && !Team::IsAncientAlliance(pTeam, pShipOwner))
-			return true;
-	}
-	return false;
+	if (m_fleets.size() < 2)
+		return false;
+
+	if (m_fleets.size() == 2)
+		if (HasShip(Colour::None, ShipType::Ancient))
+			if (Race(game.GetTeam(m_fleets.back().GetColour()).GetRace()).IsAncientsAlly())
+				return false;
+	return true;
 }
 
-bool Hex::HasForeignShip(const Colour& c, bool bPlayerShipsOnly) const
+bool Hex::GetPendingBattle(Colour& defender, Colour& invader, const Game& game) const
 {
-	for (auto& s : m_ships)
-		if (s.GetColour() != c)
-			if (!bPlayerShipsOnly || s.GetColour() != Colour::None)
-				return true;
-	return false;
+	if (!HasPendingBattle(game))
+		return false;
+
+	std::list<Colour> colours;
+	for (auto& f : m_fleets)
+		if (f.GetColour() == m_colour)
+			colours.push_front(f.GetColour());
+		else
+			colours.push_back(f.GetColour());
+	
+	invader = colours.back();
+	colours.pop_back();
+	defender = colours.back();
+	return true;
 }
 
-std::set<Colour> Hex::GetShipColours(bool bPlayerShipsOnly) const
+//bool Hex::HasEnemyShip(const Game& game, const Team* pTeam) const
+//{
+//	Colour c = pTeam ? pTeam->GetColour() : Colour::None;
+//	for (auto& s : m_ships)
+//	{
+//		auto pShipOwner = s.GetOwner(game);
+//		if (s.GetColour() != c && !Team::IsAncientAlliance(pTeam, pShipOwner))
+//			return true;
+//	}
+//	return false;
+//}
+
+bool Hex::HasForeignShip(const Colour& c/*, bool bPlayerShipsOnly*/) const
 {
-	std::set<Colour> set;
-	for (auto& s : m_ships)
-		if (!bPlayerShipsOnly || s.GetColour() != Colour::None)
-			set.insert(s.GetColour());
-	return set;
+	return !m_fleets.empty() && !(m_fleets.size() == 1 && HasShip(c));
 }
+
+//std::set<Colour> Hex::GetShipColours(bool bPlayerShipsOnly) const
+//{
+//	std::set<Colour> set;
+//	for (auto& s : m_ships)
+//		if (!bPlayerShipsOnly || s.GetColour() != Colour::None)
+//			set.insert(s.GetColour());
+//	return set;
+//}
 
 int Hex::GetPinnage(const Team& team) const
 {
 	int nPinnage = 0;
-	for (auto& s : m_ships)
+	for (auto& fleet : m_fleets)
 	{
-		if (s.GetType() == ShipType::GCDS)
+		if (fleet.FindSquadron(ShipType::GCDS))
 			return 1000;
-		if (!(Race(team.GetRace()).IsAncientsAlly() && s.GetType() == ShipType::Ancient))
-			nPinnage += s.GetColour() == team.GetColour() ? -1 : 1;
+		if (!(Race(team.GetRace()).IsAncientsAlly() && fleet.GetColour() == Colour::None))
+			nPinnage += (fleet.GetColour() == team.GetColour() ? -1 : 1) * fleet.GetShipCount();
 	}
 	return nPinnage;
 }
@@ -270,7 +385,7 @@ void Hex::Save(Serial::SaveNode& node) const
 {
 	node.SaveType("id", m_id);
 	node.SaveType("rotation", m_nRotation);
-	node.SaveCntr("ships", m_ships, Serial::ClassSaver());
+	node.SaveCntr("fleets", m_fleets, Serial::ClassSaver());
 	node.SaveEnum("discovery", m_discovery);
 	node.SaveEnum("colour", m_colour);
 	node.SaveCntr("occupied", m_occupied, Serial::TypeSaver());
@@ -282,7 +397,7 @@ void Hex::Load(const Serial::LoadNode& node)
 {
 	node.LoadType("id", m_id);
 	node.LoadType("rotation", m_nRotation);
-	node.LoadCntr("ships", m_ships, Serial::ClassLoader());
+	node.LoadCntr("fleets", m_fleets, Serial::ClassLoader());
 	node.LoadEnum("discovery", m_discovery);
 	node.LoadEnum("colour", m_colour);
 	node.LoadCntr("occupied", m_occupied, Serial::TypeLoader());

@@ -10,8 +10,10 @@ Battle::Battle() : m_groupIndex(0), m_missilePhase(false)
 {
 }
 
-Battle::Battle(const Hex& hex, Colour defender, Colour invader, const LiveGame& game) : m_defender(defender), m_invader(invader)
+Battle::Battle(const Hex& hex, const LiveGame& game)
 {
+	VerifyModel("Battle::Battle 1", hex.GetPendingBattle(m_defender, m_invader, game));
+
 	auto pred = [&](const Group& lhs, const Group& rhs)
 	{
 		int lhsInit = GetBlueprint(game, lhs.shipType, lhs.invader).GetInitiative();
@@ -34,7 +36,7 @@ Battle::Battle(const Hex& hex, Colour defender, Colour invader, const LiveGame& 
 				m_missilePhase |= missiles;
 			}
 
-	VerifyModel("Battle::Battle", m_groups.size() >= 2);
+	VerifyModel("Battle::Battle 2", m_groups.size() >= 2);
 
 	// Sort groups by initiative.
 	std::sort(m_groups.begin(), m_groups.end(), pred);
@@ -69,7 +71,7 @@ const Blueprint& Battle::GetBlueprint(const Game& game, const Group& group) cons
 
 const Blueprint& Battle::GetBlueprint(const Game& game, ShipType shipType, bool invader) const
 {
-	return Ship(shipType, GetColour(invader)).GetBlueprint(game);
+	return Ship::GetBlueprint(GetColour(invader), shipType, game);
 }
 
 const Blueprint& Battle::GetCurrentBlueprint(const Game& game) const

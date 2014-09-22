@@ -46,8 +46,6 @@ public:
 
 	virtual bool HasStarted() const = 0;
 	virtual bool IsLive() const { return false; }
-	virtual void ShipMovedFrom(const Hex& hex, Colour colour) {}
-	virtual void ShipMovedTo(const Hex& hex, Colour colour) {}
 	virtual std::vector<std::pair<int, std::string>> GetLogs() const = 0;
 
 	ReputationBag& GetReputationBag() { return m_repBag; }

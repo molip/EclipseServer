@@ -30,6 +30,14 @@ Hex* Map::FindHex(const MapPos& pos)
 	return h == m_hexes.end() ? nullptr : h->second.get();
 }
 
+const Hex* Map::FindPendingBattleHex(const Game& game) const
+{
+	for (auto& h : m_hexes)
+		if (h.second->HasPendingBattle(game))
+			return h.second.get();
+	return nullptr;
+}
+
 Hex& Map::GetHex(const MapPos& pos)
 {
 	Hex* pHex = FindHex(pos);

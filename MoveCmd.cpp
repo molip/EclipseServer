@@ -24,9 +24,9 @@ void MoveCmd::UpdateClient(const Controller& controller, const LiveGame& game) c
 	// Get movable ships in each hex.
 	for (auto& h : game.GetMap().GetHexes()) // Pos, hex.
 		if (CanMoveFrom(*h.second, game))
-			for (auto& s : h.second->GetShips())
-				if (s.GetColour() == m_colour)
-					srcs[h.first].insert(s.GetType());
+			if (auto* fleet = h.second->FindFleet(m_colour))
+				for (auto& squadron : fleet->GetSquadrons())
+					srcs[h.first].insert(squadron.GetType());
 
 	controller.SendMessage(Output::ChooseMoveSrc(srcs, m_iPhase > 0), GetPlayer(game));
 }
@@ -92,9 +92,6 @@ private:
 
 		srcHex.RemoveShip(m_ship, m_colour);
 		dstHex.AddShip(m_ship, m_colour);
-
-		game.ShipMovedFrom(srcHex, m_colour);
-		game.ShipMovedTo(dstHex, m_colour);
 
 		controller.SendMessage(Output::UpdateMap(game), game);
 	}

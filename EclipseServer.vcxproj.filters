@@ -248,9 +248,6 @@
     <ClInclude Include="CombatPhase.h">
       <Filter>Model\Phases</Filter>
     </ClInclude>
-    <ClInclude Include="HexArrivals.h">
-      <Filter>Model</Filter>
-    </ClInclude>
     <ClInclude Include="OrderedPhase.h">
       <Filter>Model\Phases</Filter>
     </ClInclude>
@@ -483,9 +480,6 @@
     </ClCompile>
     <ClCompile Include="CombatPhase.cpp">
       <Filter>Model\Phases</Filter>
-    </ClCompile>
-    <ClCompile Include="HexArrivals.cpp">
-      <Filter>Model</Filter>
     </ClCompile>
     <ClCompile Include="OrderedPhase.cpp">
       <Filter>Model\Phases</Filter>

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "OrderedPhase.h"
-#include "HexArrivals.h"
 
 class Hex;
 
@@ -19,9 +18,6 @@ public:
 	bool CanDoAction() const;
 	void FinishTurn(CommitSession& session);
 
-	void ShipMovedFrom(const Hex& hex, Colour colour);
-	void ShipMovedTo(const Hex& hex, Colour colour);
-
 	virtual void UpdateClient(const Controller& controller, const Player* pPlayer) const override;
 
 	virtual void Save(Serial::SaveNode& node) const override;
@@ -32,6 +28,5 @@ protected:
 
 private:
 	std::vector<Colour> m_passOrder;
-	HexArrivals m_hexArrivalOrder;
 	bool m_bDoneAction;
 };

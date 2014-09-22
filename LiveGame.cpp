@@ -131,7 +131,7 @@ void LiveGame::StartActionPhase()
 	m_pPhase = PhasePtr(new ActionPhase(this));
 }
 
-void LiveGame::FinishActionPhase(const std::vector<Colour>& passOrder, const HexArrivals& hexArrivalOrder)
+void LiveGame::FinishActionPhase(const std::vector<Colour>& passOrder)
 {
 	VerifyModel("LiveGame::FinishActionPhase", passOrder.size() == m_teams.size());
 	
@@ -154,16 +154,10 @@ void LiveGame::FinishActionPhase(const std::vector<Colour>& passOrder, const Hex
 
 	Test::AddShipsToCentre(*this);
 
-	HexArrivals combatSites = hexArrivalOrder;
-	combatSites.RemovePeaceful(*this);
-
-	if (combatSites.empty())
-		m_pPhase = PhasePtr(new UpkeepPhase(this));
+	if (m_map.FindPendingBattleHex(*this))
+		m_pPhase = PhasePtr(new CombatPhase(this));
 	else
-	{
-		combatSites.MoveOwningTeamsToStart(m_map);
-		m_pPhase = PhasePtr(new CombatPhase(this, combatSites));
-	}
+		m_pPhase = PhasePtr(new UpkeepPhase(this));
 }
 
 void LiveGame::FinishCombatPhase()
@@ -197,16 +191,6 @@ int LiveGame::GetLastPoppableRecord() const
 		--lastPoppable;
 
 	return lastPoppable;
-}
-
-void LiveGame::ShipMovedFrom(const Hex& hex, Colour colour)
-{
-	GetActionPhase().ShipMovedFrom(hex, colour);
-}
-
-void LiveGame::ShipMovedTo(const Hex& hex, Colour colour) 
-{
-	GetActionPhase().ShipMovedTo(hex, colour);
 }
 
 LiveGame::LogVec LiveGame::GetLogs() const

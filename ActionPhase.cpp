@@ -85,7 +85,7 @@ void ActionPhase::FinishTurn(CommitSession& session)
 		m_passOrder.push_back(c);
 		if (m_passOrder.size() == game.GetTeams().size())
 		{
-			game.FinishActionPhase(m_passOrder, m_hexArrivalOrder); // Deletes this.
+			game.FinishActionPhase(m_passOrder); // Deletes this.
 			game.GetPhase().Init(session);
 			game.GetPhase().UpdateClient(controller, nullptr); // Show next phase UI (combat or upkeep).
 			return;
@@ -96,52 +96,6 @@ void ActionPhase::FinishTurn(CommitSession& session)
 	AdvanceTurn();
 
 	UpdateClient(controller, &GetCurrentPlayer());
-}
-
-void ActionPhase::ShipMovedFrom(const Hex& hex, Colour colour)
-{
-	if (!hex.HasShip(colour, false)) // The last ship of /colour/ has left.
-	{
-		auto itMap = m_hexArrivalOrder.find(hex.GetID());
-		if (itMap != m_hexArrivalOrder.end()) // Hex is/was contended.
-		{
-			auto& vec = itMap->second;
-			auto itVec = std::find(vec.begin(), vec.end(), colour);
-			VerifyModel("ActionPhase::ShipMovedFrom 1", itVec != vec.end());
-			
-			vec.erase(itVec);
-			VerifyModel("ActionPhase::ShipMovedFrom 2", std::find(vec.begin(), vec.end(), colour) == vec.end());
-
-			if (vec.size() == 1) // Forget hexes with only one colour ship.
-			{
-				VerifyModel("ActionPhase::ShipMovedFrom 3", !hex.HasForeignShip(vec.front(), false));
-				m_hexArrivalOrder.erase(itMap);
-			}
-		}
-	}
-}
-
-void ActionPhase::ShipMovedTo(const Hex& hex, Colour colour)
-{
-	std::set<Colour> colours = hex.GetShipColours(false);
-	VerifyModel("ActionPhase::ShipMovedTo 1", colours.erase(colour) == 1);
-
-	if (colours.empty()) // No contention.
-		return;
-
-	auto it = m_hexArrivalOrder.find(hex.GetID());
-	
-	if (it == m_hexArrivalOrder.end())
-	{
-		it = m_hexArrivalOrder.insert(std::make_pair(hex.GetID(), CombatSite(hex.GetID()))).first;
-
-		// Add the colour that was there first.
-		VerifyModel("ActionPhase::ShipMovedTo 2", colours.size() == 1); // Should only be one colour here already.
-		it->second.push_back(*colours.begin());
-	}
-	auto& combatSite = it->second;
-	if (std::find(combatSite.begin(), combatSite.end(), colour) == combatSite.end())
-		combatSite.push_back(colour);
 }
 
 void ActionPhase::UpdateClient(const Controller& controller, const Player* pPlayer) const
@@ -161,7 +115,6 @@ void ActionPhase::Save(Serial::SaveNode& node) const
 	TurnPhase::Save(node);
 	node.SaveType("done_action", m_bDoneAction);
 	node.SaveCntr("pass_order", m_passOrder, Serial::EnumSaver());
-	node.SaveClass("hex_arrivals", m_hexArrivalOrder);
 }
 
 void ActionPhase::Load(const Serial::LoadNode& node)
@@ -170,7 +123,6 @@ void ActionPhase::Load(const Serial::LoadNode& node)
 	TurnPhase::Load(node);
 	node.LoadType("done_action", m_bDoneAction);
 	node.LoadCntr("pass_order", m_passOrder, Serial::EnumLoader());
-	node.LoadClass("hex_arrivals", m_hexArrivalOrder);
 }
 
 REGISTER_DYNAMIC(ActionPhase)

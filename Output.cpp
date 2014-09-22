@@ -261,12 +261,13 @@ UpdateMap::UpdateMap(const Game& game) : Update("map")
 		}
 
 		auto eShips = e.AddArray("ships");
-		for (auto& ship : hex.GetShips())
-		{
-			auto eShip = eShips.AppendElement();
-			eShip.SetAttribute("colour", EnumTraits<Colour>::ToString(ship.GetColour()));
-			eShip.SetAttribute("type", EnumTraits<ShipType>::ToString(ship.GetType()));
-		}
+		for (auto& fleet : hex.GetFleets())
+			for (auto& squadron : fleet.GetSquadrons())
+			{
+				auto eShip = eShips.AppendElement();
+				eShip.SetAttribute("colour", EnumTraits<Colour>::ToString(fleet.GetColour()));
+				eShip.SetAttribute("type", EnumTraits<ShipType>::ToString(squadron.GetType()));
+			}
 
 		//DiscoveryType GetDiscoveryTile() const { return m_discovery; }
 		//int GetVictoryPoints() const { return m_nVictory; }
@@ -326,6 +327,15 @@ UpdateCombat::UpdateCombat(const Game& game, const Battle& battle) : Update("com
 		for (auto& hits : group.ships)
 			shipsElem.Append(hits);
 	}
+	//auto diceElem = m_root.AddArray("dice");
+	//for (auto pair : battle.GetDice())
+	//{
+	//	auto typeElem = diceElem.AppendElement();
+	//	typeElem.SetAttribute("colour", EnumTraits<DiceColour>::ToString(pair.first));
+	//	auto valuesElem = typeElem.AddArray("values");
+	//	for (auto& val : pair.second)
+	//		valuesElem.Append(val);
+	//}
 }
 
 AddLog::AddLog(int id, const std::string& msg) : AddLog(Vec { Vec::value_type(id, msg) } )

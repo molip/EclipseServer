@@ -16,8 +16,8 @@ CombatPhase::CombatPhase() : OrderedPhase(nullptr)
 {
 }
 
-CombatPhase::CombatPhase(LiveGame* pGame, const HexArrivals& hexArrivals) : 
-OrderedPhase(pGame), m_hexArrivals(hexArrivals)
+CombatPhase::CombatPhase(LiveGame* pGame) : 
+OrderedPhase(pGame)
 {
 }
 
@@ -33,24 +33,12 @@ void CombatPhase::Init(CommitSession& session)
 
 bool CombatPhase::StartBattle()
 {
-	if (m_hexArrivals.empty())
+	const Hex* hex = GetGame().GetMap().FindPendingBattleHex(GetGame());
+
+	if (!hex)
 		return false;
 
-	auto it = m_hexArrivals.rbegin();
-	auto& site = it->second;
-	VerifyModel("CombatPhase::StartBattle 1", site.size() >= 2);
-
-	const Hex* hex = GetGame().GetMap().FindHex(it->first);
-	VerifyModel("CombatPhase::StartBattle 2", hex != nullptr);
-
-	if (site.IsPeaceful(GetGame()))
-	{
-		m_hexArrivals.erase(--m_hexArrivals.end());
-		// TODO: Hex battles finished: attack population, take rep tiles.  
-		return StartBattle();
-	}
-
-	m_battle.reset(new Battle(*hex, site[site.size() - 2], site[site.size() - 1], GetGame()));
+	m_battle.reset(new Battle(*hex, GetGame()));
 
 	return true;
 }
@@ -78,14 +66,12 @@ const Team& CombatPhase::GetCurrentTeam() const
 void CombatPhase::Save(Serial::SaveNode& node) const
 {
 	__super::Save(node);
-	node.SaveClass("hex_arrivals", m_hexArrivals);
 	node.SaveClassPtr("battle", m_battle);
 }
 
 void CombatPhase::Load(const Serial::LoadNode& node)
 {
 	__super::Load(node);
-	node.LoadClass("hex_arrivals", m_hexArrivals);
 	node.LoadClassPtr("battle", m_battle);
 }
 

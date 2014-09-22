@@ -91,12 +91,10 @@ private:
 			if (bDo)
 			{
 				hex.AddShip(s, m_colour);
-				game.ShipMovedTo(hex, m_colour);
 			}
 			else
 			{
 				hex.RemoveShip(s, m_colour);
-				game.ShipMovedFrom(hex, m_colour);
 			}
 			team.AddShips(s, bDo ? -1 : 1);
 		}

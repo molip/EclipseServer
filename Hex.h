@@ -51,18 +51,47 @@ private:
 class Ship
 {
 public:
-	Ship();
-	Ship(ShipType type, Colour owner) : m_type(type), m_colour(owner) {}
+	static const Blueprint& GetBlueprint(Colour colour, ShipType type, const Game& game);
+};
+
+class Squadron 
+{
+	friend class Fleet;
+public:
+	Squadron();
+	Squadron(ShipType type);
 	ShipType GetType() const { return m_type; }
-	Colour GetColour() const { return m_colour; }
-	const Team* GetOwner(const Game& game) const;
 	const Blueprint& GetBlueprint(const Game& game) const;
+	int GetShipCount() const { return m_shipCount; }
 
 	void Save(Serial::SaveNode& node) const;
 	void Load(const Serial::LoadNode& node);
-
 private:
-	ShipType m_type;
+	ShipType m_type; 
+	int m_shipCount;
+	Colour m_colour; // Not saved. 
+};
+
+class Fleet
+{
+	friend class Hex;
+public:
+	Fleet();
+	Fleet(Colour colour);
+	Colour GetColour() const { return m_colour; }
+	const Team* GetOwner(const Game& game) const;
+	const Squadron* FindSquadron(ShipType type) const { return const_cast<Fleet*>(this)->FindSquadron(type); }
+	const std::vector<Squadron>& GetSquadrons() const { return m_squadrons; }
+	int GetShipCount() const;
+
+	void Save(Serial::SaveNode& node) const;
+	void Load(const Serial::LoadNode& node);
+private:
+	void AddShip(ShipType type);
+	void RemoveShip(ShipType type);
+	Squadron* FindSquadron(ShipType type);
+	
+	std::vector<Squadron> m_squadrons;
 	Colour m_colour;
 };
 
@@ -83,22 +112,28 @@ public:
 	bool IsOwned() const;
 	bool IsOwnedBy(const Team& team) const;
 
-	void AddShip(ShipType type, Colour owner);
-	void RemoveShip(ShipType type, Colour owner);
-	int GetShipCount(const Colour& c, ShipType ship) const;
-	bool HasShip(const Colour& c, ShipType ship) const;
+	Fleet* FindFleet(Colour c);
+	const Fleet* FindFleet(Colour c) const { return const_cast<Hex*>(this)->FindFleet(c); }
+	const Squadron* FindSquadron(Colour c, ShipType type) const;
+
+	void AddShip(ShipType type, Colour colour);
+	void RemoveShip(ShipType type, Colour colour);
+	int GetShipCount(const Colour& c, ShipType type) const;
+	bool HasShip(const Colour& c, ShipType type) const;
 	bool HasShip(const Colour& c, bool bMoveableOnly = false) const;
-	bool HasEnemyShip(const Game& game, const Team* pTeam) const; // Ancients and their allies are not enemies.
-	bool HasForeignShip(const Colour& c, bool bPlayerShipsOnly = false) const; // Ancients and their allies are foreign.
-	std::set<Colour> GetShipColours(bool bPlayerShipsOnly = false) const;
+	//bool HasEnemyShip(const Game& game, const Team* pTeam) const; // Ancients and their allies are not enemies.
+	bool HasForeignShip(const Colour& c/*, bool bPlayerShipsOnly = false*/) const; // Ancients and their allies are foreign.
+	//std::set<Colour> GetShipColours(bool bPlayerShipsOnly = false) const;
 	bool AreAllShipsPinned(const Colour& c) const;
+	bool HasPendingBattle(const Game& game) const;
+	bool GetPendingBattle(Colour& defender, Colour& invader, const Game& game) const;
 
 	int GetID() const { return m_id; }
 	const MapPos& GetPos() const { return m_pos; }
 	void SetPos(const MapPos& pos) { m_pos = pos; }
 	int GetRotation() const { return m_nRotation; }
 	const std::vector<Square>& GetSquares() const { return m_squares; }
-	const std::vector<Ship>& GetShips() const { return m_ships; }
+	const std::vector<Fleet>& GetFleets() const { return m_fleets; }
 	DiscoveryType GetDiscoveryTile() const { return m_discovery; }
 	const EdgeSet& GetWormholes() const; // Non-rotated.
 	int GetVictoryPoints() const;
@@ -136,7 +171,7 @@ private:
 	MapPos m_pos;
 	int m_nRotation; // [0, 5]
 	std::vector<Square> m_squares;
-	std::vector<Ship> m_ships;
+	std::vector<Fleet> m_fleets; // In arrival order.
 	DiscoveryType m_discovery;
 	Colour m_colour;
 	std::set<int> m_occupied;

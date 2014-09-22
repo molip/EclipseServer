@@ -230,7 +230,7 @@ ExploreHexCmd::ExploreHexCmd(Colour colour, const LiveGame& game, const MapPos& 
 	{
 		Hex hex(id, pos, 0);
 
-		bool bCanInfluenceHex = hex.GetShips().empty(); // Any ships must be ancients.
+		bool bCanInfluenceHex = hex.GetFleets().empty(); // Any ships must be ancients.
 		HexChoice hc(id, bCanInfluenceHex && team.GetInfluenceTrack().GetDiscCount() > 0);
 		
 		EdgeSet inner = hex.GetWormholes();
