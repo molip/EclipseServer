@@ -13,7 +13,8 @@
 CommitSession* CommitSession::s_pInstance;
 
 CommitSession::CommitSession(const LiveGame& game, const Controller& controller) : 
-m_game(const_cast<LiveGame&>(game)), m_controller(controller), m_bCommitted(), m_lock(game.GetMutex(), std::defer_lock)
+m_game(const_cast<LiveGame&>(game)), m_controller(controller), m_bCommitted(), m_lock(game.GetMutex(), std::defer_lock),
+m_bUpdateReviewUI(false)
 {
 	Verify("CommitSession::CommitSession", !s_pInstance);
 	s_pInstance = this;
@@ -48,6 +49,10 @@ void CommitSession::Commit()
 		m_lock.unlock();
 		SaveThread::Instance()->Push(m_game);
 	}
+
+	if (m_bUpdateReviewUI)
+		for (auto& g : m_game.GetReviewGames())
+			m_controller.SendMessage(Output::UpdateReviewUI(*g), *g);
 }
 
 void CommitSession::DoAndPushRecord(RecordPtr pRec)
@@ -66,6 +71,8 @@ void CommitSession::DoAndPushRecord(RecordPtr pRec)
 	
 	for (auto& g : m_game.GetReviewGames())
 		m_controller.SendMessage(output, *g);
+
+	m_bUpdateReviewUI |= !pRec->IsMessageRecord();
 }
 
 RecordPtr CommitSession::PopAndUndoRecord()
@@ -80,11 +87,7 @@ RecordPtr CommitSession::PopAndUndoRecord()
 	for (auto& g : m_game.GetReviewGames())
 		m_controller.SendMessage(output, *g);
 
-	return pRec;
-}
+	m_bUpdateReviewUI |= !pRec->IsMessageRecord();
 
-void CommitSession::UpdateReviewGames()
-{
-	for (auto& g : m_game.GetReviewGames())
-		m_controller.SendMessage(Output::UpdateReviewUI(*g), *g);
+	return pRec;
 }

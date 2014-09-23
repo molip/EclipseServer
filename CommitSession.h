@@ -25,14 +25,12 @@ public:
 	void DoAndPushRecord(RecordPtr pRec);
 	RecordPtr PopAndUndoRecord();
 
-	void UpdateReviewGames();
-		
 	void Commit();
 
 private:
 	LiveGame& m_game;
 	const Controller& m_controller;
 	static CommitSession* s_pInstance;
-	bool m_bOpened, m_bCommitted;
+	bool m_bOpened, m_bCommitted, m_bUpdateReviewUI;
 	std::unique_lock<std::mutex> m_lock;
 };

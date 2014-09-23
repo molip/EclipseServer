@@ -40,9 +40,6 @@ void Phase::ProcessCmdMessage(const Input::CmdMessage& msg, CommitSession& sessi
 		FinishCmd(colour);
 
 	UpdateClient(session.GetController(), &player);
-
-	if (pCmd->HasRecord()) 
-		session.UpdateReviewGames();
 }
 
 void Phase::UndoCmd(CommitSession& session, Player& player)
@@ -63,8 +60,6 @@ void Phase::UndoCmd(CommitSession& session, Player& player)
 				g->OnPreRecordPop(controller);
 
 			pUndo->PopRecord(session);
-
-			session.UpdateReviewGames();
 		}
 
 		if (pUndo->IsAutoProcess()) // Also undo the command start. 
