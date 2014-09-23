@@ -60,6 +60,8 @@ void CommitSession::DoAndPushRecord(RecordPtr pRec)
 	Open();
 	pRec->Do(m_game, m_controller);
 
+	m_bUpdateReviewUI |= !pRec->IsMessageRecord();
+
 	std::string msg = pRec->GetMessage(m_game);
 
 	int id = m_game.PushRecord(std::move(pRec));
@@ -71,8 +73,6 @@ void CommitSession::DoAndPushRecord(RecordPtr pRec)
 	
 	for (auto& g : m_game.GetReviewGames())
 		m_controller.SendMessage(output, *g);
-
-	m_bUpdateReviewUI |= !pRec->IsMessageRecord();
 }
 
 RecordPtr CommitSession::PopAndUndoRecord()
@@ -81,13 +81,13 @@ RecordPtr CommitSession::PopAndUndoRecord()
 	RecordPtr pRec = m_game.PopRecord();
 	pRec->Undo(m_game, m_controller);
 
+	m_bUpdateReviewUI |= !pRec->IsMessageRecord();
+
 	Output::RemoveLog output(pRec->GetID());
 	m_controller.SendMessage(output, m_game);
 
 	for (auto& g : m_game.GetReviewGames())
 		m_controller.SendMessage(output, *g);
-
-	m_bUpdateReviewUI |= !pRec->IsMessageRecord();
 
 	return pRec;
 }
