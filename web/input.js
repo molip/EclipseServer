@@ -397,7 +397,7 @@ function OnCommandUpdateBlueprints(elem)
 
 function OnCommandUpdateShowCombat(elem)
 {
-	ShowCombat(true)
+	ShowCombat(elem.show)
 }
 
 function OnCommandUpdateCombat(elem)

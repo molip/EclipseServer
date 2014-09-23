@@ -10,7 +10,7 @@ Battle::Battle() : m_groupIndex(0), m_missilePhase(false)
 {
 }
 
-Battle::Battle(const Hex& hex, const LiveGame& game)
+Battle::Battle(const Hex& hex, const Game& game)
 {
 	VerifyModel("Battle::Battle 1", hex.GetPendingBattle(m_defender, m_invader, game));
 

@@ -21,6 +21,9 @@
     <Filter Include="Model\Phases">
       <UniqueIdentifier>{78fabba7-1f68-42f6-8d16-def4f96d8e28}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Model\Records">
+      <UniqueIdentifier>{82653a8d-829f-45a9-b267-8d42e006b2b5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -215,12 +218,6 @@
     <ClInclude Include="UpkeepPhase.h">
       <Filter>Model\Phases</Filter>
     </ClInclude>
-    <ClInclude Include="StartRoundRecord.h">
-      <Filter>Model</Filter>
-    </ClInclude>
-    <ClInclude Include="ActionRecord.h">
-      <Filter>Model</Filter>
-    </ClInclude>
     <ClInclude Include="DiscTrack.h">
       <Filter>Model</Filter>
     </ClInclude>
@@ -254,14 +251,23 @@
     <ClInclude Include="CombatCmd.h">
       <Filter>Commands</Filter>
     </ClInclude>
-    <ClInclude Include="Battle.h">
-      <Filter>Model\Phases</Filter>
-    </ClInclude>
     <ClInclude Include="Test.h">
       <Filter>General</Filter>
     </ClInclude>
     <ClInclude Include="Dice.h">
       <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Battle.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="ActionRecord.h">
+      <Filter>Model\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="StartBattleRecord.h">
+      <Filter>Model\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="StartRoundRecord.h">
+      <Filter>Model\Records</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -451,12 +457,6 @@
     <ClCompile Include="UpkeepPhase.cpp">
       <Filter>Model\Phases</Filter>
     </ClCompile>
-    <ClCompile Include="StartRoundRecord.cpp">
-      <Filter>Model</Filter>
-    </ClCompile>
-    <ClCompile Include="ActionRecord.cpp">
-      <Filter>Model</Filter>
-    </ClCompile>
     <ClCompile Include="DiscTrack.cpp">
       <Filter>Model</Filter>
     </ClCompile>
@@ -487,14 +487,23 @@
     <ClCompile Include="CombatCmd.cpp">
       <Filter>Commands</Filter>
     </ClCompile>
-    <ClCompile Include="Battle.cpp">
-      <Filter>Model\Phases</Filter>
-    </ClCompile>
     <ClCompile Include="Test.cpp">
       <Filter>General</Filter>
     </ClCompile>
     <ClCompile Include="Dice.cpp">
       <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Battle.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="ActionRecord.cpp">
+      <Filter>Model\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="StartBattleRecord.cpp">
+      <Filter>Model\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="StartRoundRecord.cpp">
+      <Filter>Model\Records</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

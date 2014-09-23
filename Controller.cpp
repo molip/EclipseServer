@@ -143,6 +143,10 @@ void Controller::SendUpdateGame(const Game& game, const Player* pPlayer) const
 		SendMessage(Output::AddLog(game.GetLogs()), game, pPlayer);
 	}
 
+	bool isBattle = game.HasBattle();
+	SendMessage(Output::UpdateShowCombat(game, isBattle), game, pPlayer);
+	if (isBattle)
+		SendMessage(Output::UpdateCombat(game, game.GetBattle()), game, pPlayer);
 
 	if (pLive)
 		pLive->GetPhase().UpdateClient(*this, pPlayer);

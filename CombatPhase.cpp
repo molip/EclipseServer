@@ -11,6 +11,7 @@
 #include "Map.h"
 #include "Race.h"
 #include "CombatCmd.h"
+#include "StartBattleRecord.h"
 
 CombatPhase::CombatPhase() : OrderedPhase(nullptr)
 {
@@ -27,18 +28,17 @@ CombatPhase::~CombatPhase()
 
 void CombatPhase::Init(CommitSession& session)
 {
-	VerifyModel("CombatPhase::Init", StartBattle());
-	StartCmd(CmdPtr(new CombatCmd(m_battle->GetCurrentTeamColour(), GetGame())), session);
+	VerifyModel("CombatPhase::Init", StartBattle(session));
 }
 
-bool CombatPhase::StartBattle()
+bool CombatPhase::StartBattle(CommitSession& session)
 {
-	const Hex* hex = GetGame().GetMap().FindPendingBattleHex(GetGame());
-
-	if (!hex)
+	if (!GetGame().GetMap().FindPendingBattleHex(GetGame()))
 		return false;
 
-	m_battle.reset(new Battle(*hex, GetGame()));
+	session.DoAndPushRecord(RecordPtr(new StartBattleRecord));
+
+	StartCmd(CmdPtr(new CombatCmd(GetGame().GetBattle().GetCurrentTeamColour(), GetGame())), session);
 
 	return true;
 }
@@ -49,8 +49,8 @@ void CombatPhase::FinishTurn(CommitSession& session)
 
 void CombatPhase::UpdateClient(const Controller& controller, const Player* pPlayer) const
 {
-	controller.SendMessage(Output::UpdateShowCombat(GetGame(), true), GetGame(), pPlayer);
-	controller.SendMessage(Output::UpdateCombat(GetGame(), *m_battle), GetGame(), pPlayer);
+	//controller.SendMessage(Output::UpdateShowCombat(GetGame(), true), GetGame(), pPlayer);
+	//controller.SendMessage(Output::UpdateCombat(GetGame(), *m_battle), GetGame(), pPlayer);
 
 	if (const Cmd* pCmd = GetCurrentCmd())
 		pCmd->UpdateClient(controller, GetGame());
@@ -60,19 +60,17 @@ void CombatPhase::UpdateClient(const Controller& controller, const Player* pPlay
 
 const Team& CombatPhase::GetCurrentTeam() const
 {
-	return GetGame().GetTeam(m_battle->GetCurrentTeamColour());
+	return GetGame().GetTeam(GetGame().GetBattle().GetCurrentTeamColour());
 }
 
 void CombatPhase::Save(Serial::SaveNode& node) const
 {
 	__super::Save(node);
-	node.SaveClassPtr("battle", m_battle);
 }
 
 void CombatPhase::Load(const Serial::LoadNode& node)
 {
 	__super::Load(node);
-	node.LoadClassPtr("battle", m_battle);
 }
 
 REGISTER_DYNAMIC(CombatPhase)

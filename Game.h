@@ -16,8 +16,11 @@ enum class HexRing { None = -1, Inner, Middle, Outer, _Count };
 
 class CmdStack;
 class Record;
+class Battle;
 
 namespace Serial { class SaveNode; class LoadNode; }
+
+DEFINE_UNIQUE_PTR(Battle)
 
 class Game
 {
@@ -70,6 +73,11 @@ public:
 	void AddPlayer(const Player* player) const { m_players.insert(player); }
 	void RemovePlayer(const Player* player) const { m_players.erase(player); }
 
+	Battle& GetBattle();
+	const Battle& GetBattle() const { return const_cast<Game*>(this)->GetBattle(); }
+	void SetBattle(BattlePtr battle);
+	bool HasBattle() const { return !!m_battle; }
+
 protected:
 	int m_id; 
 	std::string m_name;
@@ -87,6 +95,8 @@ protected:
 	Map	m_map; // After m_discBag
 
 	int m_iRound;
+
+	BattlePtr m_battle;
 
 	mutable std::set<const Player*> m_players; // Not saved. Includes observers.
 };

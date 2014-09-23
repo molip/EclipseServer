@@ -3,7 +3,6 @@
 #include "OrderedPhase.h"
 
 class Hex;
-class Battle;
 
 class CombatPhase : public OrderedPhase
 {
@@ -17,8 +16,6 @@ public:
 
 	void FinishTurn(CommitSession& session);
 
-	const Battle& GetBattle() const { return *m_battle; }
-
 	virtual void UpdateClient(const Controller& controller, const Player* pPlayer) const override;
 
 	virtual void Save(Serial::SaveNode& node) const override;
@@ -28,7 +25,5 @@ protected:
 	virtual const Team& GetCurrentTeam() const override;
 
 private:
-	bool StartBattle();
-
-	std::unique_ptr<Battle> m_battle;
+	bool StartBattle(CommitSession& session);
 };

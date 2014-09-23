@@ -303,7 +303,7 @@ UpdateRound::UpdateRound(const Game& game) : Update("round")
 
 UpdateShowCombat::UpdateShowCombat(const Game& game, bool show) : Update("show_combat")
 {
-
+	m_root.SetAttribute("show", show);
 }
 
 UpdateCombat::UpdateCombat(const Game& game, const Battle& battle) : Update("combat")
@@ -624,7 +624,8 @@ ChooseCombat::ChooseCombat(const LiveGame& game) : Choose("combat")
 {
 	const CombatPhase& phase = game.GetCombatPhase();
 
-	const Battle& battle = game.GetCombatPhase().GetBattle();
+	const Battle& battle = game.GetBattle();
+
 	m_root.SetAttribute("missiles", battle.IsMissilePhase());
 	m_root.SetAttribute("can_fire", true); // TODO: Check guns.
 	m_root.SetAttribute("can_retreat", false); // TODO: Check escape routes. 

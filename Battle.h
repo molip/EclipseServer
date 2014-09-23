@@ -33,7 +33,7 @@ public:
 //	typedef std::map<ShipType, int> Targets; // Dice roll required to hit ship type.
 
 	Battle();
-	Battle(const Hex& hex, const LiveGame& game);
+	Battle(const Hex& hex, const Game& game);
 
 	//const ShipVec& GetDefenderShips() const { return m_defenderShips; }
 	//const ShipVec& GetInvaderShips() const { return m_invaderShips; }

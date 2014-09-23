@@ -23,7 +23,7 @@ CmdPtr CombatCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
 {
 	auto& m = VerifyCastInput<const Input::CmdCombat>(msg);
 
-	const Battle& battle = session.GetGame().GetCombatPhase().GetBattle();
+	const Battle& battle = session.GetGame().GetBattle();
 	//const Battle::Group& turn = battle.GetCurrentGroup();
 
 	VerifyInput("CombatCmd::Process: missiles must be fired", !battle.IsMissilePhase() || m.m_fire);
