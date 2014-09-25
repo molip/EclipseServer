@@ -53,7 +53,7 @@ void WSServer::OnMessage(ClientID client, const std::string& message)
 			if (const Game* game = player->GetCurrentGame())
 			{
 				m_controller.ClearQueuedMessages();
-				m_controller.SendUpdateGame(*game);
+				//m_controller.SendUpdateGame(*game); // Uh oh! Can trigger exceptionception.
 				m_controller.SendMessage(Output::AddLog(0, error), *game);
 				m_controller.SendQueuedMessages();
 			}
