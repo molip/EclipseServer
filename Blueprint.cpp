@@ -113,18 +113,18 @@ void Blueprint::AddDice(Dice& dice, bool missiles) const
 		{
 			switch (s)
 			{
-			case ShipPart::IonMissile:		dice.Add(DiceColour::Yellow, 3);
-			case ShipPart::PlasmaMissile:	dice.Add(DiceColour::Orange, 2);
+			case ShipPart::IonMissile:		dice.Add(DiceColour::Yellow, 3); break;
+			case ShipPart::PlasmaMissile:	dice.Add(DiceColour::Orange, 2); break;
 			}
 		}
 		else
 		{
 			switch (s)
 			{
-			case ShipPart::IonCannon:		dice.Add(DiceColour::Yellow, 1);
-			case ShipPart::PlasmaCannon:	dice.Add(DiceColour::Orange, 1);
-			case ShipPart::AntimatterCannon:dice.Add(DiceColour::Red, 1);
-			case ShipPart::IonTurret:		dice.Add(DiceColour::Yellow, 2);
+			case ShipPart::IonCannon:		dice.Add(DiceColour::Yellow, 1); break;
+			case ShipPart::PlasmaCannon:	dice.Add(DiceColour::Orange, 1); break;
+			case ShipPart::AntimatterCannon:dice.Add(DiceColour::Red, 1);	 break;
+			case ShipPart::IonTurret:		dice.Add(DiceColour::Yellow, 2); break;
 			}
 		}
 	}
