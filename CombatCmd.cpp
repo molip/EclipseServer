@@ -9,6 +9,7 @@
 #include "CombatPhase.h"
 #include "Battle.h"
 #include "Dice.h"
+#include "Player.h"
 
 CombatCmd::CombatCmd(Colour colour, const LiveGame& game) : Cmd(colour)
 {
@@ -16,6 +17,7 @@ CombatCmd::CombatCmd(Colour colour, const LiveGame& game) : Cmd(colour)
 
 void CombatCmd::UpdateClient(const Controller& controller, const LiveGame& game) const
 {
+
 	controller.SendMessage(Output::ChooseCombat(game), GetPlayer(game));
 }
 
@@ -28,25 +30,46 @@ CmdPtr CombatCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
 
 	VerifyInput("CombatCmd::Process: missiles must be fired", !battle.IsMissilePhase() || m.m_fire);
 	
-
-
 	Dice dice;
 	battle.RollDice(session.GetGame(), dice);
+
+	return CmdPtr(new CombatDiceCmd(m_colour, session.GetGame(), dice));
+}
+
+REGISTER_DYNAMIC(CombatCmd)
+
+//-----------------------------------------------------------------------------
+
+CombatDiceCmd::CombatDiceCmd(Colour colour, const LiveGame& game, const Dice& dice) : Cmd(colour), m_dice(dice)
+{
+}
+
+void CombatDiceCmd::UpdateClient(const Controller& controller, const LiveGame& game) const
+{
+	// Send to all players. 
+	controller.SendMessage(Output::ChooseDice(game, m_dice, GetPlayer(game).GetID()), game);
+}
+
+CmdPtr CombatDiceCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
+{
+	auto& m = VerifyCastInput<const Input::CmdDice>(msg);
 
 	return nullptr;
 }
 
-void CombatCmd::Save(Serial::SaveNode& node) const
+void CombatDiceCmd::Save(Serial::SaveNode& node) const
 {
 	__super::Save(node);
+	node.SaveClass("dice", m_dice);
 }
 
-void CombatCmd::Load(const Serial::LoadNode& node)
+void CombatDiceCmd::Load(const Serial::LoadNode& node)
 {
 	__super::Load(node);
+	node.LoadClass("dice", m_dice);
 }
 
-REGISTER_DYNAMIC(CombatCmd)
+REGISTER_DYNAMIC(CombatDiceCmd)
 
 //-----------------------------------------------------------------------------
 

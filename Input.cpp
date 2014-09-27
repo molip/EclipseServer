@@ -105,6 +105,8 @@ MessagePtr CreateCommand(const Json::Element& root)
 		return MessagePtr(new CmdTrade(root));
 	if (type == "cmd_combat")
 		return MessagePtr(new CmdCombat(root));
+	if (type == "cmd_dice")
+		return MessagePtr(new CmdDice(root));
 
 	VerifyInput("Input command not recognised: " + type);
 	return nullptr;
@@ -498,4 +500,8 @@ CmdCombat::CmdCombat(const Json::Element& node)
 	m_fire = node.GetAttributeBool("fire");
 }
 
+CmdDice::CmdDice(const Json::Element& node)
+{
+
+}
 } // namespace

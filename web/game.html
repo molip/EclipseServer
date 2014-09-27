@@ -100,11 +100,15 @@
 			<input type = "image" id="map_pan_centre_btn" src="/images/btn_pan_centre.png" onclick="Map.PanCentre()">
 			<span style="float:right">Round:<span id="round_count"></span></span>
 		</div>
-		<div id="map">
-			<canvas id="map_canvas" width="600" height="600" style="background-color:black"></canvas>
-		</div>
-		<div id="combat">
-			<canvas id="combat_canvas" width="600" height="600" style="background-color:black"></canvas>
+		
+		<!-- Canvas position is absolute, otherwise layers are created in wrong place -->
+		<div style="position: relative; width:600px; height:600px;"> 
+			<div id="map">
+				<canvas id="map_canvas" width="600" height="600" style="background-color:black; position: absolute;"></canvas>
+			</div>
+			<div id="combat">
+				<canvas id="combat_canvas" width="600" height="600" style="background-color:black; position: absolute;"></canvas>
+			</div>
 		</div>
 	</div>
 	<div id="players" style="border:1px solid; margin:5px 5px 5px 610px; padding:5px; float:none; height:350px"> <!-- "float:none" uses all remaining width -->
@@ -239,6 +243,10 @@
 				<button id="choose_combat_missiles" type="button" onclick="data.action.Send(true)">Fire Missiles</button>
 				<button id="choose_combat_cannons" type="button" onclick="data.action.Send(true)">Fire Cannons</button>
 				<button id="choose_combat_retreat" type="button" onclick="data.action.Send(false)">Retreat</button>
+			</div>
+			<div id="choose_dice" style="display:none">
+				Assign Dice
+				<button id="choose_dice_ok" type="button" onclick="data.action.Send()">OK</button>
 			</div>
 		</div>
 		<div id="review_ui">

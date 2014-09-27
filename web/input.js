@@ -156,6 +156,8 @@ function OnCommandChoose(elem)
 		Trade.OnCommand(elem)
 	else if (param == "combat")
 		Combat.OnCommand(elem)
+	else if (param == "dice")
+		Combat.OnDiceCommand(elem)
 	else
 		alert('OnCommandChoose: unknown param: ' + param)
 

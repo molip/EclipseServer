@@ -1,9 +1,11 @@
 var Combat = {}
 
 Combat.canvas = null
+Combat.diceLayer = null
 Combat.overlay = null
 Combat.invader = null
 Combat.defender = null
+Combat.dice = null
 
 Combat.Init = function()
 {
@@ -11,11 +13,12 @@ Combat.Init = function()
 	{
 		Combat.canvas = document.getElementById('combat_canvas')
 
-		Combat.overlay = Canvas.AddLayer(Map.canvas)
+		Combat.diceLayer = Canvas.AddLayer(Combat.canvas)
+		Combat.overlay = Canvas.AddLayer(Combat.canvas)
 
-		Combat.overlay.onmousemove = Map.OnMouseMove
-		Combat.overlay.onmouseout = Map.OnMouseOut
-		Combat.overlay.onmousedown = Map.OnMouseDown
+		Combat.overlay.onmousemove = Combat.OnMouseMove
+		Combat.overlay.onmouseout = Combat.OnMouseOut
+		Combat.overlay.onmousedown = Combat.OnMouseDown
 
 		Combat.OnMouseOut()
 	}
@@ -25,8 +28,16 @@ Combat.Update = function(invader, defender)
 { 
 	Combat.invader = invader
 	Combat.defender = defender
+	Combat.dice = null
 	
 	Combat.Draw()
+	Combat.DrawDice() // Clear
+}
+
+Combat.UpdateDice = function(dice)
+{ 
+	Combat.dice = dice.length ? dice : null
+	Combat.DrawDice()
 }
 
 Combat.Draw = function()
@@ -78,7 +89,15 @@ Combat.Draw = function()
 	ctx.scale(-1, 1)
 	drawSide(Combat.defender)
 	ctx.restore()
-	
+}
+
+Combat.DrawDice = function()
+{
+	var ctx = Combat.diceLayer.getContext("2d");
+
+	ctx.setTransform(1, 0, 0, 1, 0, 0)
+	ctx.clearRect(0, 0, Combat.canvas.width, Combat.canvas.height);
+
 	var drawDie = function(ctx, colour, pips)
 	{
 		ctx.fillStyle = colour
@@ -126,23 +145,40 @@ Combat.Draw = function()
 		}
 	}
 
-	ctx.translate(280, 50)
+	//ctx.globalAlpha = 0.3
 
-	ctx.globalAlpha = 0.3
+	if (!Combat.dice)
+		return
+	
+	var count = 0
+	for (var i = 0, type; type = Combat.dice[i]; ++i)
+		count += type.values.length
 
-	for (var i = 1; i < 7; ++i)
-	{
-		if (i == 4)
-			ctx.globalAlpha = 1
-
-		drawDie(ctx, 'red', i)
-		ctx.translate(0, 50)
-	}
+	var wide = count > 10
+	
+	ctx.translate(300 - (wide ? 45 : 20), 10)
+	
+	var right = false
+	for (var i = 0, type; type = Combat.dice[i]; ++i)
+		for (var j = 0, val; val = type.values[j]; ++j)
+		{
+			drawDie(ctx, type.colour, val)
+			
+			if (wide)
+			{ 
+				if (right = !right)
+					ctx.translate(50, 0)
+				else
+					ctx.translate(-50, 50)
+			}
+			else
+				ctx.translate(0, 50)
+		}
 }
 
 Combat.OnMouseMove = function(evt)
 { 
-	var pt = Canvas.RelMouseCoords(evt, Map.canvas)
+	var pt = Canvas.RelMouseCoords(evt, Combat.canvas)
 }
 
 Combat.OnMouseOut = function(evt)
@@ -178,12 +214,38 @@ Combat.Stage.prototype.Send = function(fire)
 	SendJSON(json)
 }
 
+//-----------------------------------------------------------------------------
+
+Combat.DiceStage = function() 
+{
+	this.flagNoSubAction = true;
+	this.flagCantUndo = true
+}
+
+Combat.DiceStage.prototype.Send = function(fire)
+{
+	var json = CreateCommandJSON("cmd_dice")
+
+	ExitAction()
+
+	SendJSON(json)
+}
+
+//-----------------------------------------------------------------------------
+
 Combat.OnCommand = function(elem)
 {
 	ShowActionElement('choose_combat')
 
 	data.action = new Combat.Stage(elem.missiles, elem.can_fire, elem.can_retreat)
+}
 
-	// Map.DrawActionLayer()
-	// Map.DrawSelectLayer()
+Combat.OnDiceCommand = function(elem)
+{
+	if (elem.active_player_id == data.playerID)
+		ShowActionElement('choose_dice')
+	
+	Combat.UpdateDice(elem.dice)
+
+	data.action = new Combat.DiceStage()
 }

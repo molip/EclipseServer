@@ -12,6 +12,7 @@
 #include "ActionPhase.h"
 #include "Battle.h"
 #include "CombatPhase.h"
+#include "Dice.h"
 
 namespace
 {
@@ -327,15 +328,6 @@ UpdateCombat::UpdateCombat(const Game& game, const Battle& battle) : Update("com
 		for (auto& hits : group.ships)
 			shipsElem.Append(hits);
 	}
-	//auto diceElem = m_root.AddArray("dice");
-	//for (auto pair : battle.GetDice())
-	//{
-	//	auto typeElem = diceElem.AppendElement();
-	//	typeElem.SetAttribute("colour", EnumTraits<DiceColour>::ToString(pair.first));
-	//	auto valuesElem = typeElem.AddArray("values");
-	//	for (auto& val : pair.second)
-	//		valuesElem.Append(val);
-	//}
 }
 
 AddLog::AddLog(int id, const std::string& msg) : AddLog(Vec { Vec::value_type(id, msg) } )
@@ -629,6 +621,22 @@ ChooseCombat::ChooseCombat(const LiveGame& game) : Choose("combat")
 	m_root.SetAttribute("missiles", battle.IsMissilePhase());
 	m_root.SetAttribute("can_fire", true); // TODO: Check guns.
 	m_root.SetAttribute("can_retreat", false); // TODO: Check escape routes. 
+}
+
+// This is a choose command for /player/, but an update for everyone else. 
+ChooseDice::ChooseDice(const LiveGame& game, const Dice& dice, int activePlayerId) : Choose("dice")
+{
+	m_root.SetAttribute("active_player_id", activePlayerId);
+
+	auto diceElem = m_root.AddArray("dice");
+	for (auto pair : dice)
+	{
+		auto typeElem = diceElem.AppendElement();
+		typeElem.SetAttribute("colour", EnumTraits<DiceColour>::ToString(pair.first));
+		auto valuesElem = typeElem.AddArray("values");
+		for (auto& val : pair.second)
+			valuesElem.Append(val);
+	}
 }
 
 } // namespace

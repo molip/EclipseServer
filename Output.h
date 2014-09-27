@@ -17,6 +17,7 @@ class Team;
 class Player;
 class Hex;
 class Battle;
+class Dice;
 
 namespace Output
 {
@@ -124,6 +125,7 @@ struct ChooseTrade : Choose { ChooseTrade(const Team& team); };
 struct ChooseUpkeep : Choose { ChooseUpkeep(const Team& team, bool canUndo); };
 
 struct ChooseCombat : Choose { ChooseCombat(const LiveGame& game); };
+struct ChooseDice : Choose { ChooseDice(const LiveGame& game, const Dice& dice, int activePlayerId); };
 
 struct ShowGameList : Show { ShowGameList(); };
 struct ShowLobby : Show { ShowLobby(); };

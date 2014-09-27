@@ -252,4 +252,9 @@ struct CmdCombat : CmdMessage
 	bool m_fire;
 };
 
+struct CmdDice : CmdMessage
+{
+	CmdDice(const Json::Element& node);
+};
+
 }
