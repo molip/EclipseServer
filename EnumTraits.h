@@ -35,6 +35,15 @@ private:
 	static int base;
 };
 
+template <typename T>
+const char* EnumToString(T t) { return EnumTraits<T>::ToString(t); }
+
+template <typename T>
+T EnumFromString(const char* s) { return EnumTraits<T>::FromString(s); }
+
+template <typename T>
+T EnumFromString(const std::string& s) { return EnumTraits<T>::FromString(s); }
+
 #define DEFINE_ENUM_NAMES(T) \
 	int EnumTraits<T>::base; const char* EnumTraits<T>::names[] = 
 
