@@ -12,6 +12,8 @@
 #include "Race.h"
 #include "CombatCmd.h"
 #include "StartBattleRecord.h"
+#include "AttackRecord.h"
+#include "AdvanceCombatTurnRecord.h"
 
 CombatPhase::CombatPhase() : OrderedPhase(nullptr)
 {
@@ -28,30 +30,68 @@ CombatPhase::~CombatPhase()
 
 void CombatPhase::Init(CommitSession& session)
 {
-	VerifyModel("CombatPhase::Init", StartBattle(session));
+	StartBattle(session);
 }
 
-bool CombatPhase::StartBattle(CommitSession& session)
+void CombatPhase::StartBattle(CommitSession& session)
 {
-	if (!GetGame().GetMap().FindPendingBattleHex(GetGame()))
-		return false;
-
 	session.DoAndPushRecord(RecordPtr(new StartBattleRecord));
+	StartTurn(session);
+}
 
-	StartCmd(CmdPtr(new CombatCmd(GetGame().GetBattle().GetCurrentTeamColour(), GetGame())), session);
+void CombatPhase::StartTurn(CommitSession& session)
+{
+	Colour colour = GetGame().GetBattle().GetFiringColour();
+	if (colour == Colour::None)
+	{
+		Dice dice;
+		GetGame().GetBattle().RollDice(session.GetGame(), dice);
+		const Battle::Hits hits = GetGame().GetBattle().AutoAssignHits(dice, session.GetGame());
 
-	return true;
+		// TODO: Send attack animation 
+
+		session.DoAndPushRecord(RecordPtr(new AttackRecord(hits)));
+		FinishTurn(session);
+	}
+	else
+		StartCmd(CmdPtr(new CombatCmd(GetGame().GetBattle().GetFiringColour(), GetGame())), session);
+}
+
+void CombatPhase::FinishCmd(CommitSession& session, Colour c)
+{
+	OrderedPhase::FinishCmd(session, c);
+	FinishTurn(session);
 }
 
 void CombatPhase::FinishTurn(CommitSession& session)
 {
+	if (!GetGame().GetBattle().IsFinished())
+	{
+		session.DoAndPushRecord(RecordPtr(new AdvanceCombatTurnRecord()));
+		StartTurn(session);
+		return;
+	}
+
+	auto hex = GetGame().GetMap().FindPendingBattleHex(GetGame());
+	if (!hex || hex->GetID() != GetGame().GetBattle().GetHexId()) // No more battles in this hex.
+	{
+		// TODO: Attack population, assign reputation tiles, influence.
+	}
+	else
+	{
+		// TODO: Copy damage from battle.
+	}
+
+	GetGame().SetBattle(nullptr); // TODO: Use record. 
+
+	if (hex)
+		StartBattle(session);
+	else
+		GetGame().FinishCombatPhase(); // Deletes this.
 }
 
 void CombatPhase::UpdateClient(const Controller& controller, const Player* pPlayer) const
 {
-	//controller.SendMessage(Output::UpdateShowCombat(GetGame(), true), GetGame(), pPlayer);
-	//controller.SendMessage(Output::UpdateCombat(GetGame(), *m_battle), GetGame(), pPlayer);
-
 	if (const Cmd* pCmd = GetCurrentCmd())
 		pCmd->UpdateClient(controller, GetGame());
 
@@ -60,7 +100,12 @@ void CombatPhase::UpdateClient(const Controller& controller, const Player* pPlay
 
 const Team& CombatPhase::GetCurrentTeam() const
 {
-	return GetGame().GetTeam(GetGame().GetBattle().GetCurrentTeamColour());
+	Colour colour = GetGame().GetBattle().GetFiringColour();
+	
+	//if (colour == Colour::None) // Keep OrderedPhase::FinishCmd happy.
+	//	colour = GetGame().GetBattle().GetTargetColour();
+
+	return GetGame().GetTeam(colour);
 }
 
 void CombatPhase::Save(Serial::SaveNode& node) const

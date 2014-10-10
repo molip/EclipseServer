@@ -34,7 +34,8 @@ public:
 	const Hex& GetHex(const MapPos& pos) const { return const_cast<Map*>(this)->GetHex(pos); }
 	const Hex* FindHex(const MapPos& pos) const { return const_cast<Map*>(this)->FindHex(pos); }
 	
-	const Hex* FindHex(int hexId) const;
+	Hex* FindHex(int hexId);
+	const Hex* FindHex(int hexId) const { return const_cast<Map*>(this)->FindHex(hexId); }
 	const Hex* FindPendingBattleHex(const Game& game) const;
 
 	void GetInfluencableNeighbours(const MapPos& pos, const Team& team, std::set<MapPos>& neighbours) const;

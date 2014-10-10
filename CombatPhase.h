@@ -14,7 +14,7 @@ public:
 
 	virtual void Init(CommitSession& session) override;
 
-	void FinishTurn(CommitSession& session);
+	virtual void FinishCmd(CommitSession& session, Colour c) override;
 
 	virtual void UpdateClient(const Controller& controller, const Player* pPlayer) const override;
 
@@ -25,5 +25,7 @@ protected:
 	virtual const Team& GetCurrentTeam() const override;
 
 private:
-	bool StartBattle(CommitSession& session);
+	void StartBattle(CommitSession& session);
+	void StartTurn(CommitSession& session);
+	void FinishTurn(CommitSession& session);
 };

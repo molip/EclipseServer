@@ -269,6 +269,12 @@
     <ClInclude Include="StartRoundRecord.h">
       <Filter>Model\Records</Filter>
     </ClInclude>
+    <ClInclude Include="AttackRecord.h">
+      <Filter>Model\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="AdvanceCombatTurnRecord.h">
+      <Filter>Model\Records</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -503,6 +509,12 @@
       <Filter>Model\Records</Filter>
     </ClCompile>
     <ClCompile Include="StartRoundRecord.cpp">
+      <Filter>Model\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="AttackRecord.cpp">
+      <Filter>Model\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="AdvanceCombatTurnRecord.cpp">
       <Filter>Model\Records</Filter>
     </ClCompile>
   </ItemGroup>

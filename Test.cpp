@@ -11,13 +11,13 @@ void Test::AddShipsToCentre(LiveGame& game)
 	{
 		for (auto type : EnumRange<ShipType>())
 		{
-			int count;
+			int count = 0;
 			switch (type)
 			{
 			case ShipType::Interceptor: count = 8; break;
-			case ShipType::Cruiser: count = 4; break;
-			case ShipType::Dreadnought: count = 2; break;
-			case ShipType::Starbase: count = 4; break;
+			//case ShipType::Cruiser: count = 4; break;
+			//case ShipType::Dreadnought: count = 2; break;
+			//case ShipType::Starbase: count = 4; break;
 			}
 
 			for (int i = 0; i < count; ++i)

@@ -10,6 +10,7 @@
 #include "Battle.h"
 #include "Dice.h"
 #include "Player.h"
+#include "AttackRecord.h"
 
 CombatCmd::CombatCmd(Colour colour, const LiveGame& game) : Cmd(colour)
 {
@@ -17,7 +18,6 @@ CombatCmd::CombatCmd(Colour colour, const LiveGame& game) : Cmd(colour)
 
 void CombatCmd::UpdateClient(const Controller& controller, const LiveGame& game) const
 {
-
 	controller.SendMessage(Output::ChooseCombat(game), GetPlayer(game));
 }
 
@@ -26,7 +26,6 @@ CmdPtr CombatCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
 	auto& m = VerifyCastInput<const Input::CmdCombat>(msg);
 
 	const Battle& battle = session.GetGame().GetBattle();
-	//const Battle::Group& turn = battle.GetCurrentGroup();
 
 	VerifyInput("CombatCmd::Process: missiles must be fired", !battle.IsMissilePhase() || m.m_fire);
 	
@@ -53,6 +52,12 @@ void CombatDiceCmd::UpdateClient(const Controller& controller, const LiveGame& g
 CmdPtr CombatDiceCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
 {
 	auto& m = VerifyCastInput<const Input::CmdDice>(msg);
+
+	const Battle::Hits hits = session.GetGame().GetBattle().AutoAssignHits(m_dice, session.GetGame());
+
+	// TODO: Send attack animation 
+
+	DoRecord(RecordPtr(new AttackRecord(hits)), session);
 
 	return nullptr;
 }

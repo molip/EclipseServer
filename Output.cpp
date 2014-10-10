@@ -321,12 +321,12 @@ UpdateCombat::UpdateCombat(const Game& game, const Battle& battle) : Update("com
 	{
 		auto groupElem = groupsElems[group.invader].AppendElement();
 		groupElem.SetAttribute("type", EnumTraits<ShipType>::ToString(group.shipType));
-		groupElem.SetAttribute("lives", battle.GetBlueprint(game, group).GetHulls() + 1);
+		groupElem.SetAttribute("max_lives", battle.GetBlueprint(game, group).GetLives());
 		groupElem.SetAttribute("active", group.invader == currentGroup.invader && group.shipType == currentGroup.shipType);
 
 		auto shipsElem = groupElem.AddArray("ships");
-		for (auto& hits : group.ships)
-			shipsElem.Append(hits);
+		for (auto& lives : group.lifeCounts)
+			shipsElem.Append(lives);
 	}
 }
 
@@ -629,7 +629,7 @@ ChooseDice::ChooseDice(const LiveGame& game, const Dice& dice, int activePlayerI
 	m_root.SetAttribute("active_player_id", activePlayerId);
 
 	auto diceElem = m_root.AddArray("dice");
-	for (auto pair : dice)
+	for (auto& pair : dice)
 	{
 		auto typeElem = diceElem.AppendElement();
 		typeElem.SetAttribute("colour", EnumTraits<DiceColour>::ToString(pair.first));

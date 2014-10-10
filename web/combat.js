@@ -50,11 +50,19 @@ Combat.Draw = function()
 	var drawSide = function(side)
 	{
 		var gap = 5
+		var livesWidth = 8
 		var totalHeight = gap, maxWidth = 0
 		for (var i = 0, group; group = side.ship_groups[i]; ++i)
 		{
 			if (!group.image)
-				group.image = LoadImage('/images/ships/player/' + side.colour + group.type + '.png', Combat.Draw)
+			{
+				if (group.type == 'GCDS')
+					group.image = data.gcds_img
+				else if (group.type == 'Ancient')
+					group.image = data.ancient_img
+				else
+					group.image = LoadImage('/images/ships/player/' + side.colour + group.type + '.png', Combat.Draw)
+			}
 			totalHeight += (group.image.height + gap) * group.ships.length
 			
 			if (maxWidth < group.image.width)
@@ -66,16 +74,55 @@ Combat.Draw = function()
 		var y = gap
 		for (var i = 0, group; group = side.ship_groups[i]; ++i)
 		{
-			var x = 0
-			var inset = group.active ? 50 : gap
+			var inset = livesWidth + (group.active ? 50 : gap)
+			var x = inset
 			for (var j = 0; j < group.ships.length; ++j)
-			{
-				ctx.drawImage(group.image, inset + x, y);
-				if (wide && (j % 2 == 0) && j < group.ships.length - 1)
-					x += group.image.width + gap
+			{			
+				if (side == Combat.defender && side.colour == 'None') // Unflip.
+				{
+					ctx.save()
+					ctx.scale(-1, 1)
+					ctx.drawImage(group.image, -x - group.image.width, y);
+					ctx.restore()
+				}
+				else 
+					ctx.drawImage(group.image, x, y);
+				
+				if (group.ships[j] <= 0) // Dead.
+				{
+					ctx.strokeStyle = '#f00'
+					ctx.lineWidth = 5
+					ctx.beginPath();
+					ctx.moveTo(x, y);
+					ctx.lineTo(x + group.image.width, y + group.image.height);
+					ctx.stroke()
+					ctx.moveTo(x + group.image.width, y);
+					ctx.lineTo(x, y + group.image.height);
+					ctx.stroke()
+				}
 				else
 				{
-					x = 0
+					ctx.fillStyle = '#0f0'
+					var lives = group.ships[j]
+					var lifeSize = 6
+					var lifeGap = 2
+					var stride = Math.min(lifeSize + lifeGap, group.image.height / lives)
+					var top = y + (group.image.height - lives * stride - lifeGap) / 2
+					
+					ctx.beginPath();
+					for (var k = 0; k < lives; ++k)
+					{
+						ctx.rect(x - livesWidth, top, lifeSize, stride - lifeGap);
+						top += stride;
+					}
+					ctx.fill()
+				}
+				
+				if (wide && (j % 2 == 0) && j < group.ships.length - 1)
+					x += group.image.width + gap + livesWidth
+				else
+				{
+					x = inset
 					y += group.image.height + gap
 				}
 			}
