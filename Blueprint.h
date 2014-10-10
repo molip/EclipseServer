@@ -35,7 +35,8 @@ public:
 	int GetComputer() const;
 	int GetShield() const;
 	int GetMovement() const;
-	int GetHulls() const;
+	int GetExtraHulls() const;
+	int GetLives() const;
 
 	bool HasCannon() const;
 	bool HasMissiles() const;

@@ -72,6 +72,14 @@ int Blueprint::GetComputer() const
 	return n;
 }
 
+int Blueprint::GetShield() const
+{
+	int n = 0;
+	for (auto s : SlotRange(*this))
+		n += ShipLayout::GetShield(s);
+	return n;
+}
+
 int Blueprint::GetMovement() const
 {
 	int n = 0;
@@ -80,12 +88,17 @@ int Blueprint::GetMovement() const
 	return n;
 }
 
-int Blueprint::GetHulls() const
+int Blueprint::GetExtraHulls() const
 {
 	int n = 0;
 	for (auto s : SlotRange(*this))
 		n += ShipLayout::GetHulls(s);
 	return n;
+}
+
+int Blueprint::GetLives() const
+{
+	return GetExtraHulls() + 1;
 }
 
 bool Blueprint::HasCannon() const
