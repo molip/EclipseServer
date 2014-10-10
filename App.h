@@ -85,6 +85,20 @@ bool InRange(const T& cntr, int n)
 	return n >= 0 && n < (int)cntr.size();
 }
 
+template <typename T>
+class ReverseAdapter
+{
+public:
+	ReverseAdapter(T t) : m_t(t) {}
+
+	typename T::reverse_iterator begin() const { return m_t.rbegin(); }
+	typename T::reverse_iterator end() const { return m_t.rend(); }
+private:
+	T m_t;
+};
+
+template <typename T>
+ReverseAdapter<T> Reverse(const T& t) { return ReverseAdapter<T>(t); }
 
 enum class SquareType;
 enum class Resource;
@@ -95,3 +109,4 @@ extern SquareType ResourceToSquareType(Resource t);
 extern std::default_random_engine& GetRandom();
 
 #define DEFINE_UNIQUE_PTR(T) typedef std::unique_ptr<T> T##Ptr;
+
