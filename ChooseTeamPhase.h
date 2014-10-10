@@ -23,7 +23,7 @@ public:
 
 protected:
 	virtual void AddCmd(CmdPtr pCmd) override {}
-	virtual void FinishCmd(Colour c) override {}
+	virtual void FinishCmd(CommitSession& session, Colour c) override {}
 	virtual Cmd* RemoveCmd(CommitSession& session, Colour c) override { return nullptr; }; // Returns cmd to undo.
 };
 

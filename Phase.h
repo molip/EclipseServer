@@ -46,7 +46,7 @@ public:
 
 protected:
 	virtual void AddCmd(CmdPtr pCmd) = 0;
-	virtual void FinishCmd(Colour c) = 0;
+	virtual void FinishCmd(CommitSession& session, Colour c) = 0;
 	virtual Cmd* RemoveCmd(CommitSession& session, Colour c) = 0; // Returns cmd to undo.
 
 	const LiveGame& GetGame() const { return *m_pGame; }

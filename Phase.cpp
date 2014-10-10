@@ -37,9 +37,10 @@ void Phase::ProcessCmdMessage(const Input::CmdMessage& msg, CommitSession& sessi
 	if (pNext)
 		AddCmd(std::move(pNext)); 
 	else
-		FinishCmd(colour);
+		FinishCmd(session, colour); 
 
-	UpdateClient(session.GetController(), &player);
+	// This phase might have finished, get potentially new phase.
+	game.GetPhase().UpdateClient(session.GetController(), &player);
 }
 
 void Phase::UndoCmd(CommitSession& session, Player& player)

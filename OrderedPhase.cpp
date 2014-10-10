@@ -26,7 +26,7 @@ void OrderedPhase::AddCmd(CmdPtr pCmd)
 	m_pCmdStack->AddCmd(pCmd);
 }
 
-void OrderedPhase::FinishCmd(Colour c)
+void OrderedPhase::FinishCmd(CommitSession& session, Colour c)
 {
 	VerifyModel("OrderedPhase::FinishCmd", IsTeamActive(c));
 

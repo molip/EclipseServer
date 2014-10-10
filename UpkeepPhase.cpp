@@ -43,7 +43,7 @@ void UpkeepPhase::AddCmd(CmdPtr pCmd)
 	GetCmdStack(pCmd->GetColour()).AddCmd(pCmd);
 }
 
-void UpkeepPhase::FinishCmd(Colour c)
+void UpkeepPhase::FinishCmd(CommitSession& session, Colour c)
 {
 	GetCmdStack(c).AddCmd(CmdPtr());
 }
