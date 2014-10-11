@@ -33,6 +33,7 @@ void AttackRecord::Apply(bool bDo, Game& game, const Controller& controller)
 	Hex* hex = game.GetMap().FindHex(battle.GetHexId());
 	VerifyModel("AttackRecord::Apply", !!hex);
 
+	bool updateMap = false;
 	for (size_t i = 0; i < m_hits.size(); ++i)
 	{
 		const auto& hit = m_hits[i];
@@ -49,12 +50,16 @@ void AttackRecord::Apply(bool bDo, Game& game, const Controller& controller)
 			{
 				hex->RemoveShip(hit.shipType, m_targetColour);
 				m_killIndices.insert(i);
+				updateMap = true;
 			}
 		}
 		else
 		{
 			if (group->lifeCounts[hit.shipIndex] <= 0)
+			{
 				hex->AddShip(hit.shipType, m_targetColour);
+				updateMap = true;
+			}
 
 			group->lifeCounts[hit.shipIndex] += hit.dice.GetDamage();
 			VerifyModel("AttackRecord::Apply", group->lifeCounts[hit.shipIndex] > 0);
@@ -65,6 +70,9 @@ void AttackRecord::Apply(bool bDo, Game& game, const Controller& controller)
 	//	m_oldTurn = battle.AdvanceTurn();
 
 	controller.SendMessage(Output::UpdateCombat(game, battle), game);
+
+	if (updateMap)
+		controller.SendMessage(Output::UpdateMap(game), game);
 }
 
 std::string AttackRecord::GetMessage(const Game& game) const
