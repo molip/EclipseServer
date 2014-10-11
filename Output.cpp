@@ -118,14 +118,14 @@ UpdateChoose::UpdateChoose(const LiveGame& game) : Update("choose_team")
 
 UpdateTeams::UpdateTeams(const Game& game) : Update("teams")
 {
-	VerifyModel("UpdateTeams: Game not started yet: " + game.GetName(), game.HasStarted());
+	VERIFY_MODEL_MSG("Game not started yet", game.HasStarted());
 
 	m_root.SetAttribute("game_type", game.IsLive() ? "live" : "review");
 
 	auto teamsNode = m_root.AddArray("teams");
 	for (auto& pTeam : game.GetTeams())
 	{
-		VerifyModel("UpdateTeams: Team not chosen yet: " + pTeam->GetPlayer().GetName(), pTeam->GetRace() != RaceType::None);
+		VERIFY_MODEL_MSG("Team not chosen yet", pTeam->GetRace() != RaceType::None);
 
 		std::string blueprints;
 		switch (pTeam->GetRace())
@@ -393,7 +393,7 @@ ChooseAction::ChooseAction(const LiveGame& game) : Choose("action")
 {
 	const ActionPhase& phase = game.GetActionPhase();
 
-	VerifyModel("ChooseAction::ChooseAction", !phase.GetCurrentCmd());
+	VERIFY_MODEL(!phase.GetCurrentCmd());
 
 	bool bCanDoAction = phase.CanDoAction();
 	bool bPassed = phase.GetCurrentTeam().HasPassed();

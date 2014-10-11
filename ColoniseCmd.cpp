@@ -27,7 +27,7 @@ void ColoniseCmd::UpdateClient(const Controller& controller, const LiveGame& gam
 CmdPtr ColoniseCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
 {
 	auto& m = VerifyCastInput<const Input::CmdColonisePos>(msg);
-	VerifyInput("ColoniseCmd::Process: invalid pos index", m.m_iPos == -1 || InRange(m_positions, m.m_iPos));
+	VERIFY_INPUT_MSG("invalid pos index", m.m_iPos == -1 || InRange(m_positions, m.m_iPos));
 	
 	return CmdPtr(new ColoniseSquaresCmd(m_colour, session.GetGame(), m_positions[m.m_iPos]));
 }
@@ -82,7 +82,7 @@ private:
 			if (move.second != Resource::None)
 			{
 				Square* pSquare = hex.FindSquare(move.first, !bDo);
-				VerifyModel("ColoniseRecord::Apply: square not found", !!pSquare);
+				VERIFY_MODEL_MSG("square not found", !!pSquare);
 				pSquare->SetOccupied(bDo);
 				team.GetPopulationTrack().Add(move.second, bDo ? -1 : 1);
 			}
@@ -114,7 +114,7 @@ ColoniseSquaresCmd::ColoniseSquaresCmd(Colour colour, const LiveGame& game, cons
 	const Hex& hex = game.GetMap().GetHex(pos);
 	
 	auto squares = hex.GetAvailableSquares(GetTeam(game));
-	VerifyInput("ColoniseSquaresCmd: no squares available", !squares.empty());
+	VERIFY_INPUT_MSG("no squares available", !squares.empty());
 
 	for (int i = 0; i < (int)SquareType::_Count; ++i)
 		m_squareCounts[i] = 0;
@@ -140,8 +140,8 @@ CmdPtr ColoniseSquaresCmd::Process(const Input::CmdMessage& msg, CommitSession& 
 
 	Population fixed = m.m_fixed, grey = m.m_grey, orbital = m.m_orbital;
 
-	VerifyInput("ColoniseSquaresCmd::Process: no cubes specified", !fixed.IsEmpty() || !grey.IsEmpty() || !orbital.IsEmpty());
-	VerifyInput("ColoniseSquaresCmd::Process: not enough ships",
+	VERIFY_INPUT_MSG("no cubes specified", !fixed.IsEmpty() || !grey.IsEmpty() || !orbital.IsEmpty());
+	VERIFY_INPUT_MSG("not enough ships",
 		fixed.GetTotal() + grey.GetTotal() + orbital.GetTotal() <= GetTeam(session.GetGame()).GetUnusedColonyShips());
 
 	ColoniseRecord* pRec = new ColoniseRecord(m_colour, m_pos);
@@ -175,7 +175,7 @@ CmdPtr ColoniseSquaresCmd::Process(const Input::CmdMessage& msg, CommitSession& 
 			pRec->AddMove(s, res);
 	}
 
-	VerifyInput("ColoniseSquaresCmd::Process: not enough squares", fixed.IsEmpty() || grey.IsEmpty() || orbital.IsEmpty());
+	VERIFY_INPUT_MSG("not enough squares", fixed.IsEmpty() || grey.IsEmpty() || orbital.IsEmpty());
 
 	DoRecord(RecordPtr(pRec), session);
 

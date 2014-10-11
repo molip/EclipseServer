@@ -29,7 +29,7 @@ std::vector<std::pair<int, std::string>> ReviewGame::GetLogs() const
 
 void ReviewGame::Advance(const Controller& controller)
 {
-	VerifyModel("ReviewGame::Advance: Already at end", CanAdvance());
+	VERIFY_MODEL_MSG("Already at end", CanAdvance());
 	Record& rec = *GetRecords()[m_iRecord++];
 	rec.Do(*this, controller);
 
@@ -40,7 +40,7 @@ void ReviewGame::Advance(const Controller& controller)
 
 void ReviewGame::Retreat(const Controller& controller)
 {
-	VerifyModel("ReviewGame::Retreat: Already at start", CanRetreat());
+	VERIFY_MODEL_MSG("Already at start", CanRetreat());
 
 	// Skip messages.
 	while (CanRetreat() && GetRecords()[m_iRecord - 1]->IsMessageRecord())
@@ -68,7 +68,7 @@ int ReviewGame::GetNextRecordID() const
 void ReviewGame::OnPreRecordPop(const Controller& controller)
 {
 	int pop = Games::GetLive(m_idLive).GetLastPoppableRecord();
-	VerifyModel("ReviewGame::OnPreRecordPop", CanRetreat() && m_iRecord <= (int)GetRecords().size() && pop >= 0);
+	VERIFY_MODEL(CanRetreat() && m_iRecord <= (int)GetRecords().size() && pop >= 0);
 
 	if (m_iRecord > pop)
 		GetRecords()[pop]->Undo(*this, controller);

@@ -30,13 +30,13 @@ Cmd* ActionPhase::RemoveCmd(CommitSession& session, Colour c)
 
 	if (bAction && !pUndo) // It's a start cmd.
 	{
-		VerifyModel("Phase::RemoveCmd", m_bDoneAction);
+		VERIFY_MODEL(m_bDoneAction);
 		m_bDoneAction = false;
 
 		if (bCostsInfluence)
 		{
 			RecordPtr pRec = session.PopAndUndoRecord();
-			VerifyModel("ActionPhase::RemoveCmd: current record not ActionRecord", !!dynamic_cast<ActionRecord*>(pRec.get()));
+			VERIFY_MODEL_MSG("current record not ActionRecord", !!dynamic_cast<ActionRecord*>(pRec.get()));
 		}
 	}
 
@@ -45,11 +45,11 @@ Cmd* ActionPhase::RemoveCmd(CommitSession& session, Colour c)
 
 void ActionPhase::StartCmd(CmdPtr pCmd, CommitSession& session)
 {
-	VerifyModel("ActionPhase::StartCmd: Team not active", IsTeamActive(pCmd->GetColour()));
+	VERIFY_MODEL_MSG("Team not active", IsTeamActive(pCmd->GetColour()));
 
 	if (pCmd->IsAction()) // Includes PassCmd.
 	{
-		VerifyModel("ActionPhase::StartCmd: Already done an action", !m_bDoneAction);
+		VERIFY_MODEL_MSG("Already done an action", !m_bDoneAction);
 		m_bDoneAction = true;
 	}
 

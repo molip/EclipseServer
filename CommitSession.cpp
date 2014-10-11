@@ -16,7 +16,7 @@ CommitSession::CommitSession(const LiveGame& game, const Controller& controller)
 m_game(const_cast<LiveGame&>(game)), m_controller(controller), m_bCommitted(), m_lock(game.GetMutex(), std::defer_lock),
 m_bUpdateReviewUI(false)
 {
-	Verify("CommitSession::CommitSession", !s_pInstance);
+	VERIFY(!s_pInstance);
 	s_pInstance = this;
 }
 
@@ -41,7 +41,7 @@ LiveGame& CommitSession::Open()
 
 void CommitSession::Commit()
 {
-	Verify("CommitSession::Commit", !m_bCommitted);
+	VERIFY(!m_bCommitted);
 	m_bCommitted = true;
 
 	if (m_lock)

@@ -14,7 +14,7 @@
 InfluenceCmd::InfluenceCmd(Colour colour, const LiveGame& game, int iPhase) : PhaseCmd(colour, iPhase)
 {
 	const Team& team = GetTeam(game);
-	VerifyModel("InfluenceCmd::InfluenceCmd", !team.HasPassed());
+	VERIFY_MODEL(!team.HasPassed());
 
 	const Map& map = game.GetMap();
 	const Map::HexMap& hexes = map.GetHexes();
@@ -36,7 +36,7 @@ CmdPtr InfluenceCmd::Process(const Input::CmdMessage& msg, CommitSession& sessio
 		return nullptr;
 
 	auto& m = VerifyCastInput<const Input::CmdInfluenceSrc>(msg);
-	VerifyInput("InfluenceCmd::Process: invalid pos index", m.m_iPos == -1 || InRange(m_srcs, m.m_iPos));
+	VERIFY_INPUT_MSG("invalid pos index", m.m_iPos == -1 || InRange(m_srcs, m.m_iPos));
 
 	const LiveGame& game = session.GetGame();
 	return CmdPtr(new InfluenceDstCmd(m_colour, game, m.m_iPos < 0 ? nullptr : &m_srcs[m.m_iPos], m_iPhase));
@@ -120,13 +120,13 @@ public:
 private:
 	Hex* TransferDisc(const MapPosPtr& pSrcPos, const MapPosPtr& pDstPos, Game& game, const Controller& controller)
 	{
-		VerifyModel("InfluenceRecord::TransferDisc: no op", pSrcPos != pDstPos && !(pSrcPos && pDstPos && *pSrcPos == *pDstPos));
+		VERIFY_MODEL_MSG("no op", pSrcPos != pDstPos && !(pSrcPos && pDstPos && *pSrcPos == *pDstPos));
 		Team& team = game.GetTeam(m_colour);
 
 		if (pSrcPos)
 		{
 			Hex& hex = game.GetMap().GetHex(*pSrcPos);
-			VerifyModel("InfluenceCmd::TransferDisc: Src not owned", hex.IsOwnedBy(team));
+			VERIFY_MODEL_MSG("Src not owned", hex.IsOwnedBy(team));
 			hex.SetColour(Colour::None);
 		}
 		else
@@ -136,7 +136,7 @@ private:
 		if (pDstPos)
 		{
 			pDstHex = &game.GetMap().GetHex(*pDstPos);
-			VerifyModel("InfluenceCmd::TransferDisc: Dst already owned", !pDstHex->IsOwned());
+			VERIFY_MODEL_MSG("Dst already owned", !pDstHex->IsOwned());
 			pDstHex->SetColour(m_colour);
 		}
 		else
@@ -215,7 +215,7 @@ void InfluenceDstCmd::UpdateClient(const Controller& controller, const LiveGame&
 CmdPtr InfluenceDstCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
 {
 	auto& m = VerifyCastInput<const Input::CmdInfluenceDst>(msg);
-	VerifyInput("InfluenceDstCmd::Process: invalid pos index", m.m_iPos == -1 || InRange(m_dsts, m.m_iPos));
+	VERIFY_INPUT_MSG("invalid pos index", m.m_iPos == -1 || InRange(m_dsts, m.m_iPos));
 	
 	const MapPos* pDstPos = m.m_iPos >= 0 ? &m_dsts[m.m_iPos] : nullptr;
 	

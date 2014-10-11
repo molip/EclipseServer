@@ -41,8 +41,8 @@ CmdPtr MoveCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
 	
 	const LiveGame& game = session.GetGame(); 
 	const Hex& hex = game.GetMap().GetHex(pos);
-	VerifyInput("MoveCmd::Process: invalid hex", CanMoveFrom(hex, game));
-	VerifyInput("MoveCmd::Process: invalid ship", hex.HasShip(m_colour, m.m_ship));
+	VERIFY_INPUT_MSG("invalid hex", CanMoveFrom(hex, game));
+	VERIFY_INPUT_MSG("invalid ship", hex.HasShip(m_colour, m.m_ship));
 
 	return CmdPtr(new MoveDstCmd(m_colour, game, pos, m.m_ship, m_iPhase));
 }
@@ -148,7 +148,7 @@ CmdPtr MoveDstCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
 
 	const LiveGame& game = session.GetGame();
 	std::set<MapPos> dsts = GetDsts(game);
-	VerifyInput("MoveDstCmd::Process: invalid hex", dsts.find(dst) != dsts.end());
+	VERIFY_INPUT_MSG("invalid hex", dsts.find(dst) != dsts.end());
 
 	MoveRecord* pRec = new MoveRecord(m_colour, m_ship, m_src, dst);
 	DoRecord(RecordPtr(pRec), session);

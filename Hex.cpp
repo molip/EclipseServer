@@ -104,14 +104,14 @@ void Fleet::RemoveShip(ShipType type)
 	for (auto it = m_squadrons.begin(); it != m_squadrons.end(); ++it)
 		if (it->GetType() == type)
 		{
-			VerifyModel("Fleet::RemoveShip 1", it->m_shipCount > 0);
+			VERIFY_MODEL(it->m_shipCount > 0);
 			
 			if (--it->m_shipCount == 0)
 				m_squadrons.erase(it);
 			return;
 		}
 
-	VerifyModel("Fleet::RemoveShip 2", false);
+	VERIFY_MODEL(false);
 }
 
 void Fleet::Save(Serial::SaveNode& node) const
@@ -141,7 +141,7 @@ Hex::Hex(int id, const MapPos& pos, int nRotation) :
 	m_id(id), m_pos(pos), m_nRotation(nRotation), m_discovery(DiscoveryType::None), m_colour(Colour::None), m_pDef(&HexDefs::Get(id)),
 	m_bOrbital(false), m_bMonolith(false)
 {
-	VerifyModel("Hex::Hex: Invalid rotation", nRotation >= 0 && nRotation < 6);
+	VERIFY_MODEL_MSG("Invalid rotation", nRotation >= 0 && nRotation < 6);
 
 	for (int i = 0; i < GetDef().GetAncients(); ++i)
 		AddShip(ShipType::Ancient, Colour::None);
@@ -159,14 +159,14 @@ Hex::Hex(const Hex& rhs) :
 
 void Hex::InitSquares()
 {
-	VerifyModel("Hex::InitSquares", m_squares.empty());
+	VERIFY_MODEL(m_squares.empty());
 	for (int i = 0; i < GetDef().GetSquareCount(); ++i)
 		m_squares.push_back(Square(*this, i));
 }
 
 void Hex::SetSquareOccupied(int i, bool b) 
 {
-	VerifyModel("Hex::SetSquareOccupied", InRange(m_squares, i));
+	VERIFY_MODEL(InRange(m_squares, i));
 	if (b)
 		m_occupied.insert(i);
 	else
@@ -175,7 +175,7 @@ void Hex::SetSquareOccupied(int i, bool b)
 
 bool Hex::IsSquareOccupied(int i) const 
 {
-	VerifyModel("Hex::IsSquareOccupied", InRange(m_squares, i));
+	VERIFY_MODEL(InRange(m_squares, i));
 	return m_occupied.find(i) != m_occupied.end(); 
 }
 
@@ -186,7 +186,7 @@ bool Hex::HasWormhole(Edge e) const
 
 std::vector<Square*> Hex::GetAvailableSquares(const Team& team) 
 {
-	VerifyModel("Hex::GetAvailableSquares", m_colour == team.GetColour());
+	VERIFY_MODEL(m_colour == team.GetColour());
 	
 	std::vector<Square*> squares;
 
@@ -232,7 +232,7 @@ void Hex::RemoveShip(ShipType type, Colour colour)
 			return;
 		}
 
-	VerifyModel("Hex::RemoveShip", false);
+	VERIFY_MODEL(false);
 }
 
 bool Hex::HasShip(const Colour& c, ShipType type) const
@@ -337,7 +337,7 @@ bool Hex::CanMoveThrough(const Team& team) const
 
 void Hex::SetColour(Colour c)
 {
-	VerifyModel("Hex::SetOwner", (c == Colour::None) != (m_colour == Colour::None));
+	VERIFY_MODEL((c == Colour::None) != (m_colour == Colour::None));
 	m_colour = c;
 }
 
@@ -358,13 +358,13 @@ bool Hex::HasNeighbour(const Map& map, bool bWormholeGen) const
 
 void Hex::RemoveDiscoveryTile()
 {
-	VerifyModel("Hex::RemoveDiscoveryTile", m_discovery != DiscoveryType::None);
+	VERIFY_MODEL(m_discovery != DiscoveryType::None);
 	m_discovery = DiscoveryType::None;
 }
 
 void Hex::SetDiscoveryTile(DiscoveryType type)
 {
-	VerifyModel("Hex::SetDiscoveryTile", m_discovery == DiscoveryType::None);
+	VERIFY_MODEL(m_discovery == DiscoveryType::None);
 	m_discovery = type;
 }
 

@@ -5,15 +5,15 @@
 
 bool CmdStack::Chain::IsOpen() const
 {
-	VerifyModel("CmdStack::Chain::IsOpen: empty chain", !empty());
+	VERIFY_MODEL_MSG("empty chain", !empty());
 	bool bOpen = back()->pCmd != nullptr;
-	VerifyModel("CmdStack::Chain::IsOpen: chain closed but subchain open", bOpen || !const_cast<Chain*>(this)->GetOpenChild());
+	VERIFY_MODEL_MSG("chain closed but subchain open", bOpen || !const_cast<Chain*>(this)->GetOpenChild());
 	return bOpen;
 }
 
 CmdStack::Node& CmdStack::Chain::GetLastNode()
 {
-	VerifyModel("CmdStack::Chain::GetLastNode", !empty());
+	VERIFY_MODEL(!empty());
 	return *back();
 }
 
@@ -38,7 +38,7 @@ CmdStack::Chain* CmdStack::Chain::GetOpenChild()
 	if (Chain* pChild = GetLastChild())
 		if (pChild->IsOpen())
 		{
-			VerifyModel("CmdStack::Chain::GetOpenChild: subchain open but chain closed", IsOpen());
+			VERIFY_MODEL_MSG("subchain open but chain closed", IsOpen());
 			return pChild;
 		}
 	return nullptr;
@@ -49,11 +49,11 @@ void CmdStack::Chain::AddCmd(CmdPtr& pCmd, bool bStart)
 	Chain* pChain = this;
 	if (empty()) // New root chain. 
 	{
-		VerifyModel("CmdStack::Chain::AddCmd: nothing to add to", bStart);
+		VERIFY_MODEL_MSG("nothing to add to", bStart);
 	}
 	else
 	{
-		VerifyModel("CmdStack::Chain::AddCmd: chain not open", IsOpen());
+		VERIFY_MODEL_MSG("chain not open", IsOpen());
 
 		if (Chain* pChild = GetOpenChild())
 		{
@@ -88,15 +88,14 @@ bool CmdStack::Chain::CanRemoveCmd() const
 	if (const Chain* pChild = const_cast<CmdStack::Chain*>(this)->GetLastChild())
 		return pChild->CanRemoveCmd();
 	
-	VerifyModel("CmdStack::Chain::CanRemoveCmd: empty chain", !empty());
+	VERIFY_MODEL_MSG("empty chain", !empty());
 
 	return size() == 1 || (*(end() - 2))->pCmd->CanUndo();
 }
 
 void CmdStack::Chain::AssertValid() const
 {
-	std::string s = "CmdStack::Chain::AssertValid";
-	VerifyModel(s, !empty());
+	VERIFY_MODEL(!empty());
 
 	for (auto& node : *this)
 	{
@@ -106,14 +105,14 @@ void CmdStack::Chain::AssertValid() const
 			for (auto& chain : node->subchains)
 			{
 				if (chain->IsOpen())
-					VerifyModel(s, bLast && &chain == &node->subchains.back());
+					VERIFY_MODEL(bLast && &chain == &node->subchains.back());
 				chain->AssertValid();
 			}
 		}
 		else
 		{
-			VerifyModel(s, bLast);
-			VerifyModel(s, node->subchains.empty());
+			VERIFY_MODEL(bLast);
+			VERIFY_MODEL(node->subchains.empty());
 		}
 	}
 }
@@ -148,7 +147,7 @@ CmdStack::CmdStack()
 
 void CmdStack::StartCmd(CmdPtr& pCmd)
 {
-	VerifyModel("CmdStack::StartCmd", !!pCmd);
+	VERIFY_MODEL(!!pCmd);
 
 	if (m_chains.empty() || !m_chains.back()->IsOpen())
 		m_chains.push_back(ChainPtr(new Chain()));
@@ -156,25 +155,25 @@ void CmdStack::StartCmd(CmdPtr& pCmd)
 	m_chains.back()->AddCmd(pCmd, true); 
 
 	AssertValid();
-	VerifyModel("CmdStack::StartCmd", !!GetCurrentCmd());
+	VERIFY_MODEL(!!GetCurrentCmd());
 }
 
 void CmdStack::AddCmd(CmdPtr& pCmd)
 {
-	VerifyModel("CmdStack::AddCmd: no chains", !m_chains.empty());
-	VerifyModel("CmdStack::AddCmd: chain not open", m_chains.back()->IsOpen());
+	VERIFY_MODEL_MSG("no chains", !m_chains.empty());
+	VERIFY_MODEL_MSG("chain not open", m_chains.back()->IsOpen());
 	
 	Purge();
 
 	m_chains.back()->AddCmd(pCmd, false); 
 	
 	AssertValid();
-	VerifyModel("CmdStack::AddCmd", !pCmd || GetCurrentCmd());
+	VERIFY_MODEL(!pCmd || GetCurrentCmd());
 }
 
 Cmd* CmdStack::RemoveCmd()
 {
-	VerifyModel("CmdStack::RemoveCmd", CanRemoveCmd());
+	VERIFY_MODEL(CanRemoveCmd());
 
 	Cmd* pCmd = m_chains.back()->RemoveCmd();
 	if (m_chains.back()->empty())

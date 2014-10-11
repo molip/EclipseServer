@@ -59,7 +59,7 @@ Team* Game::FindTeam(const Player& player)
 Team& Game::GetTeam(const Player& player)
 {
 	Team* pTeam = FindTeam(player);
-	VerifyModel("Game::GetTeam: player not in game: " + player.GetName(), !!pTeam);
+	VERIFY_MODEL_MSG(player.GetName(), !!pTeam);
 	return *pTeam;
 }
 
@@ -74,7 +74,7 @@ Team* Game::FindTeam(Colour c)
 Team& Game::GetTeam(Colour c) 
 {
 	Team* pTeam = FindTeam(c);
-	VerifyModel("Game::GetTeam: colour not in game: ", !!pTeam);
+	VERIFY_MODEL_MSG("colour not in game: ", !!pTeam);
 	return *pTeam;
 }
 
@@ -89,7 +89,7 @@ bool Game::IncrementRound(bool bDo)
 
 Battle& Game::GetBattle() 
 {
-	VerifyModel("Game::GetBattle: ", !!m_battle);
+	VERIFY_MODEL(!!m_battle);
 	return *m_battle;
 }
 

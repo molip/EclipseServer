@@ -41,11 +41,11 @@ void WSServer::OnMessage(ClientID client, const std::string& message)
 			}
 		}
 		else
-			VerifyInput("OnMessage");
+			VERIFY_INPUT(false);
 	}
 	catch (Exception& e)
 	{
-		std::string error = GetErrorMessage(e.GetType(), e.what(), client);
+		std::string error = GetErrorMessage(e.GetTypeString(), e.what(), client);
 		std::cerr << error << std::endl;
 
 		if (player)
@@ -132,10 +132,11 @@ void WSServer::BroadcastMessage(const std::string& msg) const
 std::string WSServer::GetErrorMessage(const std::string& type, const std::string& msg, ClientID client)
 {
 	std::ostringstream ss;
-	ss << "Exception : " << type << " : " << msg;
+	ss << type << " exception: " << msg;
+	std::string name;
 	if (client)
 	{
-		ss << " [";
+		ss << " [client: ";
 
 		auto i = m_mapClientToPlayer.find(client);
 		if (i != m_mapClientToPlayer.end())

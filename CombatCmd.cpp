@@ -27,7 +27,7 @@ CmdPtr CombatCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
 
 	const Battle& battle = session.GetGame().GetBattle();
 
-	VerifyInput("CombatCmd::Process: missiles must be fired", !battle.IsMissilePhase() || m.m_fire);
+	VERIFY_INPUT_MSG("missiles must be fired", !battle.IsMissilePhase() || m.m_fire);
 	
 	Dice dice;
 	battle.RollDice(session.GetGame(), dice);

@@ -34,13 +34,13 @@ const Player& Cmd::GetPlayer(const LiveGame& game) const
 
 std::string Cmd::GetActionName() const
 {
-	Verify("Cmd::GetActionName", false);
+	VERIFY(false);
 	return "";
 }
 
 void Cmd::DoRecord(RecordPtr pRec, CommitSession& session)
 {
-	VerifyModel("Cmd::DoRecord", !m_bHasRecord);
+	VERIFY_MODEL(!m_bHasRecord);
 
 	session.DoAndPushRecord(std::move(pRec));
 	m_bHasRecord = true;
@@ -48,7 +48,7 @@ void Cmd::DoRecord(RecordPtr pRec, CommitSession& session)
 
 void Cmd::PopRecord(CommitSession& session)
 {
-	VerifyModel("Cmd::PopRecord", m_bHasRecord);
+	VERIFY_MODEL(m_bHasRecord);
 	session.PopAndUndoRecord();
 	m_bHasRecord = false;
 }

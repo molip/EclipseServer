@@ -41,14 +41,14 @@ const Hex* Map::FindPendingBattleHex(const Game& game) const
 Hex& Map::GetHex(const MapPos& pos)
 {
 	Hex* pHex = FindHex(pos);
-	VerifyModel("Map::GetHex", !!pHex);
+	VERIFY_MODEL(!!pHex);
 	return *pHex;
 }
 
 std::vector<MapPos> Map::GetTeamStartPositions() const
 {
 	const int nTeams = m_game.GetTeams().size();
-	VerifyModel("Map::GetTeamStartPositions", nTeams > 0 && nTeams < 7);
+	VERIFY_MODEL(nTeams > 0 && nTeams < 7);
 
 	std::string s;
 	switch (nTeams)
@@ -75,8 +75,8 @@ std::vector<MapPos> Map::GetTeamStartPositions() const
 
 Hex& Map::AddHex(const MapPos& pos, int id, int rotation)
 {
-	VerifyModel("Map::AddHex: hex already occupied", FindHex(pos) == nullptr);
-	VerifyModel("Map::AddHex: invalid rotation", rotation >= 0 && rotation < 6);
+	VERIFY_MODEL_MSG("hex already occupied", FindHex(pos) == nullptr);
+	VERIFY_MODEL_MSG("invalid rotation", rotation >= 0 && rotation < 6);
 	Hex* p = new Hex(id, pos, rotation);
 	m_hexes.insert(std::make_pair(pos, HexPtr(p)));
 	
@@ -89,12 +89,12 @@ Hex& Map::AddHex(const MapPos& pos, int id, int rotation)
 void Map::DeleteHex(const MapPos& pos)
 {
 	auto i = m_hexes.find(pos);
-	VerifyModel("Map::DeleteHex: hex not found", i != m_hexes.end());
+	VERIFY_MODEL_MSG("hex not found", i != m_hexes.end());
 
 	if (i->second->HasDiscovery())
 	{
 		DiscoveryType d = i->second->GetDiscoveryTile();
-		VerifyModel("Map::DeleteHex: discovery tile has gone", d != DiscoveryType::None);
+		VERIFY_MODEL_MSG("discovery tile has gone", d != DiscoveryType::None);
 		m_game.GetDiscoveryBag().ReturnTile(d);
 	}
 	m_hexes.erase(i);
@@ -105,7 +105,7 @@ void Map::GetInfluencableNeighbours(const MapPos& pos, const Team& team, std::se
 	const bool bWormholeGen = team.HasTech(TechType::WormholeGen);
 
 	const Hex& hex= GetHex(pos);
-	VerifyModel("Map::GetInfluencableNeighbours: wrong owner", !hex.IsOwned() || hex.IsOwnedBy(team));
+	VERIFY_MODEL_MSG("wrong owner", !hex.IsOwned() || hex.IsOwnedBy(team));
 
 	for (auto e : EnumRange<Edge>())
 		if (int nWormholes = hex.HasWormhole(e) + bWormholeGen)

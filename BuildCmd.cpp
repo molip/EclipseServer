@@ -18,7 +18,7 @@ namespace
 		case ShipType::Dreadnought:	return Buildable::Dreadnought;
 		case ShipType::Starbase:	return Buildable::Starbase;
 		}
-		VerifyModel("ShipToBuildable", false);
+		VERIFY_MODEL(false);
 		return Buildable::None;
 	}
 
@@ -31,7 +31,7 @@ namespace
 		case Buildable::Dreadnought:	return ShipType::Dreadnought;
 		case Buildable::Starbase:		return ShipType::Starbase;
 		}
-		VerifyModel("BuildableToShip", false);
+		VERIFY_MODEL(false);
 		return ShipType::None;
 	}
 
@@ -157,10 +157,10 @@ CmdPtr BuildCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
 	const LiveGame& game = session.GetGame();
 	const Team& team = GetTeam(game);
 	const Hex& hex = game.GetMap().GetHex(pos);
-	VerifyInput("BuildCmd::Process: invalid hex", hex.GetColour() == m_colour);
-	VerifyInput("BuildCmd::Process: team can't build this", CanBuild(team, m.m_buildable));
-	VerifyInput("BuildCmd::Process: already got orbital", !bOrbital || !hex.HasOrbital());
-	VerifyInput("BuildCmd::Process: already got monolith", !bMonolith || !hex.HasMonolith());
+	VERIFY_INPUT_MSG("invalid hex", hex.GetColour() == m_colour);
+	VERIFY_INPUT_MSG("team can't build this", CanBuild(team, m.m_buildable));
+	VERIFY_INPUT_MSG("already got orbital", !bOrbital || !hex.HasOrbital());
+	VERIFY_INPUT_MSG("already got monolith", !bMonolith || !hex.HasMonolith());
 
 	BuildRecord* pRec = new BuildRecord(m_colour, pos, m.m_buildable);
 	DoRecord(RecordPtr(pRec), session);

@@ -31,7 +31,7 @@ void AttackRecord::Apply(bool bDo, Game& game, const Controller& controller)
 	}
 
 	Hex* hex = game.GetMap().FindHex(battle.GetHexId());
-	VerifyModel("AttackRecord::Apply", !!hex);
+	VERIFY_MODEL(!!hex);
 
 	bool updateMap = false;
 	for (size_t i = 0; i < m_hits.size(); ++i)
@@ -39,11 +39,11 @@ void AttackRecord::Apply(bool bDo, Game& game, const Controller& controller)
 		const auto& hit = m_hits[i];
 		
 		Battle::Group* group = battle.FindTargetGroup(hit.shipType);
-		VerifyModel("AttackRecord::Apply", !!group);
+		VERIFY_MODEL(!!group);
 		
 		if (bDo)
 		{
-			VerifyModel("AttackRecord::Apply", group->lifeCounts[hit.shipIndex] > 0);
+			VERIFY_MODEL(group->lifeCounts[hit.shipIndex] > 0);
 			group->lifeCounts[hit.shipIndex] -= hit.dice.GetDamage();
 
 			if (group->lifeCounts[hit.shipIndex] <= 0)
@@ -62,7 +62,7 @@ void AttackRecord::Apply(bool bDo, Game& game, const Controller& controller)
 			}
 
 			group->lifeCounts[hit.shipIndex] += hit.dice.GetDamage();
-			VerifyModel("AttackRecord::Apply", group->lifeCounts[hit.shipIndex] > 0);
+			VERIFY_MODEL(group->lifeCounts[hit.shipIndex] > 0);
 		}
 	}
 

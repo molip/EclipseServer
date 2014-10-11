@@ -13,22 +13,22 @@ UpkeepPhase::UpkeepPhase(LiveGame* pGame) : Phase(pGame)
 	if (pGame)
 		for (auto& team : pGame->GetTeams())
 		{
-			VerifyModel("UpkeepPhase::UpkeepPhase: Team has no colour", team->GetColour() != Colour::None);
+			VERIFY_MODEL_MSG("Team has no colour", team->GetColour() != Colour::None);
 			auto pair = m_cmdStacks.insert(std::make_pair(team->GetColour(), CmdStackPtr(new CmdStack)));
-			VerifyModel("LiveGame::AssignTeam", pair.second);
+			VERIFY_MODEL(pair.second);
 		}
 }
 
 CmdStack& UpkeepPhase::GetCmdStack(Colour c)
 {
 	auto it = m_cmdStacks.find(c);
-	VerifyModel("Phase::GetCmdStack", it != m_cmdStacks.end());
+	VERIFY_MODEL(it != m_cmdStacks.end());
 	return *it->second;
 }
 
 void UpkeepPhase::StartCmd(CmdPtr pCmd, CommitSession& session)
 {
-	VerifyModel("UpkeepPhase::StartCmd", !pCmd->IsAction());
+	VERIFY_MODEL(!pCmd->IsAction());
 
 	Colour c = pCmd->GetColour();
 	GetCmdStack(c).StartCmd(pCmd);
@@ -38,7 +38,7 @@ void UpkeepPhase::StartCmd(CmdPtr pCmd, CommitSession& session)
 
 void UpkeepPhase::AddCmd(CmdPtr pCmd)
 {
-	VerifyModel("Phase::UpkeepPhase", (bool)pCmd);
+	VERIFY_MODEL((bool)pCmd);
 
 	GetCmdStack(pCmd->GetColour()).AddCmd(pCmd);
 }
@@ -92,10 +92,10 @@ void UpkeepPhase::FinishTurn(CommitSession& session, const Player& player)
 	
 	const Colour c = game.GetTeam(player).GetColour();
 
-	VerifyModel("UpkeepPhase::FinishTurn", GetCurrentCmd(c) == nullptr);
+	VERIFY_MODEL(GetCurrentCmd(c) == nullptr);
 
 	bool bOK = m_finished.insert(c).second;
-	VerifyModel("UpkeepPhase::FinishTurn", bOK);
+	VERIFY_MODEL(bOK);
 
 	const Controller& controller = session.GetController();
 

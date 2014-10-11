@@ -90,6 +90,7 @@
     <ClInclude Include="BuildCmd.h" />
     <ClInclude Include="CombatCmd.h" />
     <ClInclude Include="CombatPhase.h" />
+    <ClInclude Include="Debug.h" />
     <ClInclude Include="Dice.h" />
     <ClInclude Include="FinishBattleRecord.h" />
     <ClInclude Include="MessageRecord.h" />
@@ -176,6 +177,7 @@
     <ClCompile Include="BuildCmd.cpp" />
     <ClCompile Include="CombatCmd.cpp" />
     <ClCompile Include="CombatPhase.cpp" />
+    <ClCompile Include="Debug.cpp" />
     <ClCompile Include="Dice.cpp" />
     <ClCompile Include="FinishBattleRecord.cpp" />
     <ClCompile Include="MessageRecord.cpp" />

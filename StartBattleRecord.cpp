@@ -9,7 +9,7 @@ StartBattleRecord::StartBattleRecord(const Battle* oldBattle)
 {
 	if (oldBattle)
 	{
-		VerifyModel("StartBattleRecord::StartBattleRecord", oldBattle->IsFinished() && !oldBattle->GetGroups().empty());
+		VERIFY_MODEL(oldBattle->IsFinished() && !oldBattle->GetGroups().empty());
 		m_oldGroups = oldBattle->GetGroups();
 	}
 }
@@ -21,7 +21,7 @@ void StartBattleRecord::Apply(bool bDo, Game& game, const Controller& controller
 	if (bDo)
 	{
 		const Hex* hex = game.GetMap().FindPendingBattleHex(game);
-		VerifyModel("StartBattleRecord::Apply", !!hex);
+		VERIFY_MODEL(!!hex);
 		game.AttachBattle(BattlePtr(new Battle(*hex, game, m_oldGroups)));
 		controller.SendMessage(Output::UpdateCombat(game, game.GetBattle()), game);
 	}

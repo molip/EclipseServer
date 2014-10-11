@@ -354,7 +354,7 @@ struct ObjectLoader
 	{ 
 		std::string id;
 		if (!e.GetAttribute("_class", id))
-			VerifySerial("ObjectLoader", false);
+			VERIFY_SERIAL(false);
 
 		delete pObj;
 		pObj = nullptr;
@@ -559,7 +559,7 @@ template <typename T, typename LK, typename LV> bool LoadNode::LoadMap(const std
 
 		const Xml::Element k = item.GetFirstChild("_k");
 		const Xml::Element v = item.GetFirstChild("_v");
-		VerifySerial("LoadNode::LoadMap", !k.IsNull() && !v.IsNull());
+		VERIFY_SERIAL(!k.IsNull() && !v.IsNull());
 
 		keyLoader(k, key);
 		valLoader(v, val);

@@ -108,7 +108,7 @@ MessagePtr CreateCommand(const Json::Element& root)
 	if (type == "cmd_dice")
 		return MessagePtr(new CmdDice(root));
 
-	VerifyInput("Input command not recognised: " + type);
+	VERIFY_INPUT_MSG(type, false);
 	return nullptr;
 }
 
@@ -124,8 +124,8 @@ MessagePtr CreateMessage(const std::string& msg)
 const LiveGame& Message::GetLiveGame(const Player& player) const
 {
 	const LiveGame* pGame = player.GetCurrentLiveGame();
-	VerifyInput("ChooseMessage: player not registered in any game", !!pGame);
-	VerifyInput("ChooseMessage: game not in main phase: " + pGame->GetName(), pGame->GetGamePhase() == LiveGame::GamePhase::Main);
+	VERIFY_INPUT_MSG(player.GetName(), !!pGame);
+	VERIFY_INPUT_MSG(pGame->GetName(), pGame->GetGamePhase() == LiveGame::GamePhase::Main);
 	return *pGame;
 }
 
@@ -134,20 +134,20 @@ const LiveGame& Message::GetLiveGame(const Player& player) const
 Register::Register(const Json::Element& node) : m_idPlayer(0)
 {
 	node.GetAttribute("player", m_idPlayer);
-	VerifyInput("Register", m_idPlayer > 0);
+	VERIFY_INPUT(m_idPlayer > 0);
 }
 
 JoinGame::JoinGame(const Json::Element& node) : m_idGame(0)
 {
 	node.GetAttribute("game", m_idGame);
-	VerifyInput("JoinGame", m_idGame > 0);
+	VERIFY_INPUT(m_idGame > 0);
 }
 
 namespace 
 {
 	void DoJoinGame(Controller& controller, Player& player, const LiveGame& game)
 	{
-		VerifyInput("DoJoinGame: Player already in a game: " + player.GetName(), !player.GetCurrentGame());
+		VERIFY_INPUT_MSG(player.GetName(), !player.GetCurrentGame());
 		player.SetCurrentGame(&game);
 		if (!game.HasStarted())
 		{
@@ -172,7 +172,7 @@ bool JoinGame::Process(Controller& controller, Player& player) const
 bool ExitGame::Process(Controller& controller, Player& player) const 
 {
 	const Game* pGame = player.GetCurrentGame();
-	VerifyInput("ExitGame: Player not in any game: " + player.GetName(), !!pGame);
+	VERIFY_INPUT_MSG(player.GetName(), !!pGame);
 
 	player.SetCurrentGame(nullptr);
 	controller.SendMessage(Output::ShowGameList(), player);
@@ -183,7 +183,7 @@ bool ExitGame::Process(Controller& controller, Player& player) const
 bool StartReview::Process(Controller& controller, Player& player) const 
 {
 	const LiveGame* pLive = player.GetCurrentLiveGame();
-	VerifyInput("ExitGame: Player not in live game: " + player.GetName(), !!pLive);
+	VERIFY_INPUT_MSG(player.GetName(), !!pLive);
 
 	ReviewGame& review = Games::AddReview(player, *pLive);
 	
@@ -195,7 +195,7 @@ bool StartReview::Process(Controller& controller, Player& player) const
 bool ExitReview::Process(Controller& controller, Player& player) const 
 {
 	const ReviewGame* pReview = player.GetCurrentReviewGame();
-	VerifyInput("ExitGame: Player not in review game: " + player.GetName(), !!pReview);
+	VERIFY_INPUT_MSG(player.GetName(), !!pReview);
 
 	const LiveGame& live = Games::GetLive(pReview->GetLiveGameID());
 	player.SetCurrentGame(&live);
@@ -209,7 +209,7 @@ bool ExitReview::Process(Controller& controller, Player& player) const
 bool AdvanceReview::Process(Controller& controller, Player& player) const 
 {
 	const ReviewGame* pReview = player.GetCurrentReviewGame();
-	VerifyInput("AdvanceReview: Player not in review game: " + player.GetName(), !!pReview);
+	VERIFY_INPUT_MSG(player.GetName(), !!pReview);
 
 	Record::DoImmediate(*pReview, [&](ReviewGame& game) { game.Advance(controller); });
 
@@ -220,7 +220,7 @@ bool AdvanceReview::Process(Controller& controller, Player& player) const
 bool RetreatReview::Process(Controller& controller, Player& player) const 
 {
 	const ReviewGame* pReview = player.GetCurrentReviewGame();
-	VerifyInput("RetreatReview: Player not in review game: " + player.GetName(), !!pReview);
+	VERIFY_INPUT_MSG(player.GetName(), !!pReview);
 	Record::DoImmediate(*pReview, [&](ReviewGame& game) { game.Retreat(controller); });
 
 	controller.SendMessage(Output::UpdateReviewUI(*pReview), player);
@@ -242,9 +242,9 @@ bool StartGame::Process(Controller& controller, Player& player) const
 {
 	const LiveGame* pGame = player.GetCurrentLiveGame();
 
-	VerifyInput("StartGame: player not registered in any game", !!pGame);
-	VerifyInput("StartGame: player isn't the owner of game: " + pGame->GetName(), &player == &pGame->GetOwner());
-	VerifyInput("StartGame: game already started: " + pGame->GetName(), !pGame->HasStarted());
+	VERIFY_INPUT_MSG(player.GetName(), !!pGame);
+	VERIFY_INPUT_MSG(player.GetName(), &player == &pGame->GetOwner());
+	VERIFY_INPUT_MSG(pGame->GetName(), !pGame->HasStarted());
 	
 	CommitSession session(*pGame, controller);
 	session.Open().StartChooseTeamGamePhase();
@@ -265,19 +265,19 @@ ChooseTeam::ChooseTeam(const Json::Element& node)
 bool ChooseTeam::Process(Controller& controller, Player& player) const 
 {
 	const LiveGame* pGame = player.GetCurrentLiveGame();
-	VerifyInput("ChooseTeam: player not registered in any game", !!pGame);
-	VerifyInput("ChooseMessage: player played out of turn",
+	VERIFY_INPUT_MSG(player.GetName(), !!pGame);
+	VERIFY_INPUT_MSG(player.GetName(),
 		pGame->GetChooseTeamPhase().GetCurrentTeam().GetColour() == player.GetCurrentTeam()->GetColour());
 
 	RaceType race = ::EnumFromString<RaceType>(m_race);
 	Colour colour = ::EnumFromString<Colour>(m_colour);
 
-	VerifyInput("ChooseTeam:race", race != RaceType::None);
-	VerifyInput("ChooseTeam:colour", colour != Colour::None);
-	VerifyInput("ChooseTeam: colour already taken", !pGame->FindTeam(colour));
+	VERIFY_INPUT_MSG("race", race != RaceType::None);
+	VERIFY_INPUT_MSG("colour", colour != Colour::None);
+	VERIFY_INPUT_MSG("colour already taken", !pGame->FindTeam(colour));
 
 	if (race != RaceType::Human)
-		VerifyInput("ChooseTeam: colour doesn't match race", colour == Race(race).GetColour());
+		VERIFY_INPUT_MSG("colour doesn't match race", colour == Race(race).GetColour());
 
 	CommitSession session(*pGame, controller);
 	session.Open().GetChooseTeamPhase().AssignTeam(session, player, race, colour);
@@ -319,7 +319,7 @@ bool StartAction::Process(Controller& controller, Player& player) const
 	else if (m_action == "pass") 
 		pCmd = new PassCmd(colour, game);
 
-	VerifyInput("StartAction::Process: No command created", !!pCmd);
+	VERIFY_INPUT_MSG("No command created", !!pCmd);
 	
 	CommitSession session(game, controller);
 	session.Open().GetPhase().StartCmd(CmdPtr(pCmd), session);
@@ -427,7 +427,7 @@ CmdColoniseSquares::CmdColoniseSquares(const Json::Element& node)
 	auto Read = [&] (const std::string& type, Population& pops)
 	{
 		auto el = node.GetChild(type);
-		VerifyInput("CmdColoniseSquares: child not found", !el.IsNull());
+		VERIFY_INPUT_MSG("child not found", !el.IsNull());
 		for (auto r : EnumRange<Resource>())
 			pops[r] = el.GetAttributeInt(::EnumToString(r));
 	};
@@ -436,7 +436,7 @@ CmdColoniseSquares::CmdColoniseSquares(const Json::Element& node)
 	Read("Grey", m_grey);
 	Read("Orbital", m_orbital);
 
-	VerifyInput("CmdColonise: trying to add materials to orbital", m_orbital[Resource::Materials] == 0);
+	VERIFY_INPUT_MSG("trying to add materials to orbital", m_orbital[Resource::Materials] == 0);
 }
 
 CmdInfluenceSrc::CmdInfluenceSrc(const Json::Element& node)

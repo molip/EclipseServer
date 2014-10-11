@@ -94,7 +94,7 @@ Battle::Battle() : m_hexId(0)
 
 Battle::Battle(const Hex& hex, const Game& game, const GroupVec& oldGroups) : m_hexId(hex.GetID())
 {
-	VerifyModel("Battle::Battle 1", hex.GetPendingBattle(m_defender, m_invader, game));
+	VERIFY_MODEL(hex.GetPendingBattle(m_defender, m_invader, game));
 
 	auto pred = [&](const Group& lhs, const Group& rhs)
 	{
@@ -114,7 +114,7 @@ Battle::Battle(const Hex& hex, const Game& game, const GroupVec& oldGroups) : m_
 	else
 		AddOldGroups(oldGroups, hex, game);
 
-	VerifyModel("Battle::Battle 3", m_groups.size() >= 2);
+	VERIFY_MODEL(m_groups.size() >= 2);
 
 	for (auto& group : m_groups)
 	{
@@ -149,7 +149,7 @@ void Battle::AddOldGroups(const GroupVec& oldGroups, const Hex& hex, const Game&
 
 		if (!lifeCounts.empty())
 		{
-			VerifyModel("Battle::AddOldGroups", lifeCounts.size() == hex.GetShipCount(GetColour(true), oldGroup.shipType));
+			VERIFY_MODEL(lifeCounts.size() == hex.GetShipCount(GetColour(true), oldGroup.shipType));
 			m_groups.push_back(Group(oldGroup.shipType, true));
 			m_groups.back().lifeCounts = lifeCounts;
 		}
@@ -185,7 +185,7 @@ Battle::Turn Battle::AdvanceTurn()
 
 	if (m_turn.missilePhase)
 	{
-		VerifyModel("Battle::AdvanceTurn", GetCurrentGroup().hasMissiles);
+		VERIFY_MODEL(GetCurrentGroup().hasMissiles);
 		GetCurrentGroup().hasMissiles = false;
 		m_turn.groupIndex = FindFirstMissileGroup();
 		

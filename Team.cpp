@@ -34,7 +34,7 @@ Team::Team(const Team& rhs) :
 
 void Team::Assign(RaceType race, Colour colour, LiveGame& game)
 {
-	VerifyModel("Team::Assign", m_race == RaceType::None);
+	VERIFY_MODEL(m_race == RaceType::None);
 	m_race = race;
 	m_colour = colour;
 
@@ -79,13 +79,13 @@ Player& Team::GetPlayer()
 void Team::AddShips(ShipType type, int nShips)
 {
 	// TODO: Check max count not exceeded.
-	VerifyModel("Team::AddShips: invalid ship type", int(type) >= 0);
+	VERIFY_MODEL_MSG("invalid ship type", int(type) >= 0);
 	m_nShips[(int)type] += nShips;
 }
 
 int Team::GetUnusedShips(ShipType type) const 
 {
-	VerifyModel("Team::GetUnusedShips", int(type) >= 0);
+	VERIFY_MODEL(int(type) >= 0);
 	return m_nShips[(int)type]; 
 }
 
@@ -114,7 +114,7 @@ void Team::PopulateStartHex(Hex& hex)
 
 void Team::UseColonyShips(int nShips)
 {
-	VerifyModel("Team::UseColonyShips", m_nColonyShipsUsed + nShips <= GetColonyShips());
+	VERIFY_MODEL(m_nColonyShipsUsed + nShips <= GetColonyShips());
 	m_nColonyShipsUsed += nShips;
 }
 
@@ -130,13 +130,13 @@ int Team::GetColonyShips() const
 
 Blueprint& Team::GetBlueprint(ShipType s) 
 {
-	VerifyModel("Team::GetBlueprint", int(s) >= 0 && s != ShipType::_Count);
+	VERIFY_MODEL(int(s) >= 0 && s != ShipType::_Count);
 	return *m_blueprints[int(s)];
 }
 
 bool Team::CanUseShipPart(ShipPart part) const
 {
-	VerifyModel("Team::CanUseShipPart", int(part) >= 0);
+	VERIFY_MODEL(int(part) >= 0);
 
 	if (m_discoveredShipParts.find(part) != m_discoveredShipParts.end())
 		return true;
@@ -170,7 +170,7 @@ bool Team::CanUseShipPart(ShipPart part) const
 
 bool Team::IsAncientAlliance(const Team* pTeam1, const Team* pTeam2)
 {
-	VerifyModel("Team::IsAncientAlliance", pTeam1 != pTeam2);
+	VERIFY_MODEL(pTeam1 != pTeam2);
 	return (!pTeam1 || !pTeam2) && Race((pTeam1 ? pTeam1 : pTeam2)->GetRace()).IsAncientsAlly();
 }
 

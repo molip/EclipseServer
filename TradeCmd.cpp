@@ -72,9 +72,9 @@ CmdPtr TradeCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
 	auto& m = VerifyCastInput<const Input::CmdTrade>(msg);
 
 	const int fromCount = m.m_count * Race(team.GetRace()).GetTradeRate();
-	VerifyInput("TradeCmd::Process: no count", m.m_count > 0);
-	VerifyInput("TradeCmd::Process: to == from", m.m_from != m.m_to);
-	VerifyInput("TradeCmd::Process: can't afford trade", fromCount <= storage[m.m_from]);
+	VERIFY_INPUT_MSG("no count", m.m_count > 0);
+	VERIFY_INPUT_MSG("to == from", m.m_from != m.m_to);
+	VERIFY_INPUT_MSG("can't afford trade", fromCount <= storage[m.m_from]);
 
 	TradeRecord::PairVec srcs{ { m.m_from, fromCount } };
 	TradeRecord::Pair dst(m.m_to, m.m_count);

@@ -42,7 +42,7 @@ const HexDefs& HexDefs::Instance()
 const HexDef& HexDefs::Get(int id)
 {
 	auto it = Instance().m_map.find(id);
-	VerifyModel("HexDefs::Get", it != Instance().m_map.end());
+	VERIFY_MODEL(it != Instance().m_map.end());
 	return it->second;
 }
 

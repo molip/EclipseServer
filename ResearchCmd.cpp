@@ -34,7 +34,7 @@ private:
 		// Add/remove tech from supply board.
 		if (bDo)
 		{
-			VerifyModel("ResearchRecord::Apply", it != techs.end());
+			VERIFY_MODEL(it != techs.end());
 			if (--it->second == 0)
 				techs.erase(it);
 		}
@@ -88,7 +88,7 @@ REGISTER_DYNAMIC(ResearchRecord)
 ResearchCmd::ResearchCmd(Colour colour, const LiveGame& game, int iPhase) : PhaseCmd(colour, iPhase)
 {
 	const Team& team = GetTeam(game);
-	VerifyInput("ResearchCmd::ResearchCmd", !team.HasPassed());
+	VERIFY_INPUT(!team.HasPassed());
 }
 
 void ResearchCmd::UpdateClient(const Controller& controller, const LiveGame& game) const
@@ -118,7 +118,7 @@ CmdPtr ResearchCmd::Process(const Input::CmdMessage& msg, CommitSession& session
 		return nullptr;
 
 	auto& m = VerifyCastInput<const Input::CmdResearch>(msg);
-	VerifyInput("ResearchCmd::Process: invalid tech index", InRange(m_techs, m.m_iTech));
+	VERIFY_INPUT_MSG("invalid tech index", InRange(m_techs, m.m_iTech));
 
 	ResearchRecord* pRec = new ResearchRecord(m_colour, m_techs[m.m_iTech].first);
 	DoRecord(RecordPtr(pRec), session);

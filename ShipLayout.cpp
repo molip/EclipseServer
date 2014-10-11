@@ -22,14 +22,14 @@ ShipLayout::ShipLayout(ShipType type) : m_type(ShipType::None)
 
 void ShipLayout::SetType(ShipType t) 
 {
-	Verify("ShipLayout::SetType", m_slots.empty() && m_type == ShipType::None);
+	VERIFY(m_slots.empty() && m_type == ShipType::None);
 	m_type = t;
 	m_slots.resize(GetSlotCount(t), ShipPart::Empty);
 }
 
 void ShipLayout::SetSlot(int i, ShipPart part) 
 {
-	Verify("ShipLayout::SetSlot", i >= 0 && i < (int)m_slots.size());
+	VERIFY(i >= 0 && i < (int)m_slots.size());
 	m_slots[i] = part;
 }
 

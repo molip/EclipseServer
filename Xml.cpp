@@ -45,7 +45,7 @@ Element Document::AddElement(const std::string& name)
 Element Document::GetRoot()
 {
 	auto pRoot = m_pDoc->RootElement();
-	VerifySerial("Document::GetRoot", !!pRoot);
+	VERIFY_SERIAL(!!pRoot);
 	return Element(pRoot);
 }
 
@@ -57,13 +57,13 @@ Element::Element(TiXmlElement* pElem) : m_pElem(pElem)
 
 const std::string& Element::GetName() const
 {
-	VerifySerial("Element::GetName", !!m_pElem);
+	VERIFY_SERIAL(!!m_pElem);
 	return m_pElem->ValueStr();
 }
 
 Element Element::AddElement(const std::string& name)
 {
-	VerifySerial("Element::AddElement", !!m_pElem);
+	VERIFY_SERIAL(!!m_pElem);
 	TiXmlElement* pElem = new TiXmlElement(name);
 	m_pElem->LinkEndChild(pElem);
 	return Element(pElem);
@@ -71,19 +71,19 @@ Element Element::AddElement(const std::string& name)
 
 void Element::SetAttribute(const std::string& name, const std::string& val)
 {
-	VerifySerial("Element::SetAttribute", !!m_pElem);
+	VERIFY_SERIAL(!!m_pElem);
 	m_pElem->SetAttribute(name, val);
 }
 
 void Element::SetAttribute(const std::string& name, int val)
 {
-	VerifySerial("Element::SetAttribute", !!m_pElem);
+	VERIFY_SERIAL(!!m_pElem);
 	m_pElem->SetAttribute(name, val);
 }
 
 bool Element::GetAttribute(const std::string& name, std::string& val) const
 {
-	VerifySerial("Element::GetAttribute", !!m_pElem);
+	VERIFY_SERIAL(!!m_pElem);
 	if (auto pStr = m_pElem->Attribute(name))
 	{
 		val = *pStr;
@@ -94,52 +94,52 @@ bool Element::GetAttribute(const std::string& name, std::string& val) const
 
 bool Element::GetAttribute(const std::string& name, int& val) const
 {
-	VerifySerial("Element::GetAttribute", !!m_pElem);
+	VERIFY_SERIAL(!!m_pElem);
 	return !!m_pElem->Attribute(name, &val);
 }
 
 bool Element::GetAttribute(const std::string& name, bool& val) const
 {
-	VerifySerial("Element::GetAttribute", !!m_pElem);
+	VERIFY_SERIAL(!!m_pElem);
 	return m_pElem->QueryBoolAttribute(name.c_str(), &val) == TIXML_SUCCESS;
 }
 
 const std::string& Element::GetAttributeStr(const std::string& name) const
 {
-	VerifySerial("Element::GetAttributeStr: null element", !!m_pElem);
+	VERIFY_SERIAL(!!m_pElem);
 	auto pStr = m_pElem->Attribute(name);
-	VerifySerial("Element::GetAttributeStr: attribute not found", !!pStr);
+	VERIFY_SERIAL(!!pStr);
 	return *pStr;
 }
 
 int Element::GetAttributeInt(const std::string& name) const
 {
-	VerifySerial("Element::GetAttributeInt: null element", !!m_pElem);
+	VERIFY_SERIAL(!!m_pElem);
 	int val = 0;
 	auto pStr = m_pElem->Attribute(name, &val);
-	VerifySerial("Element::GetAttributeInt: attribute not found", !!pStr);
+	VERIFY_SERIAL(!!pStr);
 	return val;
 }
 
 bool Element::GetAttributeBool(const std::string& name) const
 {
-	VerifySerial("Element::GetAttributeBool: null element", !!m_pElem);
+	VERIFY_SERIAL(!!m_pElem);
 	bool val = false;
 	bool bOK = m_pElem->QueryBoolAttribute(name.c_str(), &val) == TIXML_SUCCESS;
-	VerifySerial("Element::GetAttributeBool: attribute not found", bOK);
+	VERIFY_SERIAL(bOK);
 	return val;
 }
 
 Element Element::GetFirstChild(const std::string& name) const
 {
-	VerifySerial("Element::GetFirstChild: null element", !!m_pElem);
+	VERIFY_SERIAL(!!m_pElem);
 	auto pEl = m_pElem->FirstChildElement(name);
 	return Element(pEl);
 }
 
 Element Element::GetNextSibling(const std::string& name) const
 {
-	VerifySerial("Element::GetNext: null element", !!m_pElem);
+	VERIFY_SERIAL(!!m_pElem);
 	return Element(m_pElem->NextSiblingElement(name));
 }
 

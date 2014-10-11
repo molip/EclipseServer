@@ -27,11 +27,11 @@ void Phase::Load(const Serial::LoadNode& node)
 void Phase::ProcessCmdMessage(const Input::CmdMessage& msg, CommitSession& session, const Player& player)
 {
 	LiveGame& game = GetGame();
-	VerifyModel("Phase::ProcessCmdMessage: Player not in game", &game == player.GetCurrentLiveGame());
+	VERIFY_MODEL_MSG(player.GetName(), &game == player.GetCurrentLiveGame());
 
 	const Colour colour = game.GetTeam(player).GetColour();
 	Cmd* pCmd = GetCurrentCmd(colour);
-	VerifyModel("Phase::ProcessCmdMessage: No current command", !!pCmd);
+	VERIFY_MODEL_MSG("No current command", !!pCmd);
 
 	CmdPtr pNext = pCmd->Process(msg, session); // Might be null.
 	if (pNext)
@@ -46,7 +46,7 @@ void Phase::ProcessCmdMessage(const Input::CmdMessage& msg, CommitSession& sessi
 void Phase::UndoCmd(CommitSession& session, Player& player)
 {
 	LiveGame& game = GetGame();
-	VerifyModel("Phase::UndoCmd: Player not in game", &game == player.GetCurrentLiveGame());
+	VERIFY_MODEL_MSG(player.GetName(), &game == player.GetCurrentLiveGame());
 
 	const Colour colour = game.GetTeam(player).GetColour();
 	const Cmd* pCmd = GetCurrentCmd(colour);

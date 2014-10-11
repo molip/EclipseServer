@@ -101,7 +101,7 @@ CmdPtr UpgradeCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
 	const Team& team = GetTeam(session.GetGame());
 
 	const int allowedUpgrades = team.HasPassed() ? 1 : Race(team.GetRace()).GetUpgradeRate();
-	VerifyInput("UpgradeCmd::Process: too many upgrades", (int)m.m_changes.size() <= allowedUpgrades);
+	VERIFY_INPUT_MSG("too many upgrades", (int)m.m_changes.size() <= allowedUpgrades);
 
 	// Apply changes to temporary blueprints and validate them.
 	std::vector<BlueprintPtr> blueprints;
@@ -112,7 +112,7 @@ CmdPtr UpgradeCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
 		blueprints[(int)c.ship]->SetSlot(c.slot, c.part);
 
 	for (auto& bp : blueprints)
-		VerifyInput("UpgradeCmd::Process: invalid blueprint", bp->IsValid());
+		VERIFY_INPUT_MSG("invalid blueprint", bp->IsValid());
 
 	UpgradeRecord* pRec = new UpgradeRecord(m_colour, m.m_changes);
 	DoRecord(RecordPtr(pRec), session);

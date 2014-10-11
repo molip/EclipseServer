@@ -20,29 +20,29 @@ OrderedPhase::~OrderedPhase()
 
 void OrderedPhase::AddCmd(CmdPtr pCmd)
 {
-	VerifyModel("OrderedPhase::AddCmd: Team not active", IsTeamActive(pCmd->GetColour()));
-	VerifyModel("OrderedPhase::AddCmd: pCmd is null", !!pCmd);
+	VERIFY_MODEL_MSG("Team not active", IsTeamActive(pCmd->GetColour()));
+	VERIFY_MODEL_MSG("pCmd is null", !!pCmd);
 
 	m_pCmdStack->AddCmd(pCmd);
 }
 
 void OrderedPhase::FinishCmd(CommitSession& session, Colour c)
 {
-	VerifyModel("OrderedPhase::FinishCmd", IsTeamActive(c));
+	VERIFY_MODEL(IsTeamActive(c));
 
 	m_pCmdStack->AddCmd(CmdPtr());
 }
 
 Cmd* OrderedPhase::RemoveCmd(CommitSession& session, Colour c)
 {
-	VerifyModel("OrderedPhase::RemoveCmd", IsTeamActive(c));
+	VERIFY_MODEL(IsTeamActive(c));
 
 	return m_pCmdStack->RemoveCmd();
 }
 
 bool OrderedPhase::CanRemoveCmd(Colour c) const
 {
-	VerifyModel("OrderedPhase::CanRemoveCmd", IsTeamActive(c));
+	VERIFY_MODEL(IsTeamActive(c));
 	return CanRemoveCmd();
 }
 
@@ -58,7 +58,7 @@ const Player& OrderedPhase::GetCurrentPlayer() const
 
 Cmd* OrderedPhase::GetCurrentCmd(Colour c)
 {
-	VerifyModel("OrderedPhase::GetCurrentCmd", IsTeamActive(c));
+	VERIFY_MODEL(IsTeamActive(c));
 	return GetCurrentCmd();
 }
 
@@ -74,7 +74,7 @@ bool OrderedPhase::CanRemoveCmd() const
 
 void OrderedPhase::StartCmd(CmdPtr pCmd, CommitSession& session)
 {
-	VerifyModel("OrderedPhase::StartCmd: Team not active", IsTeamActive(pCmd->GetColour()));
+	VERIFY_MODEL_MSG("Team not active", IsTeamActive(pCmd->GetColour()));
 
 	m_pCmdStack->StartCmd(pCmd);
 

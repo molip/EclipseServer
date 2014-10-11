@@ -18,14 +18,14 @@ bool TechTrack::CanAdd(TechType techtype) const
 
 void TechTrack::Add(TechType tech)
 {
-	VerifyModel("TechTrack::Add", CanAdd(tech));
+	VERIFY_MODEL(CanAdd(tech));
 
 	m_class[(int)Technology::GetClass(tech)].push_back(tech);
 }
 
 void TechTrack::Remove(TechType tech)
 {
-	VerifyModel("TechTrack::Remove", Has(tech));
+	VERIFY_MODEL(Has(tech));
 
 	auto& c = m_class[(int)Technology::GetClass(tech)];
 	c.erase(std::remove(c.begin(), c.end(), tech), c.end());
@@ -33,7 +33,7 @@ void TechTrack::Remove(TechType tech)
 
 bool TechTrack::Has(TechType tech) const
 {
-	VerifyModel("TechTrack::Has", tech != TechType::None);
+	VERIFY_MODEL(tech != TechType::None);
 	
 	auto& c = m_class[(int)Technology::GetClass(tech)];
 	return std::find(c.begin(), c.end(), tech) != c.end();

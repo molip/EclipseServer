@@ -55,7 +55,7 @@ void Controller::SendMessage(const Output::Message& msg, const Game& game, const
 	}
 	else
 	{
-		VerifyModel("Controller::SendMessage: Player not in game: " + pPlayer->GetName(), pPlayer->GetCurrentGame() == &game);
+		VERIFY_MODEL_MSG(pPlayer->GetName(), pPlayer->GetCurrentGame() == &game);
 		SendMessage(str, *pPlayer);
 	}
 }
@@ -119,7 +119,7 @@ void Controller::SendUpdateGame(const Game& game, const Player* pPlayer) const
 		for (auto& pInfoTeam : game.GetTeams())
 		{
 			const Player& infoPlayer = pInfoTeam->GetPlayer();
-			VerifyModel("Controller::SendUpdateGame: Team not chosen yet: " + infoPlayer.GetName(), !!pInfoTeam);
+			VERIFY_MODEL_MSG("Team not chosen yet", !!pInfoTeam);
 			SendMessage(Output::UpdateTeam(*pInfoTeam), game, pPlayer);
 			SendMessage(Output::UpdateInfluenceTrack(*pInfoTeam), game, pPlayer);
 			SendMessage(Output::UpdateTechnologyTrack(*pInfoTeam), game, pPlayer);
