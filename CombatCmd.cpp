@@ -53,6 +53,8 @@ CmdPtr CombatDiceCmd::Process(const Input::CmdMessage& msg, CommitSession& sessi
 {
 	auto& m = VerifyCastInput<const Input::CmdDice>(msg);
 
+	session.GetController().SendMessage(Output::ChooseFinished(), GetPlayer(session.GetGame()));
+
 	const Battle::Hits hits = session.GetGame().GetBattle().AutoAssignHits(m_dice, session.GetGame());
 
 	// TODO: Send attack animation 
