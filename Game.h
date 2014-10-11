@@ -75,7 +75,8 @@ public:
 
 	Battle& GetBattle();
 	const Battle& GetBattle() const { return const_cast<Game*>(this)->GetBattle(); }
-	void SetBattle(BattlePtr battle);
+	void AttachBattle(BattlePtr battle);
+	BattlePtr DetachBattle();
 	bool HasBattle() const { return !!m_battle; }
 
 protected:

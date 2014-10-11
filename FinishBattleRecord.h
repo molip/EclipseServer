@@ -1,12 +1,14 @@
 #pragma once
 
 #include "Record.h"
-#include "Battle.h"
 
-class StartBattleRecord : public Record
+class Battle;
+DEFINE_UNIQUE_PTR(Battle)
+
+class FinishBattleRecord : public Record
 {
 public:
-	StartBattleRecord(const Battle* oldBattle = nullptr);
+	FinishBattleRecord();
 	
 private:
 	virtual void Apply(bool bDo, Game& game, const Controller& controller);
@@ -15,5 +17,5 @@ private:
 	virtual void Save(Serial::SaveNode& node) const override;
 	virtual void Load(const Serial::LoadNode& node) override;
 
-	Battle::GroupVec m_oldGroups;
+	BattlePtr m_battle;
 };

@@ -1,4 +1,3 @@
-#include "Battle.h"
 #include "stdafx.h"
 #include "CombatPhase.h"
 #include "CmdStack.h"
@@ -12,6 +11,7 @@
 #include "Race.h"
 #include "CombatCmd.h"
 #include "StartBattleRecord.h"
+#include "FinishBattleRecord.h"
 #include "AttackRecord.h"
 #include "AdvanceCombatTurnRecord.h"
 
@@ -33,9 +33,9 @@ void CombatPhase::Init(CommitSession& session)
 	StartBattle(session);
 }
 
-void CombatPhase::StartBattle(CommitSession& session)
+void CombatPhase::StartBattle(CommitSession& session, const Battle* oldBattle)
 {
-	session.DoAndPushRecord(RecordPtr(new StartBattleRecord));
+	session.DoAndPushRecord(RecordPtr(new StartBattleRecord(oldBattle)));
 	StartTurn(session);
 }
 
@@ -65,29 +65,35 @@ void CombatPhase::FinishCmd(CommitSession& session, Colour c)
 
 void CombatPhase::FinishTurn(CommitSession& session)
 {
-	if (!GetGame().GetBattle().IsFinished())
+	if (GetGame().GetBattle().IsFinished())
+		FinishBattle(session);
+	else
 	{
 		session.DoAndPushRecord(RecordPtr(new AdvanceCombatTurnRecord()));
 		StartTurn(session);
-		return;
 	}
+}
 
+void CombatPhase::FinishBattle(CommitSession& session)
+{
+	const Battle* oldBattle = nullptr;
+	
 	auto hex = GetGame().GetMap().FindPendingBattleHex(GetGame());
-	if (!hex || hex->GetID() != GetGame().GetBattle().GetHexId()) // No more battles in this hex.
+	if (hex && hex->GetID() == GetGame().GetBattle().GetHexId()) // Continue battles in this hex.
 	{
-		// TODO: Attack population, assign reputation tiles, influence.
+		oldBattle = &GetGame().GetBattle();
 	}
 	else
 	{
-		// TODO: Copy damage from battle.
+		// TODO: Attack population, assign reputation tiles.
 	}
 
-	GetGame().SetBattle(nullptr); // TODO: Use record. 
+	session.DoAndPushRecord(RecordPtr(new FinishBattleRecord));
 
 	if (hex)
-		StartBattle(session);
+		StartBattle(session, oldBattle);
 	else
-		GetGame().FinishCombatPhase(); // Deletes this.
+		GetGame().FinishCombatPhase(); // Deletes this. TODO: influence hexes.
 }
 
 void CombatPhase::UpdateClient(const Controller& controller, const Player* pPlayer) const

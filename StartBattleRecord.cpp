@@ -4,9 +4,15 @@
 #include "Game.h"
 #include "Controller.h"
 #include "Output.h"
-#include "Battle.h"
 
-StartBattleRecord::StartBattleRecord() {}
+StartBattleRecord::StartBattleRecord(const Battle* oldBattle)
+{
+	if (oldBattle)
+	{
+		VerifyModel("StartBattleRecord::StartBattleRecord", oldBattle->IsFinished() && !oldBattle->GetGroups().empty());
+		m_oldGroups = oldBattle->GetGroups();
+	}
+}
 
 void StartBattleRecord::Apply(bool bDo, Game& game, const Controller& controller)
 {
@@ -16,28 +22,28 @@ void StartBattleRecord::Apply(bool bDo, Game& game, const Controller& controller
 	{
 		const Hex* hex = game.GetMap().FindPendingBattleHex(game);
 		VerifyModel("StartBattleRecord::Apply", !!hex);
-		game.SetBattle(BattlePtr(new Battle(*hex, game)));
+		game.AttachBattle(BattlePtr(new Battle(*hex, game, m_oldGroups)));
 		controller.SendMessage(Output::UpdateCombat(game, game.GetBattle()), game);
 	}
 	else
-		game.SetBattle(BattlePtr());
+		game.DetachBattle();
 }
 
 std::string StartBattleRecord::GetMessage(const Game& game) const
 {
-	return "started battle";
+	return "battle started";
 }
 
 void StartBattleRecord::Save(Serial::SaveNode& node) const
 {
 	__super::Save(node);
-	//node.SaveType("action_name", m_actionName);
+	node.SaveCntr("old_groups", m_oldGroups, Serial::ClassSaver());
 }
 
 void StartBattleRecord::Load(const Serial::LoadNode& node)
 {
 	__super::Load(node);
-	//node.LoadType("action_name", m_actionName);
+	node.LoadCntr("old_groups", m_oldGroups, Serial::ClassLoader());
 }
 
 REGISTER_DYNAMIC(StartBattleRecord)

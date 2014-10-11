@@ -91,6 +91,7 @@
     <ClInclude Include="CombatCmd.h" />
     <ClInclude Include="CombatPhase.h" />
     <ClInclude Include="Dice.h" />
+    <ClInclude Include="FinishBattleRecord.h" />
     <ClInclude Include="MessageRecord.h" />
     <ClInclude Include="ChooseTeamPhase.h" />
     <ClInclude Include="civetweb.h" />
@@ -176,6 +177,7 @@
     <ClCompile Include="CombatCmd.cpp" />
     <ClCompile Include="CombatPhase.cpp" />
     <ClCompile Include="Dice.cpp" />
+    <ClCompile Include="FinishBattleRecord.cpp" />
     <ClCompile Include="MessageRecord.cpp" />
     <ClCompile Include="ChooseTeamPhase.cpp" />
     <ClCompile Include="civetweb.c" />

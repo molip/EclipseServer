@@ -41,6 +41,9 @@ public:
 
 	struct Group
 	{
+		Group();
+		Group(ShipType _shipType, bool _invader);
+
 		ShipType shipType;
 		bool invader;
 		bool hasMissiles; // false if they've been used.
@@ -52,6 +55,8 @@ public:
 		void Save(Serial::SaveNode& node) const;
 		void Load(const Serial::LoadNode& node);
 	};
+
+	typedef std::vector<Group> GroupVec;
 
 	struct Turn
 	{
@@ -67,14 +72,14 @@ public:
 //	typedef std::map<ShipType, int> Targets; // Dice roll required to hit ship type.
 
 	Battle();
-	Battle(const Hex& hex, const Game& game);
+	Battle(const Hex& hex, const Game& game, const GroupVec& oldGroups);
 
 	//const ShipVec& GetDefenderShips() const { return m_defenderShips; }
 	//const ShipVec& GetInvaderShips() const { return m_invaderShips; }
 
 	int GetHexId() const { return m_hexId; }
 
-	const std::vector<Group>& GetGroups() const { return m_groups; }
+	const GroupVec& GetGroups() const { return m_groups; }
 
 	const Group& GetCurrentGroup() const { return m_groups[m_turn.groupIndex]; }
 	Group& GetCurrentGroup() { return m_groups[m_turn.groupIndex]; }
@@ -104,6 +109,8 @@ public:
 	void SetTurn(const Turn& turn);
 
 private:
+	void AddGroups(bool invader, const Hex& hex, const Game& game);
+	void AddOldGroups(const GroupVec& oldGroups, const Hex& hex, const Game& game);
 	int FindFirstMissileGroup() const;
 	int GetToHitRoll(ShipType shipType, const Game& game) const;
 	std::vector<int> GetShipIndicesWeakestFirst(const Group& group) const; // Dead ships ignored. 
@@ -113,7 +120,7 @@ private:
 	Colour m_defender, m_invader;
 	int m_hexId;
 	
-	std::vector<Group> m_groups;
+	GroupVec m_groups;
 
 	Turn m_turn;
 };

@@ -93,9 +93,14 @@ Battle& Game::GetBattle()
 	return *m_battle;
 }
 
-void Game::SetBattle(BattlePtr battle) 
+void Game::AttachBattle(BattlePtr battle)
 { 
 	m_battle = std::move(battle); 
+}
+
+BattlePtr Game::DetachBattle()
+{
+	return std::move(m_battle);
 }
 
 void Game::Save(Serial::SaveNode& node) const 

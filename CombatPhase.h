@@ -1,6 +1,7 @@
 #pragma once
 
 #include "OrderedPhase.h"
+#include "Battle.h"
 
 class Hex;
 
@@ -25,7 +26,8 @@ protected:
 	virtual const Team& GetCurrentTeam() const override;
 
 private:
-	void StartBattle(CommitSession& session);
+	void StartBattle(CommitSession& session, const Battle* oldBattle = nullptr);
 	void StartTurn(CommitSession& session);
 	void FinishTurn(CommitSession& session);
+	void FinishBattle(CommitSession& session);
 };

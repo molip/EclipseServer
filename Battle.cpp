@@ -35,6 +35,15 @@ void Battle::Hits::Load(const Serial::LoadNode& node)
 
 //-----------------------------------------------------------------------------
 
+Battle::Group::Group() : shipType(ShipType::None), invader(false), hasMissiles(false) 
+{
+}
+
+Battle::Group::Group(ShipType _shipType, bool _invader) : 
+	shipType(_shipType), invader(_invader), hasMissiles(false)
+{
+}
+
 bool Battle::Group::IsDead() const
 {
 	for (int lives : lifeCounts)
@@ -83,7 +92,7 @@ Battle::Battle() : m_hexId(0)
 {
 }
 
-Battle::Battle(const Hex& hex, const Game& game) : m_hexId(hex.GetID())
+Battle::Battle(const Hex& hex, const Game& game, const GroupVec& oldGroups) : m_hexId(hex.GetID())
 {
 	VerifyModel("Battle::Battle 1", hex.GetPendingBattle(m_defender, m_invader, game));
 
@@ -98,24 +107,53 @@ Battle::Battle(const Hex& hex, const Game& game) : m_hexId(hex.GetID())
 		return lhsInit > rhsInit;
 	};
 
-	for (int invader = 0; invader < 2; ++invader)
-		for (auto shipType : EnumRange<ShipType>(ShipType::_First))
-			if (int count = hex.GetShipCount(GetColour(!!invader), shipType))
-			{
-				auto& blueprint = GetBlueprint(game, shipType, !!invader);
-				bool missiles = blueprint.HasMissiles();
-				m_groups.push_back(Group{ shipType, !!invader, missiles });
-				m_groups.back().lifeCounts.resize(count, blueprint.GetLives());
+	AddGroups(false, hex, game);
 
-				m_turn.missilePhase |= missiles;
-			}
+	if (oldGroups.empty())
+		AddGroups(true, hex, game);
+	else
+		AddOldGroups(oldGroups, hex, game);
 
-	VerifyModel("Battle::Battle 2", m_groups.size() >= 2);
+	VerifyModel("Battle::Battle 3", m_groups.size() >= 2);
+
+	for (auto& group : m_groups)
+	{
+		group.hasMissiles = GetBlueprint(game, group.shipType, group.invader).HasMissiles();
+		m_turn.missilePhase |= group.hasMissiles;
+	}
 
 	// Sort groups by initiative.
 	std::sort(m_groups.begin(), m_groups.end(), pred);
 
 	m_turn.groupIndex = m_turn.missilePhase ? FindFirstMissileGroup() : 0;
+}
+
+void Battle::AddGroups(bool invader, const Hex& hex, const Game& game)
+{
+	for (auto shipType : EnumRange<ShipType>(ShipType::_First))
+		if (int count = hex.GetShipCount(GetColour(!!invader), shipType))
+		{
+			m_groups.push_back(Group(shipType, invader));
+			m_groups.back().lifeCounts.resize(count, GetBlueprint(game, shipType, invader).GetLives());
+		}
+}
+
+void Battle::AddOldGroups(const GroupVec& oldGroups, const Hex& hex, const Game& game)
+{
+	for (auto& oldGroup : oldGroups)
+	{
+		std::vector<int> lifeCounts;
+		for (int lives : oldGroup.lifeCounts)
+			if (lives)
+				lifeCounts.push_back(lives);
+
+		if (!lifeCounts.empty())
+		{
+			VerifyModel("Battle::AddOldGroups", lifeCounts.size() == hex.GetShipCount(GetColour(true), oldGroup.shipType));
+			m_groups.push_back(Group(oldGroup.shipType, true));
+			m_groups.back().lifeCounts = lifeCounts;
+		}
+	}
 }
 
 int Battle::FindFirstMissileGroup() const

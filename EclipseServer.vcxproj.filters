@@ -275,6 +275,9 @@
     <ClInclude Include="AdvanceCombatTurnRecord.h">
       <Filter>Model\Records</Filter>
     </ClInclude>
+    <ClInclude Include="FinishBattleRecord.h">
+      <Filter>Model\Records</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -515,6 +518,9 @@
       <Filter>Model\Records</Filter>
     </ClCompile>
     <ClCompile Include="AdvanceCombatTurnRecord.cpp">
+      <Filter>Model\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="FinishBattleRecord.cpp">
       <Filter>Model\Records</Filter>
     </ClCompile>
   </ItemGroup>
