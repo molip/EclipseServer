@@ -7,6 +7,11 @@ namespace Serial { class SaveNode; class LoadNode; }
 
 enum class Resource { None = -1, Money, Science, Materials, _Count };
 
+struct OrbitalResourcesRange : EnumRange<Resource>
+{
+	OrbitalResourcesRange() : EnumRange<Resource>(Resource::Money, Resource::Materials) {}
+};
+
 class Resources : private std::vector<int>
 {
 public:

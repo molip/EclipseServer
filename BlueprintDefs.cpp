@@ -18,7 +18,7 @@ BlueprintDefs::BlueprintDefs()
 	for (auto r : races)
 	{
 		Race race(r);
-		for (auto s : EnumRange<ShipType>())
+		for (auto s : PlayerShipTypesRange())
 			m_map.insert(std::make_pair(BlueprintID(r, s), race.GetBlueprintDef(s)));
 	}
 }

@@ -130,7 +130,7 @@ void BuildCmd::UpdateClient(const Controller& controller, const LiveGame& game) 
 	const Team& team = GetTeam(game);
 
 	std::set<ShipType> ships;
-	for (auto s : EnumRange<ShipType>())
+	for (auto s : PlayerShipTypesRange())
 		if (CanBuild(team, ShipToBuildable(s)))
 			ships.insert(s);
 

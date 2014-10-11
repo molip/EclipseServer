@@ -167,7 +167,7 @@ CmdPtr ColoniseSquaresCmd::Process(const Input::CmdMessage& msg, CommitSession& 
 						--grey[r], res = r;
 				break;
 			case SquareType::Orbital:
-				for (auto r : EnumRange<Resource>(Resource::Money, Resource::Materials))
+				for (auto r : OrbitalResourcesRange())
 					if (orbital[r])
 						--orbital[r], res = r;
 		}

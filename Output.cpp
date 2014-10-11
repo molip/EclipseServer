@@ -220,7 +220,7 @@ UpdateBlueprints::UpdateBlueprints(const Team& team) : Update("blueprints")
 	m_root.SetAttribute("id", team.GetPlayer().GetID());
 
 	auto blueprintsNode = m_root.AddArray("blueprints");
-	for (auto type : EnumRange<ShipType>())
+	for (auto type : PlayerShipTypesRange())
 	{
 		auto partsNode = blueprintsNode.AppendArray();
 		for (ShipPart part : team.GetBlueprint(type).GetOverlay().GetSlotRange())
@@ -539,7 +539,7 @@ ChooseMoveSrc::ChooseMoveSrc(std::map<MapPos, std::set<ShipType>>& srcs, bool bC
 		AddPointElement(it.first.GetX(), it.first.GetY(), "pos", e);
 
 		auto shipsNode = e.AddArray("ships");
-		for (auto s : EnumRange<ShipType>())
+		for (auto s : PlayerShipTypesRange())
 		{
 			auto j = it.second.find(s);
 			if (j != it.second.end())
@@ -574,7 +574,7 @@ ChooseUpgrade::ChooseUpgrade(const Team& team) : Choose("upgrade")
 			appendPart(partsNode, part);
 
 	auto blueprintsNode = m_root.AddArray("blueprints");
-	for (auto type : EnumRange<ShipType>())
+	for (auto type : PlayerShipTypesRange())
 	{
 		auto& bp = team.GetBlueprint(type);
 

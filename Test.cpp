@@ -9,7 +9,7 @@ void Test::AddShipsToCentre(LiveGame& game)
 	Hex* hex = const_cast<Hex*>(game.GetMap().FindHex(1));
 	for (auto& team : game.GetTeams())
 	{
-		for (auto type : EnumRange<ShipType>())
+		for (auto type : PlayerShipTypesRange())
 		{
 			int count = 0;
 			switch (type)

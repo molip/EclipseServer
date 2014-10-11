@@ -105,7 +105,7 @@ CmdPtr UpgradeCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
 
 	// Apply changes to temporary blueprints and validate them.
 	std::vector<BlueprintPtr> blueprints;
-	for (ShipType type : EnumRange<ShipType>())
+	for (ShipType type : PlayerShipTypesRange())
 		blueprints.push_back(BlueprintPtr(new Blueprint(team.GetBlueprint(type))));
 
 	for (auto& c : m.m_changes)

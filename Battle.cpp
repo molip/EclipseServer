@@ -130,7 +130,7 @@ Battle::Battle(const Hex& hex, const Game& game, const GroupVec& oldGroups) : m_
 
 void Battle::AddGroups(bool invader, const Hex& hex, const Game& game)
 {
-	for (auto shipType : EnumRange<ShipType>(ShipType::_First))
+	for (auto shipType : AllShipTypesRange())
 		if (int count = hex.GetShipCount(GetColour(!!invader), shipType))
 		{
 			m_groups.push_back(Group(shipType, invader));

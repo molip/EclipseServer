@@ -50,7 +50,7 @@ void Team::Assign(RaceType race, Colour colour, LiveGame& game)
 	for (int i = 0; i < r.GetStartReputationTiles(); ++i)
 		m_repTrack.AddReputationTile(game.GetReputationBag().TakeTile());
 	
-	for (auto i : EnumRange<ShipType>())
+	for (auto i : PlayerShipTypesRange())
 		m_blueprints[(int)i].reset(new Blueprint(race, i));
 
 	AddShips(ShipType::Interceptor, 8);
@@ -218,7 +218,7 @@ void Team::Load(const Serial::LoadNode& node)
 	node.LoadType("passed", m_bPassed);
 
 	if (m_race != RaceType::None)
-		for (auto s : EnumRange<ShipType>())
+		for (auto s : PlayerShipTypesRange())
 			m_blueprints[(int)s]->Init(m_race, s);
 }
 
