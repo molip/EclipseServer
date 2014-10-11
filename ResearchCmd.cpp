@@ -75,7 +75,7 @@ private:
 
 	virtual std::string GetTeamMessage() const
 	{
-		return FormatString("researched %0", EnumTraits<TechType>::ToString(m_tech));
+		return FormatString("researched %0", ::EnumToString(m_tech));
 	}
 
 	TechType m_tech;

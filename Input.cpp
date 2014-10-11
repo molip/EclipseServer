@@ -269,8 +269,8 @@ bool ChooseTeam::Process(Controller& controller, Player& player) const
 	VerifyInput("ChooseMessage: player played out of turn",
 		pGame->GetChooseTeamPhase().GetCurrentTeam().GetColour() == player.GetCurrentTeam()->GetColour());
 
-	RaceType race = EnumTraits<RaceType>::FromString(m_race);
-	Colour colour = EnumTraits<Colour>::FromString(m_colour);
+	RaceType race = ::EnumFromString<RaceType>(m_race);
+	Colour colour = ::EnumFromString<Colour>(m_colour);
 
 	VerifyInput("ChooseTeam:race", race != RaceType::None);
 	VerifyInput("ChooseTeam:colour", colour != Colour::None);
@@ -376,7 +376,7 @@ SlotChanges::SlotChanges(const Json::Element& node)
 	{
 		ShipType ship = ShipType(child.GetAttributeInt("ship"));
 		int slot = child.GetAttributeInt("slot");
-		ShipPart part = EnumTraits<ShipPart>::FromString(child.GetAttributeStr("part"));
+		ShipPart part = ::EnumFromString<ShipPart>(child.GetAttributeStr("part"));
 
 		push_back(SlotChange{ ship, slot, part });
 	}
@@ -429,7 +429,7 @@ CmdColoniseSquares::CmdColoniseSquares(const Json::Element& node)
 		auto el = node.GetChild(type);
 		VerifyInput("CmdColoniseSquares: child not found", !el.IsNull());
 		for (auto r : EnumRange<Resource>())
-			pops[r] = el.GetAttributeInt(EnumTraits<Resource>::ToString(r));
+			pops[r] = el.GetAttributeInt(::EnumToString(r));
 	};
 	
 	Read("Fixed", m_fixed);
@@ -457,14 +457,14 @@ CmdResearch::CmdResearch(const Json::Element& node)
 CmdResearchArtifact::CmdResearchArtifact(const Json::Element& node)
 {
 	for (auto r : EnumRange<Resource>())
-		m_artifacts[r] = node.GetAttributeInt(EnumTraits<Resource>::ToString(r));
+		m_artifacts[r] = node.GetAttributeInt(::EnumToString(r));
 }
 
 CmdMoveSrc::CmdMoveSrc(const Json::Element& node)
 {
 	m_x = node.GetAttributeInt("x");
 	m_y = node.GetAttributeInt("y");
-	m_ship = EnumTraits<ShipType>::FromString(node.GetAttributeStr("ship"));
+	m_ship = ::EnumFromString<ShipType>(node.GetAttributeStr("ship"));
 }
 
 CmdMoveDst::CmdMoveDst(const Json::Element& node)
@@ -477,7 +477,7 @@ CmdBuild::CmdBuild(const Json::Element& node)
 {
 	m_x = node.GetAttributeInt("x");
 	m_y = node.GetAttributeInt("y");
-	m_buildable = EnumTraits<Buildable>::FromString(node.GetAttributeStr("buildable"));
+	m_buildable = ::EnumFromString<Buildable>(node.GetAttributeStr("buildable"));
 }
 
 CmdDiplomacy::CmdDiplomacy(const Json::Element& node)
@@ -490,8 +490,8 @@ CmdUpgrade::CmdUpgrade(const Json::Element& node) : m_changes(node.GetChild("cha
 
 CmdTrade::CmdTrade(const Json::Element& node)
 {
-	m_from = EnumTraits<Resource>::FromString(node.GetAttributeStr("from"));
-	m_to = EnumTraits<Resource>::FromString(node.GetAttributeStr("to"));
+	m_from = ::EnumFromString<Resource>(node.GetAttributeStr("from"));
+	m_to = ::EnumFromString<Resource>(node.GetAttributeStr("to"));
 	m_count = node.GetAttributeInt("count");
 }
 

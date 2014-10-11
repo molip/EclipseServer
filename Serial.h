@@ -138,7 +138,7 @@ template <typename T> void SaveNode::SaveType(const std::string& name, const T& 
 
 template <typename T> void SaveNode::SaveEnum(const std::string& name, const T& val)
 {
-	m_elem.SetAttribute(name, EnumTraits<T>::ToString(val));
+	m_elem.SetAttribute(name, ::EnumToString(val));
 }
 
 template <typename T> void SaveNode::SaveClass(const std::string& name, const T& obj)
@@ -404,7 +404,7 @@ template <typename T> bool LoadNode::LoadEnum(const std::string& name, T& val) c
 	std::string s;
 	if (LoadType(name, s))
 	{
-		val = EnumTraits<T>::FromString(s);
+		val = ::EnumFromString<T>(s);
 		return true;
 	}
 	return false;

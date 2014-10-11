@@ -74,7 +74,7 @@ std::string TeamRecord::GetMessage(const Game& game) const
 	if (!msg.empty())
 	{
 		std::string player = game.GetTeam(m_colour).GetPlayer().GetName();
-		return FormatString("%0 (%1) %2", player, EnumTraits<Colour>::ToString(m_colour), msg);
+		return FormatString("%0 (%1) %2", player, ::EnumToString(m_colour), msg);
 	}
 	Verify("TeamRecord::GetMessage", false);
 	return "";

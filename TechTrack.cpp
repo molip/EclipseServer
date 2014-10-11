@@ -63,11 +63,11 @@ int TechTrack::GetCost(TechType t) const
 void TechTrack::Save(Serial::SaveNode& node) const
 {
 	for (auto c : EnumRange<Technology::Class>())
-		node.SaveCntr(EnumTraits<Technology::Class>::ToString(c), m_class[(int)c], Serial::EnumSaver());
+		node.SaveCntr(::EnumToString(c), m_class[(int)c], Serial::EnumSaver());
 }
 
 void TechTrack::Load(const Serial::LoadNode& node)
 {
 	for (auto c : EnumRange<Technology::Class>())
-		node.LoadCntr(EnumTraits<Technology::Class>::ToString(c), m_class[(int)c], Serial::EnumLoader());
+		node.LoadCntr(::EnumToString(c), m_class[(int)c], Serial::EnumLoader());
 }

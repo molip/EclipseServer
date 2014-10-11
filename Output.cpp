@@ -110,8 +110,8 @@ UpdateChoose::UpdateChoose(const LiveGame& game) : Update("choose_team")
 		teamNode.SetAttribute("name", t->GetPlayer().GetName());
 		if (t->GetRace() != RaceType::None)
 		{
-			teamNode.SetAttribute("race", EnumTraits<RaceType>::ToString(t->GetRace()));
-			teamNode.SetAttribute("colour", EnumTraits<Colour>::ToString(t->GetColour()));
+			teamNode.SetAttribute("race", ::EnumToString(t->GetRace()));
+			teamNode.SetAttribute("colour", ::EnumToString(t->GetColour()));
 		}
 	}
 }
@@ -133,7 +133,7 @@ UpdateTeams::UpdateTeams(const Game& game) : Update("teams")
 		case RaceType::Eridani:
 		case RaceType::Planta:
 		case RaceType::Orion:
-			blueprints = EnumTraits<RaceType>::ToString(pTeam->GetRace());
+			blueprints = ::EnumToString(pTeam->GetRace());
 			break;
 		default:
 			blueprints = "normal";
@@ -150,8 +150,8 @@ UpdateTeam::UpdateTeam(const Team& team) : Update("team")
 {
 	m_root.SetAttribute("id", team.GetPlayer().GetID());
 	m_root.SetAttribute("name", team.GetPlayer().GetName());
-	m_root.SetAttribute("race", EnumTraits<RaceType>::ToString(team.GetRace()));
-	m_root.SetAttribute("colour", EnumTraits<Colour>::ToString(team.GetColour()));
+	m_root.SetAttribute("race", ::EnumToString(team.GetRace()));
+	m_root.SetAttribute("colour", ::EnumToString(team.GetColour()));
 }
 
 UpdateInfluenceTrack::UpdateInfluenceTrack(const Team& team) : Update("influence_track")
@@ -170,7 +170,7 @@ UpdateStorageTrack::UpdateStorageTrack(const Team& team) : Update("storage_track
 {
 	m_root.SetAttribute("id", team.GetPlayer().GetID());
 	for (auto r : EnumRange<Resource>())
-		m_root.SetAttribute(EnumTraits<Resource>::ToString(r), team.GetStorage()[r]);
+		m_root.SetAttribute(::EnumToString(r), team.GetStorage()[r]);
 }
 
 UpdateTechnologyTrack::UpdateTechnologyTrack(const Team& team) : Update("technology_track")
@@ -180,10 +180,10 @@ UpdateTechnologyTrack::UpdateTechnologyTrack(const Team& team) : Update("technol
 	for (auto c : EnumRange<Technology::Class>())
 	{
 		auto eClass = classesNode.AppendElement();
-		eClass.SetAttribute("name", EnumTraits<Technology::Class>::ToString(c));
+		eClass.SetAttribute("name", ::EnumToString(c));
 		auto techsNode = eClass.AddArray("techs");
 		for (auto& t : team.GetTechTrack().GetClass(c))
-			techsNode.AppendElement().SetAttribute("name", EnumTraits<TechType>::ToString(t));
+			techsNode.AppendElement().SetAttribute("name", ::EnumToString(t));
 	}
 }
 
@@ -191,7 +191,7 @@ UpdatePopulationTrack::UpdatePopulationTrack(const Team& team) : Update("populat
 {
 	m_root.SetAttribute("id", team.GetPlayer().GetID());
 	for (auto r : EnumRange<Resource>())
-		m_root.SetAttribute(EnumTraits<Resource>::ToString(r), team.GetPopulationTrack().GetPopulation()[r]);
+		m_root.SetAttribute(::EnumToString(r), team.GetPopulationTrack().GetPopulation()[r]);
 }
 
 UpdateColonyShips::UpdateColonyShips(const Team& team) : Update("colony_ships")
@@ -224,7 +224,7 @@ UpdateBlueprints::UpdateBlueprints(const Team& team) : Update("blueprints")
 	{
 		auto partsNode = blueprintsNode.AppendArray();
 		for (ShipPart part : team.GetBlueprint(type).GetOverlay().GetSlotRange())
-			partsNode.Append(EnumTraits<ShipPart>::ToString(part));
+			partsNode.Append(::EnumToString(part));
 	}
 }
 
@@ -249,7 +249,7 @@ UpdateMap::UpdateMap(const Game& game) : Update("map")
 		if (hex.IsOwned())
 		{
 			const Team& team = game.GetTeam(hex.GetColour());
-			e.SetAttribute("colour", EnumTraits<Colour>::ToString(team.GetColour()));
+			e.SetAttribute("colour", ::EnumToString(team.GetColour()));
 		
 			auto eSquares = e.AddArray("squares");
 			for (auto& square : hex.GetSquares())
@@ -266,8 +266,8 @@ UpdateMap::UpdateMap(const Game& game) : Update("map")
 			for (auto& squadron : fleet.GetSquadrons())
 			{
 				auto eShip = eShips.AppendElement();
-				eShip.SetAttribute("colour", EnumTraits<Colour>::ToString(fleet.GetColour()));
-				eShip.SetAttribute("type", EnumTraits<ShipType>::ToString(squadron.GetType()));
+				eShip.SetAttribute("colour", ::EnumToString(fleet.GetColour()));
+				eShip.SetAttribute("type", ::EnumToString(squadron.GetType()));
 			}
 
 		//DiscoveryType GetDiscoveryTile() const { return m_discovery; }
@@ -290,7 +290,7 @@ UpdateTechnologies::UpdateTechnologies(const Game& game) : Update("technologies"
 		if (t.second > 0)
 		{
 			auto e = techsNode.AppendElement();
-			e.SetAttribute("type", EnumTraits<TechType>::ToString(t.first));
+			e.SetAttribute("type", ::EnumToString(t.first));
 			e.SetAttribute("count", t.second);
 			e.SetAttribute("max_cost", Technology::GetMaxCost(t.first));
 			e.SetAttribute("min_cost", Technology::GetMinCost(t.first));
@@ -315,12 +315,12 @@ UpdateCombat::UpdateCombat(const Game& game, const Battle& battle) : Update("com
 	Json::Element groupsElems[] = { elems[0].AddArray("ship_groups"), elems[1].AddArray("ship_groups") };
 
 	for (int invader = 0; invader < 2; ++invader)
-		elems[invader].SetAttribute("colour", EnumTraits<Colour>::ToString(battle.GetColour(!!invader)));
+		elems[invader].SetAttribute("colour", ::EnumToString(battle.GetColour(!!invader)));
 
 	for (auto& group : battle.GetGroups())
 	{
 		auto groupElem = groupsElems[group.invader].AppendElement();
-		groupElem.SetAttribute("type", EnumTraits<ShipType>::ToString(group.shipType));
+		groupElem.SetAttribute("type", ::EnumToString(group.shipType));
 		groupElem.SetAttribute("max_lives", battle.GetBlueprint(game, group).GetLives());
 		groupElem.SetAttribute("active", group.invader == currentGroup.invader && group.shipType == currentGroup.shipType);
 
@@ -372,8 +372,8 @@ ChooseTeam::ChooseTeam(const Game& game, bool bActive) : Choose("team")
 		if (!game.FindTeam(c))
 		{
 			auto e = teamsNode.AppendElement();
-			e.SetAttribute("name", EnumTraits<RaceType>::ToString(RaceType::Human));
-			e.SetAttribute("colour", EnumTraits<Colour>::ToString(c));
+			e.SetAttribute("name", ::EnumToString(RaceType::Human));
+			e.SetAttribute("colour", ::EnumToString(c));
 		}
 	
 	for (auto r : EnumRange<RaceType>())
@@ -383,8 +383,8 @@ ChooseTeam::ChooseTeam(const Game& game, bool bActive) : Choose("team")
 			if (!game.FindTeam(c))
 			{
 				auto e = teamsNode.AppendElement();
-				e.SetAttribute("name", EnumTraits<RaceType>::ToString(r));
-				e.SetAttribute("colour", EnumTraits<Colour>::ToString(c));
+				e.SetAttribute("name", ::EnumToString(r));
+				e.SetAttribute("colour", ::EnumToString(c));
 			}
 		}
 }
@@ -464,11 +464,11 @@ ChooseColoniseSquares::ChooseColoniseSquares(const int squares[SquareType::_Coun
 
 	auto eCounts = m_root.AddElement("square_counts");
 	for (auto t : EnumRange<SquareType>())
-		eCounts.SetAttribute(EnumTraits<SquareType>::ToString(t), squares[(int)t]);
+		eCounts.SetAttribute(::EnumToString(t), squares[(int)t]);
 
 	auto eCubes = m_root.AddElement("max_cubes");
 	for (auto r : EnumRange<Resource>())
-		eCubes.SetAttribute(EnumTraits<Resource>::ToString(r), pop[r]);
+		eCubes.SetAttribute(::EnumToString(r), pop[r]);
 }
 
 ChooseInfluencePos::ChooseInfluencePos(const std::vector<MapPos>& positions, bool bEnableTrack, const std::string& param) : Choose(param) 
@@ -496,7 +496,7 @@ ChooseResearch::ChooseResearch(const std::vector<std::pair<TechType, int>>& tech
 	for (auto& it : techs)
 	{
 		auto e = techsNode.AppendElement();
-		e.SetAttribute("type", EnumTraits<TechType>::ToString(it.first));
+		e.SetAttribute("type", ::EnumToString(it.first));
 		e.SetAttribute("cost", it.second);
 	}
 }
@@ -512,7 +512,7 @@ ChooseBuild::ChooseBuild(const std::set<ShipType>& ships, const std::map<MapPos,
 
 	auto ship_elems = m_root.AddArray("ships");
 	for (auto s : ships)
-		ship_elems.Append(EnumTraits<ShipType>::ToString(s));
+		ship_elems.Append(::EnumToString(s));
 
 	auto hex_elems = m_root.AddArray("hexes");
 	for (auto& it : hexes)
@@ -543,7 +543,7 @@ ChooseMoveSrc::ChooseMoveSrc(std::map<MapPos, std::set<ShipType>>& srcs, bool bC
 		{
 			auto j = it.second.find(s);
 			if (j != it.second.end())
-				shipsNode.Append(EnumTraits<ShipType>::ToString(s));
+				shipsNode.Append(::EnumToString(s));
 		}
 	}
 }
@@ -560,7 +560,7 @@ ChooseUpgrade::ChooseUpgrade(const Team& team) : Choose("upgrade")
 	auto appendPart = [](Json::Element& array, ShipPart part)
 	{
 		auto partNode = array.AppendElement();
-		partNode.SetAttribute("name", EnumTraits<ShipPart>::ToString(part));
+		partNode.SetAttribute("name", ::EnumToString(part));
 		partNode.SetAttribute("power_source", ShipLayout::GetPowerSource(part));
 		partNode.SetAttribute("power_drain", ShipLayout::GetPowerDrain(part));
 		partNode.SetAttribute("is_drive", ShipLayout::IsDrive(part));
@@ -599,7 +599,7 @@ ChooseTrade::ChooseTrade(const Team& team) : Choose("trade")
 	{
 		int storage = team.GetStorage()[r];
 		if (storage >= rate)
-			available.SetAttribute(EnumTraits<Resource>::ToString(r), storage);
+			available.SetAttribute(::EnumToString(r), storage);
 	}
 	m_root.SetAttribute("rate", rate);
 }
@@ -632,7 +632,7 @@ ChooseDice::ChooseDice(const LiveGame& game, const Dice& dice, int activePlayerI
 	for (auto& pair : dice)
 	{
 		auto typeElem = diceElem.AppendElement();
-		typeElem.SetAttribute("colour", EnumTraits<DiceColour>::ToString(pair.first));
+		typeElem.SetAttribute("colour", ::EnumToString(pair.first));
 		auto valuesElem = typeElem.AddArray("values");
 		for (auto& val : pair.second)
 			valuesElem.Append(val);

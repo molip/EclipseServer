@@ -38,7 +38,7 @@ std::string MessageRecord::GetMessage(const Game& game) const
 		if (m_colour == Colour::None)
 			prefix = FormatString("%0 said: ", m_player);
 		else 
-			prefix = FormatString("%0 (%1) said: ", m_player, EnumTraits<Colour>::ToString(m_colour));
+			prefix = FormatString("%0 (%1) said: ", m_player, ::EnumToString(m_colour));
 	}
 
 	return prefix + m_msg;

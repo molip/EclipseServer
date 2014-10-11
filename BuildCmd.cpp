@@ -109,7 +109,7 @@ private:
 
 	virtual std::string GetTeamMessage() const 
 	{
-		return FormatString("built %0 in hex %1", EnumTraits<Buildable>::ToString(m_buildable), m_idHex);
+		return FormatString("built %0 in hex %1", ::EnumToString(m_buildable), m_idHex);
 	}
 
 	Buildable m_buildable;
