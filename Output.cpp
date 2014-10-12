@@ -29,7 +29,7 @@ namespace
 		node.SetAttribute("x", x);
 		node.SetAttribute("y", y);
 	}
-	void AppendPointElement(int x, int y, Json::Element& array)
+	void AppendPointElement(int x, int y, Json::Array& array)
 	{
 		auto node = array.AppendElement();
 		node.SetAttribute("x", x);
@@ -312,7 +312,7 @@ UpdateCombat::UpdateCombat(const Game& game, const Battle& battle) : Update("com
 	const Battle::Group& currentGroup = battle.GetCurrentGroup();
 
 	Json::Element elems[] = { m_root.AddElement("defender"), m_root.AddElement("invader") };
-	Json::Element groupsElems[] = { elems[0].AddArray("ship_groups"), elems[1].AddArray("ship_groups") };
+	Json::Array groupsElems[] = { elems[0].AddArray("ship_groups"), elems[1].AddArray("ship_groups") };
 
 	for (int invader = 0; invader < 2; ++invader)
 		elems[invader].SetAttribute("colour", ::EnumToString(battle.GetColour(!!invader)));
@@ -557,7 +557,7 @@ ChooseMoveDst::ChooseMoveDst(const std::set<MapPos>& dsts) : Choose("move_dst")
 
 ChooseUpgrade::ChooseUpgrade(const Team& team) : Choose("upgrade")
 {
-	auto appendPart = [](Json::Element& array, ShipPart part)
+	auto appendPart = [](Json::Array& array, ShipPart part)
 	{
 		auto partNode = array.AppendElement();
 		partNode.SetAttribute("name", ::EnumToString(part));

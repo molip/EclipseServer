@@ -14,7 +14,7 @@ enum class ShipType;
 enum class Buildable;
 enum class ShipPart;
 
-namespace Json { class Element; }
+namespace Json { class Element; class Array; }
 
 namespace Input 
 {
@@ -129,7 +129,7 @@ struct SlotChange
 struct SlotChanges : std::vector<SlotChange>
 {
 	SlotChanges() {}
-	SlotChanges(const Json::Element& node);
+	SlotChanges(const Json::Array& node);
 };
 struct QueryBlueprintStats : Message
 {

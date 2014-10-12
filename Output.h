@@ -102,7 +102,7 @@ struct ChooseExploreHex : Choose
 	ChooseExploreHex(int x, int y, bool bCanTake, bool bCanUndo);
 	void AddHexChoice(int idHex, const std::vector<int>& rotations, bool bCanInfluence);
 private:
-	Json::Element m_hexes;
+	Json::Array m_hexes;
 };
 struct ChooseDiscovery : Choose { ChooseDiscovery(bool bCanUndo); };
 struct ChooseColonisePos : Choose { ChooseColonisePos(const std::vector<MapPos>& hexes); };

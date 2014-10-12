@@ -370,7 +370,7 @@ bool Chat::Process(Controller& controller, Player& player) const
 	return true;
 }
 
-SlotChanges::SlotChanges(const Json::Element& node)
+SlotChanges::SlotChanges(const Json::Array& node)
 {
 	for (Json::Element child : node)
 	{
@@ -382,7 +382,7 @@ SlotChanges::SlotChanges(const Json::Element& node)
 	}
 }
 
-QueryBlueprintStats::QueryBlueprintStats(const Json::Element& node) : m_changes(node.GetChild("changes"))
+QueryBlueprintStats::QueryBlueprintStats(const Json::Element& node) : m_changes(node.GetChildArray("changes"))
 {
 }
 
@@ -426,7 +426,7 @@ CmdColoniseSquares::CmdColoniseSquares(const Json::Element& node)
 {
 	auto Read = [&] (const std::string& type, Population& pops)
 	{
-		auto el = node.GetChild(type);
+		auto el = node.GetChildElement(type);
 		VERIFY_INPUT_MSG("child not found", !el.IsNull());
 		for (auto r : EnumRange<Resource>())
 			pops[r] = el.GetAttributeInt(::EnumToString(r));
@@ -484,7 +484,7 @@ CmdDiplomacy::CmdDiplomacy(const Json::Element& node)
 {
 }
 
-CmdUpgrade::CmdUpgrade(const Json::Element& node) : m_changes(node.GetChild("changes"))
+CmdUpgrade::CmdUpgrade(const Json::Element& node) : m_changes(node.GetChildArray("changes"))
 {
 }
 

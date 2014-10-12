@@ -42,14 +42,43 @@ bool Document::LoadFromString(const std::string str)
 
 //-----------------------------------------------------------------------------
 
-Element::Element(cJSON* pElem) : m_pElem(pElem)
+Base::Base(cJSON* pElem) : m_pElem(pElem)
 {
 }
 
-std::string Element::GetName() const
+std::string Base::GetName() const
 {
 	VERIFY_SERIAL(!!m_pElem);
 	return m_pElem->string;
+}
+
+cJSON* Base::AddObject(cJSON* pElem, const std::string& name)
+{
+	cJSON_AddItemToObject(m_pElem, name.c_str(), pElem);
+	return pElem;
+}
+
+cJSON* Base::GetChild(const std::string& name) const
+{
+	VERIFY_SERIAL(!!m_pElem);
+	for (cJSON* p = m_pElem->child; p; p = p->next)
+		if (name.empty() || p->string == name)
+			return p;
+
+	return nullptr;
+}
+
+cJSON* Base::GetNextSibling() const
+{
+	VERIFY_SERIAL(!!m_pElem);
+	return m_pElem->next;
+}
+
+//-----------------------------------------------------------------------------
+
+Element::Element(cJSON* pElem) : Base(pElem)
+{
+	VERIFY_SERIAL(!pElem || pElem->type == cJSON_Object);
 }
 
 Element Element::AddElement(const std::string& name)
@@ -57,38 +86,14 @@ Element Element::AddElement(const std::string& name)
 	VERIFY_SERIAL(!!m_pElem);
 	VERIFY_SERIAL(!HasChild(name));
 
-	return AddObject(cJSON_CreateObject(), name);
+	return Element(AddObject(cJSON_CreateObject(), name));
 }
 
-Element Element::AddArray(const std::string& name)
+Array Element::AddArray(const std::string& name)
 {
 	VERIFY_SERIAL(!!m_pElem);
 	VERIFY_SERIAL(!HasChild(name));
-	return AddObject(cJSON_CreateArray(), name);
-}
-
-Element Element::AddObject(cJSON* pElem, const std::string& name)
-{
-	cJSON_AddItemToObject(m_pElem, name.c_str(), pElem);
-	return Element(pElem);
-}
-
-Element Element::AppendElement()
-{
-	VERIFY_SERIAL(!!m_pElem);
-	VERIFY_SERIAL(m_pElem->type == cJSON_Array);
-	cJSON* pElem = cJSON_CreateObject();
-	cJSON_AddItemToArray(m_pElem, pElem);
-	return Element(pElem);
-}
-
-Element Element::AppendArray()
-{
-	VERIFY_SERIAL(!!m_pElem);
-	VERIFY_SERIAL(m_pElem->type == cJSON_Array);
-	cJSON* pElem = cJSON_CreateArray();
-	cJSON_AddItemToArray(m_pElem, pElem);
-	return Element(pElem);
+	return Array(AddObject(cJSON_CreateArray(), name));
 }
 
 void Element::SetAttribute(const std::string& name, const std::string& val)
@@ -115,22 +120,6 @@ void Element::SetAttribute(const std::string& name, bool val)
 	VERIFY_SERIAL(!!m_pElem);
 	VERIFY_SERIAL(!HasChild(name));
 	cJSON_AddBoolToObject(m_pElem, name.c_str(), val);
-}
-
-void Element::Append(const std::string& val)
-{
-	VERIFY_SERIAL(!!m_pElem);
-	VERIFY_SERIAL(m_pElem->type == cJSON_Array);
-	cJSON* pElem = cJSON_CreateString(val.c_str());
-	cJSON_AddItemToArray(m_pElem, pElem);
-}
-
-void Element::Append(int val)
-{
-	VERIFY_SERIAL(!!m_pElem);
-	VERIFY_SERIAL(m_pElem->type == cJSON_Array);
-	cJSON* pElem = cJSON_CreateNumber(val);
-	cJSON_AddItemToArray(m_pElem, pElem);
 }
 
 bool Element::GetAttribute(const std::string& name, std::string& val) const
@@ -193,20 +182,14 @@ bool Element::GetAttributeBool(const std::string& name) const
 	return b;
 }
 
-Element Element::GetChild(const std::string& name) const
+Element Element::GetChildElement(const std::string& name) const
 {
-	VERIFY_SERIAL(!!m_pElem);
-	for (cJSON* p = m_pElem->child; p; p = p->next)
-		if (name.empty() || p->string == name)
-			return Element(p);
-
-	return Element();
+	return Element(GetChild(name));
 }
 
-Element Element::GetNextSibling() const
+Array Element::GetChildArray(const std::string& name) const
 {
-	VERIFY_SERIAL(!!m_pElem);
-	return Element(m_pElem->next);
+	return Array(GetChild(name));
 }
 
 bool Element::HasChild(const std::string& name) const
@@ -214,7 +197,49 @@ bool Element::HasChild(const std::string& name) const
 	return m_pElem && !!cJSON_GetObjectItem(m_pElem, name.c_str());
 }
 
-ElementIter Element::begin() const { return ElementIter(m_pElem ? m_pElem->child : nullptr); }
-ElementIter Element::end() const { return ElementIter(); }
+Element Element::GetNextSibling() const
+{
+	return Element(__super::GetNextSibling());
+}
+
+//-----------------------------------------------------------------------------
+
+Array::Array(cJSON* pElem) : Base(pElem)
+{
+	VERIFY_SERIAL(!pElem || pElem->type == cJSON_Array);
+}
+
+Element Array::AppendElement()
+{
+	VERIFY_SERIAL(!!m_pElem);
+	cJSON* pElem = cJSON_CreateObject();
+	cJSON_AddItemToArray(m_pElem, pElem);
+	return Element(pElem);
+}
+
+Array Array::AppendArray()
+{
+	VERIFY_SERIAL(!!m_pElem);
+	cJSON* pElem = cJSON_CreateArray();
+	cJSON_AddItemToArray(m_pElem, pElem);
+	return Array(pElem);
+}
+
+void Array::Append(const std::string& val)
+{
+	VERIFY_SERIAL(!!m_pElem);
+	cJSON* pElem = cJSON_CreateString(val.c_str());
+	cJSON_AddItemToArray(m_pElem, pElem);
+}
+
+void Array::Append(int val)
+{
+	VERIFY_SERIAL(!!m_pElem);
+	cJSON* pElem = cJSON_CreateNumber(val);
+	cJSON_AddItemToArray(m_pElem, pElem);
+}
+
+ElementIter Array::begin() const { return ElementIter(m_pElem ? m_pElem->child : nullptr); }
+ElementIter Array::end() const { return ElementIter(); }
 
 }

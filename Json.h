@@ -8,29 +8,45 @@ struct cJSON;
 namespace Json
 {
 class ElementIter;
+class Array;
 
-class Element
+class Base
 {
 public:
-	Element() : m_pElem(nullptr) {}
+	Base() : m_pElem(nullptr) {}
 
 	std::string GetName() const;
-	
-	Element AddElement(const std::string& name);
-	Element AddArray(const std::string& name);
-	Element AppendElement();
-	Element AppendArray();
 
-	Element GetChild(const std::string& name = "") const;
-	Element GetNextSibling() const;
+	bool IsNull() const { return m_pElem == nullptr; }
+	bool operator == (const Base& rhs) const { return m_pElem == rhs.m_pElem; }
+	bool operator != (const Base& rhs) const { return !operator ==(rhs); }
+
+protected:
+	Base(cJSON* pElem);
+
+	cJSON* AddObject(cJSON* pElem, const std::string& name);
+	cJSON* GetChild(const std::string& name = "") const;
+	cJSON* GetNextSibling() const;
+
+	cJSON* m_pElem;
+};
+
+class Element : public Base
+{
+	friend class Array;
+public:
+	Element() : Base(nullptr) {}
+
+	Element AddElement(const std::string& name);
+	Array AddArray(const std::string& name);
+
+	Element GetChildElement(const std::string& name = "") const;
+	Array GetChildArray(const std::string& name = "") const;
 
 	void SetAttribute(const std::string& name, const std::string& val);
 	void SetAttribute(const std::string& name, const char* val);
 	void SetAttribute(const std::string& name, int val);
 	void SetAttribute(const std::string& name, bool val);
-
-	void Append(const std::string& val);
-	void Append(int val);
 
 	bool GetAttribute(const std::string& name, std::string& val) const;
 	bool GetAttribute(const std::string& name, int& val) const;
@@ -40,21 +56,29 @@ public:
 	int GetAttributeInt(const std::string& name) const;
 	bool GetAttributeBool(const std::string& name) const;
 
-	bool IsNull() const { return m_pElem == nullptr; }
-	bool operator == (const Element& rhs) const { return m_pElem == rhs.m_pElem; }
-	bool operator != (const Element& rhs) const { return !operator ==(rhs); }
-
 	bool HasChild(const std::string& name) const;
+	Element GetNextSibling() const;
+
+protected:
+	Element(cJSON* pElem);
+};
+
+class Array : public Base
+{
+	friend class Element;
+public:
+	Array() : Base(nullptr) {}
+
+	Element AppendElement();
+	Array AppendArray();
+	void Append(const std::string& val);
+	void Append(int val);
 
 	ElementIter begin() const;
 	ElementIter end() const;
 
 protected:
-	Element(cJSON* pElem);
-
-	Element AddObject(cJSON* pElem, const std::string& name);
-
-	cJSON* m_pElem;
+	Array(cJSON* pElem);
 };
 
 class Document : public Element
@@ -78,7 +102,7 @@ public:
 	Element operator* () const { return m_elem; }
     void operator++ () { m_elem = m_elem.GetNextSibling(); }
 private:
-    Element m_elem;
+	Element m_elem;
 };
  
 //class ElementRange
