@@ -6,7 +6,7 @@ class HTMLServer : public MongooseServer
 {
 public:
 	HTMLServer();
-	virtual bool OnHTTPRequest(const std::string& url, const std::string& host, const QueryMap& queries, std::string& reply) override;
+	virtual std::string OnHTTPRequest(const std::string& url, const std::string& host, const StringMap& queries, const StringMap& cookies) override;
 
 private:
 };

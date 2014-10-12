@@ -7,19 +7,40 @@ typedef unsigned long ClientID;
 class IServer
 {
 public:
-	typedef std::map<std::string, std::string> QueryMap;
+	struct StringMap : std::map<std::string, std::string>
+	{
+		std::string Get(const std::string& name) const
+		{
+			auto it = find(name);
+			return it == end() ? "" : it->second;
+		}
+	};
 
 	virtual ~IServer() {}
-	virtual bool OnHTTPRequest(const std::string& url, const std::string& host, const QueryMap& queries, std::string& reply) { return false; }
+	virtual std::string OnHTTPRequest(const std::string& url, const std::string& host, const StringMap& queries, const StringMap& cookies) { return ""; }
 	virtual void OnConnect(ClientID client, const std::string& url) {}
 	virtual void OnDisconnect(ClientID client) {}
 	virtual void OnMessage(ClientID client, const std::string& msg) {}
 
-	static QueryMap SplitQuery(const std::string& query);
+	static StringMap SplitString(const std::string& string, char sep);
 };
 
 struct mg_context;
 struct mg_connection;
+
+class Cookies : public std::string
+{
+public:
+	void Set(const std::string& name, const std::string& value, bool httpOnly = false, int maxAge = -1);
+	void Delete(const std::string& name);
+};
+
+class Request
+{
+public:
+	void Set(const std::string& name, const std::string& value, bool httpOnly = false, int maxAge = -1);
+	void Delete(const std::string& name);
+};
 
 class MongooseServer : public IServer
 {
@@ -31,6 +52,9 @@ public:
 	bool UnregisterClient(ClientID client, bool bAbort = false);
 	bool SendMessage(ClientID client, const std::string& msg) const;
 	bool PopAbort(mg_connection* pConn);
+
+	std::string CreateOKResponse(const std::string& content, const Cookies& cookies = Cookies()) const;
+	std::string CreateRedirectResponse(const std::string& newUrl, const Cookies& cookies = Cookies()) const;
 
 protected:
 	bool AbortClient(ClientID client);

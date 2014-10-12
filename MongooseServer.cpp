@@ -92,6 +92,28 @@ bool MongooseServer::SendMessage(ClientID client, const std::string& msg) const
 	return mg_websocket_write(pConn, WEBSOCKET_OPCODE_TEXT, msg.c_str(), msg.size()) == msg.size();
 }
 
+std::string MongooseServer::CreateOKResponse(const std::string& content, const Cookies& cookies) const
+{
+	return ::FormatString(
+		"HTTP/1.1 200 OK\r\n"
+		"Content-Type: text/html\r\n"
+		"Content-Length: %0\r\n"        // Always set Content-Length
+		"%2"
+		"\r\n"
+		"%1",
+		content.size(), content.c_str(), cookies);
+}
+
+std::string MongooseServer::CreateRedirectResponse(const std::string& url, const Cookies& cookies) const
+{
+	return ::FormatString(
+		"HTTP/1.1 302 Found\r\n"
+		"Location: %0\r\n"
+		"%1"
+		"\r\n",
+		url, cookies);
+}
+
 int begin_request_handler(struct mg_connection *conn)
 {
 	const mg_request_info *request_info = mg_get_request_info(conn);
@@ -99,21 +121,18 @@ int begin_request_handler(struct mg_connection *conn)
 	MongooseServer* pServer = reinterpret_cast<MongooseServer*>(request_info->user_data);
 	const ClientID client = reinterpret_cast<ClientID>(conn);
 
-	IServer::QueryMap queries;
+	IServer::StringMap queries, cookies;
+	
 	if (request_info->query_string)
-		queries = IServer::SplitQuery(request_info->query_string);
+		queries = IServer::SplitString(request_info->query_string, '&');
 
-	std::string reply;
-	if (pServer->OnHTTPRequest(request_info->uri, mg_get_header(conn, "Host"), queries, reply))
+	if (const char* cookiesString = mg_get_header(conn, "Cookie"))
+		cookies = IServer::SplitString(cookiesString, ';');
+
+	std::string reply = pServer->OnHTTPRequest(request_info->uri, mg_get_header(conn, "Host"), queries, cookies);
+	if (!reply.empty())
 	{
-		mg_printf(conn,
-			"HTTP/1.1 200 OK\r\n"
-			"Content-Type: text/html\r\n"
-			"Content-Length: %d\r\n"        // Always set Content-Length
-			"\r\n"
-			"%s",
-			reply.size(), reply.c_str());
-
+		mg_write(conn, reply.c_str(), reply.size());
 		return 1; // Mark as processed
 	}
 	return 0;
@@ -175,19 +194,44 @@ int websocket_data_handler(mg_connection *conn, int flags, char *data, size_t da
 }
 
 //-----------------------------------------------------------------------------
-
-IServer::QueryMap IServer::SplitQuery(const std::string& query) 
+//name = jon; id = 1
+IServer::StringMap IServer::SplitString(const std::string& string, char sep)
 {
-	QueryMap map;
-
-	auto v = Util::SplitString(query, '&');
+	auto trim = [](const std::string& s)
+	{
+		int start = 0, end = s.length();
+		for (auto i = s.begin(); i != s.end() && *i == ' '; ++i)
+			++start;
+		if (start < end)
+			for (auto i = s.rbegin(); i != s.rend() && *i == ' '; ++i)
+				++end;
+		return s.substr(start, end - start);
+	};
+	
+	
+	StringMap map;
+	auto v = Util::SplitString(string, sep);
 
 	for (auto& s : v)
 	{
 		auto pair = Util::SplitString(s, '=');
 		if (pair.size() == 2)
-			map[pair[0]] = pair[1];
+			map[trim(pair[0])] = trim(pair[1]);
 	}
 	return map;
 }
 
+//-----------------------------------------------------------------------------
+
+void Cookies::Set(const std::string& name, const std::string& value, bool httpOnly, int maxAge)
+{
+	std::string maxAgeString = maxAge >= 0 ? ::FormatString("; max-age=%0", maxAge) : "";
+	std::string httpOnlyString = httpOnly ? "; HttpOnly" : "";
+
+	*this += ::FormatString("Set-Cookie: %0=%1%2%3\r\n", name, value, maxAgeString, httpOnlyString);
+}
+
+void Cookies::Delete(const std::string& name)
+{
+	Set(name, "", false, 0);
+}

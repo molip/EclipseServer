@@ -23,20 +23,6 @@ namespace
 		return s;
 	}
 
-	std::string GetRedirectHTML(const std::string& url)
-	{
-		std::string html =	"<!DOCTYPE HTML>"
-							"<html>"
-							"<head>"
-							"<meta http-equiv=\"REFRESH\" content=\"0;url=";
-		html += url;
-		html +=				"\">"
-							"</head>"
-							"<body/>"
-							"</html>";
-		return html;
-	}
-
 	bool ReplaceToken(std::string& str, const std::string& token, const std::string& real)
 	{
 		size_t pos = str.find(token);
@@ -54,7 +40,7 @@ HTMLServer::HTMLServer() : MongooseServer(8999)
 {
 }
 
-bool HTMLServer::OnHTTPRequest(const std::string& url, const std::string& host, const QueryMap& queries, std::string& reply)
+std::string HTMLServer::OnHTTPRequest(const std::string& url, const std::string& host, const StringMap& queries, const StringMap& cookies)
 {
 	if (url == "/game")
 	{
@@ -71,12 +57,10 @@ bool HTMLServer::OnHTTPRequest(const std::string& url, const std::string& host, 
 				ReplaceToken(sPage, "%PLAYER_ID%", FormatInt(pPlayer->GetID()));
 				ReplaceToken(sPage, "%WSURL%", wsURL);
 
-				reply = sPage;
-				return true;
+				return CreateOKResponse(sPage);
 			}
 		}
-		reply = "Player name not recognised";
-		return true;
+		return CreateOKResponse("Player name not recognised");
 	}
-	return false; 
+	return ""; 
 }
