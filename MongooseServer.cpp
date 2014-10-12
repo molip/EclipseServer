@@ -146,12 +146,19 @@ void connection_close_handler(mg_connection *conn)
 	const ClientID client = reinterpret_cast<ClientID>(conn);
 
 	if (pServer->UnregisterClient(client))
-		pServer->OnDisconnect(client);
+		pServer->OnWebSocketDisconnect(client);
 }
 
-int websocket_connect_handler(const struct mg_connection *)
+int websocket_connect_handler(const struct mg_connection *conn)
 {
-	return 0;
+	const mg_request_info *request_info = mg_get_request_info(const_cast<mg_connection*>(conn));
+	MongooseServer* pServer = reinterpret_cast<MongooseServer*>(request_info->user_data);
+
+	IServer::StringMap cookies;
+	if (const char* cookiesString = mg_get_header(conn, "Cookie"))
+		cookies = IServer::SplitString(cookiesString, ';');
+
+	return pServer->OnWebSocketConnect(request_info->uri, cookies) ? 0 : 1;
 }
 
 void websocket_ready_handler(mg_connection *conn)
@@ -161,7 +168,7 @@ void websocket_ready_handler(mg_connection *conn)
 	const ClientID client = reinterpret_cast<ClientID>(conn);
 
 	pServer->RegisterClient(client, conn);
-	pServer->OnConnect(client, request_info->uri);
+	pServer->OnWebSocketReady(client, request_info->uri);
 }
 
 int websocket_data_handler(mg_connection *conn, int flags, char *data, size_t data_len)
@@ -180,11 +187,11 @@ int websocket_data_handler(mg_connection *conn, int flags, char *data, size_t da
 		{
 		case WEBSOCKET_OPCODE_TEXT:
 			if (data_len)
-				pServer->OnMessage(client, std::string(data, data_len));
+				pServer->OnWebSocketMessage(client, std::string(data, data_len));
 			break;
 		case WEBSOCKET_OPCODE_CONNECTION_CLOSE: // Called on refresh but not tab/browser close.
 			pServer->UnregisterClient(client);
-			pServer->OnDisconnect(client);
+			pServer->OnWebSocketDisconnect(client);
 			break;
 		default:
 			ASSERT(false);

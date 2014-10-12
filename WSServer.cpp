@@ -12,12 +12,17 @@ WSServer::WSServer(Controller& controller) : MongooseServer(8998), m_controller(
 	controller.SetServer(this);
 }
 
-void WSServer::OnConnect(ClientID client, const std::string& url)
+bool WSServer::OnWebSocketConnect(const std::string& url, const StringMap& cookies)
+{
+	return true; 
+}
+
+void WSServer::OnWebSocketReady(ClientID client, const std::string& url)
 {
 	std::cout << "INFO: Client connected: " << client << std::endl;
 }
 
-void WSServer::OnMessage(ClientID client, const std::string& message)
+void WSServer::OnWebSocketMessage(ClientID client, const std::string& message)
 {
 	LOCK(m_mutex); // Only process 1 message at a time. 
 
@@ -64,7 +69,7 @@ void WSServer::OnMessage(ClientID client, const std::string& message)
 		SendMessage(Output::Response(), *player);
 }
 
-void WSServer::OnDisconnect(ClientID client)
+void WSServer::OnWebSocketDisconnect(ClientID client)
 {
 	LOCK(m_mutex);
 	UnregisterPlayer(client);

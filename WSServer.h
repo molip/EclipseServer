@@ -13,9 +13,10 @@ class WSServer : public MongooseServer
 {
 public:
 	WSServer(Controller& controller);
-	virtual void OnConnect(ClientID client, const std::string& url) override;
-	virtual void OnMessage(ClientID client, const std::string& message) override;
-	virtual void OnDisconnect(ClientID client) override;
+	virtual bool OnWebSocketConnect(const std::string& url, const StringMap& cookies) override;
+	virtual void OnWebSocketReady(ClientID client, const std::string& url) override;
+	virtual void OnWebSocketMessage(ClientID client, const std::string& message) override;
+	virtual void OnWebSocketDisconnect(ClientID client) override;
 
 	bool SendMessage(const Output::Message& msg, const Player& player) const;
 	bool SendMessage(const std::string& msg, const Player& player) const;

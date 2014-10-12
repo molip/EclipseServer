@@ -18,9 +18,10 @@ public:
 
 	virtual ~IServer() {}
 	virtual std::string OnHTTPRequest(const std::string& url, const std::string& host, const StringMap& queries, const StringMap& cookies) { return ""; }
-	virtual void OnConnect(ClientID client, const std::string& url) {}
-	virtual void OnDisconnect(ClientID client) {}
-	virtual void OnMessage(ClientID client, const std::string& msg) {}
+	virtual bool OnWebSocketConnect(const std::string& url, const StringMap& cookies) { return true; }
+	virtual void OnWebSocketReady(ClientID client, const std::string& url) {}
+	virtual void OnWebSocketDisconnect(ClientID client) {}
+	virtual void OnWebSocketMessage(ClientID client, const std::string& msg) {}
 
 	static StringMap SplitString(const std::string& string, char sep);
 };
