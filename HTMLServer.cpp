@@ -72,8 +72,29 @@ std::string HTMLServer::OnHTTPRequest(const std::string& url, const std::string&
 
 		return CreateRedirectResponse("/login.html?failed=1");
 	}
+	
+	if (url == "/register")
+	{
+		auto postData = request.GetPostData();
 
-	if (url != "/login.html")
+		auto name = postData.Get("player");
+		auto password = postData.Get("password1");
+
+		if (name.empty() || password.empty()) // Shouldn't happen, checked client-side.
+			return CreateRedirectResponse("/register.html");
+		
+		if (Players::Find(name))
+			return CreateRedirectResponse("/register.html?error=name_taken");
+
+		Players::Add(name, password);
+
+		Cookies newCookies;
+		newCookies.Set("name", name, true);
+		newCookies.Set("password", password, true);
+		return CreateRedirectResponse("/", newCookies);
+	}
+
+	if (url != "/login.html" && url != "/register.html")
 		if (!Authenticate(cookies))
 			return CreateRedirectResponse("/login.html");
 
