@@ -16,8 +16,23 @@ public:
 		}
 	};
 
+	class Cookies : public std::string
+	{
+	public:
+		void Set(const std::string& name, const std::string& value, bool httpOnly = false, int maxAge = -1);
+		void Delete(const std::string& name);
+	};
+
+	class Request
+	{
+	public:
+		virtual StringMap GetQueries() const = 0;
+		virtual StringMap GetCookies() const = 0;
+		virtual StringMap GetPostData() const = 0;
+	};
+
 	virtual ~IServer() {}
-	virtual std::string OnHTTPRequest(const std::string& url, const std::string& host, const StringMap& queries, const StringMap& cookies) { return ""; }
+	virtual std::string OnHTTPRequest(const std::string& url, const std::string& host, const Request& request) { return ""; }
 	virtual bool OnWebSocketConnect(const std::string& url, const StringMap& cookies) { return true; }
 	virtual void OnWebSocketReady(ClientID client, const std::string& url) {}
 	virtual void OnWebSocketDisconnect(ClientID client) {}
@@ -29,20 +44,6 @@ public:
 struct mg_context;
 struct mg_connection;
 
-class Cookies : public std::string
-{
-public:
-	void Set(const std::string& name, const std::string& value, bool httpOnly = false, int maxAge = -1);
-	void Delete(const std::string& name);
-};
-
-class Request
-{
-public:
-	void Set(const std::string& name, const std::string& value, bool httpOnly = false, int maxAge = -1);
-	void Delete(const std::string& name);
-};
-
 class MongooseServer : public IServer
 {
 public:
@@ -53,7 +54,7 @@ public:
 	bool UnregisterClient(ClientID client, bool bAbort = false);
 	bool SendMessage(ClientID client, const std::string& msg) const;
 	bool PopAbort(mg_connection* pConn);
-
+	
 	std::string CreateOKResponse(const std::string& content, const Cookies& cookies = Cookies()) const;
 	std::string CreateRedirectResponse(const std::string& newUrl, const Cookies& cookies = Cookies()) const;
 

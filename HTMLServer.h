@@ -6,7 +6,11 @@ class HTMLServer : public MongooseServer
 {
 public:
 	HTMLServer();
-	virtual std::string OnHTTPRequest(const std::string& url, const std::string& host, const StringMap& queries, const StringMap& cookies) override;
+
+	static bool Authenticate(const std::string& name, const std::string& password);
+	static bool Authenticate(const StringMap& cookies);
+
+	virtual std::string OnHTTPRequest(const std::string& url, const std::string& host, const Request& request) override;
 
 private:
 };

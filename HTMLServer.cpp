@@ -40,27 +40,58 @@ HTMLServer::HTMLServer() : MongooseServer(8999)
 {
 }
 
-std::string HTMLServer::OnHTTPRequest(const std::string& url, const std::string& host, const StringMap& queries, const StringMap& cookies)
+bool HTMLServer::Authenticate(const std::string& name, const std::string& password)
 {
-	if (url == "/game")
-	{
-		auto pid = queries.find("player"); // TODO: Authentication.
-		if (pid != queries.end())
-		{
-			const std::string& name = pid->second;
-			if (const Player* pPlayer = Players::Find(name))
-			{
-				ASSERT(host.substr(host.size() - 5) == ":8999");
-				std::string wsURL = std::string("ws://") + host.substr(0, host.size() - 4) + "8998";
-			
-				std::string sPage = LoadFile("web\\game.html");
-				ReplaceToken(sPage, "%PLAYER_ID%", FormatInt(pPlayer->GetID()));
-				ReplaceToken(sPage, "%WSURL%", wsURL);
+	const Player* pPlayer = Players::Find(name);
+	return pPlayer && pPlayer->GetPassword() == password;
+}
 
-				return CreateOKResponse(sPage);
-			}
+bool HTMLServer::Authenticate(const StringMap& cookies)
+{
+	return Authenticate(cookies.Get("name"), cookies.Get("password"));
+}
+
+std::string HTMLServer::OnHTTPRequest(const std::string& url, const std::string& host, const Request& request)
+{
+	auto cookies = request.GetCookies();
+
+	if (url == "/login")
+	{
+		auto postData = request.GetPostData();
+
+		auto name = postData.Get("player");
+		auto password = postData.Get("password");
+
+		if (Authenticate(name, password))
+		{
+			Cookies newCookies;
+			newCookies.Set("name", name, true);
+			newCookies.Set("password", password, true);
+			return CreateRedirectResponse("/", newCookies);
 		}
-		return CreateOKResponse("Player name not recognised");
+
+		return CreateRedirectResponse("/login.html?failed=1");
+	}
+
+	if (url != "/login.html")
+		if (!Authenticate(cookies))
+			return CreateRedirectResponse("/login.html");
+
+	if (url == "/")
+	{
+		const std::string& name = cookies.Get("name");
+		if (const Player* pPlayer = Players::Find(name))
+		{
+			ASSERT(host.substr(host.size() - 5) == ":8999");
+			std::string wsURL = std::string("ws://") + host.substr(0, host.size() - 4) + "8998";
+			
+			std::string sPage = LoadFile("web\\game.html");
+			ReplaceToken(sPage, "%PLAYER_ID%", FormatInt(pPlayer->GetID()));
+			ReplaceToken(sPage, "%WSURL%", wsURL);
+
+			return CreateOKResponse(sPage);
+		}
+		return CreateRedirectResponse("/login.html");
 	}
 	return ""; 
 }

@@ -6,6 +6,7 @@
 #include "Input.h"
 #include "Player.h"
 #include "Players.h"
+#include "HTMLServer.h"
 
 WSServer::WSServer(Controller& controller) : MongooseServer(8998), m_controller(controller)
 {
@@ -14,7 +15,7 @@ WSServer::WSServer(Controller& controller) : MongooseServer(8998), m_controller(
 
 bool WSServer::OnWebSocketConnect(const std::string& url, const StringMap& cookies)
 {
-	return true; 
+	return HTMLServer::Authenticate(cookies);
 }
 
 void WSServer::OnWebSocketReady(ClientID client, const std::string& url)

@@ -114,6 +114,41 @@ std::string MongooseServer::CreateRedirectResponse(const std::string& url, const
 		url, cookies);
 }
 
+class MongooseRequest : public IServer::Request
+{
+public:
+	MongooseRequest(struct mg_connection* conn) : m_conn(conn) {}
+
+	virtual IServer::StringMap GetQueries() const override
+	{
+		IServer::StringMap queries;
+		if (const char* queryString = mg_get_request_info(m_conn)->query_string)
+			queries = IServer::SplitString(queryString, '&');
+		return queries;
+	}
+	virtual IServer::StringMap GetCookies() const override
+	{
+		IServer::StringMap cookies;
+
+		if (const char* cookiesString = mg_get_header(m_conn, "Cookie"))
+			cookies = IServer::SplitString(cookiesString, ';');
+		return cookies;
+	}
+	virtual IServer::StringMap GetPostData() const override
+	{
+		IServer::StringMap postData;
+		char postDataString[1024];
+		if (int bytes = mg_read(m_conn, postDataString, sizeof(postDataString)))
+		{
+			postDataString[bytes] = 0;
+			postData = IServer::SplitString(postDataString, '&');
+		}
+		return postData;
+	}
+private:
+	struct mg_connection* m_conn;
+};
+
 int begin_request_handler(struct mg_connection *conn)
 {
 	const mg_request_info *request_info = mg_get_request_info(conn);
@@ -121,15 +156,9 @@ int begin_request_handler(struct mg_connection *conn)
 	MongooseServer* pServer = reinterpret_cast<MongooseServer*>(request_info->user_data);
 	const ClientID client = reinterpret_cast<ClientID>(conn);
 
-	IServer::StringMap queries, cookies;
-	
-	if (request_info->query_string)
-		queries = IServer::SplitString(request_info->query_string, '&');
+	auto request = std::make_unique<MongooseRequest>(conn);
 
-	if (const char* cookiesString = mg_get_header(conn, "Cookie"))
-		cookies = IServer::SplitString(cookiesString, ';');
-
-	std::string reply = pServer->OnHTTPRequest(request_info->uri, mg_get_header(conn, "Host"), queries, cookies);
+	std::string reply = pServer->OnHTTPRequest(request_info->uri, mg_get_header(conn, "Host"), *request);
 	if (!reply.empty())
 	{
 		mg_write(conn, reply.c_str(), reply.size());
@@ -230,7 +259,7 @@ IServer::StringMap IServer::SplitString(const std::string& string, char sep)
 
 //-----------------------------------------------------------------------------
 
-void Cookies::Set(const std::string& name, const std::string& value, bool httpOnly, int maxAge)
+void IServer::Cookies::Set(const std::string& name, const std::string& value, bool httpOnly, int maxAge)
 {
 	std::string maxAgeString = maxAge >= 0 ? ::FormatString("; max-age=%0", maxAge) : "";
 	std::string httpOnlyString = httpOnly ? "; HttpOnly" : "";
@@ -238,7 +267,7 @@ void Cookies::Set(const std::string& name, const std::string& value, bool httpOn
 	*this += ::FormatString("Set-Cookie: %0=%1%2%3\r\n", name, value, maxAgeString, httpOnlyString);
 }
 
-void Cookies::Delete(const std::string& name)
+void IServer::Cookies::Delete(const std::string& name)
 {
 	Set(name, "", false, 0);
 }

@@ -1,0 +1,27 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<script>
+function GetURLParameter(name) 
+{
+  return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null
+}
+
+function CheckForFailedLogin() 
+{
+	if (GetURLParameter("failed") != null)
+		document.getElementById('failed_msg').style.display = ''
+}
+</script>
+
+</head>
+<body onload="CheckForFailedLogin()">
+	<h1>Eclipsoid: Sign in</h1>
+	<span id="failed_msg" style="display:none">Login failed!<br></span>
+	<form action="login" method="POST">
+	  <input type="text" placeholder="User name" name="player" autofocus><br>
+	  <input type="password" placeholder="Password" name="password"><br>
+	  <button type="submit" value="Submit">Sign in</button>
+	</form> 
+</body>
+</html>
