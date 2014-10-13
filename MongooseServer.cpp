@@ -114,6 +114,13 @@ std::string MongooseServer::CreateRedirectResponse(const std::string& url, const
 		url, cookies);
 }
 
+std::string MongooseServer::CreateMD5(const std::string& string1, const std::string& string2)
+{
+	char buf[33];
+	mg_md5(buf, string1.c_str(), string2.c_str(), nullptr);
+	return buf;
+}
+
 class MongooseRequest : public IServer::Request
 {
 public:

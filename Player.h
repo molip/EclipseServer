@@ -16,7 +16,8 @@ public:
 
 	int GetID() const { return m_id; }
 	const std::string& GetName() const { return m_name; }
-	const std::string& GetPassword() const { return m_password; }
+	const std::string& GetPasswordHash() const { return m_passwordHash; }
+	//const std::string& GetPasswordSalt() const { return m_passwordSalt; }
 
 	const LiveGame* GetCurrentLiveGame() const;
 	const ReviewGame* GetCurrentReviewGame() const;
@@ -26,10 +27,14 @@ public:
 	const Team* GetCurrentTeam() const;
 	//const Team* GetCurrentTeam() const { return const_cast<Player*>(this)->GetCurrentTeam(); }
 
+	bool CheckPassword(const std::string& password) const;
+
 private:
+	std::string HashPassword(const std::string& password) const;
+		
 	int m_id;
 	int m_idCurrentGame;
-	std::string m_name, m_password;
+	std::string m_name, m_passwordHash, m_passwordSalt;
 };
 
 typedef std::unique_ptr<Player> PlayerPtr;

@@ -58,6 +58,8 @@ public:
 	std::string CreateOKResponse(const std::string& content, const Cookies& cookies = Cookies()) const;
 	std::string CreateRedirectResponse(const std::string& newUrl, const Cookies& cookies = Cookies()) const;
 
+	static std::string CreateMD5(const std::string& string1, const std::string& string2);
+
 protected:
 	bool AbortClient(ClientID client);
 

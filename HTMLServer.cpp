@@ -40,15 +40,16 @@ HTMLServer::HTMLServer() : MongooseServer(8999)
 {
 }
 
-bool HTMLServer::Authenticate(const std::string& name, const std::string& password)
+Player* HTMLServer::Authenticate(const std::string& name, const std::string& password)
 {
-	const Player* pPlayer = Players::Find(name);
-	return pPlayer && pPlayer->GetPassword() == password;
+	Player* pPlayer = Players::Find(name);
+	return pPlayer && pPlayer->CheckPassword(password) ? pPlayer : nullptr;
 }
 
-bool HTMLServer::Authenticate(const StringMap& cookies)
+Player* HTMLServer::Authenticate(const StringMap& cookies)
 {
-	return Authenticate(cookies.Get("name"), cookies.Get("password"));
+	Player* pPlayer = Players::Find(cookies.Get("name"));
+	return pPlayer && pPlayer->GetPasswordHash() == cookies.Get("session") ? pPlayer : nullptr;
 }
 
 std::string HTMLServer::OnHTTPRequest(const std::string& url, const std::string& host, const Request& request)
@@ -62,11 +63,11 @@ std::string HTMLServer::OnHTTPRequest(const std::string& url, const std::string&
 		auto name = postData.Get("player");
 		auto password = postData.Get("password");
 
-		if (Authenticate(name, password))
+		if (Player* player = Authenticate(name, password))
 		{
 			Cookies newCookies;
-			newCookies.Set("name", name, true);
-			newCookies.Set("password", password, true);
+			newCookies.Set("name", name);
+			newCookies.Set("session", player->GetPasswordHash(), true);
 			return CreateRedirectResponse("/", newCookies);
 		}
 
@@ -86,33 +87,31 @@ std::string HTMLServer::OnHTTPRequest(const std::string& url, const std::string&
 		if (Players::Find(name))
 			return CreateRedirectResponse("/register.html?error=name_taken");
 
-		Players::Add(name, password);
+		Player& player = Players::Add(name, password);
 
 		Cookies newCookies;
 		newCookies.Set("name", name, true);
-		newCookies.Set("password", password, true);
+		newCookies.Set("session", player.GetPasswordHash(), true);
 		return CreateRedirectResponse("/", newCookies);
 	}
 
-	if (url != "/login.html" && url != "/register.html")
-		if (!Authenticate(cookies))
+	const Player* player = nullptr;
+
+
+	if (url != "/login.html" && url != "/register.html" && url != "/util.js")
+		if (!(player = Authenticate(cookies)))
 			return CreateRedirectResponse("/login.html");
 
 	if (url == "/")
 	{
-		const std::string& name = cookies.Get("name");
-		if (const Player* pPlayer = Players::Find(name))
-		{
-			ASSERT(host.substr(host.size() - 5) == ":8999");
-			std::string wsURL = std::string("ws://") + host.substr(0, host.size() - 4) + "8998";
+		ASSERT(host.substr(host.size() - 5) == ":8999");
+		std::string wsURL = std::string("ws://") + host.substr(0, host.size() - 4) + "8998";
 			
-			std::string sPage = LoadFile("web\\game.html");
-			ReplaceToken(sPage, "%PLAYER_ID%", FormatInt(pPlayer->GetID()));
-			ReplaceToken(sPage, "%WSURL%", wsURL);
+		std::string sPage = LoadFile("web\\game.html");
+		ReplaceToken(sPage, "%PLAYER_ID%", FormatInt(player->GetID()));
+		ReplaceToken(sPage, "%WSURL%", wsURL);
 
-			return CreateOKResponse(sPage);
-		}
-		return CreateRedirectResponse("/login.html");
+		return CreateOKResponse(sPage);
 	}
 	return ""; 
 }

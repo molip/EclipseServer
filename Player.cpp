@@ -2,14 +2,28 @@
 #include "Player.h"
 #include "Game.h"
 #include "Games.h"
+#include "MongooseServer.h"
 
 Player::Player() : m_id(0), m_idCurrentGame(0)
 {
 }
 
 Player::Player(int id, const std::string& name, const std::string& password) : 
-	m_id(id), m_name(name), m_password(password), m_idCurrentGame(0)
+	m_id(id), m_name(name), m_idCurrentGame(0)
 {
+	m_passwordSalt = ::FormatInt(::GetRandom()());
+	m_passwordHash = HashPassword(password);
+}
+
+bool Player::CheckPassword(const std::string& password) const
+{
+	std::string hash = HashPassword(password);
+	return hash == m_passwordHash;
+}
+
+std::string Player::HashPassword(const std::string& password) const
+{
+	return MongooseServer::CreateMD5(password.c_str(), m_passwordSalt.c_str());
 }
 
 void Player::SetCurrentGame(const Game* pGame)
