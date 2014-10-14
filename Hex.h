@@ -143,7 +143,8 @@ public:
 	void SetDiscoveryTile(DiscoveryType type);
 	bool CanMoveOut(const Team& team) const;
 	bool CanMoveThrough(const Team& team) const;
-	
+	bool CanExploreFrom(const Team& team) const;
+
 	Square* FindSquare(SquareType type, bool bOccupied);
 
 	bool HasNeighbour(const Map& map, bool bWormholeGen) const;

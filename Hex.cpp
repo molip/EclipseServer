@@ -325,6 +325,7 @@ int Hex::GetPinnage(const Team& team) const
 	return nPinnage;
 }
 
+// NB. Ignores the immoveability of space stations. 
 bool Hex::CanMoveOut(const Team& team) const
 {
 	return GetPinnage(team) < 0;
@@ -333,6 +334,13 @@ bool Hex::CanMoveOut(const Team& team) const
 bool Hex::CanMoveThrough(const Team& team) const
 {
 	return GetPinnage(team) <= 0;
+}
+
+bool Hex::CanExploreFrom(const Team& team) const
+{
+	// "...next to a hex where you have a Ship or an Influence Disc"
+	// "If you Explore from a hex with only a Ship, it must not be pinned"
+		return IsOwnedBy(team) || (HasShip(team.GetColour()) && CanMoveOut(team));
 }
 
 void Hex::SetColour(Colour c)

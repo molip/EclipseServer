@@ -163,14 +163,14 @@ bool Map::HasNeighbour(const MapPos& pos, bool bWormholeGen) const
 	return false;
 }
 
-std::vector<const Hex*> Map::GetSurroundingHexes(const MapPos& pos, const Team& team) const
+std::vector<const Hex*> Map::GetValidExploreOriginNeighbours(const MapPos& pos, const Team& team) const
 {
 	std::vector<const Hex*> hexes;
 	hexes.resize(6);
 
 	for (auto e : EnumRange<Edge>())
 		if (const Hex* pHex = FindHex(pos.GetNeighbour(e)))
-			if (pHex->IsOwnedBy(team)) // TODO: Check ships.
+			if (pHex->CanExploreFrom(team)) // TODO: Check ships.
 				hexes[(int)e] = pHex;
 
 	return hexes;		

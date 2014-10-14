@@ -65,7 +65,7 @@ ExploreCmd::ExploreCmd(Colour colour, const LiveGame& game, int iPhase) : PhaseC
 	std::set<MapPos> positions;
 	const Map::HexMap& hexes = game.GetMap().GetHexes();
 	for (auto& h : hexes)
-		if (h.second->IsOwnedBy(team)) // TODO: Check ships.
+		if (h.second->CanExploreFrom(team))
 			game.GetMap().GetEmptyNeighbours(h.first, team.HasTech(TechType::WormholeGen), positions);
 
 	m_positions.insert(m_positions.begin(), positions.begin(), positions.end());
@@ -220,7 +220,7 @@ ExploreHexCmd::ExploreHexCmd(Colour colour, const LiveGame& game, const MapPos& 
 
 	bool bWormholeGen = team.HasTech(TechType::WormholeGen);
 
-	std::vector<const Hex*> hexes = game.GetMap().GetSurroundingHexes(m_pos, team);
+	std::vector<const Hex*> hexes = game.GetMap().GetValidExploreOriginNeighbours(m_pos, team);
 
 	Race race(team.GetRace());
 
@@ -256,6 +256,7 @@ ExploreHexCmd::ExploreHexCmd(Colour colour, const LiveGame& game, const MapPos& 
 			if (bMatch)
 				hc.m_rotations.push_back(i);
 		}
+		VERIFY_MODEL(!hc.m_rotations.empty());
 		m_hexChoices.push_back(hc);
 	}
 }
