@@ -8,6 +8,8 @@ class LiveGame;
 class ReviewGame;
 class Team;
 
+namespace Serial { class SaveNode; class LoadNode; }
+
 class Player
 {
 public:
@@ -17,17 +19,18 @@ public:
 	int GetID() const { return m_id; }
 	const std::string& GetName() const { return m_name; }
 	const std::string& GetPasswordHash() const { return m_passwordHash; }
-	//const std::string& GetPasswordSalt() const { return m_passwordSalt; }
 
 	const LiveGame* GetCurrentLiveGame() const;
 	const ReviewGame* GetCurrentReviewGame() const;
 	const Game* GetCurrentGame() const;
+	const Team* GetCurrentTeam() const;
+	bool CheckPassword(const std::string& password) const;
+
 	void SetCurrentGame(const Game* pGame);
 
-	const Team* GetCurrentTeam() const;
-	//const Team* GetCurrentTeam() const { return const_cast<Player*>(this)->GetCurrentTeam(); }
-
-	bool CheckPassword(const std::string& password) const;
+	void Save() const;
+	void Save(Serial::SaveNode& node) const;
+	void Load(const Serial::LoadNode& node);
 
 private:
 	std::string HashPassword(const std::string& password) const;

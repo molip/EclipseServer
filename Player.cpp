@@ -3,6 +3,7 @@
 #include "Game.h"
 #include "Games.h"
 #include "MongooseServer.h"
+#include "Players.h"
 
 Player::Player() : m_id(0), m_idCurrentGame(0)
 {
@@ -13,6 +14,8 @@ Player::Player(int id, const std::string& name, const std::string& password) :
 {
 	m_passwordSalt = ::FormatInt(::GetRandom()());
 	m_passwordHash = HashPassword(password);
+
+	Save();
 }
 
 bool Player::CheckPassword(const std::string& password) const
@@ -40,6 +43,8 @@ void Player::SetCurrentGame(const Game* pGame)
 
 	if (pGame)
 		pGame->AddPlayer(this);
+
+	Save();
 }
 
 const Game* Player::GetCurrentGame() const
@@ -60,4 +65,33 @@ const ReviewGame* Player::GetCurrentReviewGame() const
 const Team* Player::GetCurrentTeam() const
 {
 	return m_idCurrentGame ? GetCurrentGame()->FindTeam(*this) : nullptr;
+}
+
+void Player::Save() const
+{
+	std::string path = ::FormatString("%0%1.xml", Players::GetPath(), m_id);
+	VERIFY_SERIAL_MSG(path, Serial::SaveClass(path, *this));
+}
+
+void Player::Save(Serial::SaveNode& node) const
+{
+	node.SaveType("id", m_id);
+	node.SaveType("current_game", m_idCurrentGame);
+	node.SaveType("name", m_name);
+	node.SaveType("hash", m_passwordHash);
+	node.SaveType("salt", m_passwordSalt);
+}
+
+void Player::Load(const Serial::LoadNode& node)
+{
+	node.LoadType("id", m_id);
+	node.LoadType("current_game", m_idCurrentGame);
+	node.LoadType("name", m_name);
+	node.LoadType("hash", m_passwordHash);
+	node.LoadType("salt", m_passwordSalt);
+
+	if (const Game* game = GetCurrentGame())
+		game->AddPlayer(this);
+	else
+		m_idCurrentGame = 0;
 }

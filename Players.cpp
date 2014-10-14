@@ -1,6 +1,9 @@
 #include "stdafx.h"
 #include "Players.h"
 #include "App.h"
+#include "OS.h"
+#include "Xml.h"
+#include "Serial.h"
 
 int Players::s_nNextID = 1;
 std::map<int, PlayerPtr> Players::s_map;
@@ -26,4 +29,28 @@ Player* Players::Find(const std::string& name)
 		if (name == i.second->GetName())
 			return i.second.get();
 	return nullptr;
+}
+
+std::string Players::GetPath()
+{
+	return "data/players/";
+}
+
+void Players::Load()
+{
+	VERIFY_SERIAL(s_map.empty());
+
+	auto files = OS::FindFilesInDir(GetPath(), "*.xml");
+
+	for (auto& f : files)
+	{
+		PlayerPtr player(new Player);
+		if (Serial::LoadClass(GetPath() + f, *player))
+		{
+			s_nNextID = std::max(s_nNextID, player->GetID() + 1);
+			ASSERT(s_map.insert(std::make_pair(player->GetID(), std::move(player))).second);
+		}
+		else
+			ASSERT(false);
+	}
 }
