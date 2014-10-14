@@ -12,26 +12,29 @@ class Hex;
 class InfluenceCmd : public PhaseCmd
 {
 public:
-	InfluenceCmd() {}
-	InfluenceCmd(Colour colour, const LiveGame& game, int iPhase = 0);
+	InfluenceCmd() : m_flipsLeft(0)  {}
+	InfluenceCmd(Colour colour, const LiveGame& game, int iPhase = 0, int flipsLeft = 2);
 
 	virtual void UpdateClient(const Controller& controller, const LiveGame& game) const override;
 	virtual CmdPtr Process(const Input::CmdMessage& msg, CommitSession& session) override;
 	virtual bool IsAction() const override { return true; } 
-	virtual std::string GetActionName() const override { return "Inlfuence"; }
+	virtual std::string GetActionName() const override { return "Influence"; }
 
 	virtual void Save(Serial::SaveNode& node) const override;
 	virtual void Load(const Serial::LoadNode& node) override;
 
 private:
 	std::vector<MapPos> GetSources(const LiveGame& game) const;
+	int GetMaxFlips(const LiveGame& game) const;
+
+	int m_flipsLeft;
 };
 
 class InfluenceDstCmd : public PhaseCmd
 {
 public:
-	InfluenceDstCmd() : m_discovery(DiscoveryType::None) {}
-	InfluenceDstCmd(Colour colour, const LiveGame& game, const MapPos* pSrcPos, int iPhase = 0);
+	InfluenceDstCmd() : m_discovery(DiscoveryType::None), m_flipsLeft(0) {}
+	InfluenceDstCmd(Colour colour, const LiveGame& game, const MapPos* pSrcPos, int iPhase, int flipsLeft);
 
 	virtual void UpdateClient(const Controller& controller, const LiveGame& game) const override;
 	virtual CmdPtr Process(const Input::CmdMessage& msg, CommitSession& session) override;
@@ -45,4 +48,5 @@ private:
 
 	std::unique_ptr<MapPos> m_pSrcPos;
 	DiscoveryType m_discovery;
+	int m_flipsLeft;
 };

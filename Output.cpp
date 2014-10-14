@@ -480,9 +480,10 @@ ChooseInfluencePos::ChooseInfluencePos(const std::vector<MapPos>& positions, boo
 		AppendPointElement(pos.GetX(), pos.GetY(), positionsNode);
 }
 
-ChooseInfluenceSrc::ChooseInfluenceSrc(const std::vector<MapPos>& positions, bool bEnableTrack) : 
+ChooseInfluenceSrc::ChooseInfluenceSrc(const std::vector<MapPos>& positions, bool bEnableTrack, int flips) :
 	ChooseInfluencePos(positions, bEnableTrack, "influence_src") 
 {
+	m_root.SetAttribute("max_flips", flips);
 }
 
 ChooseInfluenceDst::ChooseInfluenceDst(const std::vector<MapPos>& positions, bool bEnableTrack) : 

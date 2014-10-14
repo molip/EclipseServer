@@ -109,7 +109,7 @@ struct ChooseColonisePos : Choose { ChooseColonisePos(const std::vector<MapPos>&
 struct ChooseColoniseSquares : Choose { ChooseColoniseSquares(const int squares[SquareType::_Count], const Population& pop, int nShips); };
 
 struct ChooseInfluencePos : Choose { ChooseInfluencePos(const std::vector<MapPos>& positions, bool bEnableTrack, const std::string& param); };
-struct ChooseInfluenceSrc : ChooseInfluencePos { ChooseInfluenceSrc(const std::vector<MapPos>& positions, bool bEnableTrack); };
+struct ChooseInfluenceSrc : ChooseInfluencePos { ChooseInfluenceSrc(const std::vector<MapPos>& positions, bool bEnableTrack, int flips); };
 struct ChooseInfluenceDst : ChooseInfluencePos { ChooseInfluenceDst(const std::vector<MapPos>& positions, bool bEnableTrack); };
 
 struct ChooseResearch : Choose { ChooseResearch(const std::vector<std::pair<TechType, int>>& techs, bool bCanSkip); };

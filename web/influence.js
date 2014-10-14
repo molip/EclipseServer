@@ -3,10 +3,11 @@ var Influence = {}
 ///////////////////////////////////////////////////////////////////////////////
 // Stages
 
-Influence.Stage = function(positions, can_select_track, btn_id, command)
+Influence.Stage = function(positions, can_select_track, max_flips, btn_id, command)
 {
 	this.positions = positions
 	this.can_select_track = can_select_track
+	this.max_flips = max_flips
 	this.btn_id = btn_id
 	this.command = command
 	this.selected = null
@@ -14,6 +15,10 @@ Influence.Stage = function(positions, can_select_track, btn_id, command)
 	this.pos_idx = can_select_track ? -1 : 0
 
 	document.getElementById(btn_id).disabled = true
+	
+	var flipBtn = document.getElementById('choose_influence_flip_btn')
+	flipBtn.disabled = max_flips <= 0
+	flipBtn.textContent = 'Flip {0} colony ship{1}'.format(max_flips, max_flips == 1 ? '' : 's')
 
 	this.UpdateTrackSelection()
 }
@@ -62,6 +67,13 @@ Influence.Stage.prototype.Send = function()
 	SendJSON(json)
 }
 
+Influence.Stage.prototype.SendFlip = function()
+{
+	var json = CreateCommandJSON('cmd_influence_flip')
+	ExitAction()
+	SendJSON(json)
+}
+
 Influence.Stage.prototype.UpdateTrackSelection = function()
 {
 	var style = ""
@@ -88,7 +100,7 @@ Influence.OnCommandChooseSrc = function(elem)
 	ShowActionElement('choose_influence_src')
 	Map.selecting = true
 
-	data.action = new Influence.Stage(elem.positions, elem.can_select_track, 'choose_influence_src_btn', 'cmd_influence_src')
+	data.action = new Influence.Stage(elem.positions, elem.can_select_track, elem.max_flips, 'choose_influence_src_btn', 'cmd_influence_src')
 	Map.DrawActionLayer()
 }
 
@@ -97,6 +109,6 @@ Influence.OnCommandChooseDst = function(elem)
 	ShowActionElement('choose_influence_dst')
 	Map.selecting = true
 
-	data.action = new Influence.Stage(elem.positions, elem.can_select_track, 'choose_influence_dst_btn', 'cmd_influence_dst')
+	data.action = new Influence.Stage(elem.positions, elem.can_select_track, 0, 'choose_influence_dst_btn', 'cmd_influence_dst')
 	Map.DrawActionLayer()
 }

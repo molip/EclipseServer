@@ -190,6 +190,11 @@ struct CmdInfluenceSrc : CmdMessage
 	int m_iPos;
 };
 
+struct CmdInfluenceFlip : CmdMessage
+{
+	CmdInfluenceFlip(const Json::Element& node);
+};
+
 struct CmdInfluenceDst : CmdMessage
 {
 	CmdInfluenceDst(const Json::Element& node);

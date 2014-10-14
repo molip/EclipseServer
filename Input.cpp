@@ -79,6 +79,8 @@ MessagePtr CreateCommand(const Json::Element& root)
 		return MessagePtr(new CmdExploreDiscovery(root));
 	if (type == "cmd_influence_src")
 		return MessagePtr(new CmdInfluenceSrc(root));
+	if (type == "cmd_influence_flip")
+		return MessagePtr(new CmdInfluenceFlip(root));
 	if (type == "cmd_influence_dst")
 		return MessagePtr(new CmdInfluenceDst(root));
 	if (type == "cmd_abort")
@@ -442,6 +444,10 @@ CmdColoniseSquares::CmdColoniseSquares(const Json::Element& node)
 CmdInfluenceSrc::CmdInfluenceSrc(const Json::Element& node)
 {
 	m_iPos = node.GetAttributeInt("pos_idx");
+}
+
+CmdInfluenceFlip::CmdInfluenceFlip(const Json::Element& node)
+{
 }
 
 CmdInfluenceDst::CmdInfluenceDst(const Json::Element& node)
