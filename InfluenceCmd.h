@@ -24,7 +24,7 @@ public:
 	virtual void Load(const Serial::LoadNode& node) override;
 
 private:
-	std::vector<MapPos> m_srcs;
+	std::vector<MapPos> GetSources(const LiveGame& game) const;
 };
 
 class InfluenceDstCmd : public PhaseCmd
@@ -41,7 +41,8 @@ public:
 	virtual void Load(const Serial::LoadNode& node) override;
 
 private:
+	std::vector<MapPos> GetDests(const LiveGame& game) const;
+
 	std::unique_ptr<MapPos> m_pSrcPos;
-	std::vector<MapPos> m_dsts;
 	DiscoveryType m_discovery;
 };

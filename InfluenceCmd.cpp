@@ -13,19 +13,25 @@
 
 InfluenceCmd::InfluenceCmd(Colour colour, const LiveGame& game, int iPhase) : PhaseCmd(colour, iPhase)
 {
-	const Team& team = GetTeam(game);
-	VERIFY_MODEL(!team.HasPassed());
+	VERIFY_MODEL(!GetTeam(game).HasPassed());
+}
 
+std::vector<MapPos> InfluenceCmd::GetSources(const LiveGame& game) const
+{
+	std::vector<MapPos> srcs;
+
+	const Team& team = GetTeam(game);
 	const Map& map = game.GetMap();
 	const Map::HexMap& hexes = map.GetHexes();
 	for (auto& h : hexes)
 		if (h.second->IsOwnedBy(team))
-			m_srcs.push_back(h.first);
+			srcs.push_back(h.first);
+	return srcs;
 }
 
 void InfluenceCmd::UpdateClient(const Controller& controller, const LiveGame& game) const
 {
-	controller.SendMessage(Output::ChooseInfluenceSrc(m_srcs, GetTeam(game).GetInfluenceTrack().GetDiscCount() > 0), GetPlayer(game));
+	controller.SendMessage(Output::ChooseInfluenceSrc(GetSources(game), GetTeam(game).GetInfluenceTrack().GetDiscCount() > 0), GetPlayer(game));
 }
 
 CmdPtr InfluenceCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
@@ -36,22 +42,22 @@ CmdPtr InfluenceCmd::Process(const Input::CmdMessage& msg, CommitSession& sessio
 		return nullptr;
 
 	auto& m = VerifyCastInput<const Input::CmdInfluenceSrc>(msg);
-	VERIFY_INPUT_MSG("invalid pos index", m.m_iPos == -1 || InRange(m_srcs, m.m_iPos));
+
+	std::vector<MapPos> srcs = InfluenceCmd::GetSources(session.GetGame());
+	VERIFY_INPUT_MSG("invalid pos index", m.m_iPos == -1 || InRange(srcs, m.m_iPos));
 
 	const LiveGame& game = session.GetGame();
-	return CmdPtr(new InfluenceDstCmd(m_colour, game, m.m_iPos < 0 ? nullptr : &m_srcs[m.m_iPos], m_iPhase));
+	return CmdPtr(new InfluenceDstCmd(m_colour, game, m.m_iPos < 0 ? nullptr : &srcs[m.m_iPos], m_iPhase));
 }
 
 void InfluenceCmd::Save(Serial::SaveNode& node) const 
 {
 	__super::Save(node);
-	node.SaveCntr("srcs", m_srcs, Serial::TypeSaver());
 }
 
 void InfluenceCmd::Load(const Serial::LoadNode& node) 
 {
 	__super::Load(node);
-	node.LoadCntr("srcs", m_srcs, Serial::TypeLoader());
 }
 
 REGISTER_DYNAMIC(InfluenceCmd)
@@ -181,43 +187,48 @@ REGISTER_DYNAMIC(DiscoverAndInfluenceCmd)
 //-----------------------------------------------------------------------------
 
 InfluenceDstCmd::InfluenceDstCmd(Colour colour, const LiveGame& game, const MapPos* pSrcPos, int iPhase) : PhaseCmd(colour, iPhase),
-	m_discovery(DiscoveryType::None)
+m_discovery(DiscoveryType::None)
 {
-	auto& team = GetTeam(game);
-
 	if (pSrcPos)
 		m_pSrcPos.reset(new MapPos(*pSrcPos));
+}
+
+std::vector<MapPos> InfluenceDstCmd::GetDests(const LiveGame& game) const
+{
+	auto& team = GetTeam(game);
 
 	std::set<MapPos> dsts;
 
 	const bool bWormholeGen = team.HasTech(TechType::WormholeGen);
 
 	const Map& map = game.GetMap();
-	const Map::HexMap& hexes = map.GetHexes();
-	for (auto& h : hexes)
+	for (auto& h : map.GetHexes())
 	{
 		if (!h.second->IsOwned())
 			if (h.second->HasShip(team.GetColour()) && !h.second->HasForeignShip(team.GetColour())) // "a hex where only you have a Ship"
 				dsts.insert(h.first);
-		if (!pSrcPos || h.first != *pSrcPos) // Would break the wormhole, see FAQ.
+		if (!m_pSrcPos || h.first != *m_pSrcPos) // Would break the wormhole, see FAQ.
 			if (h.second->IsOwnedBy(team) || h.second->HasShip(team.GetColour())) // "adjacent to a hex where you have a disc or a Ship"
 				map.GetInfluencableNeighbours(h.first, team, dsts);
 	}
 
-	m_dsts.insert(m_dsts.begin(), dsts.begin(), dsts.end());
+	return std::vector<MapPos>(dsts.begin(), dsts.end());
 }
 
 void InfluenceDstCmd::UpdateClient(const Controller& controller, const LiveGame& game) const
 {
-	controller.SendMessage(Output::ChooseInfluenceDst(m_dsts, !!m_pSrcPos), GetPlayer(game));
+	controller.SendMessage(Output::ChooseInfluenceDst(GetDests(game), !!m_pSrcPos), GetPlayer(game));
 }
 
 CmdPtr InfluenceDstCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
 {
 	auto& m = VerifyCastInput<const Input::CmdInfluenceDst>(msg);
-	VERIFY_INPUT_MSG("invalid pos index", m.m_iPos == -1 || InRange(m_dsts, m.m_iPos));
+
+	std::vector<MapPos> dsts = GetDests(session.GetGame());
+
+	VERIFY_INPUT_MSG("invalid pos index", m.m_iPos == -1 || InRange(dsts, m.m_iPos));
 	
-	const MapPos* pDstPos = m.m_iPos >= 0 ? &m_dsts[m.m_iPos] : nullptr;
+	const MapPos* pDstPos = m.m_iPos >= 0 ? &dsts[m.m_iPos] : nullptr;
 	
 	InfluenceRecord* pRec = new InfluenceRecord(m_colour, m_pSrcPos.get(), pDstPos);
 	DoRecord(RecordPtr(pRec), session);
@@ -237,7 +248,6 @@ void InfluenceDstCmd::Save(Serial::SaveNode& node) const
 {
 	__super::Save(node);
 	node.SaveTypePtr("src", m_pSrcPos);
-	node.SaveCntr("dsts", m_dsts, Serial::TypeSaver());
 	node.SaveEnum("discovery", m_discovery);
 }
 
@@ -245,7 +255,6 @@ void InfluenceDstCmd::Load(const Serial::LoadNode& node)
 {
 	__super::Load(node);
 	node.LoadTypePtr("src", m_pSrcPos);
-	node.LoadCntr("dsts", m_dsts, Serial::TypeLoader());
 	node.LoadEnum("discovery", m_discovery);
 }
 
