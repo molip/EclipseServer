@@ -24,6 +24,9 @@ public:
 	static const Game& Get(int idGame);
 	static const LiveGame& GetLive(int idGame);
 	static const ReviewGame& GetReview(int idGame);
+	static bool IsGame(int idGame);
+	static bool IsLiveGame(int idGame);
+	static bool IsReviewGame(int idGame);
 
 private:
 	static std::vector<LiveGamePtr> s_liveGames;

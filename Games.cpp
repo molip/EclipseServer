@@ -86,3 +86,26 @@ const Game& Games::Get(int idGame)
 	VERIFY_MODEL(false);
 	return *(Game*)nullptr;
 }
+
+bool Games::IsGame(int idGame)
+{
+	return idGame && (IsLiveGame(idGame) || IsReviewGame(idGame));
+}
+
+bool Games::IsLiveGame(int idGame)
+{
+	if (idGame)
+		for (auto& g : s_liveGames)
+			if (g->GetID() == idGame)
+				return true;
+	return false;
+}
+
+bool Games::IsReviewGame(int idGame)
+{
+	if (idGame)
+		for (auto& g : s_reviewGames)
+			if (g->GetID() == idGame)
+				return true;
+	return false;
+}

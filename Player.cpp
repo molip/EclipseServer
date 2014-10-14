@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Player.h"
 #include "Game.h"
+#include "ReviewGame.h"
 #include "Games.h"
 #include "MongooseServer.h"
 #include "Players.h"
@@ -75,8 +76,10 @@ void Player::Save() const
 
 void Player::Save(Serial::SaveNode& node) const
 {
+	int idGame = Games::IsReviewGame(m_idCurrentGame) ? GetCurrentReviewGame()->GetLiveGameID() : m_idCurrentGame;
+
 	node.SaveType("id", m_id);
-	node.SaveType("current_game", m_idCurrentGame);
+	node.SaveType("current_game", idGame);
 	node.SaveType("name", m_name);
 	node.SaveType("hash", m_passwordHash);
 	node.SaveType("salt", m_passwordSalt);
@@ -90,8 +93,8 @@ void Player::Load(const Serial::LoadNode& node)
 	node.LoadType("hash", m_passwordHash);
 	node.LoadType("salt", m_passwordSalt);
 
-	if (const Game* game = GetCurrentGame())
-		game->AddPlayer(this);
+	if (Games::IsGame(m_idCurrentGame)) 
+		GetCurrentGame()->AddPlayer(this);
 	else
 		m_idCurrentGame = 0;
 }
