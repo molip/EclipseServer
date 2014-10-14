@@ -57,7 +57,12 @@ private:
 };
 REGISTER_DYNAMIC(ExploreRecord)
 
-ExploreCmd::ExploreCmd(Colour colour, const LiveGame& game, int iPhase) : PhaseCmd(colour, iPhase), m_idHex(-1), m_iPos(-1)
+ExploreCmd::ExploreCmd(Colour colour, const LiveGame& game, int iPhase) : PhaseCmd(colour, iPhase)
+{
+	VERIFY_INPUT(!GetTeam(game).HasPassed());
+}
+
+std::vector<MapPos> ExploreCmd::GetPositions(const LiveGame& game) const
 {
 	const Team& team = GetTeam(game);
 	VERIFY_INPUT(!team.HasPassed());
@@ -68,12 +73,12 @@ ExploreCmd::ExploreCmd(Colour colour, const LiveGame& game, int iPhase) : PhaseC
 		if (h.second->CanExploreFrom(team))
 			game.GetMap().GetEmptyNeighbours(h.first, team.HasTech(TechType::WormholeGen), positions);
 
-	m_positions.insert(m_positions.begin(), positions.begin(), positions.end());
+	return std::vector<MapPos>(positions.begin(), positions.end());
 }
 
 void ExploreCmd::UpdateClient(const Controller& controller, const LiveGame& game) const
 {
-	controller.SendMessage(Output::ChooseExplorePos(m_positions, m_iPhase > 0), GetPlayer(game));
+	controller.SendMessage(Output::ChooseExplorePos(GetPositions(game), m_iPhase > 0), GetPlayer(game));
 }
 
 CmdPtr ExploreCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
@@ -85,34 +90,29 @@ CmdPtr ExploreCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
 	}
 
 	auto& m = VerifyCastInput<const Input::CmdExplorePos>(msg);
-	VERIFY_INPUT_MSG("invalid pos index", InRange(m_positions, m.m_iPos));
-	m_iPos = m.m_iPos;
 
-	const MapPos& pos = m_positions[m_iPos];
+	std::vector<MapPos> positions = GetPositions(session.GetGame());
+		
+	VERIFY_INPUT_MSG("invalid pos index", InRange(positions, m.m_iPos));
+
+	const MapPos& pos = positions[m.m_iPos];
 
 	ExploreRecord* pRec = new ExploreRecord(m_colour, pos.GetRing());
 	DoRecord(RecordPtr(pRec), session);
-	m_idHex = pRec->GetHexID();
 
 	std::vector<int> hexIDs;
-	hexIDs.push_back(m_idHex);
+	hexIDs.push_back(pRec->GetHexID());
 	return CmdPtr(new ExploreHexCmd(m_colour, session.GetGame(), pos, hexIDs, m_iPhase));
 }
 
 void ExploreCmd::Save(Serial::SaveNode& node) const 
 {
 	__super::Save(node);
-	node.SaveCntr("positions", m_positions, Serial::TypeSaver());
-	node.SaveType("hex_id", m_idHex);
-	node.SaveType("pos_index", m_iPos);
 }
 
 void ExploreCmd::Load(const Serial::LoadNode& node) 
 {
 	__super::Load(node);
-	node.LoadCntr("positions", m_positions, Serial::TypeLoader());
-	node.LoadType("hex_id", m_idHex);
-	node.LoadType("pos_index", m_iPos);
 }
 
 REGISTER_DYNAMIC(ExploreCmd)

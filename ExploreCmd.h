@@ -15,21 +15,20 @@ class Game;
 class ExploreCmd : public PhaseCmd
 {
 public:
-	ExploreCmd() : m_idHex(-1), m_iPos(-1) {}
+	ExploreCmd() {}
 	ExploreCmd(Colour colour, const LiveGame& game, int iPhase = 0);
 
 	virtual void UpdateClient(const Controller& controller, const LiveGame& game) const override;
 	virtual CmdPtr Process(const Input::CmdMessage& msg, CommitSession& session) override;
 	virtual bool IsAction() const override { return true; } 
 	virtual std::string GetActionName() const override { return "Explore"; }
-	virtual bool CanUndo() const override { return m_idHex < 0; }
+	virtual bool CanUndo() const override { return !HasRecord(); }
 
 	virtual void Save(Serial::SaveNode& node) const override;
 	virtual void Load(const Serial::LoadNode& node) override;
 
 private:
-	std::vector<MapPos> m_positions;
-	int m_idHex, m_iPos;
+	std::vector<MapPos> GetPositions(const LiveGame& game) const;
 };
 
 class ExploreHexCmd : public PhaseCmd
