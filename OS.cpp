@@ -31,5 +31,10 @@ std::vector<std::string> FindFilesInDir(const std::string& dir, const std::strin
 	}
 	return files;
 }
+#undef DeleteFile
+bool DeleteFile(const std::string& path)
+{
+	return ::DeleteFileA(path.c_str()) != 0;
+}
 
 } // namespace

@@ -93,6 +93,7 @@
     <ClInclude Include="Debug.h" />
     <ClInclude Include="Dice.h" />
     <ClInclude Include="FinishBattleRecord.h" />
+    <ClInclude Include="Invitations.h" />
     <ClInclude Include="MessageRecord.h" />
     <ClInclude Include="ChooseTeamPhase.h" />
     <ClInclude Include="civetweb.h" />
@@ -180,6 +181,7 @@
     <ClCompile Include="Debug.cpp" />
     <ClCompile Include="Dice.cpp" />
     <ClCompile Include="FinishBattleRecord.cpp" />
+    <ClCompile Include="Invitations.cpp" />
     <ClCompile Include="MessageRecord.cpp" />
     <ClCompile Include="ChooseTeamPhase.cpp" />
     <ClCompile Include="civetweb.c" />

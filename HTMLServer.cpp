@@ -6,6 +6,7 @@
 #include "Game.h"
 #include "Controller.h"
 #include "Players.h"
+#include "Invitations.h"
 
 namespace
 {
@@ -80,14 +81,25 @@ std::string HTMLServer::OnHTTPRequest(const std::string& url, const std::string&
 
 		auto name = postData.Get("player");
 		auto password = postData.Get("password1");
+		auto code = postData.Get("code");
+
+		auto redirect = [&](const std::string& error)
+		{
+			const std::string& errorParam = error.empty() ? "" : ::FormatString("&error=%0", error);
+			return CreateRedirectResponse(::FormatString("/register.html?code=%0%1", code, errorParam));
+		};
 
 		if (name.empty() || password.empty()) // Shouldn't happen, checked client-side.
-			return CreateRedirectResponse("/register.html");
+			return redirect("");
 		
 		if (Players::Find(name))
-			return CreateRedirectResponse("/register.html?error=name_taken");
+			return redirect("name_taken");
+
+		if (!Invitations::Find(code))
+			return redirect("invalid_code");
 
 		Player& player = Players::Add(name, password);
+		Invitations::Remove(code);
 
 		Cookies newCookies;
 		newCookies.Set("name", name, true);

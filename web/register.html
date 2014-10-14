@@ -23,8 +23,13 @@
 	
 	function OnLoad() 
 	{
-		if (GetURLParameter('error') == 'name_taken')
+		document.getElementsByName('code')[0].value = GetURLParameter('code')
+
+		var error = GetURLParameter('error')
+		if (error == 'name_taken')
 			document.getElementById('name_taken_msg').style.display = ''
+		else if (error == 'invalid_code')
+			document.getElementById('invalid_code_msg').style.display = ''
 	}
 </script>
 </head>
@@ -33,10 +38,12 @@
 	<span id="empty_field_msg" style="display:none">Please fill in all the fields<br></span>
 	<span id="password_mismatch_msg" style="display:none">Passwords don't match<br></span>
 	<span id="name_taken_msg" style="display:none">User name already registered<br></span>
+	<span id="invalid_code_msg" style="display:none">Invalid invitation code<br></span>
 	<form action="register" method="POST">
 	  <input type="text" placeholder="User name" name="player" autofocus><br>
 	  <input type="password" placeholder="Password" name="password1"><br>
 	  <input type="password" placeholder="Password again" name="password2"><br>
+	  <input type="hidden" name="code"><br>
 	  <button type="submit" value="Submit" onclick="return CheckForm()">Register</button>
 	  <a href="/login.html">Log in</a>
 	</form> 
