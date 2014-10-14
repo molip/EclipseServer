@@ -91,7 +91,7 @@ protected:
 	ReputationBag m_repBag;
 	TechnologyBag m_techBag;
 	DiscoveryBag m_discBag;
-	HexBag m_hexBag[HexRing::_Count];
+	HexBag m_hexBag[(int)HexRing::_Count];
 
 	Map	m_map; // After m_discBag
 
