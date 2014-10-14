@@ -45,6 +45,7 @@ public:
 
 private:
 	std::vector<MapPos> GetDests(const LiveGame& game) const;
+	int GetMaxFlips(const LiveGame& game) const;
 
 	std::unique_ptr<MapPos> m_pSrcPos;
 	DiscoveryType m_discovery;

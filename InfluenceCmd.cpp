@@ -291,6 +291,11 @@ std::vector<MapPos> InfluenceDstCmd::GetDests(const LiveGame& game) const
 	return std::vector<MapPos>(dsts.begin(), dsts.end());
 }
 
+int InfluenceDstCmd::GetMaxFlips(const LiveGame& game) const
+{
+	return std::min(m_flipsLeft, GetTeam(game).GetUsedColonyShips());
+}
+
 void InfluenceDstCmd::UpdateClient(const Controller& controller, const LiveGame& game) const
 {
 	controller.SendMessage(Output::ChooseInfluenceDst(GetDests(game), !!m_pSrcPos), GetPlayer(game));
@@ -311,7 +316,7 @@ CmdPtr InfluenceDstCmd::Process(const Input::CmdMessage& msg, CommitSession& ses
 
 	m_discovery = pRec->GetDiscovery();
 
-	const bool bFinish = m_iPhase == 1 && m_flipsLeft == 0;
+	const bool bFinish = m_iPhase == 1 && GetMaxFlips(session.GetGame()) == 0;
 
 	const LiveGame& game = session.GetGame();
 	if (m_discovery != DiscoveryType::None)
