@@ -79,7 +79,10 @@ void ExploreCmd::UpdateClient(const Controller& controller, const LiveGame& game
 CmdPtr ExploreCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
 {
 	if (dynamic_cast<const Input::CmdAbort*>(&msg))
+	{
+		VERIFY_INPUT(m_iPhase > 0);
 		return nullptr;
+	}
 
 	auto& m = VerifyCastInput<const Input::CmdExplorePos>(msg);
 	VERIFY_INPUT_MSG("invalid pos index", InRange(m_positions, m.m_iPos));

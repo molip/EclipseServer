@@ -115,7 +115,10 @@ void ResearchCmd::UpdateClient(const Controller& controller, const LiveGame& gam
 CmdPtr ResearchCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
 {
 	if (dynamic_cast<const Input::CmdAbort*>(&msg))
+	{
+		VERIFY_INPUT(m_iPhase > 0);
 		return nullptr;
+	}
 
 	auto& m = VerifyCastInput<const Input::CmdResearch>(msg);
 	VERIFY_INPUT_MSG("invalid tech index", InRange(m_techs, m.m_iTech));

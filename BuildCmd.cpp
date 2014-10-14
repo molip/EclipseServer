@@ -147,7 +147,10 @@ void BuildCmd::UpdateClient(const Controller& controller, const LiveGame& game) 
 CmdPtr BuildCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
 {
 	if (dynamic_cast<const Input::CmdAbort*>(&msg))
+	{
+		VERIFY_INPUT(m_iPhase > 0);
 		return nullptr;
+	}
 
 	auto& m = VerifyCastInput<const Input::CmdBuild>(msg);
 	MapPos pos(m.m_x, m.m_y);

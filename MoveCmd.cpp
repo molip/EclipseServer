@@ -34,7 +34,10 @@ void MoveCmd::UpdateClient(const Controller& controller, const LiveGame& game) c
 CmdPtr MoveCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
 {
 	if (dynamic_cast<const Input::CmdAbort*>(&msg))
+	{
+		VERIFY_INPUT(m_iPhase > 0);
 		return nullptr;
+	}
 
 	auto& m = VerifyCastInput<const Input::CmdMoveSrc>(msg);
 	MapPos pos(m.m_x, m.m_y);
