@@ -18,6 +18,7 @@
 <script src="trade.js"></script>
 <script src="blueprints.js"></script>
 <script src="combat.js"></script>
+<script src="team.js"></script>
 
 <script>
     data.playerID = %PLAYER_ID%
@@ -113,7 +114,24 @@
 	</div>
 	<div id="players" style="border:1px solid; margin:5px 5px 5px 610px; padding:5px; float:none; height:350px"> <!-- "float:none" uses all remaining width -->
 		<div id="game_tabs"></div>
-		<div id="game_pages"></div>
+		<div id="team_page">
+			<div id="team_general">
+				<div id="team_summary"></div>
+				<div id="team_storage"></div>
+				<div id="team_population"></div>
+				<div id="team_technology"></div>
+				<div id="team_reputation"></div>
+				<div id="team_influence" onclick="if (data.action && data.action.OnClickInfluenceTrack) data.action.OnClickInfluenceTrack()"></div>
+				<div id="team_actions"></div>
+				<div id="team_colony_ships"></div>
+				<div id="team_passed"></div>
+			</div>
+			<div id="team_blueprints" style="display:none; position:relative; overflow:auto">
+				<img id="team_blueprints_img" width="360" height="320">
+				<div id="team_blueprints_overlay" style="position:absolute; left:0px; top:0px; width:378px; height:320px">
+				</div>
+			</div>
+		</div>
 		<div id="supply_page">
 			<b>Technologies</b><br>
 			<div id="supply_technologies"></div>

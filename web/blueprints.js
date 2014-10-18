@@ -11,15 +11,15 @@ Blueprints.GetPartURL = function(part_name)
 	return Blueprints.IsRealPart(part_name) ? 'images/ship_parts/{0}.png'.format(part_name) : ''
 }
 
-Blueprints.SetPart = function(team_id, ship, slot, part_name)
+Blueprints.SetPart = function(ship, slot, part_name)
 {
-	Blueprints[team_id].ships[ship][slot].src = Blueprints.GetPartURL(part_name)
+	Blueprints.ships[ship][slot].src = Blueprints.GetPartURL(part_name)
 }
 
-//Blueprints.SetOverlay = function(team_id, ship_index, overlay) // overlay[slot_index]
+//Blueprints.SetOverlay = function(ship_index, overlay) // overlay[slot_index]
 //{
-//	for (var j = 0; j < Blueprints[team_id].ships[ship_index].length; ++j)
-//		Blueprints.SetPart(team_id, ship_index, j, overlay[j])
+//	for (var j = 0; j < Blueprints.ships[ship_index].length; ++j)
+//		Blueprints.SetPart(ship_index, j, overlay[j])
 //}
 
 Blueprints.CanDrop = function(ev, ship, slot)
@@ -38,12 +38,12 @@ Blueprints.OnDrop = function(ev, ship, slot)
 	data.action.OnDropPart(ship, slot, part_name)
 }
 
-Blueprints.EnableDrop = function(team_id, enable)
+Blueprints.EnableDrop = function(enable)
 {
 	for (var i = 0; i < 4; ++i)
-		for (var j = 0, part; part = Blueprints[team_id].ships[i][j]; ++j)
+		for (var j = 0, part; part = Blueprints.ships[i][j]; ++j)
 		{
-			var image = Blueprints[team_id].ships[i][j]
+			var image = Blueprints.ships[i][j]
 			if (enable)
 			{
 				var f = function (i, j) 
@@ -65,13 +65,11 @@ Blueprints.dragStart = function(ev, partName)
 	Blueprints.dragPart = partName
 }
 
-Blueprints.Init = function(team_id)
+Blueprints.Init = function()
 {
-	var overlay_id = GetTeamDivIDFromName(team_id, 'blueprints_overlay')
-	var div = document.getElementById(overlay_id)
+	var div = document.getElementById('team_blueprints_overlay')
 
-	Blueprints[team_id] = {}
-	Blueprints[team_id].ships = {}
+	Blueprints.ships = {}
 
 	function addImage(ship, x, y)
 	{
@@ -86,12 +84,12 @@ Blueprints.Init = function(team_id)
 		
 		div.appendChild(image)
 
-		if (Blueprints[team_id].ships == null)
-			Blueprints[team_id].ships = []
-		if (Blueprints[team_id].ships[ship] == null)
-			Blueprints[team_id].ships[ship] = []
+		if (Blueprints.ships == null)
+			Blueprints.ships = []
+		if (Blueprints.ships[ship] == null)
+			Blueprints.ships[ship] = []
 
-		Blueprints[team_id].ships[ship].push(image)
+		Blueprints.ships[ship].push(image)
 	}
 	
 	addImage(0, 122, 83)

@@ -76,12 +76,11 @@ Influence.Stage.prototype.SendFlip = function()
 
 Influence.Stage.prototype.UpdateTrackSelection = function()
 {
-	var style = ""
-	
-	if (this.can_select_track)
-		style = this.track_selected ? "2px solid red" : "2px solid green"
+	data.teams[data.playerID].can_select_influence_track = this.can_select_track
+	data.teams[data.playerID].influence_track_selected = this.track_selected
 		
-	document.getElementById(GetTeamDivIDFromName(data.playerID, 'influence')).style.border = style
+	if (IsCurrentTeam(data.playerID))
+		Team.UpdateInfluenceSelection()
 }
 
 Influence.Stage.prototype.CleanUp = function()

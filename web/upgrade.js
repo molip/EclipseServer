@@ -30,7 +30,10 @@ Upgrade.Stage = function(elem)
 		div.appendChild(image)
 	}
 
-	Blueprints.EnableDrop(data.playerID, true)
+	data.teams[data.playerID].can_edit_blueprints = true
+		
+	if (IsCurrentTeam(data.playerID))
+		Team.UpdateEditBlueprints()
 	
 	ShowTeamBlueprints()
 	
@@ -84,11 +87,17 @@ Upgrade.Stage.prototype.CleanUp = function()
 	while (div.firstChild)
 		div.removeChild(div.firstChild)
 
-	Blueprints.EnableDrop(data.playerID, false)
-	
+	data.teams[data.playerID].can_edit_blueprints = true
+		
 	for (var ship = 0; ship < 4; ++ship)
 		for (var slot = 0, part; part = this.blueprints[ship].overlay[slot]; ++slot)
-			Blueprints.SetPart(data.playerID, ship, slot, part.name)
+			data.teams[data.playerID].blueprints[ship][slot] = part
+
+	if (IsCurrentTeam(data.playerID))
+	{
+		Team.UpdateEditBlueprints()
+		Team.UpdateBlueprints()
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////

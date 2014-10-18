@@ -3,8 +3,8 @@ var ws
 var parser
 
 var data = {}
-data.team_pages = {}
-data.team_count = 0
+data.teams = {} // team_id:data
+data.current_team_id = null
 
 data.current_action_elem = null
 data.action = null
@@ -24,6 +24,16 @@ data.ancient_img.src = "/images/ships/ancient ship.png"
 
 data.gcds_img = new Image() 
 data.gcds_img.src = "/images/ships/gcds_ship.png"
+
+function GetCurrentTeam()
+{
+	return data.teams[data.current_team_id]
+}
+
+function IsCurrentTeam(team_id)
+{
+	return team_id == data.current_team_id
+}
 
 function ExitAction()
 {
@@ -149,20 +159,6 @@ function load()
 		alert("DOMParser not supported");
 }
 
-function GetTeamDivIDFromName(team, div)
-{
-	var index = data.team_pages[team]
-	return GetTeamPageIDFromIndex(index, div)
-}
-
-function GetTeamPageIDFromIndex(index, div)
-{
-	var id = 'teampage_{0}'.format(index)
-	if (div)	
-		id += '_' + div
-	return id
-}
-
 function ShowElementById(id, show, inline)
 {
 	var e = document.getElementById(id)
@@ -188,37 +184,32 @@ function ShowActionElement(id)
 	data.current_action_elem = id == null ? null : ShowElementById(id, true)
 }
 
-function ShowTeamPage(player_id)
+function ShowTeamPage(player_id, update)
 {
-	var page = data.team_pages[player_id]
-    for (var i = 0; i < data.team_count; ++i)
-		ShowElementById(GetTeamPageIDFromIndex(i), page == i)
+	data.current_team_id = player_id
 
-	ShowElementById('game_pages', true)
+	if (update)
+		Team.UpdateAll()
+
+	ShowElementById('team_page', true)
 	ShowElementById('supply_page', false)
 }
 
 function ShowTeamGeneral()
 {
-    for (var i = 0; i < data.team_count; ++i)
-	{
-		ShowElementById(GetTeamPageIDFromIndex(i, 'general'), true)
-		ShowElementById(GetTeamPageIDFromIndex(i, 'blueprints'), false)
-	}
+	ShowElementById('team_general', true)
+	ShowElementById('team_blueprints', false)
 }
 
 function ShowTeamBlueprints()
 {
-    for (var i = 0; i < data.team_count; ++i)
-	{
-		ShowElementById(GetTeamPageIDFromIndex(i, 'general'), false)
-		ShowElementById(GetTeamPageIDFromIndex(i, 'blueprints'), true)
-	}
+	ShowElementById('team_general', false)
+	ShowElementById('team_blueprints', true)
 }
 
 function ShowSupplyPage()
 {
-	ShowElementById('game_pages', false)
+	ShowElementById('team_page', false)
 	ShowElementById('supply_page', true)
 }
 

@@ -1,7 +1,3 @@
-function SetTeamDivHTML(team_id, elem_suffix, html)
-{
-	document.getElementById(GetTeamDivIDFromName(team_id, elem_suffix)).innerHTML = html
-}
 
 function OnCommand(elem)
 {
@@ -228,40 +224,20 @@ function OnCommandUpdateChooseTeam(elem)
 
 function OnCommandUpdateTeams(elem)
 {		
-	data.team_count = 0
-	data.team_pages = {}
+	data.teams = {}
 	
-	var fmt_tab = '<button type="button" onclick="ShowTeamPage(\'{0}\')">{1}</button>'
-	var fmt_page = '\
-					<div id="{0}">\
-						<div id="{0}_general">\
-							<div id="{0}_summary"></div>\
-							<div id="{0}_storage"></div>\
-							<div id="{0}_population"></div>\
-							<div id="{0}_technology"></div>\
-							<div id="{0}_reputation"></div>\
-							<div id="{0}_influence" onclick="if (data.action && data.action.OnClickInfluenceTrack) data.action.OnClickInfluenceTrack()"></div>\
-							<div id="{0}_actions"></div>\
-							<div id="{0}_colony_ships"></div>\
-							<div id="{0}_passed"></div>\
-						</div>\
-						<div id="{0}_blueprints" style="display:none; position:relative; overflow:auto">\
-							<img src="images/blueprints/{1}.png" height="320">\
-							<div id="{0}_blueprints_overlay" style="position:absolute; left:0px; top:0px; width:378px; height:320px">\
-							</div>\
-						</div>\
-					</div>'
-	
-//								<img src="images/ship_parts/gluon computer.png" style="position:absolute; left:138px; top:76px">
-	var html_tabs = '', html_pages = ''
+	var fmt_tab = '<button type="button" onclick="ShowTeamPage(\'{0}\', true)">{1}</button>'
+	var html_tabs = ''
 
 	for (var i = 0, team; team = elem.teams[i]; ++i)
 	{
 		html_tabs += fmt_tab.format(team.id, team.name)
-		html_pages += fmt_page.format(GetTeamPageIDFromIndex(data.team_count), team.blueprints)
 
-		data.team_pages[team.id] = data.team_count++
+		data.teams[team.id] = {}
+		data.teams[team.id].blueprint_type = team.blueprints
 	}
+
+	Blueprints.Init()
 
 	html_tabs +='	<button type="button" onclick="ShowSupplyPage()">Supply</button>\
 					<div style="float:right">\
@@ -270,12 +246,8 @@ function OnCommandUpdateTeams(elem)
 					</div>'
 					
 	document.getElementById('game_tabs').innerHTML = html_tabs
-	document.getElementById('game_pages').innerHTML = html_pages
 	
-	for (var i = 0, team; team = elem.teams[i]; ++i)
-		Blueprints.Init(team.id)
-
-	ShowTeamPage(data.playerID)
+	ShowTeamPage(data.playerID, false) // Don't update yet - team data hasn't been set. 
 	ShowTeamGeneral()
 
 	ShowElementById('live_ui', elem.game_type == "live")
@@ -285,65 +257,92 @@ function OnCommandUpdateTeams(elem)
 }
 
 function OnCommandUpdateTeam(elem)
-{		
-	var html = '<b>Team:</b> {0}, <b>Race:</b> {1}, <b>Colour:</b> {2}<br/><br/>'.format(elem.name, elem.race, elem.colour)
-	SetTeamDivHTML(elem.id, 'summary', html)
+{	
+	var team = data.teams[elem.id]
+	team.name = elem.name
+	team.race = elem.race
+	team.colour = elem.colour
+	
+	if (IsCurrentTeam(elem.id))
+		Team.UpdateSummary()
 }
 
 function OnCommandUpdatePassed(elem)
 {
-	var html = '<b>Passed:</b> {0}<br/>'.format(elem.has_passed)
-	SetTeamDivHTML(elem.id, 'passed', html)
+	var team = data.teams[elem.id]
+	team.has_passed = elem.has_passed
+	
+	if (IsCurrentTeam(elem.id))
+		Team.UpdatePassed()
 }
 
 function OnCommandUpdateInfluenceTrack(elem)
 {
-	var html = '<b>Influence discs:</b> {0}<br/>'.format(elem.discs)
-	SetTeamDivHTML(elem.id, 'influence', html)
+	var team = data.teams[elem.id]
+	team.discs = elem.discs
+	
+	if (IsCurrentTeam(elem.id))
+		Team.UpdateInfluence()
 }
 
 function OnCommandUpdateActionTrack(elem)
 {
-	var html = '<b>Actions done:</b> {0}<br/>'.format(elem.discs)
-	SetTeamDivHTML(elem.id, 'actions', html)
+	var team = data.teams[elem.id]
+	team.actions = elem.discs
+	
+	if (IsCurrentTeam(elem.id))
+		Team.UpdateActions()
 }
 
 function OnCommandUpdateColonyShips(elem)
 {
-	var html = '<b>Colony ships left:</b> {0}/{1}<br/>'.format(elem.used, elem.total)
-	SetTeamDivHTML(elem.id, 'colony_ships', html)
+	var team = data.teams[elem.id]
+	team.colony_ships_used = elem.used
+	team.colony_ships_total = elem.total
+	
+	if (IsCurrentTeam(elem.id))
+		Team.UpdateColonyShips()
 }
 
 function OnCommandUpdateStorageTrack(elem)
 {
-	var html = '<b>Storage:</b>Money: {0} Science: {1} Materials:{2}<br/>'.format(elem.Money, elem.Science, elem.Materials)
-	SetTeamDivHTML(elem.id, 'storage', html)
+	var team = data.teams[elem.id]
+	team.money = elem.Money
+	team.science = elem.Science
+	team.materials = elem.Materials
+	
+	if (IsCurrentTeam(elem.id))
+		Team.UpdateStorage()
 }
 
 function OnCommandUpdateTechnologyTrack(elem)
 {
-	var html = '<b>Technology:</b><br/>'
+	var team = data.teams[elem.id]
+	team.classes = elem.classes
 	
-	for (var i = 0, cls; cls = elem.classes[i]; ++i)
-	{
-		html += cls.name + ':'
-		for (var j = 0, tech; tech = cls.techs[j]; ++j)
-			html += tech.name + ','
-		html += '<br/>'
-	}
-	SetTeamDivHTML(elem.id, 'technology', html)
+	if (IsCurrentTeam(elem.id))
+		Team.UpdateTechnology()
 }
 
 function OnCommandUpdatePopulationTrack(elem)
 {
-	var html = '<b>Population:</b>Money: {0} Science: {1} Materials:{2}<br/>'.format(elem.Money, elem.Science, elem.Materials)
-	SetTeamDivHTML(elem.id, 'population', html)
+	var team = data.teams[elem.id]
+	team.population_money = elem.Money
+	team.population_science = elem.Science
+	team.population_materials = elem.Materials
+	
+	if (IsCurrentTeam(elem.id))
+		Team.UpdatePopulation()
 }
 
 function OnCommandUpdateReputationTrack(elem)
 {
-	var html = '<b>Reputation:</b>Tiles: {0}/{1}<br/>'.format(elem.tiles, elem.slots)
-	SetTeamDivHTML(elem.id, 'reputation', html)
+	var team = data.teams[elem.id]
+	team.tiles = elem.tiles
+	team.slots = elem.slots
+	
+	if (IsCurrentTeam(elem.id))
+		Team.UpdateReputation()
 }
 
 function OnCommandUpdateMap(elem)
@@ -390,11 +389,11 @@ function OnCommandUpdateRound(elem)
 
 function OnCommandUpdateBlueprints(elem)
 {
-	Assert(elem.blueprints.length == 4)
-
-	for (var ship = 0; ship < 4; ++ship)
-		for (var slot = 0, part; part = elem.blueprints[ship][slot]; ++slot)
-			Blueprints.SetPart(elem.id, ship, slot, part)
+	var team = data.teams[elem.id]
+	team.blueprints = elem.blueprints
+	
+	if (IsCurrentTeam(elem.id))
+		Team.UpdateBlueprints()
 }
 
 function OnCommandUpdateShowCombat(elem)
