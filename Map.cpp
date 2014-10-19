@@ -32,10 +32,13 @@ Hex* Map::FindHex(const MapPos& pos)
 
 const Hex* Map::FindPendingBattleHex(const Game& game) const
 {
+	std::map<int, const Hex*> map;
+
 	for (auto& h : m_hexes)
 		if (h.second->HasPendingBattle(game))
-			return h.second.get();
-	return nullptr;
+			map.insert(std::make_pair(h.second->GetID(), h.second.get()));
+
+	return map.empty() ? nullptr : map.rbegin()->second;
 }
 
 Hex& Map::GetHex(const MapPos& pos)
