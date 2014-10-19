@@ -19,6 +19,7 @@
 <script src="blueprints.js"></script>
 <script src="combat.js"></script>
 <script src="team.js"></script>
+<script src="population.js"></script>
 
 <script>
     data.playerID = %PLAYER_ID%
@@ -89,7 +90,14 @@
 	<div id="choose_team_content"></div>
 	<div id="choose_team"></div>
 </div>
-<div id="game_panel" class="panel" style="height:640px">
+<div id="game_panel" class="panel" style="height:660px">
+	<div id="bar" style="height:20px">
+		<button type="button" onclick="ToggleElementById('population')">Population</button>
+	</div>
+	<div id="population" style="display:none;">
+		<img src="/images/boards/population.png" width="580px" height="166px" style="position:absolute; z-index:900">
+		<canvas id="population_canvas" width="580px" height="166px" style="position:absolute; z-index:900"></canvas>
+	</div>
 	<div id="map_panel" style="margin:5px; float:left;">
 		<div id="map_ctrls" style="height:27px"> <!-- Ensure map_canvas doesn't move after loading-->
 			<input type = "image" id="map_zoom_in_btn" src="/images/btn_zoom_in.png" onclick="Map.Zoom(-1)">

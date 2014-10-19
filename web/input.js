@@ -234,10 +234,12 @@ function OnCommandUpdateTeams(elem)
 		html_tabs += fmt_tab.format(team.id, team.name, team.id == data.playerID ? 'font-weight: bold' : '')
 
 		data.teams[team.id] = {}
+		data.teams[team.id].population = {}
 		data.teams[team.id].blueprint_type = team.blueprints
 	}
 
 	Blueprints.Init()
+	Population.Init()
 
 	html_tabs +='	<button type="button" onclick="ShowSupplyPage()">Supply</button>\
 					<div style="float:right">\
@@ -327,9 +329,9 @@ function OnCommandUpdateTechnologyTrack(elem)
 function OnCommandUpdatePopulationTrack(elem)
 {
 	var team = data.teams[elem.id]
-	team.population_money = elem.Money
-	team.population_science = elem.Science
-	team.population_materials = elem.Materials
+	team.population.money = elem.Money
+	team.population.science = elem.Science
+	team.population.materials = elem.Materials
 	
 	if (IsCurrentTeam(elem.id))
 		Team.UpdatePopulation()

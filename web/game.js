@@ -166,6 +166,13 @@ function ShowElementById(id, show, inline)
 	return e;
 }
 
+function ToggleElementById(id)
+{
+	var e = document.getElementById(id)
+	if (e)
+		e.style.display = e.style.display == 'none' ? '' : 'none' 
+}
+
 function ShowElement(e, show, inline)
 {
 	if (e != null)
