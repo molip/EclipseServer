@@ -226,12 +226,12 @@ function OnCommandUpdateTeams(elem)
 {		
 	data.teams = {}
 	
-	var fmt_tab = '<button type="button" onclick="ShowTeamPage(\'{0}\', true)">{1}</button>'
+	var fmt_tab = '<button type="button" onclick="ShowTeamPage(\'{0}\', true)" style="{2}">{1}</button>'
 	var html_tabs = ''
 
 	for (var i = 0, team; team = elem.teams[i]; ++i)
 	{
-		html_tabs += fmt_tab.format(team.id, team.name)
+		html_tabs += fmt_tab.format(team.id, team.name, team.id == data.playerID ? 'font-weight: bold' : '')
 
 		data.teams[team.id] = {}
 		data.teams[team.id].blueprint_type = team.blueprints
