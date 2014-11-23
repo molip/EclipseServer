@@ -283,10 +283,10 @@ Map.DrawHex = function(ctx, hex)
 
 Map.DrawTeamPath = function(ctx, team)
 {
-	ctx.fillStyle = Colour[team]
+	ctx.fillStyle = GetFillColour(team)
 	ctx.fill();	
 
-	ctx.strokeStyle = team == 'Black' || team == 'Blue' ? '#fff' : '#000'
+	ctx.strokeStyle = GetStrokeColour(team)
 	ctx.lineWidth = 3
 	ctx.stroke()
 }

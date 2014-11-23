@@ -30,6 +30,16 @@ function GetCurrentTeam()
 	return data.teams[data.current_team_id]
 }
 
+function GetFillColour(teamColour)
+{
+	return Colour[teamColour]
+}
+
+function GetStrokeColour(teamColour)
+{
+	return teamColour == 'Black' || teamColour == 'Blue' ? '#fff' : '#000'
+}
+
 function IsCurrentTeam(team_id)
 {
 	return team_id == data.current_team_id

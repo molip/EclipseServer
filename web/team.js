@@ -67,9 +67,6 @@ Team.UpdateStorage = function()
 Team.UpdatePopulation = function()
 {
 	var team = GetCurrentTeam()
-	var html = '<b>Population:</b>Money: {0} Science: {1} Materials:{2}<br/>'.format(team.population.money, team.population.science, team.population.materials)
-	Team.SetDivHTML('population', html)
-	
 	Population.Draw(team.population, team.colour)
 }
 

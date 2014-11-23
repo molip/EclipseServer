@@ -91,12 +91,9 @@
 	<div id="choose_team"></div>
 </div>
 <div id="game_panel" class="panel" style="height:660px">
-	<div id="bar" style="height:20px">
-		<button type="button" onclick="ToggleElementById('population')">Population</button>
-	</div>
-	<div id="population" style="display:none;">
-		<img src="/images/boards/population.png" width="580px" height="166px" style="position:absolute; z-index:900">
-		<canvas id="population_canvas" width="580px" height="166px" style="position:absolute; z-index:900"></canvas>
+	<div id="population" style="position:relative; height:50px">
+		<img src="/images/boards/population.png" width="1740px" height="50px" style="position:absolute">
+		<canvas id="population_canvas" width="1740px" height="50px" style="position:absolute"></canvas>
 	</div>
 	<div id="map_panel" style="margin:5px; float:left;">
 		<div id="map_ctrls" style="height:27px"> <!-- Ensure map_canvas doesn't move after loading-->
@@ -126,7 +123,6 @@
 			<div id="team_general">
 				<div id="team_summary"></div>
 				<div id="team_storage"></div>
-				<div id="team_population"></div>
 				<div id="team_technology"></div>
 				<div id="team_reputation"></div>
 				<div id="team_influence" onclick="if (data.action && data.action.OnClickInfluenceTrack) data.action.OnClickInfluenceTrack()"></div>
