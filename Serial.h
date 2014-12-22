@@ -183,23 +183,21 @@ template <typename T> void SaveNode::SaveObject(const std::string& name, const s
 template <typename T, typename S> void SaveNode::SaveCntr(const std::string& name, const T& cntr, S saver)
 {
 	Xml::Element elem = m_elem.AddElement(name);
-	// Can't use range-based for loop here. 
-	// auto& doesn't work with vector<bool>, auto doesn't work with vector<unique_ptr>.
-	for (auto v = cntr.begin(); v != cntr.end(); ++v) 
+	for (auto&& v : cntr)
 	{
 		Xml::Element elem2 = elem.AddElement("_item");
-		saver(elem2, *v);
+		saver(elem2, v);
 	}
 }
 
 template <typename T, typename S1, typename S2> void SaveNode::SavePairs(const std::string& name, const T& cntr, S1 saver1, S2 saver2)
 {
 	Xml::Element elem = m_elem.AddElement(name);
-	for (auto v = cntr.begin(); v != cntr.end(); ++v) 
+	for (auto&& v : cntr)
 	{
 		Xml::Element elem2 = elem.AddElement("_item");
-		saver1(elem2.AddElement("_first"), v->first);
-		saver2(elem2.AddElement("_second"), v->second);
+		saver1(elem2.AddElement("_first"), v.first);
+		saver2(elem2.AddElement("_second"), v.second);
 	}
 }
 
@@ -213,7 +211,7 @@ template <typename T, typename S1, typename S2> void SaveNode::SavePair(const st
 template <typename T, typename S> void SaveNode::SaveArray(const std::string& name, const T& cntr, S saver)
 {
 	Xml::Element elem = m_elem.AddElement(name);
-	for (auto& v : cntr)
+	for (auto&& v : cntr)
 	{
 		Xml::Element elem2 = elem.AddElement("_item");
 		saver(elem2, v);
