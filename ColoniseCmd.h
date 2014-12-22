@@ -40,6 +40,5 @@ public:
 
 private:
 	MapPos m_pos;
-	std::vector<SquareType> m_squares;
-	int m_squareCounts[SquareType::_Count];
+	EnumIntArray<SquareType> m_squareCounts;
 };

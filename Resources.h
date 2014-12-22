@@ -27,6 +27,8 @@ public:
 	void Save(Serial::SaveNode& node) const;
 	void Load(const Serial::LoadNode& node);
 
+	static bool IsOrbitalType(Resource r);
+
 protected:
 	Resources(int money = 0, int sci = 0, int mat = 0) 
 	{

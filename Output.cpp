@@ -458,13 +458,15 @@ ChooseColonisePos::ChooseColonisePos(const std::vector<MapPos>& hexes) : Choose(
 		AppendPointElement(hex.GetX(), hex.GetY(), positionsNode);
 }
 
-ChooseColoniseSquares::ChooseColoniseSquares(const int squares[SquareType::_Count], const Population& pop, int nShips) : Choose("colonise_squares") 
+ChooseColoniseSquares::ChooseColoniseSquares(const MapPos& pos, const EnumIntArray<SquareType>& squares, const Population& pop, int nShips) : Choose("colonise_squares")
 {
 	m_root.SetAttribute("ships", nShips);
+	m_root.SetAttribute("x", pos.GetX());
+	m_root.SetAttribute("y", pos.GetY());
 
 	auto eCounts = m_root.AddElement("square_counts");
 	for (auto t : EnumRange<SquareType>())
-		eCounts.SetAttribute(::EnumToString(t), squares[(int)t]);
+		eCounts.SetAttribute(::EnumToString(t), squares[t]);
 
 	auto eCubes = m_root.AddElement("max_cubes");
 	for (auto r : EnumRange<Resource>())

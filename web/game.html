@@ -10,6 +10,7 @@
 <script src="explore.js"></script>
 <script src="influence.js"></script>
 <script src="colonise.js"></script>
+<script src="coloniser.js"></script>
 <script src="research.js"></script>
 <script src="build.js"></script>
 <script src="move.js"></script>
@@ -203,8 +204,23 @@
 				<button id="choose_colonise_pos_btn" type="button" onclick="data.action.Send()">Next</button>
 			</div>
 			<div id="choose_colonise_squares" style="display:none">
-				Choose squares to colonise...
-				<div id="choose_colonise_squares_content">
+				Choose squares to colonise...<br>
+				<div style="float:left">
+					<div style="background-color:#ff7200; padding:5px; margin:2px">
+						<button id="choose_colonise_squares_remove_Money" type="button" onclick="data.action.OnButton('Money', -1)">-</button>
+						<button id="choose_colonise_squares_add_Money" type="button" onclick="data.action.OnButton('Money', 1)">+</button>
+					</div>
+					<div style="background-color:#fe98a9; padding:5px; margin:2px">
+						<button id="choose_colonise_squares_remove_Science" type="button" onclick="data.action.OnButton('Science', -1)">-</button>
+						<button id="choose_colonise_squares_add_Science" type="button" onclick="data.action.OnButton('Science', 1)">+</button>
+					</div>
+					<div style="background-color:#a6603e; padding:5px; margin:2px">
+						<button id="choose_colonise_squares_remove_Materials" type="button" onclick="data.action.OnButton('Materials', -1)">-</button>
+						<button id="choose_colonise_squares_add_Materials" type="button" onclick="data.action.OnButton('Materials',1)">+</button>
+					</div>
+				</div>
+				<div id="choose_colonise_squares_content" style="margin-top:auto; margin-bottom:auto; float:left">
+<!-- 					<canvas id="population_ui_canvas" width="250px" height="100px" style="background-color:black "></canvas> -->
 				</div>
 				<button id="choose_colonise_squares_btn" type="button" onclick="data.action.Send()">Next</button>
 			</div>

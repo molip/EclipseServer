@@ -284,6 +284,9 @@
     <ClInclude Include="Invitations.h">
       <Filter>General</Filter>
     </ClInclude>
+    <ClInclude Include="EnumIntArray.h">
+      <Filter>General</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

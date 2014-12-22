@@ -426,19 +426,8 @@ CmdColonisePos::CmdColonisePos(const Json::Element& node)
 
 CmdColoniseSquares::CmdColoniseSquares(const Json::Element& node)
 {
-	auto Read = [&] (const std::string& type, Population& pops)
-	{
-		auto el = node.GetChildElement(type);
-		VERIFY_INPUT_MSG("child not found", !el.IsNull());
-		for (auto r : EnumRange<Resource>())
-			pops[r] = el.GetAttributeInt(::EnumToString(r));
-	};
-	
-	Read("Fixed", m_fixed);
-	Read("Grey", m_grey);
-	Read("Orbital", m_orbital);
-
-	VERIFY_INPUT_MSG("trying to add materials to orbital", m_orbital[Resource::Materials] == 0);
+	for (auto r : EnumRange<Resource>())
+		m_moved[r] = node.GetChildElement("moved").GetAttributeInt(::EnumToString(r));
 }
 
 CmdInfluenceSrc::CmdInfluenceSrc(const Json::Element& node)

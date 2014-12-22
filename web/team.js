@@ -60,14 +60,19 @@ Team.UpdateColonyShips = function()
 Team.UpdateStorage = function()
 {
 	var team = GetCurrentTeam()
-	var html = '<b>Storage:</b>Money: {0} Science: {1} Materials:{2}<br/>'.format(team.money, team.science, team.materials)
+	var html = '<b>Storage:</b>Money: {0} Science: {1} Materials:{2}<br/>'.format(team.Money, team.Science, team.Materials)
 	Team.SetDivHTML('storage', html)
 }
 
 Team.UpdatePopulation = function()
 {
 	var team = GetCurrentTeam()
-	Population.Draw(team.population, team.colour)
+	var pop = ShallowCopy(team.population)
+
+	if (IsCurrentTeam(data.playerID) && data.action && typeof(data.action.ModifyPopulation) === 'function')
+		data.action.ModifyPopulation(pop)
+	
+	Population.Draw(pop, team.colour)
 }
 
 Team.UpdateTechnology = function()

@@ -83,7 +83,7 @@ function SendChooseCommit()
 
 function SendChooseUndo()
 {
-	ExitAction()
+	ExitAction(true)
 
 	SendJSON(CreateCommandJSON('undo'))
 }

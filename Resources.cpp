@@ -29,3 +29,8 @@ void Resources::Load(const Serial::LoadNode& node)
 	for (auto r : EnumRange<Resource>())
 		node.LoadType(::EnumToString(r), operator[](r));
 }
+
+bool Resources::IsOrbitalType(Resource r)
+{
+	return r == Resource::Money || r == Resource::Materials;
+}

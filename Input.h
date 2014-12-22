@@ -177,7 +177,7 @@ struct CmdColoniseSquares : CmdMessage
 {
 	CmdColoniseSquares(const Json::Element& node);
 	
-	Population m_fixed, m_grey, m_orbital;
+	Population m_moved;
 };
 
 struct CmdAbort : CmdMessage

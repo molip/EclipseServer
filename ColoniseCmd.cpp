@@ -116,14 +116,8 @@ ColoniseSquaresCmd::ColoniseSquaresCmd(Colour colour, const LiveGame& game, cons
 	auto squares = hex.GetAvailableSquares(GetTeam(game));
 	VERIFY_INPUT_MSG("no squares available", !squares.empty());
 
-	for (int i = 0; i < (int)SquareType::_Count; ++i)
-		m_squareCounts[i] = 0;
-
 	for (auto& pSquare : squares)
-	{
-		++m_squareCounts[(int)pSquare->GetType()];
-		m_squares.push_back(pSquare->GetType());
-	}
+		++m_squareCounts[pSquare->GetType()];
 }
 
 void ColoniseSquaresCmd::UpdateClient(const Controller& controller, const LiveGame& game) const
@@ -131,51 +125,43 @@ void ColoniseSquaresCmd::UpdateClient(const Controller& controller, const LiveGa
 	auto& team = GetTeam(game);
 	const Population& pop = team.GetPopulationTrack().GetPopulation();
 	int nShips = team.GetUnusedColonyShips();
-	controller.SendMessage(Output::ChooseColoniseSquares(m_squareCounts, pop, nShips), GetPlayer(game));
+	controller.SendMessage(Output::ChooseColoniseSquares(m_pos, m_squareCounts, pop, nShips), GetPlayer(game));
 }
 
 CmdPtr ColoniseSquaresCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
 {
 	auto& m = VerifyCastInput<const Input::CmdColoniseSquares>(msg);
 
-	Population fixed = m.m_fixed, grey = m.m_grey, orbital = m.m_orbital;
+	Population pop = m.m_moved;
 
-	VERIFY_INPUT_MSG("no cubes specified", !fixed.IsEmpty() || !grey.IsEmpty() || !orbital.IsEmpty());
-	VERIFY_INPUT_MSG("not enough ships",
-		fixed.GetTotal() + grey.GetTotal() + orbital.GetTotal() <= GetTeam(session.GetGame()).GetUnusedColonyShips());
+	VERIFY_INPUT_MSG("no moves specified", !pop.IsEmpty());
+	VERIFY_INPUT_MSG("not enough ships", pop.GetTotal() <= GetTeam(session.GetGame()).GetUnusedColonyShips());
 
 	ColoniseRecord* pRec = new ColoniseRecord(m_colour, m_pos);
 
 	// Allocate population cubes to squares.
-	for (auto& s : m_squares)
+	auto squareCounts = m_squareCounts;
+	for (auto&& s : EnumRange<SquareType>())
 	{
-		Resource res = Resource::None;
-		switch (s)
+		int& squareCount = squareCounts[s];
+		for (auto&& r : EnumRange<Resource>())
 		{
-			case SquareType::Money: 
-			case SquareType::Science: 
-			case SquareType::Materials: 
+			if (pop[r] && squareCount)
 			{
-				Resource r = SquareTypeToResource(s);
-				if (fixed[r])
-					--fixed[r], res = r;
-				break;
+				if (s == SquareType::Any ? true :
+					s == SquareType::Orbital ? Resources::IsOrbitalType(r) :
+					SquareTypeToResource(s) == r)
+				{
+					int move = std::min(pop[r], squareCount);
+					pop[r] -= move;
+					squareCount -= move;
+					pRec->AddMove(s, r);
+				}
 			}
-			case SquareType::Any:
-				for (auto r : EnumRange<Resource>())
-					if (grey[r])
-						--grey[r], res = r;
-				break;
-			case SquareType::Orbital:
-				for (auto r : OrbitalResourcesRange())
-					if (orbital[r])
-						--orbital[r], res = r;
 		}
-		if (res != Resource::None)
-			pRec->AddMove(s, res);
 	}
-
-	VERIFY_INPUT_MSG("not enough squares", fixed.IsEmpty() || grey.IsEmpty() || orbital.IsEmpty());
+	
+	VERIFY_INPUT_MSG("not enough squares", pop.IsEmpty());
 
 	DoRecord(RecordPtr(pRec), session);
 
@@ -185,7 +171,6 @@ CmdPtr ColoniseSquaresCmd::Process(const Input::CmdMessage& msg, CommitSession& 
 void ColoniseSquaresCmd::Save(Serial::SaveNode& node) const 
 {
 	__super::Save(node);
-	node.SaveCntr("squares", m_squares, Serial::EnumSaver());
 	node.SaveType("pos", m_pos);
 	node.SaveArray("square_counts", m_squareCounts, Serial::TypeSaver());
 }
@@ -193,8 +178,6 @@ void ColoniseSquaresCmd::Save(Serial::SaveNode& node) const
 void ColoniseSquaresCmd::Load(const Serial::LoadNode& node) 
 {
 	__super::Load(node);
-
-	node.LoadCntr("squares", m_squares, Serial::EnumLoader());
 	node.LoadType("pos", m_pos);
 	node.LoadArray("square_counts", m_squareCounts, Serial::TypeLoader());
 }

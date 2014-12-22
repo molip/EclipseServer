@@ -309,9 +309,9 @@ function OnCommandUpdateColonyShips(elem)
 function OnCommandUpdateStorageTrack(elem)
 {
 	var team = data.teams[elem.id]
-	team.money = elem.Money
-	team.science = elem.Science
-	team.materials = elem.Materials
+	team.Money = elem.Money
+	team.Science = elem.Science
+	team.Materials = elem.Materials
 	
 	if (IsCurrentTeam(elem.id))
 		Team.UpdateStorage()
@@ -329,9 +329,9 @@ function OnCommandUpdateTechnologyTrack(elem)
 function OnCommandUpdatePopulationTrack(elem)
 {
 	var team = data.teams[elem.id]
-	team.population.money = elem.Money
-	team.population.science = elem.Science
-	team.population.materials = elem.Materials
+	team.population.Money = elem.Money
+	team.population.Science = elem.Science
+	team.population.Materials = elem.Materials
 	
 	if (IsCurrentTeam(elem.id))
 		Team.UpdatePopulation()

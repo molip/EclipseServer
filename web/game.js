@@ -45,10 +45,10 @@ function IsCurrentTeam(team_id)
 	return team_id == data.current_team_id
 }
 
-function ExitAction()
+function ExitAction(undo)
 {
 	if (data.action && data.action.CleanUp)
-		data.action.CleanUp()
+		data.action.CleanUp(undo)
 	data.action = null
 }
 
@@ -103,6 +103,16 @@ function Assert(test, msg)
 function IsTrue(str)
 {
 	return str == '1' || str == 'true';
+}
+
+function ShallowCopy(rhs) 
+{
+	var lhs = {}
+	
+	for (var v in rhs)
+		lhs[v] = rhs[v]
+	
+	return lhs;
 }
 
 function GetChildElements(elem, name)

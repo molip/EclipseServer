@@ -49,3 +49,20 @@ Population.Draw = function(cubeCounts, team)
 	}
 }
 
+//-----------------------------------------------------------------------------
+
+ Population.DrawUI = function(squareCounts, cubeCounts, team)
+ {
+	var ctx = Population.uiCanvas.getContext("2d");
+
+	ctx.setTransform(1, 0, 0, 1, 0, 0)
+	ctx.clearRect(0, 0, Population.uiCanvas.width, Population.uiCanvas.height);
+
+	var y = 4
+	for (var type in counts)
+	{
+		for (var i = 0; i < counts[type]; ++i)
+			drawCube(5 + i * 48, y)
+		y += 52
+	}
+}
