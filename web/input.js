@@ -495,4 +495,6 @@ function OnCommandChooseUpkeep(elem)
 	document.getElementById('choose_action_trade_btn').disabled = !elem.can_trade
 	document.getElementById('choose_action_bankrupt_btn').disabled = !elem.can_bankrupt
 	document.getElementById('choose_undo_btn').disabled = !elem.can_undo
+	
+	ExitAction()
 }

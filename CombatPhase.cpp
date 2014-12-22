@@ -93,7 +93,11 @@ void CombatPhase::FinishBattle(CommitSession& session)
 	if (hex)
 		StartBattle(session, oldBattle);
 	else
-		GetGame().FinishCombatPhase(); // Deletes this. TODO: influence hexes.
+	{
+		LiveGame& game = GetGame();
+		game.FinishCombatPhase(); // Deletes this. TODO: influence hexes.
+		game.GetPhase().UpdateClient(session.GetController(), nullptr); // Show next phase UI (upkeep).
+	}
 }
 
 void CombatPhase::UpdateClient(const Controller& controller, const Player* pPlayer) const
