@@ -2,7 +2,7 @@
 #include "Ship.h"
 #include "EnumTraits.h"
 
-DEFINE_ENUM_NAMES2(ShipType, -2) { "Ancient", "GCDS", "Interceptor", "Cruiser", "Dreadnought", "Starbase", "" };
+DEFINE_ENUM_NAMES2(ShipType, -3) { "None", "Ancient", "GCDS", "Interceptor", "Cruiser", "Dreadnought", "Starbase", "" };
 
 int GetShipTypeSize(ShipType shipType)
 {

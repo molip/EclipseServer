@@ -22,6 +22,7 @@ public:
 	int GetCount() const;
 
 	static int GetDamage(DiceColour colour);
+	static int GetToHitRoll(int computer, int shield);
 
 	void Save(Serial::SaveNode& node) const;
 	void Load(const Serial::LoadNode& node);

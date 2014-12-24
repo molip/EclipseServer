@@ -12,7 +12,8 @@
 #include "CombatCmd.h"
 #include "StartBattleRecord.h"
 #include "FinishBattleRecord.h"
-#include "AttackRecord.h"
+#include "AttackShipsRecord.h"
+#include "AttackPopulationRecord.h"
 #include "AdvanceCombatTurnRecord.h"
 
 CombatPhase::CombatPhase() : OrderedPhase(nullptr)
@@ -50,7 +51,7 @@ void CombatPhase::StartTurn(CommitSession& session)
 
 		// TODO: Send attack animation 
 
-		session.DoAndPushRecord(RecordPtr(new AttackRecord(hits)));
+		session.DoAndPushRecord(RecordPtr(new AttackShipsRecord(hits)));
 		FinishTurn(session);
 	}
 	else
@@ -65,33 +66,38 @@ void CombatPhase::FinishCmd(CommitSession& session, Colour c)
 
 void CombatPhase::FinishTurn(CommitSession& session)
 {
-	if (GetGame().GetBattle().IsFinished())
+	session.DoAndPushRecord(RecordPtr(new AdvanceCombatTurnRecord()));
+	
+	auto& battle = GetGame().GetBattle();
+	if (battle.IsFinished())
 		FinishBattle(session);
 	else
-	{
-		session.DoAndPushRecord(RecordPtr(new AdvanceCombatTurnRecord()));
 		StartTurn(session);
-	}
 }
 
 void CombatPhase::FinishBattle(CommitSession& session)
 {
-	const Battle* oldBattle = nullptr;
-	
+	auto& battle = GetGame().GetBattle();
+	VERIFY_MODEL(battle.IsFinished());
+
+	if (battle.CanAutoDestroyPopulation(GetGame()))
+		session.DoAndPushRecord(RecordPtr(new AttackPopulationRecord(Battle::PopulationHits(true))));
+
+	const Battle* prevBattle = nullptr;
 	auto hex = GetGame().GetMap().FindPendingBattleHex(GetGame());
 	if (hex && hex->GetID() == GetGame().GetBattle().GetHexId()) // Continue battles in this hex.
 	{
-		oldBattle = &GetGame().GetBattle();
+		prevBattle = &GetGame().GetBattle();
 	}
 	else
 	{
-		// TODO: Attack population, assign reputation tiles.
+		// TODO: assign reputation tiles.
 	}
 
 	session.DoAndPushRecord(RecordPtr(new FinishBattleRecord));
 
 	if (hex)
-		StartBattle(session, oldBattle);
+		StartBattle(session, prevBattle);
 	else
 	{
 		LiveGame& game = GetGame();

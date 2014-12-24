@@ -33,6 +33,18 @@ void Battle::Hits::Load(const Serial::LoadNode& node)
 	node.LoadCntr("hits", *this, Serial::ClassLoader());
 }
 
+void Battle::PopulationHits::Save(Serial::SaveNode& node) const
+{
+	node.SaveCntr("hits", *this, Serial::TypeSaver());
+	node.SaveType("auto_hit", autoHit);
+}
+
+void Battle::PopulationHits::Load(const Serial::LoadNode& node)
+{
+	node.LoadCntr("hits", *this, Serial::TypeLoader());
+	node.LoadType("auto_hit", autoHit);
+}
+
 //-----------------------------------------------------------------------------
 
 Battle::Group::Group() : shipType(ShipType::None), invader(false), hasMissiles(false) 
@@ -77,13 +89,13 @@ void Battle::Group::Load(const Serial::LoadNode& node)
 void Battle::Turn::Save(Serial::SaveNode& node) const
 {
 	node.SaveType("group_index", groupIndex);
-	node.SaveType("missile_phase", missilePhase);
+	node.SaveEnum("phase", phase);
 }
 
 void Battle::Turn::Load(const Serial::LoadNode& node)
 {
 	node.LoadType("group_index", groupIndex);
-	node.LoadType("missile_phase", missilePhase);
+	node.LoadEnum("phase", phase);
 }
 
 //-----------------------------------------------------------------------------
@@ -116,16 +128,18 @@ Battle::Battle(const Hex& hex, const Game& game, const GroupVec& oldGroups) : m_
 
 	VERIFY_MODEL(m_groups.size() >= 2);
 
+	bool missiles = false;
 	for (auto& group : m_groups)
 	{
 		group.hasMissiles = GetBlueprint(game, group.shipType, group.invader).HasMissiles();
-		m_turn.missilePhase |= group.hasMissiles;
+		missiles |= group.hasMissiles;
 	}
 
 	// Sort groups by initiative.
 	std::sort(m_groups.begin(), m_groups.end(), pred);
 
-	m_turn.groupIndex = m_turn.missilePhase ? FindFirstMissileGroup() : 0;
+	m_turn.groupIndex = missiles ? FindFirstMissileGroup() : 0;
+	m_turn.phase = missiles ? BattlePhase::Missile : BattlePhase::Main;
 }
 
 void Battle::AddGroups(bool invader, const Hex& hex, const Game& game)
@@ -164,7 +178,7 @@ int Battle::FindFirstMissileGroup() const
 	return -1;
 }
 
-bool Battle::IsFinished() const
+bool Battle::IsMainPhaseFinished() const
 {
 	bool alive[2] = {};
 	for (auto& group : m_groups)
@@ -176,27 +190,54 @@ bool Battle::IsFinished() const
 	return true;
 }
 
-Battle::Turn Battle::AdvanceTurn()
+Battle::Turn Battle::AdvanceTurn(const Game& game)
 {
 	if (IsFinished())
+	{
+		VERIFY_MODEL(false);
 		return m_turn;
-
+	}
 	Turn oldTurn = m_turn;
 
-	if (m_turn.missilePhase)
+	if (IsMissilePhase())
 	{
 		VERIFY_MODEL(GetCurrentGroup().hasMissiles);
 		GetCurrentGroup().hasMissiles = false;
 		m_turn.groupIndex = FindFirstMissileGroup();
 		
-		if (m_turn.groupIndex == -1)
-			m_turn.missilePhase = false;
+		if (m_turn.groupIndex == -1) // Gets advanced below. 
+			m_turn.phase = BattlePhase::Main;
 	}
 
-	if (!m_turn.missilePhase) // Advance to next living group.
-		do 
-			m_turn.groupIndex = (m_turn.groupIndex + 1) % m_groups.size();
-		while (GetCurrentGroup().IsDead());
+	const Hex* hex = game.GetMap().FindHex(m_hexId);
+	
+	if (m_turn.phase == BattlePhase::Main) // Advance to next living group (there should always be one).
+	{
+		if (IsMainPhaseFinished())
+		{
+			m_turn.groupIndex = -1; // Finished. Unless...
+			if (hex->CanAttackPopulation() && !CanAutoDestroyPopulation(game))
+				m_turn.phase = BattlePhase::Population; // m_turn.groupIndex gets advanced below. 
+		}
+		else
+		{
+			do
+				m_turn.groupIndex = (m_turn.groupIndex + 1) % m_groups.size();
+			while (GetCurrentGroup().IsDead()); // TODO: Check cannons. 
+		}
+	}
+
+	if (m_turn.phase == BattlePhase::Population)
+	{
+		if (hex->CanAttackPopulation())
+		{
+			while (++m_turn.groupIndex < (int)m_groups.size() && GetCurrentGroup().IsDead()); // TODO: Check cannons. 
+			if (m_turn.groupIndex == m_groups.size()) 
+				m_turn.groupIndex = -1; // All groups had a go - finished.
+		}
+		else
+			m_turn.groupIndex = -1; // All population dead - finished.
+	}
 
 	return oldTurn;
 }
@@ -230,14 +271,14 @@ void Battle::RollDice(const LiveGame& game, Dice& dice) const
 
 	for (int lives : GetCurrentGroup().lifeCounts)
 		if (lives > 0)
-			blueprint.AddDice(dice, m_turn.missilePhase);
+			blueprint.AddDice(dice, IsMissilePhase());
 }
 
 int Battle::GetToHitRoll(ShipType shipType, const Game& game) const
 {
 	const Blueprint& firing = GetBlueprint(game, GetCurrentGroup());
 	const Blueprint& target = GetBlueprint(game, shipType, !GetCurrentGroup().invader);
-	return std::min(6, std::max(2, 6 - firing.GetComputer() + target.GetShield()));
+	return Dice::GetToHitRoll(firing.GetComputer(), target.GetShield());
 }
 
 std::vector<int> Battle::GetShipIndicesWeakestFirst(const Group& group) const
@@ -354,12 +395,37 @@ Battle::Hits Battle::AutoAssignHits(const Dice& dice, const Game& game) const
 	return hits;
 }
 
+Battle::PopulationHits Battle::AutoAssignPopulationHits(const Dice& dice, const Game& game) const
+{
+	Battle::PopulationHits hits;
+
+	const Blueprint& firing = GetBlueprint(game, GetCurrentGroup());
+	int toHit = Dice::GetToHitRoll(firing.GetComputer(), 0);
+	int damage = dice.GetDamage(toHit);
+
+	auto& squares = game.GetMap().FindHex(m_hexId)->GetSquares();
+	for (size_t i = 0; i < squares.size() && damage > 0; ++i)
+		if (squares[i].IsOccupied())
+		{
+			hits.push_back(i);
+			--damage;
+		}
+
+	return hits;
+}
+
 Battle::Group* Battle::FindTargetGroup(ShipType shipType)
 {
 	for (Group& group : m_groups)
 		if (group.invader != GetCurrentGroup().invader && group.shipType == shipType)
 			return &group;
 	return nullptr;
+}
+
+bool Battle::CanAutoDestroyPopulation(const Game& game) const
+{
+	const Hex* hex = game.GetMap().FindHex(m_hexId);
+	return hex->CanAttackPopulation() && game.GetTeam(hex->GetFleets().front().GetColour()).HasTech(TechType::NeutronBomb);
 }
 
 void Battle::Save(Serial::SaveNode& node) const
@@ -385,3 +451,4 @@ void Battle::Load(const Serial::LoadNode& node)
 	node.LoadType("hex_id", m_hexId);
 }
 
+DEFINE_ENUM_NAMES(BattlePhase) { "Missile", "Main", "Population", "" };

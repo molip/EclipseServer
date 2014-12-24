@@ -286,6 +286,12 @@ bool Hex::GetPendingBattle(Colour& defender, Colour& invader, const Game& game) 
 	return true;
 }
 
+// Doesn't check if any squadron has cannons. 
+bool Hex::CanAttackPopulation() const
+{
+	return !m_occupied.empty() && m_fleets.size() == 1 && m_fleets.front().GetColour() != m_colour;
+}
+
 //bool Hex::HasEnemyShip(const Game& game, const Team* pTeam) const
 //{
 //	Colour c = pTeam ? pTeam->GetColour() : Colour::None;

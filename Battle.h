@@ -15,6 +15,8 @@ class Game;
 
 namespace Serial { class SaveNode; class LoadNode; }
 
+enum class BattlePhase { Missile, Main, Population };
+
 class Battle
 {
 public:
@@ -39,6 +41,15 @@ public:
 		void Load(const Serial::LoadNode& node);
 	};
 
+	struct PopulationHits : public std::vector<int>
+	{
+		PopulationHits(bool _autoHit = false) : autoHit(_autoHit) {}
+		void Save(Serial::SaveNode& node) const;
+		void Load(const Serial::LoadNode& node);
+
+		bool autoHit;
+	};
+
 	struct Group
 	{
 		Group();
@@ -60,10 +71,10 @@ public:
 
 	struct Turn
 	{
-		Turn(int _groupIndex = 0, bool _missilePhase = false) : groupIndex(_groupIndex), missilePhase(_missilePhase) {}
+		Turn(int _groupIndex = 0, BattlePhase _phase = BattlePhase::Missile) : groupIndex(_groupIndex), phase(_phase) {}
 
 		int groupIndex;
-		bool missilePhase;
+		BattlePhase phase;
 
 		void Save(Serial::SaveNode& node) const;
 		void Load(const Serial::LoadNode& node);
@@ -93,11 +104,15 @@ public:
 	Colour GetFiringColour() const { return GetColour(GetCurrentGroup().invader); }
 	Colour GetTargetColour() const { return GetColour(!GetCurrentGroup().invader); }
 
-	bool IsMissilePhase() const { return m_turn.missilePhase; }
-	bool IsFinished() const;
+	bool IsMissilePhase() const { return m_turn.phase == BattlePhase::Missile; }
+	bool IsPopulationPhase() const { return m_turn.phase == BattlePhase::Population; }
+	bool IsFinished() const { return m_turn.groupIndex < 0; }
+	bool IsMainPhaseFinished() const;
+	bool CanAutoDestroyPopulation(const Game& game) const;
 
 	void RollDice(const LiveGame& game, Dice& dice) const;
 	Hits AutoAssignHits(const Dice& dice, const Game& game) const;
+	PopulationHits AutoAssignPopulationHits(const Dice& dice, const Game& game) const;
 
 	void Save(Serial::SaveNode& node) const;
 	void Load(const Serial::LoadNode& node);
@@ -105,7 +120,7 @@ public:
 	// Non-const.
 	Group* FindTargetGroup(ShipType shipType);
 	void SetCurrentGroupIndex(int group);
-	Turn AdvanceTurn(); // Returns old turn.
+	Turn AdvanceTurn(const Game& game); // Returns old turn.
 	void SetTurn(const Turn& turn);
 
 private:

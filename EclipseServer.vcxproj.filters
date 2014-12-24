@@ -269,9 +269,6 @@
     <ClInclude Include="StartRoundRecord.h">
       <Filter>Model\Records</Filter>
     </ClInclude>
-    <ClInclude Include="AttackRecord.h">
-      <Filter>Model\Records</Filter>
-    </ClInclude>
     <ClInclude Include="AdvanceCombatTurnRecord.h">
       <Filter>Model\Records</Filter>
     </ClInclude>
@@ -286,6 +283,15 @@
     </ClInclude>
     <ClInclude Include="EnumIntArray.h">
       <Filter>General</Filter>
+    </ClInclude>
+    <ClInclude Include="AttackPopulationRecord.h">
+      <Filter>Model\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="AttackRecord.h">
+      <Filter>Model\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="AttackShipsRecord.h">
+      <Filter>Model\Records</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -523,9 +529,6 @@
     <ClCompile Include="StartRoundRecord.cpp">
       <Filter>Model\Records</Filter>
     </ClCompile>
-    <ClCompile Include="AttackRecord.cpp">
-      <Filter>Model\Records</Filter>
-    </ClCompile>
     <ClCompile Include="AdvanceCombatTurnRecord.cpp">
       <Filter>Model\Records</Filter>
     </ClCompile>
@@ -537,6 +540,15 @@
     </ClCompile>
     <ClCompile Include="Invitations.cpp">
       <Filter>General</Filter>
+    </ClCompile>
+    <ClCompile Include="AttackPopulationRecord.cpp">
+      <Filter>Model\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="AttackRecord.cpp">
+      <Filter>Model\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="AttackShipsRecord.cpp">
+      <Filter>Model\Records</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

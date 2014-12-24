@@ -19,7 +19,6 @@ void FinishBattleRecord::Apply(bool bDo, Game& game, const Controller& controlle
 	else
 	{
 		game.AttachBattle(std::move(m_battle));
-		controller.SendMessage(Output::UpdateCombat(game, game.GetBattle()), game);
 	}
 }
 

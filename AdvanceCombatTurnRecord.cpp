@@ -13,11 +13,12 @@ void AdvanceCombatTurnRecord::Apply(bool bDo, Game& game, const Controller& cont
 {
 	Battle& battle = game.GetBattle();
 	if (bDo)
-		m_oldTurn = battle.AdvanceTurn();
+		m_oldTurn = battle.AdvanceTurn(game);
 	else
 		battle.SetTurn(m_oldTurn);
 
-	controller.SendMessage(Output::UpdateCombat(game, battle), game);
+	if (!battle.IsFinished())
+		controller.SendMessage(Output::UpdateCombat(game, battle), game);
 }
 
 std::string AdvanceCombatTurnRecord::GetMessage(const Game& game) const

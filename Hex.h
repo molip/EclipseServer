@@ -127,12 +127,14 @@ public:
 	bool AreAllShipsPinned(const Colour& c) const;
 	bool HasPendingBattle(const Game& game) const;
 	bool GetPendingBattle(Colour& defender, Colour& invader, const Game& game) const;
+	bool CanAttackPopulation() const;
 
 	int GetID() const { return m_id; }
 	const MapPos& GetPos() const { return m_pos; }
 	void SetPos(const MapPos& pos) { m_pos = pos; }
 	int GetRotation() const { return m_nRotation; }
 	const std::vector<Square>& GetSquares() const { return m_squares; }
+	std::vector<Square>& GetSquares() { return m_squares; }
 	const std::vector<Fleet>& GetFleets() const { return m_fleets; }
 	DiscoveryType GetDiscoveryTile() const { return m_discovery; }
 	const EdgeSet& GetWormholes() const; // Non-rotated.

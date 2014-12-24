@@ -10,7 +10,8 @@
 #include "Battle.h"
 #include "Dice.h"
 #include "Player.h"
-#include "AttackRecord.h"
+#include "AttackShipsRecord.h"
+#include "AttackPopulationRecord.h"
 
 CombatCmd::CombatCmd(Colour colour, const LiveGame& game) : Cmd(colour)
 {
@@ -46,6 +47,7 @@ CombatDiceCmd::CombatDiceCmd(Colour colour, const LiveGame& game, const Dice& di
 void CombatDiceCmd::UpdateClient(const Controller& controller, const LiveGame& game) const
 {
 	// Send to all players. 
+	// TODO: send hittable target ships.
 	controller.SendMessage(Output::ChooseDice(game, m_dice, GetPlayer(game).GetID()), game);
 }
 
@@ -55,11 +57,20 @@ CmdPtr CombatDiceCmd::Process(const Input::CmdMessage& msg, CommitSession& sessi
 
 	session.GetController().SendMessage(Output::ChooseFinished(), GetPlayer(session.GetGame()));
 
-	const Battle::Hits hits = session.GetGame().GetBattle().AutoAssignHits(m_dice, session.GetGame());
-
+	// TODO: manually assign hits.
+	
+	auto& battle = session.GetGame().GetBattle();
+	if (battle.IsPopulationPhase())
+	{
+		const Battle::PopulationHits hits = battle.AutoAssignPopulationHits(m_dice, session.GetGame());
+		DoRecord(RecordPtr(new AttackPopulationRecord(hits)), session);
+	}
+	else
+	{
+		const Battle::Hits hits = battle.AutoAssignHits(m_dice, session.GetGame());
+		DoRecord(RecordPtr(new AttackShipsRecord(hits)), session);
+	}
 	// TODO: Send attack animation 
-
-	DoRecord(RecordPtr(new AttackRecord(hits)), session);
 
 	return nullptr;
 }

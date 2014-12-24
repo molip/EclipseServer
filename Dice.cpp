@@ -126,6 +126,11 @@ int Dice::GetDamage(DiceColour colour)
 	return 0;
 }
 
+int Dice::GetToHitRoll(int computer, int shield)
+{
+	return std::min(6, std::max(2, 6 - computer + shield));
+}
+
 void Dice::Save(Serial::SaveNode& node) const
 {
 	using namespace Serial;
