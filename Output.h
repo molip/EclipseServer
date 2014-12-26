@@ -106,7 +106,7 @@ private:
 };
 struct ChooseDiscovery : Choose { ChooseDiscovery(bool bCanUndo); };
 struct ChooseColonisePos : Choose { ChooseColonisePos(const std::vector<MapPos>& hexes); };
-struct ChooseColoniseSquares : Choose { ChooseColoniseSquares(const MapPos& pos, const EnumIntArray<SquareType>& squares, const Population& pop, int nShips); };
+struct ChooseColoniseSquares : Choose { ChooseColoniseSquares(const MapPos& pos, const EnumArray<SquareType, int>& squares, const Population& pop, int nShips); };
 
 struct ChooseInfluencePos : Choose { ChooseInfluencePos(const std::vector<MapPos>& positions, bool bEnableTrack, const std::string& param); };
 struct ChooseInfluenceSrc : ChooseInfluencePos { ChooseInfluenceSrc(const std::vector<MapPos>& positions, bool bEnableTrack, int flips); };

@@ -458,7 +458,7 @@ ChooseColonisePos::ChooseColonisePos(const std::vector<MapPos>& hexes) : Choose(
 		AppendPointElement(hex.GetX(), hex.GetY(), positionsNode);
 }
 
-ChooseColoniseSquares::ChooseColoniseSquares(const MapPos& pos, const EnumIntArray<SquareType>& squares, const Population& pop, int nShips) : Choose("colonise_squares")
+ChooseColoniseSquares::ChooseColoniseSquares(const MapPos& pos, const EnumArray<SquareType, int>& squares, const Population& pop, int nShips) : Choose("colonise_squares")
 {
 	m_root.SetAttribute("ships", nShips);
 	m_root.SetAttribute("x", pos.GetX());

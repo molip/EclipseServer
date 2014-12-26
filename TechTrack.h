@@ -1,9 +1,11 @@
 #pragma once
 
 #include "Technology.h"
+#include "EnumArray.h"
 
 #include <vector>
 #include <set>
+#include <array>
 
 namespace Serial { class SaveNode; class LoadNode; }
 
@@ -22,11 +24,11 @@ public:
 	int GetCount(Technology::Class c) const;
 	int GetCost(TechType t) const;
 
-	const std::vector<TechType>& GetClass(Technology::Class c) const { return m_class[(int)c]; }
+	const std::vector<TechType>& GetClass(Technology::Class c) const { return m_classes[c]; }
 
 	void Save(Serial::SaveNode& node) const;
 	void Load(const Serial::LoadNode& node);
 
 private:
-	std::vector<TechType> m_class[3];
+	EnumArray<Technology::Class, std::vector<TechType>> m_classes;
 };

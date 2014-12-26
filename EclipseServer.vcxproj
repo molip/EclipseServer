@@ -94,7 +94,7 @@
     <ClInclude Include="CombatPhase.h" />
     <ClInclude Include="Debug.h" />
     <ClInclude Include="Dice.h" />
-    <ClInclude Include="EnumIntArray.h" />
+    <ClInclude Include="EnumArray.h" />
     <ClInclude Include="FinishBattleRecord.h" />
     <ClInclude Include="Invitations.h" />
     <ClInclude Include="MessageRecord.h" />

@@ -281,9 +281,6 @@
     <ClInclude Include="Invitations.h">
       <Filter>General</Filter>
     </ClInclude>
-    <ClInclude Include="EnumIntArray.h">
-      <Filter>General</Filter>
-    </ClInclude>
     <ClInclude Include="AttackPopulationRecord.h">
       <Filter>Model\Records</Filter>
     </ClInclude>
@@ -292,6 +289,9 @@
     </ClInclude>
     <ClInclude Include="AttackShipsRecord.h">
       <Filter>Model\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="EnumArray.h">
+      <Filter>General</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

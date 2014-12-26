@@ -20,14 +20,14 @@ void TechTrack::Add(TechType tech)
 {
 	VERIFY_MODEL(CanAdd(tech));
 
-	m_class[(int)Technology::GetClass(tech)].push_back(tech);
+	m_classes[Technology::GetClass(tech)].push_back(tech);
 }
 
 void TechTrack::Remove(TechType tech)
 {
 	VERIFY_MODEL(Has(tech));
 
-	auto& c = m_class[(int)Technology::GetClass(tech)];
+	auto& c = m_classes[Technology::GetClass(tech)];
 	c.erase(std::remove(c.begin(), c.end(), tech), c.end());
 }
 
@@ -35,13 +35,13 @@ bool TechTrack::Has(TechType tech) const
 {
 	VERIFY_MODEL(tech != TechType::None);
 	
-	auto& c = m_class[(int)Technology::GetClass(tech)];
+	auto& c = m_classes[Technology::GetClass(tech)];
 	return std::find(c.begin(), c.end(), tech) != c.end();
 }
 
 int TechTrack::GetCount(Technology::Class c) const
 {
-	return m_class[(int)c].size();
+	return m_classes[c].size();
 }
 
 int TechTrack::GetNextDiscount(Technology::Class c) const
@@ -63,11 +63,11 @@ int TechTrack::GetCost(TechType t) const
 void TechTrack::Save(Serial::SaveNode& node) const
 {
 	for (auto c : EnumRange<Technology::Class>())
-		node.SaveCntr(::EnumToString(c), m_class[(int)c], Serial::EnumSaver());
+		node.SaveCntr(::EnumToString(c), m_classes[c], Serial::EnumSaver());
 }
 
 void TechTrack::Load(const Serial::LoadNode& node)
 {
 	for (auto c : EnumRange<Technology::Class>())
-		node.LoadCntr(::EnumToString(c), m_class[(int)c], Serial::EnumLoader());
+		node.LoadCntr(::EnumToString(c), m_classes[c], Serial::EnumLoader());
 }

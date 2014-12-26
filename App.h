@@ -1,7 +1,7 @@
 #pragma once
 
 #include "EnumRange.h"
-#include "EnumIntArray.h"
+#include "EnumArray.h"
 
 #include <map>
 #include <vector>
