@@ -23,6 +23,7 @@ class ReputationTrack
 {
 public:
 	ReputationTrack(const Team& team);
+	ReputationTrack(const ReputationTrack& rhs) = delete;
 	ReputationTrack(const ReputationTrack& rhs, const Team& team);
 
 	int GetSlotCount() const;

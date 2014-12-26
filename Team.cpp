@@ -22,7 +22,7 @@ Team::Team(int idPlayer) :
 
 Team::Team(const Team& rhs) : 
 	m_idPlayer(rhs.m_idPlayer), m_race(rhs.m_race), m_colour(rhs.m_colour), m_allies(rhs.m_allies),
-	m_popTrack(rhs.m_popTrack), m_infTrack(rhs.m_infTrack), m_actionTrack(rhs.m_actionTrack), m_repTrack(rhs.m_repTrack), 
+	m_popTrack(rhs.m_popTrack), m_infTrack(rhs.m_infTrack), m_actionTrack(rhs.m_actionTrack), m_repTrack(rhs.m_repTrack, *this), 
 	m_techTrack(rhs.m_techTrack), m_storage(rhs.m_storage), m_nColonyShipsUsed(rhs.m_nColonyShipsUsed), m_bPassed(rhs.m_bPassed)
 {	
 	for (int i = 0; i < 4; ++i)
