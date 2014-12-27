@@ -8,9 +8,9 @@
 
 FinishBattleRecord::FinishBattleRecord() {}
 
-void FinishBattleRecord::Apply(bool bDo, Game& game, const Controller& controller)
+void FinishBattleRecord::Apply(bool bDo, Game& game, const RecordContext& context)
 {
-	controller.SendMessage(Output::UpdateShowCombat(game, !bDo), game);
+	context.SendMessage(Output::UpdateShowCombat(game, !bDo));
 
 	if (bDo)
 	{

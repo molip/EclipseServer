@@ -53,7 +53,7 @@ public:
 	}
 
 private:
-	virtual void Apply(bool bDo, Game& game, const Controller& controller) override
+	virtual void Apply(bool bDo, Game& game, const RecordContext& context) override
 	{
 	}
 

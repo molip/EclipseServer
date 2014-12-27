@@ -25,9 +25,9 @@ void StartRoundRecord::Load(const Serial::LoadNode& node)
 	node.LoadType("round", m_round);
 }
 
-void StartRoundRecord::Apply(bool bDo, Game& game, const Controller& controller) 
+void StartRoundRecord::Apply(bool bDo, Game& game, const RecordContext& context) 
 {
-	const bool bFirstRound = game.GetRound() < 0;
+	bool bFirstRound = false;
 
 	game.IncrementRound(bDo);
 
@@ -38,6 +38,7 @@ void StartRoundRecord::Apply(bool bDo, Game& game, const Controller& controller)
 	
 	if (bDo)
 	{
+		bFirstRound = game.GetRound() == 0;
 		m_round = game.GetRound();
 
 		if (!bFirstRound)
@@ -67,18 +68,22 @@ void StartRoundRecord::Apply(bool bDo, Game& game, const Controller& controller)
 	}
 	else
 	{
-		ASSERT(game.GetRound() >= 0 && m_teamData.size() == game.GetTeams().size()); // Can't undo first round start.
-
-		for (size_t i = 0; i < m_teamData.size(); ++i)
+		bFirstRound = game.GetRound() < 0;
+		if (!bFirstRound)
 		{
-			const TeamData& data = m_teamData[i];
-			Team& team = *game.GetTeams()[i];
-			team.GetActionTrack().AddDiscs(data.actions);
-			team.GetInfluenceTrack().RemoveDiscs(data.actions);
-			team.UseColonyShips(data.colonyShips);
-			team.GetStorage() -= data.income;
+			ASSERT(m_teamData.size() == game.GetTeams().size());
+
+			for (size_t i = 0; i < m_teamData.size(); ++i)
+			{
+				const TeamData& data = m_teamData[i];
+				Team& team = *game.GetTeams()[i];
+				team.GetActionTrack().AddDiscs(data.actions);
+				team.GetInfluenceTrack().RemoveDiscs(data.actions);
+				team.UseColonyShips(data.colonyShips);
+				team.GetStorage() -= data.income;
+			}
+			m_teamData.clear();
 		}
-		m_teamData.clear();
 
 		for (auto i = m_techs.rbegin(); i != m_techs.rend(); ++i)
 		{
@@ -93,17 +98,17 @@ void StartRoundRecord::Apply(bool bDo, Game& game, const Controller& controller)
 		for (auto& team : game.GetTeams())
 		{
 			team->SetPassed(!bDo);
-			controller.SendMessage(Output::UpdatePassed(*team), game);
-			controller.SendMessage(Output::UpdateInfluenceTrack(*team), game);
-			controller.SendMessage(Output::UpdateActionTrack(*team), game);
-			controller.SendMessage(Output::UpdateColonyShips(*team), game);
-			controller.SendMessage(Output::UpdateStorageTrack(*team), game);
+			context.SendMessage(Output::UpdatePassed(*team));
+			context.SendMessage(Output::UpdateInfluenceTrack(*team));
+			context.SendMessage(Output::UpdateActionTrack(*team));
+			context.SendMessage(Output::UpdateColonyShips(*team));
+			context.SendMessage(Output::UpdateStorageTrack(*team));
 		}
 	}
 	// TODO: reset colony ships.
 
-	controller.SendMessage(Output::UpdateRound(game), game);
-	controller.SendMessage(Output::UpdateTechnologies(game), game);
+	context.SendMessage(Output::UpdateRound(game));
+	context.SendMessage(Output::UpdateTechnologies(game));
 }
 
 std::string StartRoundRecord::GetMessage(const Game& game) const

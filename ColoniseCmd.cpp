@@ -72,7 +72,7 @@ public:
 	}
 
 private:
-	virtual void Apply(bool bDo, Game& game, const Controller& controller) override
+	virtual void Apply(bool bDo, Game& game, const RecordContext& context) override
 	{
 		Hex& hex = game.GetMap().GetHex(m_pos);
 		m_hexId = hex.GetID();
@@ -90,9 +90,9 @@ private:
 		int nMoves = m_moves.size();
 		team.UseColonyShips(bDo ? nMoves : -nMoves);
 
-		controller.SendMessage(Output::UpdateMap(game), game);
-		controller.SendMessage(Output::UpdatePopulationTrack(team), game);
-		controller.SendMessage(Output::UpdateColonyShips(team), game);
+		context.SendMessage(Output::UpdateMap(game));
+		context.SendMessage(Output::UpdatePopulationTrack(team));
+		context.SendMessage(Output::UpdateColonyShips(team));
 	}
 
 	virtual std::string GetTeamMessage() const

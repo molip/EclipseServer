@@ -11,7 +11,7 @@ public:
 	FinishBattleRecord();
 	
 private:
-	virtual void Apply(bool bDo, Game& game, const Controller& controller);
+	virtual void Apply(bool bDo, Game& game, const RecordContext& context);
 	virtual std::string GetMessage(const Game& game) const override;
 
 	virtual void Save(Serial::SaveNode& node) const override;

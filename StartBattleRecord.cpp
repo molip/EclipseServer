@@ -14,16 +14,16 @@ StartBattleRecord::StartBattleRecord(const Battle* oldBattle)
 	}
 }
 
-void StartBattleRecord::Apply(bool bDo, Game& game, const Controller& controller)
+void StartBattleRecord::Apply(bool bDo, Game& game, const RecordContext& context)
 {
-	controller.SendMessage(Output::UpdateShowCombat(game, bDo), game);
+	context.SendMessage(Output::UpdateShowCombat(game, bDo));
 
 	if (bDo)
 	{
 		const Hex* hex = game.GetMap().FindPendingBattleHex(game);
 		VERIFY_MODEL(!!hex);
 		game.AttachBattle(BattlePtr(new Battle(*hex, game, m_oldGroups)));
-		controller.SendMessage(Output::UpdateCombat(game, game.GetBattle()), game);
+		context.SendMessage(Output::UpdateCombat(game, game.GetBattle()));
 	}
 	else
 		game.DetachBattle();

@@ -26,7 +26,7 @@ public:
 	}
 
 private:
-	virtual void Apply(bool bDo, Game& game, const Controller& controller) override
+	virtual void Apply(bool bDo, Game& game, const RecordContext& context) override
 	{
 		auto& techs = game.GetTechnologies();
 		auto it = techs.find(m_tech);
@@ -65,12 +65,12 @@ private:
 		if (int nDiscs = m_tech == TechType::QuantumGrid ? 2 : m_tech == TechType::AdvRobotics ? 1 : 0)
 		{
 			team.GetInfluenceTrack().AddDiscs(bDo ? nDiscs : -nDiscs);
-			controller.SendMessage(Output::UpdateInfluenceTrack(team), game);
+			context.SendMessage(Output::UpdateInfluenceTrack(team));
 		}
 
-		controller.SendMessage(Output::UpdateTechnologies(game), game);
-		controller.SendMessage(Output::UpdateTechnologyTrack(team), game);
-		controller.SendMessage(Output::UpdateStorageTrack(team), game);
+		context.SendMessage(Output::UpdateTechnologies(game));
+		context.SendMessage(Output::UpdateTechnologyTrack(team));
+		context.SendMessage(Output::UpdateStorageTrack(team));
 	}
 
 	virtual std::string GetTeamMessage() const
@@ -170,14 +170,14 @@ public:
 	}
 
 private:
-	virtual void Apply(bool bDo, Game& game, const Controller& controller) override
+	virtual void Apply(bool bDo, Game& game, const RecordContext& context) override
 	{
 		Team& team = game.GetTeam(m_colour);
 
 		for (auto r : EnumRange<Resource>())
 			team.GetStorage()[r] += m_artifacts[r] * (bDo ? 5 : -5);
 
-		controller.SendMessage(Output::UpdateStorageTrack(team), game);
+		context.SendMessage(Output::UpdateStorageTrack(team));
 	}
 
 	virtual std::string GetTeamMessage() const
