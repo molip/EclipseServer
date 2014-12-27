@@ -27,6 +27,7 @@ public:
 	virtual ~LiveGame();
 
 	void AddPlayer(const Player& player);
+	void AssignTeam(Player& player, RaceType race, Colour colour);
 
 	void StartChooseTeamGamePhase();
 	void StartMainGamePhase();

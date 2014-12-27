@@ -1,14 +1,10 @@
 #pragma once
 
 #include "Technology.h"
-#include "TechTrack.h"
-#include "InfluenceTrack.h"
-#include "PopulationTrack.h"
 #include "Race.h"
 #include "Resources.h"
-#include "Reputation.h"
-#include "Blueprint.h"
 #include "Ship.h"
+#include "TeamState.h"
 
 #include <vector>
 #include <set>
@@ -29,13 +25,18 @@ class LiveGame;
 
 class Team
 {
+	friend class ReviewGame;
 public:
 	Team();
 	Team(int idPlayer);
 	Team(const Team& rhs);
 	~Team();
 
-	void Assign(RaceType race, Colour colour, LiveGame& game);
+	void SetState(TeamState& state);
+	void InitState();
+
+	void Assign(RaceType race, Colour colour, TeamState& state, LiveGame& game);
+	bool IsAssigned() const;
 
 	const int GetPlayerID() const { return m_idPlayer; }
 	const Player& GetPlayer() const;
@@ -45,29 +46,29 @@ public:
 	const RaceType& GetRace() const { return m_race; }
 	Colour GetColour() const { return m_colour; }
 
-	const std::set<Colour> GetAllies() const { return m_allies; }
+	const std::set<Colour> GetAllies() const { return m_state->m_allies; }
 
-	void AddTech(TechType tech) { m_techTrack.Add(tech); }
-	bool HasTech(TechType tech) const { return m_techTrack.Has(tech); }
-	bool CanAdd(TechType tech) const { return m_techTrack.CanAdd(tech); }
+	void AddTech(TechType tech) { m_state->m_techTrack.Add(tech); }
+	bool HasTech(TechType tech) const { return m_state->m_techTrack.Has(tech); }
+	bool CanAdd(TechType tech) const { return m_state->m_techTrack.CanAdd(tech); }
 
-	Storage& GetStorage() { return m_storage; }
-	const Storage& GetStorage() const { return m_storage; }
+	Storage& GetStorage() { return m_state->m_storage; }
+	const Storage& GetStorage() const { return m_state->m_storage; }
 	
-	PopulationTrack& GetPopulationTrack() { return m_popTrack; }
-	const PopulationTrack& GetPopulationTrack() const { return m_popTrack; }
+	PopulationTrack& GetPopulationTrack() { return m_state->m_popTrack; }
+	const PopulationTrack& GetPopulationTrack() const { return m_state->m_popTrack; }
 
-	ReputationTrack& GetReputationTrack() { return m_repTrack; }
-	const ReputationTrack& GetReputationTrack() const { return m_repTrack; }
+	ReputationTrack& GetReputationTrack() { return m_state->m_repTrack; }
+	const ReputationTrack& GetReputationTrack() const { return m_state->m_repTrack; }
 
-	InfluenceTrack& GetInfluenceTrack() { return m_infTrack; }
-	const InfluenceTrack& GetInfluenceTrack() const { return m_infTrack; }
+	InfluenceTrack& GetInfluenceTrack() { return m_state->m_infTrack; }
+	const InfluenceTrack& GetInfluenceTrack() const { return m_state->m_infTrack; }
 
-	DiscTrack& GetActionTrack() { return m_actionTrack; }
-	const DiscTrack& GetActionTrack() const { return m_actionTrack; }
+	DiscTrack& GetActionTrack() { return m_state->m_actionTrack; }
+	const DiscTrack& GetActionTrack() const { return m_state->m_actionTrack; }
 
-	const TechTrack& GetTechTrack() const { return m_techTrack; }
-	TechTrack& GetTechTrack() { return m_techTrack; }
+	const TechTrack& GetTechTrack() const { return m_state->m_techTrack; }
+	TechTrack& GetTechTrack() { return m_state->m_techTrack; }
 
 	void AddShips(ShipType type, int nShips);
 	void RemoveShips(ShipType type, int nShips) { AddShips(type, -nShips); }
@@ -80,11 +81,11 @@ public:
 	void UseColonyShips(int nShips);
 	void ReturnColonyShips(int nShips);
 	int GetColonyShips() const;
-	int GetUsedColonyShips() const { return m_nColonyShipsUsed; }
-	int GetUnusedColonyShips() const { return GetColonyShips() - m_nColonyShipsUsed; }
+	int GetUsedColonyShips() const { return m_state->m_nColonyShipsUsed; }
+	int GetUnusedColonyShips() const { return GetColonyShips() - m_state->m_nColonyShipsUsed; }
 
-	void SetPassed(bool b) { m_bPassed = b; }
-	bool HasPassed() const { return m_bPassed; }
+	void SetPassed(bool b) { m_state->m_bPassed = b; }
+	bool HasPassed() const { return m_state->m_bPassed; }
 
 	Blueprint& GetBlueprint(ShipType s);
 	const Blueprint& GetBlueprint(ShipType s) const { return const_cast<Team*>(this)->GetBlueprint(s); }
@@ -100,22 +101,7 @@ private:
 	RaceType m_race;
 	Colour m_colour;
 
-	std::set<Colour> m_allies;
-
-	PopulationTrack m_popTrack;
-	InfluenceTrack m_infTrack;
-	DiscTrack m_actionTrack;
-	ReputationTrack m_repTrack;
-	TechTrack m_techTrack;
-	Storage m_storage;
-	
-	BlueprintPtr m_blueprints[4];
-	int m_nShips[4];
-
-	std::set<ShipPart> m_discoveredShipParts;
-
-	int m_nColonyShipsUsed;
-	bool m_bPassed;
+	TeamState* m_state;
 };
 
 typedef std::unique_ptr<Team> TeamPtr;

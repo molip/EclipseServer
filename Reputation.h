@@ -22,10 +22,11 @@ class Team;
 class ReputationTrack
 {
 public:
-	ReputationTrack(const Team& team);
-	ReputationTrack(const ReputationTrack& rhs) = delete;
-	ReputationTrack(const ReputationTrack& rhs, const Team& team);
+	ReputationTrack();
+	ReputationTrack(const ReputationTrack& rhs);
 	bool operator==(const ReputationTrack& rhs) const;
+
+	void SetTeam(const Team& team);
 
 	int GetSlotCount() const;
 	ReputationType GetSlotType(int iSlot) const;
@@ -45,5 +46,5 @@ private:
 	ReputationSlots GetSlots() const;
 
 	std::vector<int> m_repTiles;
-	const Team& m_team;
+	const Team* m_team;
 };

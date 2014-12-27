@@ -1,13 +1,12 @@
 #pragma once
 
-#include "Map.h"
 #include "Team.h"
 #include "Bag.h"
 #include "Cmd.h"
+#include "GameState.h"
 
 #include <memory>
 #include <set>
-#include <map>
 #include <string>
 #include <deque>
 #include <list>
@@ -16,11 +15,8 @@ enum class HexRing { None = -1, Inner, Middle, Outer, _Count };
 
 class CmdStack;
 class Record;
-class Battle;
 
 namespace Serial { class SaveNode; class LoadNode; }
-
-DEFINE_UNIQUE_PTR(Battle)
 
 class Game
 {
@@ -57,14 +53,14 @@ public:
 	HexBag& GetHexBag(HexRing ring) { return m_hexBag[(int)ring]; }
 	const HexBag& GetHexBag(HexRing ring) const { return m_hexBag[(int)ring]; }
 
-	const Map& GetMap() const { return m_map; }
-	Map& GetMap() { return m_map; }
+	const Map& GetMap() const { return m_state.m_map; }
+	Map& GetMap() { return m_state.m_map; }
 
-	const std::map<TechType, int>& GetTechnologies() const { return m_techs; }
-	std::map<TechType, int>& GetTechnologies() { return m_techs; }
+	const std::map<TechType, int>& GetTechnologies() const { return m_state.m_techs; }
+	std::map<TechType, int>& GetTechnologies() { return m_state.m_techs; }
 
 	bool IncrementRound(bool bDo); // Returns true if game finished.
-	int GetRound() const { return m_iRound; }
+	int GetRound() const { return m_state.m_iRound; }
 
 	virtual void Save(Serial::SaveNode& node) const;
 	virtual void Load(const Serial::LoadNode& node);
@@ -77,29 +73,22 @@ public:
 	const Battle& GetBattle() const { return const_cast<Game*>(this)->GetBattle(); }
 	void AttachBattle(BattlePtr battle);
 	BattlePtr DetachBattle();
-	bool HasBattle() const { return !!m_battle; }
+	bool HasBattle() const { return !!m_state.m_battle; }
 
 protected:
+	std::vector<TeamPtr> m_teams;
+	mutable std::set<const Player*> m_players; // Not saved. Includes observers.
+
+	// Immutable
 	int m_id; 
 	std::string m_name;
 	int m_idOwner;
-
-	std::map<TechType, int> m_techs;
-
-	std::vector<TeamPtr> m_teams;
-
 	ReputationBag m_repBag;
 	TechnologyBag m_techBag;
 	DiscoveryBag m_discBag;
 	HexBag m_hexBag[(int)HexRing::_Count];
 
-	Map	m_map; // After m_discBag
-
-	int m_iRound;
-
-	BattlePtr m_battle;
-
-	mutable std::set<const Player*> m_players; // Not saved. Includes observers.
+	GameState m_state;
 };
 
 typedef std::unique_ptr<Game> GamePtr;

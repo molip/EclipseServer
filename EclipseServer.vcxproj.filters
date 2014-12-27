@@ -296,6 +296,12 @@
     <ClInclude Include="EnumArray.h">
       <Filter>General</Filter>
     </ClInclude>
+    <ClInclude Include="GameState.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="TeamState.h">
+      <Filter>Model</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -552,6 +558,12 @@
     </ClCompile>
     <ClCompile Include="AttackShipsRecord.cpp">
       <Filter>Model\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="TeamState.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="GameState.cpp">
+      <Filter>Model</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

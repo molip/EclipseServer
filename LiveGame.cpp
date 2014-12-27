@@ -66,17 +66,24 @@ void LiveGame::StartChooseTeamGamePhase()
 	m_discBag.Init();
 }
 
+void LiveGame::AssignTeam(Player& player, RaceType race, Colour colour)
+{
+	auto it = m_state.m_teamStates.insert(std::make_pair(colour, TeamStatePtr(new TeamState)));
+	GetTeam(player).Assign(race, colour, *it.first->second, *this);
+}
+
 void LiveGame::StartMainGamePhase()
 {
 	VERIFY_MODEL(m_gamePhase == GamePhase::ChooseTeam);
 
 	m_gamePhase = GamePhase::Main;
-
-	Hex& centre = m_map.AddHex(MapPos(0, 0), 001, 0);
+	
+	Map& map = GetMap();
+	Hex& centre = map.AddHex(MapPos(0, 0), 001, 0);
 	centre.AddShip(ShipType::GCDS, Colour::None);
 
 	// Initialise starting hexes.
-	auto startPositions = m_map.GetTeamStartPositions();
+	auto startPositions = map.GetTeamStartPositions();
 	assert(startPositions.size() == m_teams.size());
 	for (size_t i = 0; i < m_teams.size(); ++i)
 	{
@@ -84,7 +91,7 @@ void LiveGame::StartMainGamePhase()
 		Race r(team.GetRace());
 		int idHex = r.GetStartSector(team.GetColour());
 
-		Hex& hex = m_map.AddHex(startPositions[i], idHex, 0);
+		Hex& hex = map.AddHex(startPositions[i], idHex, 0);
 
 		team.PopulateStartHex(hex);
 	}
@@ -154,7 +161,7 @@ void LiveGame::FinishActionPhase(const std::vector<Colour>& passOrder)
 
 	Test::AddShipsToCentre(*this);
 
-	if (m_map.FindPendingBattleHex(*this))
+	if (GetMap().FindPendingBattleHex(*this))
 		m_pPhase = PhasePtr(new CombatPhase(this));
 	else
 		m_pPhase = PhasePtr(new UpkeepPhase(this));
