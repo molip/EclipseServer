@@ -174,6 +174,11 @@ void LiveGame::FinishCombatPhase()
 
 int LiveGame::PushRecord(std::unique_ptr<Record> pRec)
 {
+	GameState state(m_state, *this);
+	pRec->Undo(*this, nullptr);
+	pRec->Do(*this, nullptr);
+	VERIFY(m_state == state);
+
 	int id = m_nextRecordID++;
 	pRec->SetID(id);
 	m_records.push_back(std::move(pRec));
