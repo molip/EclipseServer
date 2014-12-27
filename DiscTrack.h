@@ -15,6 +15,9 @@ public:
 	void Save(Serial::SaveNode& node) const;
 	void Load(const Serial::LoadNode& node);
 
+protected:
+	bool operator==(const DiscTrack& rhs) const;
+
 private:
 	int m_nDiscs;
 };

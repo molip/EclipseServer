@@ -6,6 +6,7 @@ class PopulationTrack
 {
 public:
 	PopulationTrack();
+	bool operator==(const PopulationTrack& rhs) const;
 
 	int GetCount(Resource r) const { return m_pop[r]; }
 	int GetIncome(Resource r) const { return GetIncome(m_pop[r]); }

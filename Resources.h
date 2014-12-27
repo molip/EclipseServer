@@ -37,6 +37,7 @@ protected:
 		push_back(sci);
 		push_back(mat);
 	}
+	bool operator==(const Resources& rhs) const { for (size_t i = 0; i < 3; ++i) if (__super::at(i) != rhs.__super::at(i)) return false; return true; }
 
 	const int& at(Resource r) const { return __super::at((int)r); }
 	int& at(Resource r) { return __super::at((int)r); }
@@ -49,6 +50,7 @@ class Population : public Resources
 public:
 	Population() {}
 	Population(int money, int sci, int mat) : Resources(money, sci, mat) {}
+	bool operator==(const Population& rhs) const { return __super::operator==(rhs); }
 };
 
 class Storage : public Resources
@@ -56,4 +58,5 @@ class Storage : public Resources
 public:
 	Storage() {}
 	Storage(int money, int sci, int mat) : Resources(money, sci, mat) {}
+	bool operator==(const Storage& rhs) const { return __super::operator==(rhs); }
 };

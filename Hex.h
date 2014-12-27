@@ -34,6 +34,7 @@ class Square
 {
 public:
 	Square(Hex& hex, int index);
+	bool operator==(const Square& rhs) const { return m_index == rhs.m_index; }
 	TechType GetRequiredTech() const;
 	bool IsOccupied() const;
 	void SetOccupied(bool b);
@@ -60,6 +61,8 @@ class Squadron
 public:
 	Squadron();
 	Squadron(ShipType type);
+	bool operator==(const Squadron& rhs) const;
+		
 	ShipType GetType() const { return m_type; }
 	const Blueprint& GetBlueprint(const Game& game) const;
 	int GetShipCount() const { return m_shipCount; }
@@ -78,6 +81,8 @@ class Fleet
 public:
 	Fleet();
 	Fleet(Colour colour);
+	bool operator==(const Fleet& rhs) const;
+
 	Colour GetColour() const { return m_colour; }
 	const Team* GetOwner(const Game& game) const;
 	const Squadron* FindSquadron(ShipType type) const { return const_cast<Fleet*>(this)->FindSquadron(type); }
@@ -102,6 +107,10 @@ public:
 	Hex();
 	Hex(int id, const MapPos& pos, int nRotation);
 	Hex(const Hex& rhs);
+
+	bool operator==(const Hex& rhs) const;
+	bool operator!=(const Hex& rhs) const { return !(*this == rhs); }
+
 	bool HasWormhole(Edge e) const;
 
 	std::vector<Square*> GetAvailableSquares(const Team& team);

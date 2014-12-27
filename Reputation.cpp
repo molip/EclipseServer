@@ -23,8 +23,12 @@ ReputationTrack::ReputationTrack(const Team& team) : m_team(team)
 
 ReputationTrack::ReputationTrack(const ReputationTrack& rhs, const Team& team) : 
 	m_team(team), m_repTiles(rhs.m_repTiles)
-
 {
+}
+
+bool ReputationTrack::operator==(const ReputationTrack& rhs) const
+{
+	return m_repTiles == rhs.m_repTiles;
 }
 
 ReputationSlots ReputationTrack::GetSlots() const

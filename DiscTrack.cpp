@@ -2,6 +2,11 @@
 #include "DiscTrack.h"
 #include "Serial.h"
 
+bool DiscTrack::operator==(const DiscTrack& rhs) const
+{
+	return m_nDiscs == rhs.m_nDiscs;
+}
+
 void DiscTrack::AddDiscs(int nDiscs)
 {
 	int n = m_nDiscs + nDiscs;

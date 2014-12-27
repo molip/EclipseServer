@@ -18,6 +18,8 @@ public:
 	Blueprint(RaceType r, ShipType s);
 	Blueprint(const BlueprintDef& def);
 	Blueprint(const Blueprint& rhs);
+	bool operator==(const Blueprint& rhs) const;
+	bool operator!=(const Blueprint& rhs) const { return !operator==(rhs); }
 
 	void Init(RaceType r, ShipType s);
 

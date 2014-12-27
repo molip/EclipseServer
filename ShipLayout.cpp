@@ -20,7 +20,12 @@ ShipLayout::ShipLayout(ShipType type) : m_type(ShipType::None)
 	SetType(type);
 }
 
-void ShipLayout::SetType(ShipType t) 
+bool ShipLayout::operator==(const ShipLayout& rhs) const
+{
+	return m_type == rhs.m_type && m_slots == rhs.m_slots;
+}
+
+void ShipLayout::SetType(ShipType t)
 {
 	VERIFY(m_slots.empty() && m_type == ShipType::None);
 	m_type = t;

@@ -56,6 +56,16 @@ Battle::Group::Group(ShipType _shipType, bool _invader) :
 {
 }
 
+bool Battle::Group::operator==(const Group& rhs) const
+{
+	if (shipType == rhs.shipType &&
+		invader == rhs.invader &&
+		hasMissiles == rhs.hasMissiles)
+		return true;
+
+	return false;
+}
+
 bool Battle::Group::IsDead() const
 {
 	for (int lives : lifeCounts)
@@ -140,6 +150,18 @@ Battle::Battle(const Hex& hex, const Game& game, const GroupVec& oldGroups) : m_
 
 	m_turn.groupIndex = missiles ? FindFirstMissileGroup() : 0;
 	m_turn.phase = missiles ? BattlePhase::Missile : BattlePhase::Main;
+}
+
+bool Battle::operator==(const Battle& rhs) const
+{
+	if (m_defender == rhs.m_defender &&
+		m_invader == rhs.m_invader &&
+		m_hexId == rhs.m_hexId &&
+		m_groups == rhs.m_groups &&
+		m_turn == rhs.m_turn)
+		return true;
+
+	return false;
 }
 
 void Battle::AddGroups(bool invader, const Hex& hex, const Game& game)

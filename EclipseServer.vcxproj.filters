@@ -290,6 +290,9 @@
     <ClInclude Include="AttackShipsRecord.h">
       <Filter>Model\Records</Filter>
     </ClInclude>
+    <ClInclude Include="ActionTrack.h">
+      <Filter>Model</Filter>
+    </ClInclude>
     <ClInclude Include="EnumArray.h">
       <Filter>General</Filter>
     </ClInclude>

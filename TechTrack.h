@@ -13,6 +13,7 @@ class TechTrack
 {
 public:
 	TechTrack();
+	bool operator==(const TechTrack& rhs) const;
 
 	void Add(TechType tech);
 	void Remove(TechType tech);

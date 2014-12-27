@@ -16,6 +16,20 @@ Map::Map(const Map& rhs, Game& game) : m_game(game)
 		m_hexes.insert(std::make_pair(h.first, HexPtr(new Hex(*h.second))));
 }
 
+bool Map::operator==(const Map& rhs) const
+{
+	if (m_hexes.size() != rhs.m_hexes.size())
+		return false;
+
+	HexMap::const_iterator i = rhs.m_hexes.begin();
+	for (auto j = m_hexes.begin(); j != m_hexes.end(); ++i, ++j)
+	{
+		if (i->first != j->first || *i->second != *j->second)
+			return false;
+	}
+	return true;
+}
+
 Hex* Map::FindHex(int hexId) 
 {
 	for (auto& h : m_hexes)

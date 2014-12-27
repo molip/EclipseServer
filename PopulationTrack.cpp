@@ -14,6 +14,11 @@ PopulationTrack::PopulationTrack() : m_pop(11, 11, 11)
 {
 }
 
+bool PopulationTrack::operator==(const PopulationTrack& rhs) const
+{
+	return m_pop == rhs.m_pop;
+}
+
 void PopulationTrack::Add(Resource r, int nAdd)
 {
 	int nNew = m_pop[r] + nAdd;

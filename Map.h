@@ -19,6 +19,8 @@ public:
 	Map(Game& game);
 	Map(const Map& rhs, Game& game);
 
+	bool operator==(const Map& rhs) const;
+
 	Hex& AddHex(const MapPos& pos, int id, int rotation);
 	void DeleteHex(const MapPos& pos);
 	std::vector<MapPos> GetTeamStartPositions() const;

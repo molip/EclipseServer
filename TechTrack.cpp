@@ -7,6 +7,11 @@ TechTrack::TechTrack()
 {
 }
 
+bool TechTrack::operator==(const TechTrack& rhs) const
+{
+	return m_classes == rhs.m_classes;
+}
+
 bool TechTrack::CanAdd(TechType techtype) const
 {
 	if (Has(techtype))

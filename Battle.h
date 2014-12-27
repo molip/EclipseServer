@@ -54,6 +54,7 @@ public:
 	{
 		Group();
 		Group(ShipType _shipType, bool _invader);
+		bool operator==(const Group& rhs) const;
 
 		ShipType shipType;
 		bool invader;
@@ -72,6 +73,7 @@ public:
 	struct Turn
 	{
 		Turn(int _groupIndex = 0, BattlePhase _phase = BattlePhase::Missile) : groupIndex(_groupIndex), phase(_phase) {}
+		bool operator==(const Turn& rhs) const { return groupIndex == rhs.groupIndex && phase == rhs.phase; }
 
 		int groupIndex;
 		BattlePhase phase;
@@ -84,6 +86,7 @@ public:
 
 	Battle();
 	Battle(const Hex& hex, const Game& game, const GroupVec& oldGroups);
+	bool operator==(const Battle& rhs) const;
 
 	//const ShipVec& GetDefenderShips() const { return m_defenderShips; }
 	//const ShipVec& GetInvaderShips() const { return m_invaderShips; }

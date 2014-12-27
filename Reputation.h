@@ -25,6 +25,7 @@ public:
 	ReputationTrack(const Team& team);
 	ReputationTrack(const ReputationTrack& rhs) = delete;
 	ReputationTrack(const ReputationTrack& rhs, const Team& team);
+	bool operator==(const ReputationTrack& rhs) const;
 
 	int GetSlotCount() const;
 	ReputationType GetSlotType(int iSlot) const;

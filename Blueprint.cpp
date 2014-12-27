@@ -28,6 +28,11 @@ Blueprint::Blueprint(const Blueprint& rhs) : m_pDef(rhs.m_pDef), m_overlay(rhs.m
 {
 }
 
+bool Blueprint::operator==(const Blueprint& rhs) const
+{
+	return m_overlay == rhs.m_overlay;
+}
+
 void Blueprint::Init(RaceType r, ShipType s) 
 {
 	m_pDef = &BlueprintDefs::Get(r, s);

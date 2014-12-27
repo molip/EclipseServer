@@ -37,6 +37,7 @@ class ShipLayout : public ISlots
 public:
 	ShipLayout();
 	ShipLayout(ShipType type);
+	bool operator==(const ShipLayout& rhs) const;
 
 	ShipType GetType() const { return m_type; }
 	void SetType(ShipType t);

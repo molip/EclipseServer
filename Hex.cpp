@@ -44,6 +44,16 @@ const Blueprint& Ship::GetBlueprint(Colour colour, ShipType type, const Game& ga
 Squadron::Squadron() : m_type(ShipType::None), m_colour(Colour::None), m_shipCount(0) {}
 Squadron::Squadron(ShipType type) : m_type(type), m_colour(Colour::None), m_shipCount(0) {}
 
+bool Squadron::operator==(const Squadron& rhs) const
+{
+	if (m_type == rhs.m_type &&
+		m_shipCount == rhs.m_shipCount &&
+		m_colour == rhs.m_colour)
+		return true;
+
+	return false;
+}
+
 const Blueprint& Squadron::GetBlueprint(const Game& game) const
 {
 	return Ship::GetBlueprint(m_colour, m_type, game);
@@ -65,6 +75,11 @@ void Squadron::Load(const Serial::LoadNode& node)
 
 Fleet::Fleet() : m_colour(Colour::None) {}
 Fleet::Fleet(Colour colour) : m_colour(colour) {}
+
+bool Fleet::operator==(const Fleet& rhs) const
+{
+	return m_squadrons == m_squadrons && m_colour == rhs.m_colour;
+}
 
 const Team* Fleet::GetOwner(const Game& game) const
 {
@@ -155,6 +170,23 @@ Hex::Hex(const Hex& rhs) :
 	m_bOrbital(rhs.m_bOrbital), m_bMonolith(rhs.m_bMonolith)
 {
 	InitSquares();
+}
+
+bool Hex::operator==(const Hex& rhs) const
+{
+	if (m_id == rhs.m_id &&
+		m_pos == rhs.m_pos &&
+		m_nRotation == rhs.m_nRotation &&
+		m_squares == rhs.m_squares &&
+		m_fleets == rhs.m_fleets &&
+		m_discovery == rhs.m_discovery &&
+		m_colour == rhs.m_colour &&
+		m_occupied == rhs.m_occupied &&
+		m_bOrbital == rhs.m_bOrbital &&
+		m_bMonolith == rhs.m_bMonolith)
+		return true;
+
+	return false;
 }
 
 void Hex::InitSquares()
