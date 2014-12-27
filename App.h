@@ -34,12 +34,12 @@ template <typename T>
 class ReverseAdapter
 {
 public:
-	ReverseAdapter(T t) : m_t(t) {}
+	ReverseAdapter(const T& t) : m_t(t) {}
 
-	typename T::reverse_iterator begin() const { return m_t.rbegin(); }
-	typename T::reverse_iterator end() const { return m_t.rend(); }
+	typename T::const_reverse_iterator begin() const { return m_t.rbegin(); }
+	typename T::const_reverse_iterator end() const { return m_t.rend(); }
 private:
-	T m_t;
+	const T& m_t;
 };
 
 template <typename T>

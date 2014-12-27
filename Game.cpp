@@ -80,7 +80,7 @@ bool Game::IncrementRound(bool bDo)
 {
 	m_state.m_iRound += bDo ? 1 : -1;
 
-	assert(m_state.m_iRound >= 0 && m_state.m_iRound <= 9);
+	VERIFY_MODEL(m_state.m_iRound <= 9);
 
 	return m_state.m_iRound == 9;
 }

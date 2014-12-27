@@ -29,6 +29,12 @@ void Games::Load()
 	}
 }
 
+void Games::Verify()
+{
+	for (auto& g : s_liveGames)
+		g->Verify();
+}
+
 LiveGame& Games::Add(const std::string& name, Player& owner)
 {
 	s_liveGames.push_back(LiveGamePtr(new LiveGame(s_nNextGameID++, name, owner)));

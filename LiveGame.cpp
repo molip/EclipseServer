@@ -212,6 +212,20 @@ LiveGame::LogVec LiveGame::GetLogs() const
 	return logs;
 }
 
+void LiveGame::Verify()
+{
+	GameState state(m_state, *this);
+	VERIFY(state == m_state);
+
+	for (auto& r : Reverse(m_records))
+		r->Undo(*this, nullptr);
+
+	for (auto& r : m_records)
+		r->Do(*this, nullptr);
+
+	VERIFY(state == m_state);
+}
+
 void LiveGame::Save() const
 {
 	std::ostringstream ss;

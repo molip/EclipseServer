@@ -66,6 +66,7 @@ public:
 	virtual void Save(Serial::SaveNode& node) const override;
 	virtual void Load(const Serial::LoadNode& node) override;
 
+	void Verify();
 	void Save() const;
 	std::mutex& GetMutex() const { return m_mutex; }
 
