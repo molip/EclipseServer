@@ -18,8 +18,8 @@ public:
 	void AssignTeam(CommitSession& session, Player& player, RaceType race, Colour colour);
 	const Team& GetCurrentTeam() const;
 
-	virtual void Save(Serial::SaveNode& node) const override {}
-	virtual void Load(const Serial::LoadNode& node) override {}
+	virtual void Save(Serial::SaveNode& node) const override;
+	virtual void Load(const Serial::LoadNode& node) override;
 
 protected:
 	virtual void AddCmd(CmdPtr pCmd) override {}

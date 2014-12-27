@@ -52,5 +52,16 @@ void ChooseTeamPhase::UpdateClient(const Controller& controller, const Player* p
 	return;
 }
 
+void ChooseTeamPhase::Save(Serial::SaveNode& node) const
+{
+	Phase::Save(node);
+	TurnPhase::Save(node);
+}
+
+void ChooseTeamPhase::Load(const Serial::LoadNode& node)
+{
+	Phase::Load(node);
+	TurnPhase::Load(node);
+}
 REGISTER_DYNAMIC(ChooseTeamPhase)
 
