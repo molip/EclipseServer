@@ -29,10 +29,7 @@ private:
 		if (bDo)
 			m_idHex = gameState.GetHexBag(m_hexRing).TakeTile();
 		else
-		{
-			gameState.GetHexBag(m_hexRing).ReturnTile();
-			m_idHex = -1;
-		}
+			VERIFY(gameState.GetHexBag(m_hexRing).ReturnTile() == m_idHex);
 	}
 
 	virtual void Save(Serial::SaveNode& node) const override
