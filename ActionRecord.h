@@ -9,7 +9,7 @@ public:
 	ActionRecord(const std::string& actionName, Colour colour);
 	
 private:
-	virtual void Apply(bool bDo, Team& team, TeamState& teamState, const RecordContext& context);
+	virtual void Apply(bool bDo, const Team& team, TeamState& teamState, const RecordContext& context);
 	virtual std::string GetTeamMessage() const override;
 
 	virtual void Save(Serial::SaveNode& node) const override;

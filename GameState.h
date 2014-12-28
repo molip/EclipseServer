@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Map.h"
+#include "Bag.h"
 
 #include <map>
 
@@ -31,6 +32,14 @@ public:
 	void AttachBattle(BattlePtr battle);
 	BattlePtr DetachBattle();
 
+	BagState<ReputationBag>& GetReputationBag() { return m_repBagState; }
+	BagState<TechnologyBag>& GetTechnologyBag() { return m_techBagState; }
+	BagState<DiscoveryBag>& GetDiscoveryBag() { return m_discBagState; }
+	BagState<HexBag>& GetHexBag(HexRing ring) { return m_hexBagStates[ring]; }
+
+	Hex& AddHex(const MapPos& pos, int id, int rotation);
+	void DeleteHex(const MapPos& pos);
+
 	void Save(Serial::SaveNode& node) const;
 	void Load(const Serial::LoadNode& node);
 
@@ -40,4 +49,12 @@ public:
 	BattlePtr m_battle;
 
 	std::map<Colour, TeamStatePtr> m_teamStates;
+
+private:
+	void InitBags(const Game& game);
+		
+	BagState<ReputationBag> m_repBagState;
+	BagState<TechnologyBag> m_techBagState;
+	BagState<DiscoveryBag> m_discBagState;
+	EnumArray<HexRing, BagState<HexBag>> m_hexBagStates;
 };

@@ -14,7 +14,7 @@ public:
 	PassRecord(Colour colour) : TeamRecord(colour) {}
 
 private:
-	virtual void Apply(bool bDo, Team& team, TeamState& teamState, const RecordContext& context) override
+	virtual void Apply(bool bDo, const Team& team, TeamState& teamState, const RecordContext& context) override
 	{
 		teamState.SetPassed(bDo);
 		context.SendMessage(Output::UpdatePassed(team));

@@ -28,7 +28,6 @@ private:
 		void Load(const Serial::LoadNode& node);
 	};
 
-	std::vector<TechType> m_techs;
 	std::vector<TeamData> m_teamData;
 	int m_round;
 };

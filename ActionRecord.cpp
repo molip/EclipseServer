@@ -11,7 +11,7 @@ ActionRecord::ActionRecord(const std::string& actionName, Colour colour) : TeamR
 {
 }
 
-void ActionRecord::Apply(bool bDo, Team& team, TeamState& teamState, const RecordContext& context)
+void ActionRecord::Apply(bool bDo, const Team& team, TeamState& teamState, const RecordContext& context)
 {
 	teamState.GetInfluenceTrack().RemoveDiscs(bDo ? 1 : -1);
 	teamState.GetActionTrack().AddDiscs(bDo ? 1 : -1);

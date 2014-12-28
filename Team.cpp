@@ -52,8 +52,8 @@ void Team::Assign(RaceType race, Colour colour, TeamState& state, LiveGame& game
 	for (TechType t : techs)
 		m_state->m_techTrack.Add(t);
 
-	for (int i = 0; i < r.GetStartReputationTiles(); ++i)
-		m_state->m_repTrack.AddReputationTile(game.GetReputationBag().TakeTile());
+	//for (int i = 0; i < r.GetStartReputationTiles(); ++i)
+	//	m_state->m_repTrack.AddReputationTile(game.GetReputationBag().TakeTile());
 	
 	for (auto i : PlayerShipTypesRange())
 		m_state->m_blueprints[(int)i].reset(new Blueprint(race, i));

@@ -12,7 +12,6 @@ StartRoundRecord::StartRoundRecord() : m_round(0)
 void StartRoundRecord::Save(Serial::SaveNode& node) const 
 {
 	__super::Save(node);
-	node.SaveCntr("techs", m_techs, Serial::EnumSaver());
 	node.SaveCntr("team_data", m_teamData, Serial::ClassSaver());
 	node.SaveType("round", m_round);
 }
@@ -20,28 +19,28 @@ void StartRoundRecord::Save(Serial::SaveNode& node) const
 void StartRoundRecord::Load(const Serial::LoadNode& node) 
 {
 	__super::Load(node);
-	node.LoadCntr("techs", m_techs, Serial::EnumLoader());
 	node.LoadCntr("team_data", m_teamData, Serial::ClassLoader());
 	node.LoadType("round", m_round);
 }
 
 void StartRoundRecord::Apply(bool bDo, const RecordContext& context) 
 {
-	Game& game = context.GetGame();
+	const Game& game = context.GetGame();
 	GameState& gameState = context.GetGameState();
-
-	bool bFirstRound = false;
 
 	gameState.IncrementRound(bDo);
 
-	// Take new technologies from bag.
+	const int startTech[] = { 12, 12, 14, 16, 18, 20 };
+	const int roundTech[] = { 4, 4, 6, 7, 8, 9 };
+
+	const bool bFirstRound = bDo ? game.GetRound() == 0 : game.GetRound() < 0;
+	const int nTech = (bFirstRound ? startTech : roundTech)[game.GetTeams().size() - 1];
 
 	std::map<TechType, int>& supplyTechs = gameState.GetTechnologies();
-	TechnologyBag& techBag = game.GetTechnologyBag();
+	auto& techBag = gameState.GetTechnologyBag();
 	
 	if (bDo)
 	{
-		bFirstRound = game.GetRound() == 0;
 		m_round = game.GetRound();
 
 		if (!bFirstRound)
@@ -59,20 +58,11 @@ void StartRoundRecord::Apply(bool bDo, const RecordContext& context)
 			}
 		}
 		
-		const int startTech[] = { 12, 12, 14, 16, 18, 20 };
-		const int roundTech[] = { 4, 4, 6, 7, 8, 9 };
-
-		int nTech = (bFirstRound ? startTech : roundTech)[game.GetTeams().size() - 1];
-
 		for (int i = 0; i < nTech && !techBag.IsEmpty(); ++i)
-		{
-			m_techs.push_back(techBag.TakeTile());
-			++supplyTechs[m_techs.back()];
-		}
+			++supplyTechs[techBag.TakeTile()];
 	}
 	else
 	{
-		bFirstRound = game.GetRound() < 0;
 		if (!bFirstRound)
 		{
 			ASSERT(m_teamData.size() == game.GetTeams().size());
@@ -90,12 +80,8 @@ void StartRoundRecord::Apply(bool bDo, const RecordContext& context)
 			m_teamData.clear();
 		}
 
-		for (auto i = m_techs.rbegin(); i != m_techs.rend(); ++i)
-		{
-			techBag.ReturnTile(*i);
-			--supplyTechs[*i];
-		}
-		m_techs.clear();
+		for (int i = 0; i < nTech && !techBag.IsFull(); ++i)
+			--supplyTechs[techBag.ReturnTile()];
 	}
 	
 	if (!bFirstRound)

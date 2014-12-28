@@ -17,7 +17,6 @@ AttackPopulationRecord::AttackPopulationRecord(const Battle::PopulationHits& hit
 
 void AttackPopulationRecord::Apply(bool bDo, const RecordContext& context)
 {
-	Game& game = context.GetGame();
 	GameState& gameState = context.GetGameState();
 
 	Battle& battle = gameState.GetBattle();
@@ -52,7 +51,7 @@ void AttackPopulationRecord::Apply(bool bDo, const RecordContext& context)
 		squares[squareIndex].SetOccupied(!bDo);
 
 	if (!m_hits.empty())
-		context.SendMessage(Output::UpdateMap(game));
+		context.SendMessage(Output::UpdateMap(context.GetGame()));
 }
 
 std::string AttackPopulationRecord::GetMessage(const Game& game) const

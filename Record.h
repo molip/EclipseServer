@@ -28,7 +28,7 @@ public:
 	RecordContext(Game& game, const Controller* controller);
 	void SendMessage(const Output::Message& msg, const Player* pPlayer = nullptr) const;
 	GameState& GetGameState() const { return __super::GetGameState(m_game); }
-	Game& GetGame() const { return m_game; }
+	const Game& GetGame() const { return m_game; }
 private:
 	Game& m_game;
 	const Controller* m_controller;
@@ -79,7 +79,7 @@ protected:
 	virtual std::string GetTeamMessage() const { return ""; }
 	
 	virtual void Apply(bool bDo, const RecordContext& context) override;
-	virtual void Apply(bool bDo, Team& team, TeamState& teamState, const RecordContext& context) = 0;
+	virtual void Apply(bool bDo, const Team& team, TeamState& teamState, const RecordContext& context) = 0;
 
 	Colour m_colour;
 };

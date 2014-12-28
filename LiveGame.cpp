@@ -78,12 +78,11 @@ void LiveGame::StartMainGamePhase()
 
 	m_gamePhase = GamePhase::Main;
 	
-	Map& map = m_state.GetMap();
-	Hex& centre = map.AddHex(MapPos(0, 0), 001, 0);
+	Hex& centre = m_state.AddHex(MapPos(0, 0), 001, 0);
 	centre.AddShip(ShipType::GCDS, Colour::None);
 
 	// Initialise starting hexes.
-	auto startPositions = map.GetTeamStartPositions();
+	auto startPositions = GetMap().GetTeamStartPositions();
 	assert(startPositions.size() == m_teams.size());
 	for (size_t i = 0; i < m_teams.size(); ++i)
 	{
@@ -91,7 +90,7 @@ void LiveGame::StartMainGamePhase()
 		Race r(team.GetRace());
 		int idHex = r.GetStartSector(team.GetColour());
 
-		Hex& hex = map.AddHex(startPositions[i], idHex, 0);
+		Hex& hex = m_state.AddHex(startPositions[i], idHex, 0);
 
 		team.PopulateStartHex(hex);
 	}

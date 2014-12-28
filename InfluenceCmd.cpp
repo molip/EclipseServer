@@ -17,7 +17,7 @@ public:
 	InfluenceFlipRecord() {}
 	InfluenceFlipRecord(Colour colour, int flips) : TeamRecord(colour), m_flips(flips) {}
 
-	virtual void Apply(bool bDo, Team& team, TeamState& teamState, const RecordContext& context) override
+	virtual void Apply(bool bDo, const Team& team, TeamState& teamState, const RecordContext& context) override
 	{
 		if (bDo)
 			teamState.ReturnColonyShips(m_flips);
@@ -137,9 +137,9 @@ public:
 
 	DiscoveryType GetDiscovery() const { return m_discovery; }
 
-	virtual void Apply(bool bDo, Team& team, TeamState& teamState, const RecordContext& context) override
+	virtual void Apply(bool bDo, const Team& team, TeamState& teamState, const RecordContext& context) override
 	{
-		Game& game = context.GetGame();
+		const Game& game = context.GetGame();
 		GameState& gameState = context.GetGameState();
 
 		if (bDo)
@@ -186,7 +186,7 @@ public:
 	}
 
 private:
-	Hex* TransferDisc(const MapPosPtr& pSrcPos, const MapPosPtr& pDstPos, GameState& gameState, Team& team, TeamState& teamState, const RecordContext& context)
+	Hex* TransferDisc(const MapPosPtr& pSrcPos, const MapPosPtr& pDstPos, GameState& gameState, const Team& team, TeamState& teamState, const RecordContext& context)
 	{
 		VERIFY_MODEL_MSG("no op", pSrcPos != pDstPos && !(pSrcPos && pDstPos && *pSrcPos == *pDstPos));
 

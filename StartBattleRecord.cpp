@@ -16,7 +16,7 @@ StartBattleRecord::StartBattleRecord(const Battle* oldBattle)
 
 void StartBattleRecord::Apply(bool bDo, const RecordContext& context)
 {
-	Game& game = context.GetGame();
+	const Game& game = context.GetGame();
 	GameState& gameState = context.GetGameState();
 
 	context.SendMessage(Output::UpdateShowCombat(game, bDo));

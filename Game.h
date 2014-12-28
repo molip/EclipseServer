@@ -4,14 +4,13 @@
 #include "Bag.h"
 #include "Cmd.h"
 #include "GameState.h"
+#include "Types.h"
 
 #include <memory>
 #include <set>
 #include <string>
 #include <deque>
 #include <list>
-
-enum class HexRing { None = -1, Inner, Middle, Outer, _Count };
 
 class CmdStack;
 class Record;
@@ -48,11 +47,12 @@ public:
 	virtual bool IsLive() const { return false; }
 	virtual std::vector<std::pair<int, std::string>> GetLogs() const = 0;
 
-	ReputationBag& GetReputationBag() { return m_repBag; }
-	TechnologyBag& GetTechnologyBag() { return m_techBag; }
-	DiscoveryBag& GetDiscoveryBag() { return m_discBag; }
-	HexBag& GetHexBag(HexRing ring) { return m_hexBag[(int)ring]; }
+	const ReputationBag& GetReputationBag() const { return m_repBag; }
+	const TechnologyBag& GetTechnologyBag() const { return m_techBag; }
+	const DiscoveryBag& GetDiscoveryBag() const { return m_discBag; }
 	const HexBag& GetHexBag(HexRing ring) const { return m_hexBag[(int)ring]; }
+
+	bool IsHexBagEmpty(HexRing ring) const { return const_cast<GameState&>(m_state).GetHexBag(ring).IsEmpty(); }
 
 	const Map& GetMap() const { return m_state.m_map; }
 

@@ -17,7 +17,6 @@ AttackShipsRecord::AttackShipsRecord(const Battle::Hits& hits) : AttackShipsReco
 
 void AttackShipsRecord::Apply(bool bDo, const RecordContext& context)
 {
-	Game& game = context.GetGame();
 	GameState& gameState = context.GetGameState();
 
 	Battle& battle = gameState.GetBattle();
@@ -66,10 +65,10 @@ void AttackShipsRecord::Apply(bool bDo, const RecordContext& context)
 		}
 	}
 
-	context.SendMessage(Output::UpdateCombat(game, battle));
+	context.SendMessage(Output::UpdateCombat(context.GetGame(), battle));
 
 	if (updateMap)
-		context.SendMessage(Output::UpdateMap(game));
+		context.SendMessage(Output::UpdateMap(context.GetGame()));
 }
 
 std::string AttackShipsRecord::GetMessage(const Game& game) const

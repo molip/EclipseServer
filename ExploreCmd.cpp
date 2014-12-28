@@ -22,16 +22,15 @@ public:
 	int GetHexID() const { return m_idHex; }
 		
 private:
-	virtual void Apply(bool bDo, Team& team, TeamState& teamState, const RecordContext& context) override
+	virtual void Apply(bool bDo, const Team& team, TeamState& teamState, const RecordContext& context) override
 	{
-		Game& game = context.GetGame();
 		GameState& gameState = context.GetGameState();
 
 		if (bDo)
-			m_idHex = game.GetHexBag(m_hexRing).TakeTile();
+			m_idHex = gameState.GetHexBag(m_hexRing).TakeTile();
 		else
 		{
-			game.GetHexBag(m_hexRing).ReturnTile(m_idHex);
+			gameState.GetHexBag(m_hexRing).ReturnTile();
 			m_idHex = -1;
 		}
 	}
@@ -132,14 +131,13 @@ public:
 
 	DiscoveryType GetDiscovery() const { return m_discovery; }
 
-	virtual void Apply(bool bDo, Team& team, TeamState& teamState, const RecordContext& context) override
+	virtual void Apply(bool bDo, const Team& team, TeamState& teamState, const RecordContext& context) override
 	{
-		Game& game = context.GetGame();
 		GameState& gameState = context.GetGameState();
 
 		if (bDo)
 		{
-			Hex& hex = gameState.GetMap().AddHex(m_pos, m_idHex, m_iRot);
+			Hex& hex = gameState.AddHex(m_pos, m_idHex, m_iRot);
 
 			if (m_bInfluence)
 			{
@@ -164,9 +162,9 @@ public:
 				if (m_discovery != DiscoveryType::None)
 					gameState.GetMap().GetHex(m_pos).SetDiscoveryTile(m_discovery);
 			}
-			gameState.GetMap().DeleteHex(m_pos);
+			gameState.DeleteHex(m_pos);
 		}
-		context.SendMessage(Output::UpdateMap(game));
+		context.SendMessage(Output::UpdateMap(context.GetGame()));
 	}
 
 	virtual void Save(Serial::SaveNode& node) const override 
@@ -271,7 +269,7 @@ ExploreHexCmd::ExploreHexCmd(Colour colour, const LiveGame& game, const MapPos& 
 void ExploreHexCmd::UpdateClient(const Controller& controller, const LiveGame& game) const
 {
 	bool bCanTake = Race(GetTeam(game).GetRace()).GetExploreChoices() > (int)m_hexChoices.size() 
-		&& !game.GetHexBag(m_pos.GetRing()).IsEmpty();
+		&& !game.IsHexBagEmpty(m_pos.GetRing());
 
 	Output::ChooseExploreHex msg(m_pos.GetX(), m_pos.GetY(), bCanTake, game.GetActionPhase().CanRemoveCmd());
 	for (auto& hc : m_hexChoices)
@@ -289,8 +287,7 @@ CmdPtr ExploreHexCmd::Process(const Input::CmdMessage& msg, CommitSession& sessi
 
 	if (dynamic_cast<const Input::CmdExploreHexTake*>(&msg))
 	{
-		const HexBag& bag = game.GetHexBag(m_pos.GetRing());
-		VERIFY_INPUT_MSG("no tiles left in bag", !bag.IsEmpty());
+		VERIFY_INPUT_MSG("no tiles left in bag", !game.IsHexBagEmpty(m_pos.GetRing()));
 		VERIFY_INPUT_MSG("too many tiles taken", Race(GetTeam(game).GetRace()).GetExploreChoices() > (int)m_hexIDs.size());
 
 		ExploreRecord* pRec = new ExploreRecord(m_colour, m_pos.GetRing());

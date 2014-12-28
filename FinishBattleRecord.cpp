@@ -10,10 +10,9 @@ FinishBattleRecord::FinishBattleRecord() {}
 
 void FinishBattleRecord::Apply(bool bDo, const RecordContext& context)
 {
-	Game& game = context.GetGame();
 	GameState& gameState = context.GetGameState();
 
-	context.SendMessage(Output::UpdateShowCombat(game, !bDo));
+	context.SendMessage(Output::UpdateShowCombat(context.GetGame(), !bDo));
 
 	if (bDo)
 	{

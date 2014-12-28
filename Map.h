@@ -21,7 +21,7 @@ public:
 
 	bool operator==(const Map& rhs) const;
 
-	Hex& AddHex(const MapPos& pos, int id, int rotation);
+	Hex& AddHex(HexPtr hex);
 	void DeleteHex(const MapPos& pos);
 	std::vector<MapPos> GetTeamStartPositions() const;
 	

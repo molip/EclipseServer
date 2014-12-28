@@ -4,25 +4,15 @@
 #include "Discovery.h"
 #include "App.h"
 #include "Serial.h"
+#include "Types.h"
 
 template <typename T> 
 class Bag 
 {
 public:
-	bool IsEmpty() const { return m_vec.empty(); }
-	
-	T TakeTile()
-	{
-		VERIFY_MODEL(!m_vec.empty());
-		T t = m_vec.back();
-		m_vec.pop_back();
-		return t;
-	}
+	typedef T TileType;
+	const std::vector<T>& GetTiles() const { return m_vec; }
 
-	void ReturnTile(T t)
-	{
-		m_vec.push_back(t);
-	}
 protected:
 	std::vector<T> m_vec;
 };
@@ -80,4 +70,43 @@ class HexBag : public IntBag
 public:
 	HexBag() {}
 	HexBag(HexRing r, int nPlayers);
+};
+
+template <typename BagType>
+class BagState
+{
+public:
+	BagState() : m_bag(nullptr), m_taken(0) {}
+	BagState(const BagState<BagType>& rhs) : m_bag(nullptr), m_taken(rhs.m_taken) {}
+
+	void SetBag(const BagType& bag) { m_bag = &bag; }
+
+	bool IsEmpty() const { return m_taken == m_bag->GetTiles().size(); }
+	bool IsFull() const { return m_taken == 0; }
+	
+	typename BagType::TileType TakeTile()
+	{
+		VERIFY_MODEL(!IsEmpty());
+		return m_bag->GetTiles()[m_taken++];
+	}
+
+	typename BagType::TileType ReturnTile()
+	{
+		VERIFY_MODEL(m_taken > 0);
+		return m_bag->GetTiles()[--m_taken];
+	}
+
+	void Save(Serial::SaveNode& node) const
+	{
+		node.SaveType("taken", m_taken);
+	}
+
+	void Load(const Serial::LoadNode& node)
+	{
+		node.LoadType("taken", m_taken);
+	}
+
+private:
+	const BagType* m_bag;
+	size_t m_taken;
 };

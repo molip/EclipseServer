@@ -74,9 +74,8 @@ public:
 	}
 
 private:
-	virtual void Apply(bool bDo, Team& team, TeamState& teamState, const RecordContext& context) override
+	virtual void Apply(bool bDo, const Team& team, TeamState& teamState, const RecordContext& context) override
 	{
-		Game& game = context.GetGame();
 		GameState& gameState = context.GetGameState();
 
 		Hex& hex = gameState.GetMap().GetHex(m_pos);
@@ -104,7 +103,7 @@ private:
 
 		teamState.GetStorage()[Resource::Materials] += bDo ? -cost : cost;
 
-		context.SendMessage(Output::UpdateMap(game));
+		context.SendMessage(Output::UpdateMap(context.GetGame()));
 		context.SendMessage(Output::UpdateStorageTrack(team));
 	}
 

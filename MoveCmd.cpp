@@ -88,9 +88,8 @@ public:
 	}
 
 private:
-	virtual void Apply(bool bDo, Team& team, TeamState& teamState, const RecordContext& context) override
+	virtual void Apply(bool bDo, const Team& team, TeamState& teamState, const RecordContext& context) override
 	{
-		Game& game = context.GetGame();
 		GameState& gameState = context.GetGameState();
 
 		Hex& srcHex = gameState.GetMap().GetHex(bDo ? m_src : m_dst);
@@ -99,7 +98,7 @@ private:
 		srcHex.RemoveShip(m_ship, m_colour);
 		dstHex.AddShip(m_ship, m_colour);
 
-		context.SendMessage(Output::UpdateMap(game));
+		context.SendMessage(Output::UpdateMap(context.GetGame()));
 	}
 
 	virtual std::string GetTeamMessage() const

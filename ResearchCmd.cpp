@@ -26,9 +26,9 @@ public:
 	}
 
 private:
-	virtual void Apply(bool bDo, Team& team, TeamState& teamState, const RecordContext& context) override
+	virtual void Apply(bool bDo, const Team& team, TeamState& teamState, const RecordContext& context) override
 	{
-		Game& game = context.GetGame();
+		const Game& game = context.GetGame();
 		GameState& gameState = context.GetGameState();
 
 		auto& techs = gameState.GetTechnologies();
@@ -171,7 +171,7 @@ public:
 	}
 
 private:
-	virtual void Apply(bool bDo, Team& team, TeamState& teamState, const RecordContext& context) override
+	virtual void Apply(bool bDo, const Team& team, TeamState& teamState, const RecordContext& context) override
 	{
 		for (auto r : EnumRange<Resource>())
 			teamState.GetStorage()[r] += m_artifacts[r] * (bDo ? 5 : -5);
