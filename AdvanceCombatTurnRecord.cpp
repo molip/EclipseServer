@@ -9,9 +9,12 @@ AdvanceCombatTurnRecord::AdvanceCombatTurnRecord()
 {
 }
 
-void AdvanceCombatTurnRecord::Apply(bool bDo, Game& game, const RecordContext& context)
+void AdvanceCombatTurnRecord::Apply(bool bDo, const RecordContext& context)
 {
-	Battle& battle = game.GetBattle();
+	Game& game = context.GetGame();
+	GameState& gameState = context.GetGameState();
+
+	Battle& battle = gameState.GetBattle();
 	if (bDo)
 		m_oldTurn = battle.AdvanceTurn(game);
 	else

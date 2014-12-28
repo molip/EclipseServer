@@ -302,6 +302,9 @@
     <ClInclude Include="TeamState.h">
       <Filter>Model</Filter>
     </ClInclude>
+    <ClInclude Include="GameStateAccess.h">
+      <Filter>Model</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -563,6 +566,9 @@
       <Filter>Model</Filter>
     </ClCompile>
     <ClCompile Include="GameState.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="GameStateAccess.cpp">
       <Filter>Model</Filter>
     </ClCompile>
   </ItemGroup>

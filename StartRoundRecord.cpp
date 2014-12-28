@@ -25,15 +25,18 @@ void StartRoundRecord::Load(const Serial::LoadNode& node)
 	node.LoadType("round", m_round);
 }
 
-void StartRoundRecord::Apply(bool bDo, Game& game, const RecordContext& context) 
+void StartRoundRecord::Apply(bool bDo, const RecordContext& context) 
 {
+	Game& game = context.GetGame();
+	GameState& gameState = context.GetGameState();
+
 	bool bFirstRound = false;
 
-	game.IncrementRound(bDo);
+	gameState.IncrementRound(bDo);
 
 	// Take new technologies from bag.
 
-	std::map<TechType, int>& supplyTechs = game.GetTechnologies();
+	std::map<TechType, int>& supplyTechs = gameState.GetTechnologies();
 	TechnologyBag& techBag = game.GetTechnologyBag();
 	
 	if (bDo)
@@ -48,10 +51,11 @@ void StartRoundRecord::Apply(bool bDo, Game& game, const RecordContext& context)
 				TeamData data{ team->GetActionTrack().GetDiscCount(), team->GetUsedColonyShips(), team->GetIncome() };
 				m_teamData.push_back(data);
 
-				team->GetActionTrack().RemoveDiscs(data.actions);
-				team->GetInfluenceTrack().AddDiscs(data.actions);
-				team->ReturnColonyShips(data.colonyShips);
-				team->GetStorage() += data.income;
+				TeamState& teamState = gameState.GetTeamState(team->GetColour());
+				teamState.GetActionTrack().RemoveDiscs(data.actions);
+				teamState.GetInfluenceTrack().AddDiscs(data.actions);
+				teamState.ReturnColonyShips(data.colonyShips);
+				teamState.GetStorage() += data.income;
 			}
 		}
 		
@@ -77,10 +81,11 @@ void StartRoundRecord::Apply(bool bDo, Game& game, const RecordContext& context)
 			{
 				const TeamData& data = m_teamData[i];
 				Team& team = *game.GetTeams()[i];
-				team.GetActionTrack().AddDiscs(data.actions);
-				team.GetInfluenceTrack().RemoveDiscs(data.actions);
-				team.UseColonyShips(data.colonyShips);
-				team.GetStorage() -= data.income;
+				TeamState& teamState = gameState.GetTeamState(team.GetColour());
+				teamState.GetActionTrack().AddDiscs(data.actions);
+				teamState.GetInfluenceTrack().RemoveDiscs(data.actions);
+				teamState.UseColonyShips(data.colonyShips);
+				teamState.GetStorage() -= data.income;
 			}
 			m_teamData.clear();
 		}
@@ -97,7 +102,8 @@ void StartRoundRecord::Apply(bool bDo, Game& game, const RecordContext& context)
 	{
 		for (auto& team : game.GetTeams())
 		{
-			team->SetPassed(!bDo);
+			TeamState& teamState = gameState.GetTeamState(team->GetColour());
+			teamState.SetPassed(!bDo);
 			context.SendMessage(Output::UpdatePassed(*team));
 			context.SendMessage(Output::UpdateInfluenceTrack(*team));
 			context.SendMessage(Output::UpdateActionTrack(*team));

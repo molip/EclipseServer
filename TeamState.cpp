@@ -50,6 +50,29 @@ void TeamState::SetTeam(const Team& team)
 	m_repTrack.SetTeam(team);
 }
 
+Blueprint& TeamState::GetBlueprint(ShipType s)
+{
+	VERIFY_MODEL(int(s) >= 0 && s != ShipType::_Count);
+	return *m_blueprints[int(s)];
+}
+
+void TeamState::AddShips(ShipType type, int nShips)
+{
+	// TODO: Check max count not exceeded.
+	VERIFY_MODEL_MSG("invalid ship type", int(type) >= 0);
+	m_nShips[(int)type] += nShips;
+}
+
+void TeamState::UseColonyShips(int nShips)
+{
+	m_nColonyShipsUsed += nShips;
+}
+
+void TeamState::ReturnColonyShips(int nShips)
+{
+	m_nColonyShipsUsed = std::max(0, m_nColonyShipsUsed - nShips);
+}
+
 void TeamState::Save(Serial::SaveNode& node) const
 {
 	node.SaveCntr("allies", m_allies, Serial::EnumSaver());

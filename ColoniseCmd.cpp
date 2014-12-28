@@ -72,23 +72,25 @@ public:
 	}
 
 private:
-	virtual void Apply(bool bDo, Game& game, const RecordContext& context) override
+	virtual void Apply(bool bDo, Team& team, TeamState& teamState, const RecordContext& context) override
 	{
-		Hex& hex = game.GetMap().GetHex(m_pos);
+		Game& game = context.GetGame();
+		GameState& gameState = context.GetGameState();
+
+		Hex& hex = gameState.GetMap().GetHex(m_pos);
 		m_hexId = hex.GetID();
 
-		Team& team = game.GetTeam(m_colour);
 		for (auto& move : m_moves)
 			if (move.second != Resource::None)
 			{
 				Square* pSquare = hex.FindSquare(move.first, !bDo);
 				VERIFY_MODEL_MSG("square not found", !!pSquare);
 				pSquare->SetOccupied(bDo);
-				team.GetPopulationTrack().Add(move.second, bDo ? -1 : 1);
+				teamState.GetPopulationTrack().Add(move.second, bDo ? -1 : 1);
 			}
 
 		int nMoves = m_moves.size();
-		team.UseColonyShips(bDo ? nMoves : -nMoves);
+		teamState.UseColonyShips(bDo ? nMoves : -nMoves);
 
 		context.SendMessage(Output::UpdateMap(game));
 		context.SendMessage(Output::UpdatePopulationTrack(team));

@@ -8,17 +8,20 @@
 
 FinishBattleRecord::FinishBattleRecord() {}
 
-void FinishBattleRecord::Apply(bool bDo, Game& game, const RecordContext& context)
+void FinishBattleRecord::Apply(bool bDo, const RecordContext& context)
 {
+	Game& game = context.GetGame();
+	GameState& gameState = context.GetGameState();
+
 	context.SendMessage(Output::UpdateShowCombat(game, !bDo));
 
 	if (bDo)
 	{
-		m_battle = game.DetachBattle();
+		m_battle = gameState.DetachBattle();
 	}
 	else
 	{
-		game.AttachBattle(std::move(m_battle));
+		gameState.AttachBattle(std::move(m_battle));
 	}
 }
 

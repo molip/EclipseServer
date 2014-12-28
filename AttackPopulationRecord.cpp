@@ -15,10 +15,13 @@ AttackPopulationRecord::AttackPopulationRecord(const Battle::PopulationHits& hit
 	m_hits = hits;
 }
 
-void AttackPopulationRecord::Apply(bool bDo, Game& game, const RecordContext& context)
+void AttackPopulationRecord::Apply(bool bDo, const RecordContext& context)
 {
-	Battle& battle = game.GetBattle();
-	Hex* hex = game.GetMap().FindHex(battle.GetHexId());
+	Game& game = context.GetGame();
+	GameState& gameState = context.GetGameState();
+
+	Battle& battle = gameState.GetBattle();
+	Hex* hex = gameState.GetMap().FindHex(battle.GetHexId());
 	VERIFY_MODEL(!!hex && hex->GetFleets().size() == 1);
 
 	auto& squares = hex->GetSquares();

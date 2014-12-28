@@ -98,6 +98,7 @@
     <ClInclude Include="EnumArray.h" />
     <ClInclude Include="FinishBattleRecord.h" />
     <ClInclude Include="GameState.h" />
+    <ClInclude Include="GameStateAccess.h" />
     <ClInclude Include="Invitations.h" />
     <ClInclude Include="MessageRecord.h" />
     <ClInclude Include="ChooseTeamPhase.h" />
@@ -190,6 +191,7 @@
     <ClCompile Include="Dice.cpp" />
     <ClCompile Include="FinishBattleRecord.cpp" />
     <ClCompile Include="GameState.cpp" />
+    <ClCompile Include="GameStateAccess.cpp" />
     <ClCompile Include="Invitations.cpp" />
     <ClCompile Include="MessageRecord.cpp" />
     <ClCompile Include="ChooseTeamPhase.cpp" />

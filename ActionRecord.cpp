@@ -11,11 +11,10 @@ ActionRecord::ActionRecord(const std::string& actionName, Colour colour) : TeamR
 {
 }
 
-void ActionRecord::Apply(bool bDo, Game& game, const RecordContext& context)
+void ActionRecord::Apply(bool bDo, Team& team, TeamState& teamState, const RecordContext& context)
 {
-	Team& team = game.GetTeam(m_colour);
-	team.GetInfluenceTrack().RemoveDiscs(bDo ? 1 : -1);
-	team.GetActionTrack().AddDiscs(bDo ? 1 : -1);
+	teamState.GetInfluenceTrack().RemoveDiscs(bDo ? 1 : -1);
+	teamState.GetActionTrack().AddDiscs(bDo ? 1 : -1);
 	context.SendMessage(Output::UpdateInfluenceTrack(team));
 	context.SendMessage(Output::UpdateActionTrack(team));
 }

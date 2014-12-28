@@ -2,6 +2,7 @@
 
 #include "App.h"
 #include "Dynamic.h"
+#include "GameStateAccess.h"
 
 #include <memory>
 #include <functional>
@@ -10,6 +11,8 @@ class Game;
 class Controller;
 class LiveGame;
 class ReviewGame;
+class Team;
+class TeamState;
 
 enum class Colour;
 
@@ -19,18 +22,19 @@ DEFINE_UNIQUE_PTR(Record);
 namespace Output { class Message; }
 class Player;
 
-class RecordContext
+class RecordContext : public GameStateAccess
 {
 public:
 	RecordContext(Game& game, const Controller* controller);
 	void SendMessage(const Output::Message& msg, const Player* pPlayer = nullptr) const;
-
+	GameState& GetGameState() const { return __super::GetGameState(m_game); }
+	Game& GetGame() const { return m_game; }
 private:
 	Game& m_game;
 	const Controller* m_controller;
 };
 
-class Record : public Dynamic
+class Record : public Dynamic 
 {
 public:
 	Record();
@@ -55,7 +59,7 @@ public:
 	virtual std::string GetMessage(const Game& game) const = 0;
 
 private:
-	virtual void Apply(bool bDo, Game& game, const RecordContext& context) = 0;
+	virtual void Apply(bool bDo, const RecordContext& context) = 0;
 
 	int m_id;
 };
@@ -74,6 +78,9 @@ public:
 protected:
 	virtual std::string GetTeamMessage() const { return ""; }
 	
+	virtual void Apply(bool bDo, const RecordContext& context) override;
+	virtual void Apply(bool bDo, Team& team, TeamState& teamState, const RecordContext& context) = 0;
+
 	Colour m_colour;
 };
 
@@ -82,7 +89,7 @@ class GameRecord : public Record
 public:
 	GameRecord(const std::function<void(Game&)>& fn) : m_fn(fn) {}
 private:
-	virtual void Apply(bool bDo, Game& game, const RecordContext& context) override;
+	virtual void Apply(bool bDo, const RecordContext& context) override;
 
 	const std::function<void(Game&)> m_fn;
 };

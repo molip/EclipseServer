@@ -58,10 +58,10 @@ void Team::Assign(RaceType race, Colour colour, TeamState& state, LiveGame& game
 	for (auto i : PlayerShipTypesRange())
 		m_state->m_blueprints[(int)i].reset(new Blueprint(race, i));
 
-	AddShips(ShipType::Interceptor, 8);
-	AddShips(ShipType::Cruiser, 4);
-	AddShips(ShipType::Dreadnought, 2);
-	AddShips(ShipType::Starbase, 4);
+	m_state->AddShips(ShipType::Interceptor, 8);
+	m_state->AddShips(ShipType::Cruiser, 4);
+	m_state->AddShips(ShipType::Dreadnought, 2);
+	m_state->AddShips(ShipType::Starbase, 4);
 
 	//ShipType GetStartShip() const;
 	//int GetStartSector(Colour colour) const;
@@ -79,13 +79,6 @@ const Player& Team::GetPlayer() const
 Player& Team::GetPlayer() 
 {
 	return Players::Get(m_idPlayer);
-}
-
-void Team::AddShips(ShipType type, int nShips)
-{
-	// TODO: Check max count not exceeded.
-	VERIFY_MODEL_MSG("invalid ship type", int(type) >= 0);
-	m_state->m_nShips[(int)type] += nShips;
 }
 
 int Team::GetUnusedShips(ShipType type) const 
@@ -112,31 +105,14 @@ void Team::PopulateStartHex(Hex& hex)
  
 	ShipType ship = Race(m_race).GetStartShip();
 	hex.AddShip(ship, m_colour);
-	RemoveShips(ship, 1);
+	m_state->RemoveShips(ship, 1);
 
 	m_state->m_infTrack.RemoveDiscs(1);
-}
-
-void Team::UseColonyShips(int nShips)
-{
-	VERIFY_MODEL(m_state->m_nColonyShipsUsed + nShips <= GetColonyShips());
-	m_state->m_nColonyShipsUsed += nShips;
-}
-
-void Team::ReturnColonyShips(int nShips)
-{
-	m_state->m_nColonyShipsUsed = std::max(0, m_state->m_nColonyShipsUsed - nShips);
 }
 
 int Team::GetColonyShips() const
 {
 	return Race(m_race).GetStartColonyShips();
-}
-
-Blueprint& Team::GetBlueprint(ShipType s) 
-{
-	VERIFY_MODEL(int(s) >= 0 && s != ShipType::_Count);
-	return *m_state->m_blueprints[int(s)];
 }
 
 bool Team::CanUseShipPart(ShipPart part) const

@@ -20,6 +20,7 @@ namespace Serial { class SaveNode; class LoadNode; }
 
 class Game
 {
+	friend class GameStateAccess;
 public:
 	Game();
 	Game(int id, const std::string& name, const Player& owner);
@@ -54,12 +55,9 @@ public:
 	const HexBag& GetHexBag(HexRing ring) const { return m_hexBag[(int)ring]; }
 
 	const Map& GetMap() const { return m_state.m_map; }
-	Map& GetMap() { return m_state.m_map; }
 
 	const std::map<TechType, int>& GetTechnologies() const { return m_state.m_techs; }
-	std::map<TechType, int>& GetTechnologies() { return m_state.m_techs; }
 
-	bool IncrementRound(bool bDo); // Returns true if game finished.
 	int GetRound() const { return m_state.m_iRound; }
 
 	virtual void Save(Serial::SaveNode& node) const;
@@ -69,10 +67,7 @@ public:
 	void AddPlayer(const Player* player) const { m_players.insert(player); }
 	void RemovePlayer(const Player* player) const { m_players.erase(player); }
 
-	Battle& GetBattle();
-	const Battle& GetBattle() const { return const_cast<Game*>(this)->GetBattle(); }
-	void AttachBattle(BattlePtr battle);
-	BattlePtr DetachBattle();
+	const Battle& GetBattle() const { return const_cast<GameState&>(m_state).GetBattle(); }
 	bool HasBattle() const { return !!m_state.m_battle; }
 
 protected:
@@ -92,3 +87,4 @@ protected:
 };
 
 typedef std::unique_ptr<Game> GamePtr;
+

@@ -78,7 +78,7 @@ void LiveGame::StartMainGamePhase()
 
 	m_gamePhase = GamePhase::Main;
 	
-	Map& map = GetMap();
+	Map& map = m_state.GetMap();
 	Hex& centre = map.AddHex(MapPos(0, 0), 001, 0);
 	centre.AddShip(ShipType::GCDS, Colour::None);
 

@@ -39,6 +39,30 @@ TeamState& GameState::GetTeamState(Colour c)
 	return *i->second;
 }
 
+bool GameState::IncrementRound(bool bDo)
+{
+	m_iRound += bDo ? 1 : -1;
+
+	VERIFY_MODEL(m_iRound <= 9);
+
+	return m_iRound == 9;
+}
+
+Battle& GameState::GetBattle()
+{
+	VERIFY_MODEL(!!m_battle);
+	return *m_battle;
+}
+
+void GameState::AttachBattle(BattlePtr battle)
+{
+	m_battle = std::move(battle);
+}
+
+BattlePtr GameState::DetachBattle()
+{
+	return std::move(m_battle);
+}
 void GameState::Save(Serial::SaveNode& node) const
 {
 	node.SaveClass("map", m_map);

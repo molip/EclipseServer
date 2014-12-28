@@ -76,31 +76,6 @@ Team& Game::GetTeam(Colour c)
 	return *pTeam;
 }
 
-bool Game::IncrementRound(bool bDo)
-{
-	m_state.m_iRound += bDo ? 1 : -1;
-
-	VERIFY_MODEL(m_state.m_iRound <= 9);
-
-	return m_state.m_iRound == 9;
-}
-
-Battle& Game::GetBattle() 
-{
-	VERIFY_MODEL(!!m_state.m_battle);
-	return *m_state.m_battle;
-}
-
-void Game::AttachBattle(BattlePtr battle)
-{ 
-	m_state.m_battle = std::move(battle);
-}
-
-BattlePtr Game::DetachBattle()
-{
-	return std::move(m_state.m_battle);
-}
-
 void Game::Save(Serial::SaveNode& node) const 
 {
 	node.SaveType("id", m_id);

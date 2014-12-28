@@ -74,11 +74,12 @@ public:
 	}
 
 private:
-	virtual void Apply(bool bDo, Game& game, const RecordContext& context) override
+	virtual void Apply(bool bDo, Team& team, TeamState& teamState, const RecordContext& context) override
 	{
-		Team& team = game.GetTeam(m_colour);
+		Game& game = context.GetGame();
+		GameState& gameState = context.GetGameState();
 
-		Hex& hex = game.GetMap().GetHex(m_pos);
+		Hex& hex = gameState.GetMap().GetHex(m_pos);
 		m_idHex = hex.GetID();
 
 		if (m_buildable == Buildable::Orbital)
@@ -96,12 +97,12 @@ private:
 			{
 				hex.RemoveShip(s, m_colour);
 			}
-			team.AddShips(s, bDo ? -1 : 1);
+			teamState.AddShips(s, bDo ? -1 : 1);
 		}
 
 		int cost = Race(team.GetRace()).GetBuildCost(m_buildable);
 
-		team.GetStorage()[Resource::Materials] += bDo ? -cost : cost;
+		teamState.GetStorage()[Resource::Materials] += bDo ? -cost : cost;
 
 		context.SendMessage(Output::UpdateMap(game));
 		context.SendMessage(Output::UpdateStorageTrack(team));

@@ -18,13 +18,29 @@ enum class ShipPart;
 
 DEFINE_UNIQUE_PTR(Blueprint)
 
-struct TeamState
+class TeamState
 {
+public:
 	TeamState();
 	TeamState(const TeamState& rhs);
 	bool operator==(const TeamState& rhs) const;
 
 	void SetTeam(const Team& team);
+
+	Blueprint& GetBlueprint(ShipType s);
+	Storage& GetStorage() { return m_storage; }
+	PopulationTrack& GetPopulationTrack() { return m_popTrack; }
+	ReputationTrack& GetReputationTrack() { return m_repTrack; }
+	InfluenceTrack& GetInfluenceTrack() { return m_infTrack; }
+	DiscTrack& GetActionTrack() { return m_actionTrack; }
+	TechTrack& GetTechTrack() { return m_techTrack; }
+	
+	void SetPassed(bool b) { m_bPassed = b; }
+	
+	void AddShips(ShipType type, int nShips);
+	void RemoveShips(ShipType type, int nShips) { AddShips(type, -nShips); }
+	void UseColonyShips(int nShips);
+	void ReturnColonyShips(int nShips);
 
 	void Save(Serial::SaveNode& node) const;
 	void Load(const Serial::LoadNode& node);
