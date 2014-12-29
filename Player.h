@@ -27,6 +27,7 @@ public:
 	bool CheckPassword(const std::string& password) const;
 
 	void SetCurrentGame(const Game* pGame);
+	void RejoinCurrentGame();
 
 	void Save() const;
 	void Save(Serial::SaveNode& node) const;

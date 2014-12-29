@@ -66,34 +66,13 @@ void LiveGame::StartChooseTeamGamePhase()
 	m_discBag.Init();
 }
 
-void LiveGame::AssignTeam(Player& player, RaceType race, Colour colour)
-{
-	auto it = m_state.m_teamStates.insert(std::make_pair(colour, TeamStatePtr(new TeamState)));
-	GetTeam(player).Assign(race, colour, *it.first->second, *this);
-}
 
 void LiveGame::StartMainGamePhase()
 {
 	VERIFY_MODEL(m_gamePhase == GamePhase::ChooseTeam);
 
 	m_gamePhase = GamePhase::Main;
-	
-	Hex& centre = m_state.AddHex(MapPos(0, 0), 001, 0);
-	centre.AddShip(ShipType::GCDS, Colour::None);
-
-	// Initialise starting hexes.
-	auto startPositions = GetMap().GetTeamStartPositions();
-	assert(startPositions.size() == m_teams.size());
-	for (size_t i = 0; i < m_teams.size(); ++i)
-	{
-		Team& team = *m_teams[i];
-		Race r(team.GetRace());
-		int idHex = r.GetStartSector(team.GetColour());
-
-		Hex& hex = m_state.AddHex(startPositions[i], idHex, 0);
-
-		team.PopulateStartHex(hex);
-	}
+	m_state.Init(*this);
 	StartActionPhase();
 }
 
@@ -158,7 +137,7 @@ void LiveGame::FinishActionPhase(const std::vector<Colour>& passOrder)
 		}
 #endif
 
-	Test::AddShipsToCentre(*this);
+	//Test::AddShipsToCentre(*this);
 
 	if (GetMap().FindPendingBattleHex(*this))
 		m_pPhase = PhasePtr(new CombatPhase(this));
@@ -216,20 +195,6 @@ LiveGame::LogVec LiveGame::GetLogs() const
 	return logs;
 }
 
-void LiveGame::Verify()
-{
-	GameState state(m_state, *this);
-	VERIFY(state == m_state);
-
-	for (auto& r : Reverse(m_records))
-		r->Undo(*this, nullptr);
-
-	for (auto& r : m_records)
-		r->Do(*this, nullptr);
-
-	VERIFY(state == m_state);
-}
-
 void LiveGame::Save() const
 {
 	std::ostringstream ss;
@@ -245,6 +210,8 @@ void LiveGame::Save(Serial::SaveNode& node) const
 	node.SaveEnum("game_phase", m_gamePhase);
 	node.SaveType("next_record_id", m_nextRecordID);
 	__super::Save(node);
+
+	node.SaveClass("state", m_state);
 }
 
 void LiveGame::Load(const Serial::LoadNode& node)
@@ -254,6 +221,18 @@ void LiveGame::Load(const Serial::LoadNode& node)
 	node.LoadEnum("game_phase", m_gamePhase);
 	node.LoadType("next_record_id", m_nextRecordID);
 	__super::Load(node);
+
+	GameState state(*this);
+	node.LoadClass("state", state);
+
+	if (m_gamePhase == GamePhase::Main)
+	{
+		m_state.Init(*this);
+		for (auto& r : m_records)
+			r->Do(*this, nullptr);
+
+		VERIFY(state == m_state);
+	}
 
 	if (m_pPhase)
 		m_pPhase->SetGame(*this);

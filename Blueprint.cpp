@@ -12,7 +12,8 @@ Blueprint::Blueprint() : m_pDef(nullptr)
 
 Blueprint::Blueprint(RaceType r, ShipType s) : m_pDef(nullptr)
 {
-	Init(r, s);
+	m_pDef = &BlueprintDefs::Get(r, s);
+
 	m_overlay.SetType(s);
 
 	for (int i = 0; i < GetSlotCount(); ++i)
@@ -31,11 +32,6 @@ Blueprint::Blueprint(const Blueprint& rhs) : m_pDef(rhs.m_pDef), m_overlay(rhs.m
 bool Blueprint::operator==(const Blueprint& rhs) const
 {
 	return m_overlay == rhs.m_overlay;
-}
-
-void Blueprint::Init(RaceType r, ShipType s) 
-{
-	m_pDef = &BlueprintDefs::Get(r, s);
 }
 
 ShipType Blueprint::GetType() const { return m_pDef->GetBaseLayout().GetType(); }

@@ -16,7 +16,6 @@ class Games
 {
 public:
 	static void Load();
-	static void Verify();
 	static LiveGame& Add(const std::string& name, Player& owner);
 	static ReviewGame& AddReview(Player& owner, const LiveGame& live);
 	static void DeleteReview(int idGame);

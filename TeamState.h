@@ -13,6 +13,8 @@
 
 class Team;
 class Blueprint;
+class Map;
+class MapPos;
 enum class Colour;
 enum class ShipPart;
 
@@ -25,6 +27,7 @@ public:
 	TeamState(const TeamState& rhs);
 	bool operator==(const TeamState& rhs) const;
 
+	void Init(const Team& team, const MapPos& pos, int rotation, Map& map, const std::vector<int>& repTiles);
 	void SetTeam(const Team& team);
 
 	Blueprint& GetBlueprint(ShipType s);
@@ -61,4 +64,7 @@ public:
 
 	int m_nColonyShipsUsed;
 	bool m_bPassed;
+
+private:
+	void InitHex(const Team& team, const MapPos& pos, int rotation, Map& map);
 };

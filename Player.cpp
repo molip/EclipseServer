@@ -92,8 +92,11 @@ void Player::Load(const Serial::LoadNode& node)
 	node.LoadType("name", m_name);
 	node.LoadType("hash", m_passwordHash);
 	node.LoadType("salt", m_passwordSalt);
+}
 
-	if (Games::IsGame(m_idCurrentGame)) 
+void Player::RejoinCurrentGame()
+{
+	if (Games::IsGame(m_idCurrentGame))
 		GetCurrentGame()->AddPlayer(this);
 	else
 		m_idCurrentGame = 0;

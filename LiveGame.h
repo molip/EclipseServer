@@ -27,7 +27,6 @@ public:
 	virtual ~LiveGame();
 
 	void AddPlayer(const Player& player);
-	void AssignTeam(Player& player, RaceType race, Colour colour);
 
 	void StartChooseTeamGamePhase();
 	void StartMainGamePhase();
@@ -66,7 +65,6 @@ public:
 	virtual void Save(Serial::SaveNode& node) const override;
 	virtual void Load(const Serial::LoadNode& node) override;
 
-	void Verify();
 	void Save() const;
 	std::mutex& GetMutex() const { return m_mutex; }
 

@@ -2,6 +2,7 @@
 
 #include "Team.h"
 #include "Serial.h"
+#include "Map.h"
 
 TeamState::TeamState() : m_nColonyShipsUsed(0), m_bPassed(false)
 {
@@ -48,6 +49,49 @@ bool TeamState::operator==(const TeamState& rhs) const
 void TeamState::SetTeam(const Team& team)
 {
 	m_repTrack.SetTeam(team);
+}
+
+void TeamState::Init(const Team& team, const MapPos& pos, int rotation, Map& map, const std::vector<int>& repTiles)
+{
+	Race race(team.GetRace());
+
+	m_storage = race.GetStartStorage();
+	m_infTrack.AddDiscs(race.GetStartInfluenceDiscs());
+
+	for (TechType t : race.GetStartTechnologies())
+		m_techTrack.Add(t);
+
+	for (int i : repTiles)
+		m_repTrack.AddReputationTile(i);
+
+	for (auto shipType : PlayerShipTypesRange())
+		m_blueprints[(int)shipType].reset(new Blueprint(team.GetRace(), shipType));
+
+	AddShips(ShipType::Interceptor, 8);
+	AddShips(ShipType::Cruiser, 4);
+	AddShips(ShipType::Dreadnought, 2);
+	AddShips(ShipType::Starbase, 4);
+
+	InitHex(team, pos, rotation, map);
+}
+
+void TeamState::InitHex(const Team& team, const MapPos& pos, int rotation, Map& map)
+{
+	Race race(team.GetRace());
+
+	Hex& hex = map.AddHex(HexPtr(new Hex(race.GetStartSector(team.GetColour()), pos, rotation)));
+	hex.SetColour(team.GetColour());
+	m_infTrack.RemoveDiscs(1);
+
+	for (Square* pSquare : hex.GetAvailableSquares(team))
+	{
+		m_popTrack.Remove(SquareTypeToResource(pSquare->GetType()), 1);
+		pSquare->SetOccupied(true);
+	}
+
+	ShipType ship = race.GetStartShip();
+	hex.AddShip(ship, team.GetColour());
+	RemoveShips(ship, 1);
 }
 
 Blueprint& TeamState::GetBlueprint(ShipType s)

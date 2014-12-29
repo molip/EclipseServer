@@ -86,8 +86,6 @@ void Game::Save(Serial::SaveNode& node) const
 	node.SaveClass("tech_bag", m_techBag);
 	node.SaveClass("disc_bag", m_discBag);
 	node.SaveArray("hex_bags", m_hexBag, Serial::ClassSaver());
-
-	node.SaveClass("state", m_state);
 }
 
 void Game::Load(const Serial::LoadNode& node)
@@ -100,17 +98,6 @@ void Game::Load(const Serial::LoadNode& node)
 	node.LoadClass("tech_bag", m_techBag);
 	node.LoadClass("disc_bag", m_discBag);
 	node.LoadArray("hex_bags", m_hexBag, Serial::ClassLoader());
-	
-	node.LoadClass("state", m_state);
-
-	for (auto& t : m_teams)
-	{
-		if (t->IsAssigned())
-		{
-			t->SetState(m_state.GetTeamState(t->GetColour()));
-			t->InitState();
-		}
-	}
 }
 
 DEFINE_ENUM_NAMES2(HexRing, -1) { "None", "Inner", "Middle", "Outer", "" };

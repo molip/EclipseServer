@@ -33,9 +33,8 @@ public:
 	~Team();
 
 	void SetState(TeamState& state);
-	void InitState();
 
-	void Assign(RaceType race, Colour colour, TeamState& state, LiveGame& game);
+	void Assign(RaceType race, Colour colour, LiveGame& game);
 	bool IsAssigned() const;
 
 	const int GetPlayerID() const { return m_idPlayer; }

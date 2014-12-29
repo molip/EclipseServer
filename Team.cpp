@@ -35,36 +35,11 @@ bool Team::IsAssigned() const
 	return m_colour != Colour::None;
 }
 
-void Team::Assign(RaceType race, Colour colour, TeamState& state, LiveGame& game)
+void Team::Assign(RaceType race, Colour colour, LiveGame& game)
 {
 	VERIFY_MODEL(!IsAssigned());
 	m_race = race;
 	m_colour = colour;
-
-	SetState(state);
-
-	Race r(race);
-	m_state->m_storage = r.GetStartStorage();
-	
-	m_state->m_infTrack.AddDiscs(r.GetStartInfluenceDiscs());
-
-	std::vector<TechType> techs = r.GetStartTechnologies();
-	for (TechType t : techs)
-		m_state->m_techTrack.Add(t);
-
-	//for (int i = 0; i < r.GetStartReputationTiles(); ++i)
-	//	m_state->m_repTrack.AddReputationTile(game.GetReputationBag().TakeTile());
-	
-	for (auto i : PlayerShipTypesRange())
-		m_state->m_blueprints[(int)i].reset(new Blueprint(race, i));
-
-	m_state->AddShips(ShipType::Interceptor, 8);
-	m_state->AddShips(ShipType::Cruiser, 4);
-	m_state->AddShips(ShipType::Dreadnought, 2);
-	m_state->AddShips(ShipType::Starbase, 4);
-
-	//ShipType GetStartShip() const;
-	//int GetStartSector(Colour colour) const;
 }
 
 Team::~Team()
@@ -92,22 +67,6 @@ Storage Team::GetIncome() const
 	Storage income = m_state->m_popTrack.GetIncome();
 	income[Resource::Money] -= m_state->m_infTrack.GetUpkeep();
 	return income;
-}
-
-void Team::PopulateStartHex(Hex& hex)
-{
-	hex.SetColour(m_colour);
-	for (Square* pSquare : hex.GetAvailableSquares(*this))
-	{
-		m_state->m_popTrack.Remove(SquareTypeToResource(pSquare->GetType()), 1);
-		pSquare->SetOccupied(true);
-	}
- 
-	ShipType ship = Race(m_race).GetStartShip();
-	hex.AddShip(ship, m_colour);
-	m_state->RemoveShips(ship, 1);
-
-	m_state->m_infTrack.RemoveDiscs(1);
 }
 
 int Team::GetColonyShips() const
@@ -153,13 +112,6 @@ bool Team::IsAncientAlliance(const Team* pTeam1, const Team* pTeam2)
 {
 	VERIFY_MODEL(pTeam1 != pTeam2);
 	return (!pTeam1 || !pTeam2) && Race((pTeam1 ? pTeam1 : pTeam2)->GetRace()).IsAncientsAlly();
-}
-
-void Team::InitState()
-{
-	if (m_race != RaceType::None)
-		for (auto s : PlayerShipTypesRange())
-			m_state->m_blueprints[(int)s]->Init(m_race, s);
 }
 
 void Team::Save(Serial::SaveNode& node) const

@@ -7,10 +7,10 @@
 
 int main(void) 
 {
-	Games::Load(); // Load games before players, so they can join their current game.
 	Players::Load();
+	Games::Load(); 
 
-	Games::Verify();
+	Players::RejoinCurrentGame();
 
 	SaveThread savethread;
 	Controller controller;

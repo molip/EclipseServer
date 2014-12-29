@@ -15,7 +15,7 @@ void ChooseTeamPhase::AssignTeam(CommitSession& session, Player& player, RaceTyp
 {
 	LiveGame& game = GetGame();
 	
-	game.AssignTeam(player, race, colour);
+	game.GetTeam(player).Assign(race, colour, game);
 
 	AdvanceTurn();
 

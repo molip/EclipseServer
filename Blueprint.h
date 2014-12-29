@@ -21,8 +21,6 @@ public:
 	bool operator==(const Blueprint& rhs) const;
 	bool operator!=(const Blueprint& rhs) const { return !operator==(rhs); }
 
-	void Init(RaceType r, ShipType s);
-
 	ShipType GetType() const;
 	const ShipLayout& GetBaseLayout() const;
 	const ShipLayout& GetOverlay() const { return m_overlay; }

@@ -21,6 +21,8 @@ public:
 	GameState(const GameState& rhs, Game& game);
 	bool operator==(const GameState& rhs) const;
 
+	void Init(const Game& game);
+
 	TeamState& GetTeamState(Colour c);
 	const TeamState& GetTeamState(Colour c) const { return const_cast<GameState*>(this)->GetTeamState(c); }
 

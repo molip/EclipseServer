@@ -1,6 +1,7 @@
 #include "GameState.h"
 
 #include "Battle.h"
+#include "Team.h"
 #include "TeamState.h"
 #include "Serial.h"
 #include "Game.h"
@@ -44,6 +45,28 @@ void GameState::InitBags(const Game& game)
 	m_discBagState.SetBag(game.GetDiscoveryBag());
 	for (auto&& ring : EnumRange<HexRing>())
 		m_hexBagStates[ring].SetBag(game.GetHexBag(ring));
+}
+
+void GameState::Init(const Game& game)
+{
+	Hex& centre = AddHex(MapPos(0, 0), 001, 0);
+	centre.AddShip(ShipType::GCDS, Colour::None);
+
+	// Initialise starting hexes.
+	auto startPositions = m_map.GetTeamStartPositions();
+	VERIFY(startPositions.size() == game.GetTeams().size());
+	int i = 0;
+	for (auto& team : game.GetTeams())
+	{
+		std::vector<int> repTiles;
+		for (int j = 0; j < Race(team->GetRace()).GetStartReputationTiles(); ++j)
+			repTiles.push_back(m_repBagState.TakeTile());
+
+		auto pair = m_teamStates.insert(std::make_pair(team->GetColour(), TeamStatePtr(new TeamState)));
+		VERIFY(pair.second);
+		team->SetState(*pair.first->second); // Set state first so Init can use team.
+		pair.first->second->Init(*team, startPositions[i++], 0, m_map, repTiles); // TODO: Initial hex rotation. 
+	}
 }
 
 TeamState& GameState::GetTeamState(Colour c)
