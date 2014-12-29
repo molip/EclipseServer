@@ -16,6 +16,8 @@ public:
 	static Player& Get(int idPlayer);
 	static Player* Find(const std::string& name);
 
+	static void RejoinCurrentGame();
+
 private:
 	static std::map<int, PlayerPtr> s_map;
 	static int s_nNextID;

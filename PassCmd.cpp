@@ -14,11 +14,10 @@ public:
 	PassRecord(Colour colour) : TeamRecord(colour) {}
 
 private:
-	virtual void Apply(bool bDo, Game& game, const Controller& controller) override
+	virtual void Apply(bool bDo, const Team& team, TeamState& teamState, const RecordContext& context) override
 	{
-		Team& team = game.GetTeam(m_colour);
-		team.SetPassed(bDo);
-		controller.SendMessage(Output::UpdatePassed(team), game);
+		teamState.SetPassed(bDo);
+		context.SendMessage(Output::UpdatePassed(team));
 	}
 
 	virtual std::string GetTeamMessage() const

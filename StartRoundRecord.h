@@ -3,7 +3,7 @@
 #include "Record.h"
 #include "Resources.h"
 
-#include <vector> 
+#include <map> 
 
 enum class TechType;
 
@@ -16,7 +16,7 @@ public:
 	virtual void Load(const Serial::LoadNode& node) override;
 
 private:
-	virtual void Apply(bool bDo, Game& game, const Controller& controller) override;
+	virtual void Apply(bool bDo, const RecordContext& context) override;
 	virtual std::string GetMessage(const Game& game) const override;
 
 	struct TeamData
@@ -28,7 +28,6 @@ private:
 		void Load(const Serial::LoadNode& node);
 	};
 
-	std::vector<TechType> m_techs;
-	std::vector<TeamData> m_teamData;
+	std::map<Colour, TeamData> m_teamData;
 	int m_round;
 };

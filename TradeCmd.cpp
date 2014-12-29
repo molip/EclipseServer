@@ -30,16 +30,14 @@ public:
 	}
 
 private:
-	virtual void Apply(bool bDo, Game& game, const Controller& controller) override
+	virtual void Apply(bool bDo, const Team& team, TeamState& teamState, const RecordContext& context) override
 	{
-		Team& team = game.GetTeam(m_colour);
-
 		for (auto& src : m_srcs)
-			team.GetStorage()[src.first] -= bDo ? src.second : -src.second;
+			teamState.GetStorage()[src.first] -= bDo ? src.second : -src.second;
 
-		team.GetStorage()[m_dst.first] += bDo ? m_dst.second : -m_dst.second;
+		teamState.GetStorage()[m_dst.first] += bDo ? m_dst.second : -m_dst.second;
 
-		controller.SendMessage(Output::UpdateStorageTrack(team), game);
+		context.SendMessage(Output::UpdateStorageTrack(team));
 	}
 
 	virtual std::string GetTeamMessage() const

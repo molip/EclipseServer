@@ -9,16 +9,18 @@ AdvanceCombatTurnRecord::AdvanceCombatTurnRecord()
 {
 }
 
-void AdvanceCombatTurnRecord::Apply(bool bDo, Game& game, const Controller& controller)
+void AdvanceCombatTurnRecord::Apply(bool bDo, const RecordContext& context)
 {
-	Battle& battle = game.GetBattle();
+	GameState& gameState = context.GetGameState();
+
+	Battle& battle = gameState.GetBattle();
 	if (bDo)
-		m_oldTurn = battle.AdvanceTurn(game);
+		m_oldTurn = battle.AdvanceTurn(context.GetGame());
 	else
 		battle.SetTurn(m_oldTurn);
 
 	if (!battle.IsFinished())
-		controller.SendMessage(Output::UpdateCombat(game, battle), game);
+		context.SendMessage(Output::UpdateCombat(context.GetGame(), battle));
 }
 
 std::string AdvanceCombatTurnRecord::GetMessage(const Game& game) const

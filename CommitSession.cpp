@@ -58,7 +58,7 @@ void CommitSession::Commit()
 void CommitSession::DoAndPushRecord(RecordPtr pRec)
 {
 	Open();
-	pRec->Do(m_game, m_controller);
+	pRec->Do(m_game, &m_controller);
 
 	m_bUpdateReviewUI |= !pRec->IsMessageRecord();
 
@@ -79,7 +79,7 @@ RecordPtr CommitSession::PopAndUndoRecord()
 {
 	Open();
 	RecordPtr pRec = m_game.PopRecord();
-	pRec->Undo(m_game, m_controller);
+	pRec->Undo(m_game, &m_controller);
 
 	m_bUpdateReviewUI |= !pRec->IsMessageRecord();
 

@@ -1,29 +1,25 @@
 #pragma once
 
-#include "Map.h"
 #include "Team.h"
 #include "Bag.h"
 #include "Cmd.h"
+#include "GameState.h"
+#include "Types.h"
 
 #include <memory>
 #include <set>
-#include <map>
 #include <string>
 #include <deque>
 #include <list>
 
-enum class HexRing { None = -1, Inner, Middle, Outer, _Count };
-
 class CmdStack;
 class Record;
-class Battle;
 
 namespace Serial { class SaveNode; class LoadNode; }
 
-DEFINE_UNIQUE_PTR(Battle)
-
 class Game
 {
+	friend class GameStateAccess;
 public:
 	Game();
 	Game(int id, const std::string& name, const Player& owner);
@@ -51,20 +47,18 @@ public:
 	virtual bool IsLive() const { return false; }
 	virtual std::vector<std::pair<int, std::string>> GetLogs() const = 0;
 
-	ReputationBag& GetReputationBag() { return m_repBag; }
-	TechnologyBag& GetTechnologyBag() { return m_techBag; }
-	DiscoveryBag& GetDiscoveryBag() { return m_discBag; }
-	HexBag& GetHexBag(HexRing ring) { return m_hexBag[(int)ring]; }
+	const ReputationBag& GetReputationBag() const { return m_repBag; }
+	const TechnologyBag& GetTechnologyBag() const { return m_techBag; }
+	const DiscoveryBag& GetDiscoveryBag() const { return m_discBag; }
 	const HexBag& GetHexBag(HexRing ring) const { return m_hexBag[(int)ring]; }
 
-	const Map& GetMap() const { return m_map; }
-	Map& GetMap() { return m_map; }
+	bool IsHexBagEmpty(HexRing ring) const { return const_cast<GameState&>(m_state).GetHexBag(ring).IsEmpty(); }
 
-	const std::map<TechType, int>& GetTechnologies() const { return m_techs; }
-	std::map<TechType, int>& GetTechnologies() { return m_techs; }
+	const Map& GetMap() const { return m_state.m_map; }
 
-	bool IncrementRound(bool bDo); // Returns true if game finished.
-	int GetRound() const { return m_iRound; }
+	const std::map<TechType, int>& GetTechnologies() const { return m_state.m_techs; }
+
+	int GetRound() const { return m_state.m_iRound; }
 
 	virtual void Save(Serial::SaveNode& node) const;
 	virtual void Load(const Serial::LoadNode& node);
@@ -73,33 +67,24 @@ public:
 	void AddPlayer(const Player* player) const { m_players.insert(player); }
 	void RemovePlayer(const Player* player) const { m_players.erase(player); }
 
-	Battle& GetBattle();
-	const Battle& GetBattle() const { return const_cast<Game*>(this)->GetBattle(); }
-	void AttachBattle(BattlePtr battle);
-	BattlePtr DetachBattle();
-	bool HasBattle() const { return !!m_battle; }
+	const Battle& GetBattle() const { return const_cast<GameState&>(m_state).GetBattle(); }
+	bool HasBattle() const { return !!m_state.m_battle; }
 
 protected:
+	std::vector<TeamPtr> m_teams;
+	mutable std::set<const Player*> m_players; // Not saved. Includes observers.
+
+	// Immutable
 	int m_id; 
 	std::string m_name;
 	int m_idOwner;
-
-	std::map<TechType, int> m_techs;
-
-	std::vector<TeamPtr> m_teams;
-
 	ReputationBag m_repBag;
 	TechnologyBag m_techBag;
 	DiscoveryBag m_discBag;
 	HexBag m_hexBag[(int)HexRing::_Count];
 
-	Map	m_map; // After m_discBag
-
-	int m_iRound;
-
-	BattlePtr m_battle;
-
-	mutable std::set<const Player*> m_players; // Not saved. Includes observers.
+	GameState m_state;
 };
 
 typedef std::unique_ptr<Game> GamePtr;
+

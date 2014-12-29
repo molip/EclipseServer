@@ -17,12 +17,12 @@ ReputationSlots::ReputationSlots(int a, int e, int r)
 
 //-----------------------------------------------------------------------------
 
-ReputationTrack::ReputationTrack(const Team& team) : m_team(team)
+ReputationTrack::ReputationTrack() : m_team(nullptr)
 {
 }
 
-ReputationTrack::ReputationTrack(const ReputationTrack& rhs, const Team& team) : 
-	m_team(team), m_repTiles(rhs.m_repTiles)
+ReputationTrack::ReputationTrack(const ReputationTrack& rhs) : 
+m_team(nullptr), m_repTiles(rhs.m_repTiles)
 {
 }
 
@@ -31,9 +31,15 @@ bool ReputationTrack::operator==(const ReputationTrack& rhs) const
 	return m_repTiles == rhs.m_repTiles;
 }
 
+void ReputationTrack::SetTeam(const Team& team)
+{
+	VERIFY_MODEL(!m_team);
+	m_team = &team;
+}
+
 ReputationSlots ReputationTrack::GetSlots() const
 {
-	return Race(m_team.GetRace()).GetReputationSlots();
+	return Race(m_team->GetRace()).GetReputationSlots();
 }
 
 int ReputationTrack::GetSlotCount() const
@@ -60,7 +66,7 @@ int ReputationTrack::GetFirstReputationTileSlot() const
 	ReputationSlots slots = GetSlots();
 
 	int nAmbassadorSlots = slots.GetCount(ReputationType::Ambassador);
-	int nEitherSlotsUsed = std::max(0, (int)m_team.GetAllies().size() - slots.GetCount(ReputationType::Ambassador));
+	int nEitherSlotsUsed = std::max(0, (int)m_team->GetAllies().size() - slots.GetCount(ReputationType::Ambassador));
 	return nAmbassadorSlots + nEitherSlotsUsed;
 }
 
@@ -86,7 +92,7 @@ bool ReputationTrack::AddReputationTile(int val)
 bool ReputationTrack::CanAddAmbassador() const
 {
 	ReputationSlots slots = GetSlots();
-	return (int)m_team.GetAllies().size() < slots.GetCount(ReputationType::Ambassador) + slots.GetCount(ReputationType::Either);
+	return (int)m_team->GetAllies().size() < slots.GetCount(ReputationType::Ambassador) + slots.GetCount(ReputationType::Either);
 }
 
 bool ReputationTrack::OnAmbassadorAdded()

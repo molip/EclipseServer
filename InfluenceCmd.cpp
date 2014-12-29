@@ -17,16 +17,14 @@ public:
 	InfluenceFlipRecord() {}
 	InfluenceFlipRecord(Colour colour, int flips) : TeamRecord(colour), m_flips(flips) {}
 
-	virtual void Apply(bool bDo, Game& game, const Controller& controller) override
+	virtual void Apply(bool bDo, const Team& team, TeamState& teamState, const RecordContext& context) override
 	{
-		Team& team = game.GetTeam(m_colour);
-
 		if (bDo)
-			team.ReturnColonyShips(m_flips);
+			teamState.ReturnColonyShips(m_flips);
 		else
-			team.UseColonyShips(m_flips);
+			teamState.UseColonyShips(m_flips);
 
-		controller.SendMessage(Output::UpdateColonyShips(team), game);
+		context.SendMessage(Output::UpdateColonyShips(team));
 	}
 
 	virtual std::string GetTeamMessage() const
@@ -139,14 +137,17 @@ public:
 
 	DiscoveryType GetDiscovery() const { return m_discovery; }
 
-	virtual void Apply(bool bDo, Game& game, const Controller& controller) override
+	virtual void Apply(bool bDo, const Team& team, TeamState& teamState, const RecordContext& context) override
 	{
+		const Game& game = context.GetGame();
+		GameState& gameState = context.GetGameState();
+
 		if (bDo)
 		{
 			m_srcID = m_pSrcPos ? game.GetMap().GetHex(*m_pSrcPos).GetID() : 0;
 			m_dstID = m_pDstPos ? game.GetMap().GetHex(*m_pDstPos).GetID() : 0;
 			
-			Hex* pDstHex = TransferDisc(m_pSrcPos, m_pDstPos, game, controller);
+			Hex* pDstHex = TransferDisc(m_pSrcPos, m_pDstPos, gameState, team, teamState, context);
 
 			if (pDstHex && pDstHex->GetDiscoveryTile() != DiscoveryType::None)
 			{
@@ -157,11 +158,11 @@ public:
 		else
 		{
 			if (m_discovery != DiscoveryType::None)
-				game.GetMap().GetHex(*m_pDstPos).SetDiscoveryTile(m_discovery);
+				gameState.GetMap().GetHex(*m_pDstPos).SetDiscoveryTile(m_discovery);
 
-			TransferDisc(m_pDstPos, m_pSrcPos, game, controller);
+			TransferDisc(m_pDstPos, m_pSrcPos, gameState, team, teamState, context);
 		}
-		controller.SendMessage(Output::UpdateMap(game), game);
+		context.SendMessage(Output::UpdateMap(game));
 	}
 
 	virtual void Save(Serial::SaveNode& node) const override 
@@ -185,32 +186,31 @@ public:
 	}
 
 private:
-	Hex* TransferDisc(const MapPosPtr& pSrcPos, const MapPosPtr& pDstPos, Game& game, const Controller& controller)
+	Hex* TransferDisc(const MapPosPtr& pSrcPos, const MapPosPtr& pDstPos, GameState& gameState, const Team& team, TeamState& teamState, const RecordContext& context)
 	{
 		VERIFY_MODEL_MSG("no op", pSrcPos != pDstPos && !(pSrcPos && pDstPos && *pSrcPos == *pDstPos));
-		Team& team = game.GetTeam(m_colour);
 
 		if (pSrcPos)
 		{
-			Hex& hex = game.GetMap().GetHex(*pSrcPos);
+			Hex& hex = gameState.GetMap().GetHex(*pSrcPos);
 			VERIFY_MODEL_MSG("Src not owned", hex.IsOwnedBy(team));
 			hex.SetColour(Colour::None);
 		}
 		else
-			team.GetInfluenceTrack().RemoveDiscs(1);
+			teamState.GetInfluenceTrack().RemoveDiscs(1);
 
 		Hex* pDstHex = nullptr;
 		if (pDstPos)
 		{
-			pDstHex = &game.GetMap().GetHex(*pDstPos);
+			pDstHex = &gameState.GetMap().GetHex(*pDstPos);
 			VERIFY_MODEL_MSG("Dst already owned", !pDstHex->IsOwned());
 			pDstHex->SetColour(m_colour);
 		}
 		else
-			team.GetInfluenceTrack().AddDiscs(1);
+			teamState.GetInfluenceTrack().AddDiscs(1);
 	
 		if (!pSrcPos || !pDstPos)
-			controller.SendMessage(Output::UpdateInfluenceTrack(team), game);
+			context.SendMessage(Output::UpdateInfluenceTrack(team));
 
 		return pDstHex;
 	}

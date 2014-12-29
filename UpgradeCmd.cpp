@@ -57,12 +57,11 @@ private:
 		node.LoadCntr("changes", m_changes, Serial::ClassLoader());
 	}
 
-	virtual void Apply(bool bDo, Game& game, const Controller& controller) override
+	virtual void Apply(bool bDo, const Team& team, TeamState& teamState, const RecordContext& context) override
 	{
-		Team& team = game.GetTeam(m_colour);
 		for (auto& c : m_changes)
 		{
-			Blueprint& bp = team.GetBlueprint(c.ship);
+			Blueprint& bp = teamState.GetBlueprint(c.ship);
 			if (bDo)
 			{
 				c.oldPart = bp.GetSlot(c.slot);
@@ -71,7 +70,7 @@ private:
 			else
 				bp.SetSlot(c.slot, c.oldPart);
 		}
-		controller.SendMessage(Output::UpdateBlueprints(team), game);
+		context.SendMessage(Output::UpdateBlueprints(team));
 	}
 
 	virtual std::string GetTeamMessage() const

@@ -12,28 +12,26 @@
 
 #include <algorithm>
 
-namespace
-{
-	const int FakePlayers = 3;
-}
-
 Game::Game() : 
-	m_id(0), m_idOwner(0), m_map(*this), m_iRound(-1)
+	m_id(0), m_idOwner(0), m_state(*this)
 {
 }
 
 Game::Game(int id, const std::string& name, const Player& owner) : 
-	m_id(id), m_name(name), m_idOwner(owner.GetID()), m_map(*this), m_iRound(-1)
+	m_id(id), m_name(name), m_idOwner(owner.GetID()), m_state(*this)
 {
 }
 
 Game::Game(int id, const std::string& name, const Player& owner, const Game& rhs) :
-	m_id(id), m_name(name), m_idOwner(owner.GetID()), 
-	m_map(rhs.m_map, *this), m_techs(rhs.m_techs), m_repBag(rhs.m_repBag), m_techBag(rhs.m_techBag), m_discBag(rhs.m_discBag),
-	m_iRound(rhs.m_iRound), m_battle(rhs.m_battle ? new Battle(*rhs.m_battle) : nullptr)
+	m_id(id), m_name(name), m_idOwner(owner.GetID()), m_state(rhs.m_state, *this),
+	 m_repBag(rhs.m_repBag), m_techBag(rhs.m_techBag), m_discBag(rhs.m_discBag)
 {
 	for (auto& t : rhs.m_teams)
+	{
+		auto& teamState = m_state.GetTeamState(t->GetColour());
 		m_teams.push_back(TeamPtr(new Team(*t)));
+		m_teams.back()->SetState(teamState);
+	}
 
 	for (int i = 0; i < (int)HexRing::_Count; ++i)
 		m_hexBag[i] = rhs.m_hexBag[i];
@@ -78,45 +76,16 @@ Team& Game::GetTeam(Colour c)
 	return *pTeam;
 }
 
-bool Game::IncrementRound(bool bDo)
-{
-	m_iRound += bDo ? 1 : -1;
-
-	assert(m_iRound >= 0 && m_iRound <= 9);
-
-	return m_iRound == 9;
-}
-
-Battle& Game::GetBattle() 
-{
-	VERIFY_MODEL(!!m_battle);
-	return *m_battle;
-}
-
-void Game::AttachBattle(BattlePtr battle)
-{ 
-	m_battle = std::move(battle); 
-}
-
-BattlePtr Game::DetachBattle()
-{
-	return std::move(m_battle);
-}
-
 void Game::Save(Serial::SaveNode& node) const 
 {
 	node.SaveType("id", m_id);
 	node.SaveType("name", m_name);
 	node.SaveType("owner", m_idOwner);
 	node.SaveCntr("teams", m_teams, Serial::ClassPtrSaver());
-	node.SaveClass("map", m_map);
-	node.SaveMap("techs", m_techs, Serial::EnumSaver(), Serial::TypeSaver());
 	node.SaveClass("rep_bag", m_repBag);
 	node.SaveClass("tech_bag", m_techBag);
 	node.SaveClass("disc_bag", m_discBag);
 	node.SaveArray("hex_bags", m_hexBag, Serial::ClassSaver());
-	node.SaveType("round", m_iRound);
-	node.SaveClassPtr("battle", m_battle);
 }
 
 void Game::Load(const Serial::LoadNode& node)
@@ -125,14 +94,10 @@ void Game::Load(const Serial::LoadNode& node)
 	node.LoadType("name", m_name);
 	node.LoadType("owner", m_idOwner);
 	node.LoadCntr("teams", m_teams, Serial::ClassPtrLoader());
-	node.LoadClass("map", m_map);
-	node.LoadMap("techs", m_techs, Serial::EnumLoader(), Serial::TypeLoader());
 	node.LoadClass("rep_bag", m_repBag);
 	node.LoadClass("tech_bag", m_techBag);
 	node.LoadClass("disc_bag", m_discBag);
 	node.LoadArray("hex_bags", m_hexBag, Serial::ClassLoader());
-	node.LoadType("round", m_iRound);
-	node.LoadClassPtr("battle", m_battle);
 }
 
 DEFINE_ENUM_NAMES2(HexRing, -1) { "None", "Inner", "Middle", "Outer", "" };

@@ -66,28 +66,13 @@ void LiveGame::StartChooseTeamGamePhase()
 	m_discBag.Init();
 }
 
+
 void LiveGame::StartMainGamePhase()
 {
 	VERIFY_MODEL(m_gamePhase == GamePhase::ChooseTeam);
 
 	m_gamePhase = GamePhase::Main;
-
-	Hex& centre = m_map.AddHex(MapPos(0, 0), 001, 0);
-	centre.AddShip(ShipType::GCDS, Colour::None);
-
-	// Initialise starting hexes.
-	auto startPositions = m_map.GetTeamStartPositions();
-	assert(startPositions.size() == m_teams.size());
-	for (size_t i = 0; i < m_teams.size(); ++i)
-	{
-		Team& team = *m_teams[i];
-		Race r(team.GetRace());
-		int idHex = r.GetStartSector(team.GetColour());
-
-		Hex& hex = m_map.AddHex(startPositions[i], idHex, 0);
-
-		team.PopulateStartHex(hex);
-	}
+	m_state.Init(*this);
 	StartActionPhase();
 }
 
@@ -152,9 +137,9 @@ void LiveGame::FinishActionPhase(const std::vector<Colour>& passOrder)
 		}
 #endif
 
-	Test::AddShipsToCentre(*this);
+	//Test::AddShipsToCentre(*this);
 
-	if (m_map.FindPendingBattleHex(*this))
+	if (GetMap().FindPendingBattleHex(*this))
 		m_pPhase = PhasePtr(new CombatPhase(this));
 	else
 		m_pPhase = PhasePtr(new UpkeepPhase(this));
@@ -167,6 +152,11 @@ void LiveGame::FinishCombatPhase()
 
 int LiveGame::PushRecord(std::unique_ptr<Record> pRec)
 {
+	GameState state(m_state, *this);
+	pRec->Undo(*this, nullptr);
+	pRec->Do(*this, nullptr);
+	VERIFY(m_state == state);
+
 	int id = m_nextRecordID++;
 	pRec->SetID(id);
 	m_records.push_back(std::move(pRec));
@@ -220,6 +210,8 @@ void LiveGame::Save(Serial::SaveNode& node) const
 	node.SaveEnum("game_phase", m_gamePhase);
 	node.SaveType("next_record_id", m_nextRecordID);
 	__super::Save(node);
+
+	node.SaveClass("state", m_state);
 }
 
 void LiveGame::Load(const Serial::LoadNode& node)
@@ -229,6 +221,18 @@ void LiveGame::Load(const Serial::LoadNode& node)
 	node.LoadEnum("game_phase", m_gamePhase);
 	node.LoadType("next_record_id", m_nextRecordID);
 	__super::Load(node);
+
+	GameState state(*this);
+	node.LoadClass("state", state);
+
+	if (m_gamePhase == GamePhase::Main)
+	{
+		m_state.Init(*this);
+		for (auto& r : m_records)
+			r->Do(*this, nullptr);
+
+		VERIFY(state == m_state);
+	}
 
 	if (m_pPhase)
 		m_pPhase->SetGame(*this);

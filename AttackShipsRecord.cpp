@@ -15,9 +15,11 @@ AttackShipsRecord::AttackShipsRecord(const Battle::Hits& hits) : AttackShipsReco
 	m_hits = hits;
 }
 
-void AttackShipsRecord::Apply(bool bDo, Game& game, const Controller& controller)
+void AttackShipsRecord::Apply(bool bDo, const RecordContext& context)
 {
-	Battle& battle = game.GetBattle();
+	GameState& gameState = context.GetGameState();
+
+	Battle& battle = gameState.GetBattle();
 
 	if (m_firingShipType == ShipType::None)
 	{
@@ -27,7 +29,7 @@ void AttackShipsRecord::Apply(bool bDo, Game& game, const Controller& controller
 		m_missilePhase = battle.IsMissilePhase();
 	}
 
-	Hex* hex = game.GetMap().FindHex(battle.GetHexId());
+	Hex* hex = gameState.GetMap().FindHex(battle.GetHexId());
 	VERIFY_MODEL(!!hex);
 
 	bool updateMap = false;
@@ -63,10 +65,10 @@ void AttackShipsRecord::Apply(bool bDo, Game& game, const Controller& controller
 		}
 	}
 
-	controller.SendMessage(Output::UpdateCombat(game, battle), game);
+	context.SendMessage(Output::UpdateCombat(context.GetGame(), battle));
 
 	if (updateMap)
-		controller.SendMessage(Output::UpdateMap(game), game);
+		context.SendMessage(Output::UpdateMap(context.GetGame()));
 }
 
 std::string AttackShipsRecord::GetMessage(const Game& game) const

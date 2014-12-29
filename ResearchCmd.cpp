@@ -26,9 +26,12 @@ public:
 	}
 
 private:
-	virtual void Apply(bool bDo, Game& game, const Controller& controller) override
+	virtual void Apply(bool bDo, const Team& team, TeamState& teamState, const RecordContext& context) override
 	{
-		auto& techs = game.GetTechnologies();
+		const Game& game = context.GetGame();
+		GameState& gameState = context.GetGameState();
+
+		auto& techs = gameState.GetTechnologies();
 		auto it = techs.find(m_tech);
 		
 		// Add/remove tech from supply board.
@@ -45,32 +48,30 @@ private:
 			++it->second;
 		}
 
-		Team& team = game.GetTeam(m_colour);
-		
 		// Add/remove tech and science cost from team.
 		int nCost = 0;
 		if (bDo)
 		{
 			nCost = team.GetTechTrack().GetCost(m_tech);
-			team.GetTechTrack().Add(m_tech);
+			teamState.GetTechTrack().Add(m_tech);
 		}
 		else
 		{
-			team.GetTechTrack().Remove(m_tech);
+			teamState.GetTechTrack().Remove(m_tech);
 			nCost = -team.GetTechTrack().GetCost(m_tech);
 		}
-		team.GetStorage()[Resource::Science] -= nCost;
+		teamState.GetStorage()[Resource::Science] -= nCost;
 
 		// Add/remove influence discs.
 		if (int nDiscs = m_tech == TechType::QuantumGrid ? 2 : m_tech == TechType::AdvRobotics ? 1 : 0)
 		{
-			team.GetInfluenceTrack().AddDiscs(bDo ? nDiscs : -nDiscs);
-			controller.SendMessage(Output::UpdateInfluenceTrack(team), game);
+			teamState.GetInfluenceTrack().AddDiscs(bDo ? nDiscs : -nDiscs);
+			context.SendMessage(Output::UpdateInfluenceTrack(team));
 		}
 
-		controller.SendMessage(Output::UpdateTechnologies(game), game);
-		controller.SendMessage(Output::UpdateTechnologyTrack(team), game);
-		controller.SendMessage(Output::UpdateStorageTrack(team), game);
+		context.SendMessage(Output::UpdateTechnologies(game));
+		context.SendMessage(Output::UpdateTechnologyTrack(team));
+		context.SendMessage(Output::UpdateStorageTrack(team));
 	}
 
 	virtual std::string GetTeamMessage() const
@@ -170,14 +171,12 @@ public:
 	}
 
 private:
-	virtual void Apply(bool bDo, Game& game, const Controller& controller) override
+	virtual void Apply(bool bDo, const Team& team, TeamState& teamState, const RecordContext& context) override
 	{
-		Team& team = game.GetTeam(m_colour);
-
 		for (auto r : EnumRange<Resource>())
-			team.GetStorage()[r] += m_artifacts[r] * (bDo ? 5 : -5);
+			teamState.GetStorage()[r] += m_artifacts[r] * (bDo ? 5 : -5);
 
-		controller.SendMessage(Output::UpdateStorageTrack(team), game);
+		context.SendMessage(Output::UpdateStorageTrack(team));
 	}
 
 	virtual std::string GetTeamMessage() const

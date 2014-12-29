@@ -15,10 +15,12 @@ AttackPopulationRecord::AttackPopulationRecord(const Battle::PopulationHits& hit
 	m_hits = hits;
 }
 
-void AttackPopulationRecord::Apply(bool bDo, Game& game, const Controller& controller)
+void AttackPopulationRecord::Apply(bool bDo, const RecordContext& context)
 {
-	Battle& battle = game.GetBattle();
-	Hex* hex = game.GetMap().FindHex(battle.GetHexId());
+	GameState& gameState = context.GetGameState();
+
+	Battle& battle = gameState.GetBattle();
+	Hex* hex = gameState.GetMap().FindHex(battle.GetHexId());
 	VERIFY_MODEL(!!hex && hex->GetFleets().size() == 1);
 
 	auto& squares = hex->GetSquares();
@@ -49,7 +51,7 @@ void AttackPopulationRecord::Apply(bool bDo, Game& game, const Controller& contr
 		squares[squareIndex].SetOccupied(!bDo);
 
 	if (!m_hits.empty())
-		controller.SendMessage(Output::UpdateMap(game), game);
+		context.SendMessage(Output::UpdateMap(context.GetGame()));
 }
 
 std::string AttackPopulationRecord::GetMessage(const Game& game) const

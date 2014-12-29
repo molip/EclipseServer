@@ -31,6 +31,12 @@ Player* Players::Find(const std::string& name)
 	return nullptr;
 }
 
+void Players::RejoinCurrentGame()
+{
+	for (auto& i : s_map)
+		i.second->RejoinCurrentGame();
+}
+
 std::string Players::GetPath()
 {
 	return "data/players/";

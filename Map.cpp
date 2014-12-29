@@ -81,30 +81,18 @@ std::vector<MapPos> Map::GetTeamStartPositions() const
 	return positions;
 }
 
-Hex& Map::AddHex(const MapPos& pos, int id, int rotation)
+Hex& Map::AddHex(HexPtr hex)
 {
-	VERIFY_MODEL_MSG("hex already occupied", FindHex(pos) == nullptr);
-	VERIFY_MODEL_MSG("invalid rotation", rotation >= 0 && rotation < 6);
-	Hex* p = new Hex(id, pos, rotation);
-	m_hexes.insert(std::make_pair(pos, HexPtr(p)));
-	
-	if (p->HasDiscovery())
-		p->SetDiscoveryTile(m_game.GetDiscoveryBag().TakeTile());
-
-	return *p;
+	Hex& hex2 = *hex;
+	VERIFY_MODEL_MSG("hex already occupied", FindHex(hex->GetPos()) == nullptr);
+	m_hexes.insert(std::make_pair(hex->GetPos(), std::move(hex)));
+	return hex2;
 }
 
 void Map::DeleteHex(const MapPos& pos)
 {
 	auto i = m_hexes.find(pos);
 	VERIFY_MODEL_MSG("hex not found", i != m_hexes.end());
-
-	if (i->second->HasDiscovery())
-	{
-		DiscoveryType d = i->second->GetDiscoveryTile();
-		VERIFY_MODEL_MSG("discovery tile has gone", d != DiscoveryType::None);
-		m_game.GetDiscoveryBag().ReturnTile(d);
-	}
 	m_hexes.erase(i);
 }
 
@@ -136,7 +124,7 @@ void Map::GetEmptyNeighbours(const MapPos& pos, bool bWormholeGen, std::set<MapP
 		{
 			MapPos pos2 = pos.GetNeighbour(e);
 			if (FindHex(pos2) == nullptr)
-				if (!m_game.GetHexBag(pos2.GetRing()).IsEmpty())
+				if (!m_game.IsHexBagEmpty(pos2.GetRing()))
 					neighbours.insert(pos2);
 		}
 }
