@@ -3,7 +3,7 @@
 #include "Record.h"
 #include "Resources.h"
 
-#include <vector> 
+#include <map> 
 
 enum class TechType;
 
@@ -28,6 +28,6 @@ private:
 		void Load(const Serial::LoadNode& node);
 	};
 
-	std::vector<TeamData> m_teamData;
+	std::map<Colour, TeamData> m_teamData;
 	int m_round;
 };

@@ -20,7 +20,7 @@ void FinishBattleRecord::Apply(bool bDo, const RecordContext& context)
 	}
 	else
 	{
-		gameState.AttachBattle(std::move(m_battle));
+		gameState.AttachBattle(BattlePtr(new Battle(*m_battle)));
 	}
 }
 

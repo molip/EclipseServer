@@ -5,21 +5,21 @@
 #include "Player.h"
 #include "LiveGame.h"
 
-StartRoundRecord::StartRoundRecord() : m_round(0)
+StartRoundRecord::StartRoundRecord() : m_round(-1)
 {
 }
 
 void StartRoundRecord::Save(Serial::SaveNode& node) const 
 {
 	__super::Save(node);
-	node.SaveCntr("team_data", m_teamData, Serial::ClassSaver());
+	node.SaveMap("team_data", m_teamData, Serial::EnumSaver(), Serial::ClassSaver());
 	node.SaveType("round", m_round);
 }
 	
 void StartRoundRecord::Load(const Serial::LoadNode& node) 
 {
 	__super::Load(node);
-	node.LoadCntr("team_data", m_teamData, Serial::ClassLoader());
+	node.LoadMap("team_data", m_teamData, Serial::EnumLoader(), Serial::ClassLoader());
 	node.LoadType("round", m_round);
 }
 
@@ -36,59 +36,40 @@ void StartRoundRecord::Apply(bool bDo, const RecordContext& context)
 	const bool bFirstRound = bDo ? game.GetRound() == 0 : game.GetRound() < 0;
 	const int nTech = (bFirstRound ? startTech : roundTech)[game.GetTeams().size() - 1];
 
-	std::map<TechType, int>& supplyTechs = gameState.GetTechnologies();
-	auto& techBag = gameState.GetTechnologyBag();
-	
-	if (bDo)
-	{
+	if (bDo && m_round < 0)
 		m_round = game.GetRound();
 
-		if (!bFirstRound)
+	if (!bFirstRound)
+	{
+		if (m_teamData.empty())
 		{
 			for (auto& team : game.GetTeams())
 			{
 				TeamData data{ team->GetActionTrack().GetDiscCount(), team->GetUsedColonyShips(), team->GetIncome() };
-				m_teamData.push_back(data);
+				m_teamData.insert(std::make_pair(team->GetColour(), data));
+			}
+		}
 
-				TeamState& teamState = gameState.GetTeamState(team->GetColour());
+		for (auto& team : game.GetTeams())
+		{
+			const TeamData& data = m_teamData[team->GetColour()];
+			TeamState& teamState = gameState.GetTeamState(team->GetColour());
+
+			if (bDo)
+			{
 				teamState.GetActionTrack().RemoveDiscs(data.actions);
 				teamState.GetInfluenceTrack().AddDiscs(data.actions);
 				teamState.ReturnColonyShips(data.colonyShips);
 				teamState.GetStorage() += data.income;
 			}
-		}
-		
-		for (int i = 0; i < nTech && !techBag.IsEmpty(); ++i)
-			++supplyTechs[techBag.TakeTile()];
-	}
-	else
-	{
-		if (!bFirstRound)
-		{
-			ASSERT(m_teamData.size() == game.GetTeams().size());
-
-			for (size_t i = 0; i < m_teamData.size(); ++i)
+			else
 			{
-				const TeamData& data = m_teamData[i];
-				Team& team = *game.GetTeams()[i];
-				TeamState& teamState = gameState.GetTeamState(team.GetColour());
 				teamState.GetActionTrack().AddDiscs(data.actions);
 				teamState.GetInfluenceTrack().RemoveDiscs(data.actions);
 				teamState.UseColonyShips(data.colonyShips);
 				teamState.GetStorage() -= data.income;
 			}
-			m_teamData.clear();
-		}
 
-		for (int i = 0; i < nTech && !techBag.IsFull(); ++i)
-			--supplyTechs[techBag.ReturnTile()];
-	}
-	
-	if (!bFirstRound)
-	{
-		for (auto& team : game.GetTeams())
-		{
-			TeamState& teamState = gameState.GetTeamState(team->GetColour());
 			teamState.SetPassed(!bDo);
 			context.SendMessage(Output::UpdatePassed(*team));
 			context.SendMessage(Output::UpdateInfluenceTrack(*team));
@@ -97,7 +78,16 @@ void StartRoundRecord::Apply(bool bDo, const RecordContext& context)
 			context.SendMessage(Output::UpdateStorageTrack(*team));
 		}
 	}
-	// TODO: reset colony ships.
+
+	std::map<TechType, int>& supplyTechs = gameState.GetTechnologies();
+	auto& techBag = gameState.GetTechnologyBag();
+
+	if (bDo)
+		for (int i = 0; i < nTech && !techBag.IsEmpty(); ++i)
+			++supplyTechs[techBag.TakeTile()];
+	else
+		for (int i = 0; i < nTech && !techBag.IsFull(); ++i)
+			--supplyTechs[techBag.ReturnTile()];
 
 	context.SendMessage(Output::UpdateRound(game));
 	context.SendMessage(Output::UpdateTechnologies(game));
