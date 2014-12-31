@@ -30,13 +30,16 @@ public:
 	}
 
 private:
-	virtual void Apply(bool bDo, const Team& team, TeamState& teamState, const RecordContext& context) override
+	virtual void Apply(bool bDo, const Game& game, const Team& team, GameState& gameState, TeamState& teamState) override
 	{
 		for (auto& src : m_srcs)
 			teamState.GetStorage()[src.first] -= bDo ? src.second : -src.second;
 
 		teamState.GetStorage()[m_dst.first] += bDo ? m_dst.second : -m_dst.second;
+	}
 
+	virtual void Update(const Game& game, const Team& team, const RecordContext& context) const override
+	{
 		context.SendMessage(Output::UpdateStorageTrack(team));
 	}
 

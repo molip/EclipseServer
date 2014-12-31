@@ -22,10 +22,8 @@ public:
 	int GetHexID() const { return m_idHex; }
 		
 private:
-	virtual void Apply(bool bDo, const Team& team, TeamState& teamState, const RecordContext& context) override
+	virtual void Apply(bool bDo, const Game& game, const Team& team, GameState& gameState, TeamState& teamState) override
 	{
-		GameState& gameState = context.GetGameState();
-
 		if (bDo)
 			m_idHex = gameState.GetHexBag(m_hexRing).TakeTile();
 		else
@@ -128,10 +126,8 @@ public:
 
 	DiscoveryType GetDiscovery() const { return m_discovery; }
 
-	virtual void Apply(bool bDo, const Team& team, TeamState& teamState, const RecordContext& context) override
+	virtual void Apply(bool bDo, const Game& game, const Team& team, GameState& gameState, TeamState& teamState) override
 	{
-		GameState& gameState = context.GetGameState();
-
 		if (bDo)
 		{
 			Hex& hex = gameState.AddHex(m_pos, m_idHex, m_iRot);
@@ -141,7 +137,6 @@ public:
 				hex.SetColour(m_colour);
 
 				teamState.GetInfluenceTrack().RemoveDiscs(1);
-				context.SendMessage(Output::UpdateInfluenceTrack(team));
 
 				m_discovery = hex.GetDiscoveryTile();
 				if (m_discovery != DiscoveryType::None)
@@ -154,13 +149,19 @@ public:
 			if (m_bInfluence)
 			{
 				teamState.GetInfluenceTrack().AddDiscs(1);
-				context.SendMessage(Output::UpdateInfluenceTrack(team));
 
 				if (m_discovery != DiscoveryType::None)
 					gameState.GetMap().GetHex(m_pos).SetDiscoveryTile(m_discovery);
 			}
 			gameState.DeleteHex(m_pos);
 		}
+	}
+
+	virtual void Update(const Game& game, const Team& team, const RecordContext& context) const override
+	{
+		if (m_bInfluence)
+			context.SendMessage(Output::UpdateInfluenceTrack(team));
+
 		context.SendMessage(Output::UpdateMap(context.GetGame()));
 	}
 

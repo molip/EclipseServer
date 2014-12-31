@@ -19,7 +19,7 @@ public:
 	virtual void Load(const Serial::LoadNode& node) override;
 
 private:
-	virtual void Apply(bool bDo, const Team& team, TeamState& teamState, const RecordContext& context) override;
+	virtual void Apply(bool bDo, const Game& game, const Team& team, GameState& gameState, TeamState& teamState) override;
 	virtual std::string GetMessage(const Game& game) const override;
 
 	std::string m_player, m_msg;

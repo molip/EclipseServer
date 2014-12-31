@@ -11,7 +11,8 @@ public:
 	AttackPopulationRecord(const Battle::PopulationHits& hits);
 	
 private:
-	virtual void Apply(bool bDo, const RecordContext& context);
+	virtual void Apply(bool bDo, const Game& game, GameState& gameState);
+	virtual void Update(const Game& game, const RecordContext& context) const;
 	virtual std::string GetMessage(const Game& game) const override;
 
 	virtual void Save(Serial::SaveNode& node) const override;

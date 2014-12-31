@@ -8,12 +8,8 @@
 
 FinishBattleRecord::FinishBattleRecord() {}
 
-void FinishBattleRecord::Apply(bool bDo, const RecordContext& context)
+void FinishBattleRecord::Apply(bool bDo, const Game& game, GameState& gameState)
 {
-	GameState& gameState = context.GetGameState();
-
-	context.SendMessage(Output::UpdateShowCombat(context.GetGame(), !bDo));
-
 	if (bDo)
 	{
 		m_battle = gameState.DetachBattle();
@@ -22,6 +18,11 @@ void FinishBattleRecord::Apply(bool bDo, const RecordContext& context)
 	{
 		gameState.AttachBattle(BattlePtr(new Battle(*m_battle)));
 	}
+}
+
+void FinishBattleRecord::Update(const Game& game, const RecordContext& context) const
+{
+	context.SendMessage(Output::UpdateShowCombat(game, game.HasBattle()));
 }
 
 std::string FinishBattleRecord::GetMessage(const Game& game) const

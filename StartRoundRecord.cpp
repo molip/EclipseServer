@@ -23,11 +23,8 @@ void StartRoundRecord::Load(const Serial::LoadNode& node)
 	node.LoadType("round", m_round);
 }
 
-void StartRoundRecord::Apply(bool bDo, const RecordContext& context) 
+void StartRoundRecord::Apply(bool bDo, const Game& game, GameState& gameState) 
 {
-	const Game& game = context.GetGame();
-	GameState& gameState = context.GetGameState();
-
 	gameState.IncrementRound(bDo);
 
 	const int startTech[] = { 12, 12, 14, 16, 18, 20 };
@@ -71,11 +68,6 @@ void StartRoundRecord::Apply(bool bDo, const RecordContext& context)
 			}
 
 			teamState.SetPassed(!bDo);
-			context.SendMessage(Output::UpdatePassed(*team));
-			context.SendMessage(Output::UpdateInfluenceTrack(*team));
-			context.SendMessage(Output::UpdateActionTrack(*team));
-			context.SendMessage(Output::UpdateColonyShips(*team));
-			context.SendMessage(Output::UpdateStorageTrack(*team));
 		}
 	}
 
@@ -88,6 +80,19 @@ void StartRoundRecord::Apply(bool bDo, const RecordContext& context)
 	else
 		for (int i = 0; i < nTech && !techBag.IsFull(); ++i)
 			--supplyTechs[techBag.ReturnTile()];
+}
+
+void StartRoundRecord::Update(const Game& game, const RecordContext& context) const
+{
+	if (!m_teamData.empty())
+		for (auto& team : game.GetTeams())
+		{
+			context.SendMessage(Output::UpdatePassed(*team));
+			context.SendMessage(Output::UpdateInfluenceTrack(*team));
+			context.SendMessage(Output::UpdateActionTrack(*team));
+			context.SendMessage(Output::UpdateColonyShips(*team));
+			context.SendMessage(Output::UpdateStorageTrack(*team));
+		}
 
 	context.SendMessage(Output::UpdateRound(game));
 	context.SendMessage(Output::UpdateTechnologies(game));

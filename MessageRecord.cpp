@@ -26,7 +26,7 @@ void MessageRecord::Load(const Serial::LoadNode& node)
 	node.LoadType("msg", m_msg);
 }
 
-void MessageRecord::Apply(bool bDo, const Team& team, TeamState& teamState, const RecordContext& context)
+void MessageRecord::Apply(bool bDo, const Game& game, const Team& team, GameState& gameState, TeamState& teamState)
 {
 }
 

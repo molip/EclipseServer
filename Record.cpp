@@ -32,23 +32,33 @@ void Record::DoImmediate(const ReviewGame& game, const std::function<void(Review
 void Record::Do(const ReviewGame& game, const Controller& controller)
 {
 	Game& game2 = const_cast<ReviewGame&>(game);
-	Apply(true, RecordContext(game2, &controller));
+	RecordContext context(game2, &controller);
+	Apply(true, game2, context.GetGameState());
+	Update(game, context);
 }
 
 void Record::Undo(const ReviewGame& game, const Controller& controller)
 {
 	Game& game2 = const_cast<ReviewGame&>(game);
-	Apply(false, RecordContext(game2, &controller));
+	RecordContext context(game2, &controller);
+	Apply(false, game2, context.GetGameState());
+	Update(game, context);
 }
 
 void Record::Do(LiveGame& game, const Controller* controller) 
 {
-	Apply(true, RecordContext(game, controller));
+	RecordContext context(game, controller);
+	Apply(true, game, context.GetGameState());
+	if (controller)
+		Update(game, context);
 }
 
 void Record::Undo(LiveGame& game, const Controller* controller) 
 {
-	Apply(false, RecordContext(game, controller));
+	RecordContext context(game, controller);
+	Apply(false, game, context.GetGameState());
+	if (controller)
+		Update(game, context);
 }
 
 void Record::Save(Serial::SaveNode& node) const
@@ -92,7 +102,12 @@ std::string TeamRecord::GetMessage(const Game& game) const
 	return "";
 }
 
-void TeamRecord::Apply(bool bDo, const RecordContext& context)
+void TeamRecord::Apply(bool bDo, const Game& game, GameState& gameState)
 {
-	Apply(bDo, context.GetGame().GetTeam(m_colour), context.GetGameState().GetTeamState(m_colour), context);
+	Apply(bDo, game, game.GetTeam(m_colour), gameState, gameState.GetTeamState(m_colour));
+}
+
+void TeamRecord::Update(const Game& game, const RecordContext& context) const
+{
+	Update(game, context.GetGame().GetTeam(m_colour), context);
 }

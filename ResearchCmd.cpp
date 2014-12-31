@@ -26,11 +26,8 @@ public:
 	}
 
 private:
-	virtual void Apply(bool bDo, const Team& team, TeamState& teamState, const RecordContext& context) override
+	virtual void Apply(bool bDo, const Game& game, const Team& team, GameState& gameState, TeamState& teamState) override
 	{
-		const Game& game = context.GetGame();
-		GameState& gameState = context.GetGameState();
-
 		auto& techs = gameState.GetTechnologies();
 		auto it = techs.find(m_tech);
 		
@@ -63,20 +60,28 @@ private:
 		teamState.GetStorage()[Resource::Science] -= nCost;
 
 		// Add/remove influence discs.
-		if (int nDiscs = m_tech == TechType::QuantumGrid ? 2 : m_tech == TechType::AdvRobotics ? 1 : 0)
-		{
+		if (int nDiscs = GetInfluenceDiscs())
 			teamState.GetInfluenceTrack().AddDiscs(bDo ? nDiscs : -nDiscs);
-			context.SendMessage(Output::UpdateInfluenceTrack(team));
-		}
+	}
 
+	virtual void Update(const Game& game, const Team& team, const RecordContext& context) const override
+	{
 		context.SendMessage(Output::UpdateTechnologies(game));
 		context.SendMessage(Output::UpdateTechnologyTrack(team));
 		context.SendMessage(Output::UpdateStorageTrack(team));
+	
+		if (int nDiscs = GetInfluenceDiscs())
+			context.SendMessage(Output::UpdateInfluenceTrack(team));
 	}
 
 	virtual std::string GetTeamMessage() const
 	{
 		return FormatString("researched %0", ::EnumToString(m_tech));
+	}
+
+	int GetInfluenceDiscs() const
+	{
+		return m_tech == TechType::QuantumGrid ? 2 : m_tech == TechType::AdvRobotics ? 1 : 0;
 	}
 
 	TechType m_tech;
@@ -171,11 +176,14 @@ public:
 	}
 
 private:
-	virtual void Apply(bool bDo, const Team& team, TeamState& teamState, const RecordContext& context) override
+	virtual void Apply(bool bDo, const Game& game, const Team& team, GameState& gameState, TeamState& teamState) override
 	{
 		for (auto r : EnumRange<Resource>())
 			teamState.GetStorage()[r] += m_artifacts[r] * (bDo ? 5 : -5);
+	}
 
+	virtual void Update(const Game& game, const Team& team, const RecordContext& context) const override
+	{
 		context.SendMessage(Output::UpdateStorageTrack(team));
 	}
 

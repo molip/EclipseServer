@@ -57,7 +57,7 @@ private:
 		node.LoadCntr("changes", m_changes, Serial::ClassLoader());
 	}
 
-	virtual void Apply(bool bDo, const Team& team, TeamState& teamState, const RecordContext& context) override
+	virtual void Apply(bool bDo, const Game& game, const Team& team, GameState& gameState, TeamState& teamState) override
 	{
 		for (auto& c : m_changes)
 		{
@@ -70,6 +70,10 @@ private:
 			else
 				bp.SetSlot(c.slot, c.oldPart);
 		}
+	}
+
+	virtual void Update(const Game& game, const Team& team, const RecordContext& context) const override
+	{
 		context.SendMessage(Output::UpdateBlueprints(team));
 	}
 

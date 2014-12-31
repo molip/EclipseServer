@@ -59,7 +59,8 @@ public:
 	virtual std::string GetMessage(const Game& game) const = 0;
 
 private:
-	virtual void Apply(bool bDo, const RecordContext& context) = 0;
+	virtual void Apply(bool bDo, const Game& game, GameState& gameState) = 0;
+	virtual void Update(const Game& game, const RecordContext& context) const {}
 
 	int m_id;
 };
@@ -78,8 +79,10 @@ public:
 protected:
 	virtual std::string GetTeamMessage() const { return ""; }
 	
-	virtual void Apply(bool bDo, const RecordContext& context) override;
-	virtual void Apply(bool bDo, const Team& team, TeamState& teamState, const RecordContext& context) = 0;
+	virtual void Apply(bool bDo, const Game& game, GameState& gameState) override;
+	virtual void Update(const Game& game, const RecordContext& context) const override;
+	virtual void Apply(bool bDo, const Game& game, const Team& team, GameState& gameState, TeamState& teamState) = 0;
+	virtual void Update(const Game& game, const Team& team, const RecordContext& context) const {}
 
 	Colour m_colour;
 };
@@ -89,7 +92,7 @@ class GameRecord : public Record
 public:
 	GameRecord(const std::function<void(Game&)>& fn) : m_fn(fn) {}
 private:
-	virtual void Apply(bool bDo, const RecordContext& context) override;
+	virtual void Apply(bool bDo, const Game& game, GameState& gameState) override;
 
 	const std::function<void(Game&)> m_fn;
 };

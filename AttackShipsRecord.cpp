@@ -15,10 +15,8 @@ AttackShipsRecord::AttackShipsRecord(const Battle::Hits& hits) : AttackShipsReco
 	m_hits = hits;
 }
 
-void AttackShipsRecord::Apply(bool bDo, const RecordContext& context)
+void AttackShipsRecord::Apply(bool bDo, const Game& game, GameState& gameState)
 {
-	GameState& gameState = context.GetGameState();
-
 	Battle& battle = gameState.GetBattle();
 
 	if (m_firingShipType == ShipType::None)
@@ -32,7 +30,8 @@ void AttackShipsRecord::Apply(bool bDo, const RecordContext& context)
 	Hex* hex = gameState.GetMap().FindHex(battle.GetHexId());
 	VERIFY_MODEL(!!hex);
 
-	bool updateMap = false;
+	m_killIndices.clear();
+
 	for (size_t i = 0; i < m_hits.size(); ++i)
 	{
 		const auto& hit = m_hits[i];
@@ -49,25 +48,24 @@ void AttackShipsRecord::Apply(bool bDo, const RecordContext& context)
 			{
 				hex->RemoveShip(hit.shipType, m_targetColour);
 				m_killIndices.insert(i);
-				updateMap = true;
 			}
 		}
 		else
 		{
 			if (group->lifeCounts[hit.shipIndex] <= 0)
-			{
 				hex->AddShip(hit.shipType, m_targetColour);
-				updateMap = true;
-			}
 
 			group->lifeCounts[hit.shipIndex] += hit.dice.GetDamage();
 			VERIFY_MODEL(group->lifeCounts[hit.shipIndex] > 0);
 		}
 	}
+}
 
-	context.SendMessage(Output::UpdateCombat(context.GetGame(), battle));
+void AttackShipsRecord::Update(const Game& game, const RecordContext& context) const
+{
+	context.SendMessage(Output::UpdateCombat(context.GetGame(), game.GetBattle()));
 
-	if (updateMap)
+	if (!m_killIndices.empty())
 		context.SendMessage(Output::UpdateMap(context.GetGame()));
 }
 
