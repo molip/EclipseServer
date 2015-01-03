@@ -36,37 +36,6 @@ void UpkeepPhase::StartCmd(CmdPtr pCmd, CommitSession& session)
 	GetCurrentCmd(c)->UpdateClient(session.GetController(), GetGame());
 }
 
-void UpkeepPhase::AddCmd(CmdPtr pCmd)
-{
-	VERIFY_MODEL((bool)pCmd);
-
-	GetCmdStack(pCmd->GetColour()).AddCmd(pCmd);
-}
-
-void UpkeepPhase::FinishCmd(CommitSession& session, Colour c)
-{
-	GetCmdStack(c).AddCmd(CmdPtr());
-}
-
-Cmd* UpkeepPhase::RemoveCmd(CommitSession& session, Colour c)
-{
-	const Cmd* pCmd = GetCurrentCmd(c);
-
-	Cmd* pUndo = GetCmdStack(c).RemoveCmd();
-
-	return pUndo;
-}
-
-bool UpkeepPhase::CanRemoveCmd(Colour c) const
-{
-	return GetCmdStack(c).CanRemoveCmd();
-}
-
-Cmd* UpkeepPhase::GetCurrentCmd(Colour c)
-{
-	return GetCmdStack(c).GetCurrentCmd();
-}
-
 void UpkeepPhase::UpdateClient(const Controller& controller, const Player* pPlayer) const
 {
 	for (auto& team : GetGame().GetTeams())

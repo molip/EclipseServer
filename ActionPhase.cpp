@@ -22,7 +22,7 @@ const Team& ActionPhase::GetCurrentTeam() const
 
 Cmd* ActionPhase::RemoveCmd(CommitSession& session, Colour c)
 {
-	const Cmd* pCmd = GetCurrentCmd(c);
+	const Cmd* pCmd = Phase::GetCurrentCmd(c);
 	bool bAction = pCmd && pCmd->IsAction();
 	bool bCostsInfluence = pCmd && pCmd->CostsInfluence();
 

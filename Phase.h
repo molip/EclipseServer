@@ -34,9 +34,9 @@ public:
 
 	virtual void StartCmd(CmdPtr pCmd, CommitSession& session) { ASSERT(false); }
 
-	virtual bool CanRemoveCmd(Colour c) const = 0;
+	virtual bool CanRemoveCmd(Colour c) const;
 
-	virtual Cmd* GetCurrentCmd(Colour c) = 0;
+	virtual Cmd* GetCurrentCmd(Colour c);
 	const Cmd* GetCurrentCmd(Colour c) const { return const_cast<Phase*>(this)->GetCurrentCmd(c); }
 
 	virtual void UpdateClient(const Controller& controller, const Player* pPlayer) const {}
@@ -45,9 +45,11 @@ public:
 	virtual void Load(const Serial::LoadNode& node) override;
 
 protected:
-	virtual void AddCmd(CmdPtr pCmd) = 0;
-	virtual void FinishCmd(CommitSession& session, Colour c) = 0;
-	virtual Cmd* RemoveCmd(CommitSession& session, Colour c) = 0; // Returns cmd to undo.
+	const CmdStack& GetCmdStack(Colour c) const { return const_cast<Phase*>(this)->GetCmdStack(c); }
+
+	virtual CmdStack& GetCmdStack(Colour c) = 0;
+	virtual void OnCmdFinished(CommitSession& session) {}
+	virtual Cmd* RemoveCmd(CommitSession& session, Colour c);
 
 	const LiveGame& GetGame() const { return *m_pGame; }
 	LiveGame& GetGame() { return *m_pGame; }

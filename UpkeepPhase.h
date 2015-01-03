@@ -9,10 +9,6 @@ public:
 
 	virtual void StartCmd(CmdPtr pCmd, CommitSession& session) override;
 
-	virtual bool CanRemoveCmd(Colour c) const override;
-
-	virtual Cmd* GetCurrentCmd(Colour c) override;
-
 	virtual void UpdateClient(const Controller& controller, const Player* pPlayer) const override;
 
 	virtual void Save(Serial::SaveNode& node) const override;
@@ -21,14 +17,10 @@ public:
 	void FinishTurn(CommitSession& session, const Player& player);
 
 protected:
-	virtual void AddCmd(CmdPtr pCmd) override;
-	virtual void FinishCmd(CommitSession& session, Colour c) override;
-	virtual Cmd* RemoveCmd(CommitSession& session, Colour c) override; // Returns cmd to undo.
-
-private:
-	CmdStack& GetCmdStack(Colour c);
+	virtual CmdStack& GetCmdStack(Colour c) override;
 	const CmdStack& GetCmdStack(Colour c) const { return const_cast<UpkeepPhase*>(this)->GetCmdStack(c); }
 
+private:
 	std::map<Colour, CmdStackPtr> m_cmdStacks;
 	std::set<Colour> m_finished;
 };

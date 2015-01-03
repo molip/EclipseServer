@@ -10,8 +10,6 @@ public:
 	virtual ~OrderedPhase();
 
 	virtual void StartCmd(CmdPtr pCmd, CommitSession& session) override;
-	virtual bool CanRemoveCmd(Colour c) const override;
-	virtual Cmd* GetCurrentCmd(Colour c) override;
 
 	bool IsTeamActive(Colour c) const;
 
@@ -23,9 +21,7 @@ public:
 	virtual void Load(const Serial::LoadNode& node) override;
 
 protected:
-	virtual void AddCmd(CmdPtr pCmd) override;
-	virtual void FinishCmd(CommitSession& session, Colour c) override;
-	virtual Cmd* RemoveCmd(CommitSession& session, Colour c) override; // Returns cmd to undo.
+	virtual CmdStack& GetCmdStack(Colour c) override;
 
 	virtual const Team& GetCurrentTeam() const = 0;
 

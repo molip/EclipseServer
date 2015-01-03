@@ -34,10 +34,12 @@ void Phase::ProcessCmdMessage(const Input::CmdMessage& msg, CommitSession& sessi
 	VERIFY_MODEL_MSG("No current command", !!pCmd);
 
 	CmdPtr pNext = pCmd->Process(msg, session); // Might be null.
-	if (pNext)
-		AddCmd(std::move(pNext)); 
-	else
-		FinishCmd(session, colour); 
+
+	CmdStack& cmdStack = GetCmdStack(colour);
+	cmdStack.AddCmd(std::move(pNext));
+	
+	if (cmdStack.GetCurrentCmd() == nullptr)
+		OnCmdFinished(session); 
 
 	// This phase might have finished, get potentially new phase.
 	game.GetPhase().UpdateClient(session.GetController(), &player);
@@ -68,6 +70,21 @@ void Phase::UndoCmd(CommitSession& session, Player& player)
 	}
 
 	UpdateClient(controller, &player);
+}
+
+Cmd* Phase::RemoveCmd(CommitSession& session, Colour c)
+{
+	return GetCmdStack(c).RemoveCmd();
+}
+
+Cmd* Phase::GetCurrentCmd(Colour c)
+{
+	return GetCmdStack(c).GetCurrentCmd();
+}
+
+bool Phase::CanRemoveCmd(Colour c) const
+{
+	return GetCmdStack(c).CanRemoveCmd();
 }
 
 //-----------------------------------------------------------------------------
