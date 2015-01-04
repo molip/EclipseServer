@@ -48,7 +48,7 @@ void OrderedPhase::StartCmd(CmdPtr pCmd, CommitSession& session)
 {
 	VERIFY_MODEL_MSG("Team not active", IsTeamActive(pCmd->GetColour()));
 
-	m_pCmdStack->StartCmd(pCmd);
+	m_pCmdStack->StartCmd(std::move(pCmd));
 
 	Cmd* pStartedCmd = GetCurrentCmd();
 

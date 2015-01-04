@@ -236,34 +236,6 @@ REGISTER_DYNAMIC(InfluenceRecord)
 
 //-----------------------------------------------------------------------------
 
-class DiscoverAndInfluenceCmd : public DiscoverCmd
-{
-public:
-	DiscoverAndInfluenceCmd() {}
-	DiscoverAndInfluenceCmd(Colour colour, const LiveGame& game, DiscoveryType discovery, int flipsLeft) :
-		DiscoverCmd(colour, game, discovery), m_flipsLeft(flipsLeft) {}
-private:
-	virtual Cmd* GetNextCmd(const LiveGame& game) const override { return new InfluenceCmd(m_colour, game, 1, m_flipsLeft); }
-
-	virtual void Save(Serial::SaveNode& node) const override
-	{
-		__super::Save(node);
-		node.SaveType("flips_left", m_flipsLeft);
-	}
-
-	virtual void Load(const Serial::LoadNode& node) override
-	{
-		__super::Load(node);
-		node.LoadType("flips_left", m_flipsLeft);
-	}
-
-	int m_flipsLeft;
-};
-
-REGISTER_DYNAMIC(DiscoverAndInfluenceCmd)
-
-//-----------------------------------------------------------------------------
-
 InfluenceDstCmd::InfluenceDstCmd(Colour colour, const LiveGame& game, const MapPos* pSrcPos, int iPhase, int flipsLeft) : 
 PhaseCmd(colour, iPhase), m_discovery(DiscoveryType::None), m_flipsLeft(flipsLeft)
 {
@@ -318,13 +290,15 @@ Cmd::ProcessResult InfluenceDstCmd::Process(const Input::CmdMessage& msg, Commit
 
 	m_discovery = pRec->GetDiscovery();
 
-	const bool bFinish = m_iPhase == 1 && GetMaxFlips(session.GetGame()) == 0;
-
 	const LiveGame& game = session.GetGame();
-	if (m_discovery != DiscoveryType::None)
-		return ProcessResult(bFinish ? new DiscoverCmd(m_colour, game, m_discovery) : new DiscoverAndInfluenceCmd(m_colour, game, m_discovery, m_flipsLeft));
 
-	return ProcessResult(bFinish ? nullptr : new InfluenceCmd(m_colour, game, m_iPhase + 1, m_flipsLeft));
+	const bool bFinish = m_iPhase == 1 && GetMaxFlips(session.GetGame()) == 0;
+	Cmd* nextInfluenceCmd = bFinish ? nullptr : new InfluenceCmd(m_colour, game, m_iPhase + 1, m_flipsLeft);
+
+	if (m_discovery != DiscoveryType::None)
+		return ProcessResult(new DiscoverCmd(m_colour, game, m_discovery), nextInfluenceCmd);
+
+	return ProcessResult(nextInfluenceCmd);
 }
 
 void InfluenceDstCmd::Save(Serial::SaveNode& node) const 

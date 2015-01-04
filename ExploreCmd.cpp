@@ -202,19 +202,6 @@ REGISTER_DYNAMIC(ExploreHexRecord)
 
 //-----------------------------------------------------------------------------
 
-class DiscoverAndExploreCmd : public DiscoverCmd
-{
-public:
-	DiscoverAndExploreCmd() {}
-	DiscoverAndExploreCmd(Colour colour, const LiveGame& game, DiscoveryType discovery) : DiscoverCmd(colour, game, discovery){}
-private:
-	virtual Cmd* GetNextCmd(const LiveGame& game) const override { return new ExploreCmd(m_colour, game, 1); }
-};
-
-REGISTER_DYNAMIC(DiscoverAndExploreCmd)
-
-//-----------------------------------------------------------------------------
-
 ExploreHexCmd::ExploreHexCmd(Colour colour, const LiveGame& game, const MapPos& pos, std::vector<int> hexIDs, int iPhase) : 
 	PhaseCmd(colour, iPhase), m_pos(pos), m_hexIDs(hexIDs), m_iRot(-1), m_iHex(-1), m_bInfluence(false), 
 	m_bTaken(false), m_discovery(DiscoveryType::None)
@@ -320,13 +307,14 @@ Cmd::ProcessResult ExploreHexCmd::Process(const Input::CmdMessage& msg, CommitSe
 
 		m_discovery = pRec->GetDiscovery();
 	}
-
+	
 	const bool bFinish = m_iPhase + 1 == Race(GetTeam(game).GetRace()).GetExploreRate();
+	Cmd* nextExploreCmd = bFinish ? nullptr : new ExploreCmd(m_colour, game, m_iPhase + 1);
 
 	if (m_discovery != DiscoveryType::None)
-		return ProcessResult(bFinish ? new DiscoverCmd(m_colour, game, m_discovery) : new DiscoverAndExploreCmd(m_colour, game, m_discovery));
+		return ProcessResult(new DiscoverCmd(m_colour, game, m_discovery), nextExploreCmd);
 
-	return ProcessResult(bFinish ? nullptr : new ExploreCmd(m_colour, game, 1));
+	return nextExploreCmd;
 }
 
 void ExploreHexCmd::Save(Serial::SaveNode& node) const 

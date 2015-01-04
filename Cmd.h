@@ -25,11 +25,11 @@ class Cmd : public Dynamic
 public:
 	struct ProcessResult
 	{
-		ProcessResult(Cmd* _next = nullptr) : next(_next) {}
-		ProcessResult(ProcessResult&& rhs) : next(std::move(rhs.next)) {}
+		ProcessResult(Cmd* _next = nullptr, Cmd* _queue = nullptr) : next(_next), queue(_queue) {}
+		ProcessResult(ProcessResult&& rhs) : next(std::move(rhs.next)), queue(std::move(rhs.queue)) {}
 		ProcessResult(const ProcessResult& rhs) = delete;
 		const ProcessResult& operator=(const ProcessResult& rhs) = delete;
-		CmdPtr next;
+		CmdPtr next, queue;
 	};
 	
 	Cmd();

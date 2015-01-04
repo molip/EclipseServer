@@ -36,7 +36,7 @@ void Phase::ProcessCmdMessage(const Input::CmdMessage& msg, CommitSession& sessi
 	Cmd::ProcessResult result = pCmd->Process(msg, session); // Might be null.
 
 	CmdStack& cmdStack = GetCmdStack(colour);
-	cmdStack.AddCmd(std::move(result.next));
+	cmdStack.AddCmd(std::move(result.next), std::move(result.queue));
 	
 	if (cmdStack.GetCurrentCmd() == nullptr)
 		OnCmdFinished(session); 

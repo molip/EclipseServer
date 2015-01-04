@@ -12,8 +12,8 @@ class CmdStack
 public:
 	CmdStack();
 	
-	void StartCmd(CmdPtr& pCmd);	// Start new chain and add cmd to it.
-	void AddCmd(CmdPtr& pCmd);		// Add cmd to existing chain (null closes the chain).
+	void StartCmd(CmdPtr pCmd);	// Start new chain and add cmd to it.
+	void AddCmd(CmdPtr pCmd, CmdPtr queued = nullptr);		// Add cmd to existing chain (null closes the chain).
 	Cmd* RemoveCmd();				// Returns cmd to undo.
 	Cmd* GetCurrentCmd();
 	const Cmd* GetCurrentCmd() const;
@@ -33,14 +33,15 @@ private:
 	typedef std::unique_ptr<Chain> ChainPtr;
 	struct Node
 	{
-		Node() {}
-		Node(CmdPtr& _pCmd) : pCmd(std::move(_pCmd)) {}
+		Node() : queued(false) {}
+		Node(CmdPtr& _pCmd, bool _queued) : pCmd(std::move(_pCmd)), queued(_queued) {}
 
 		void Save(Serial::SaveNode& node) const;
 		void Load(const Serial::LoadNode& node);
 
 		CmdPtr pCmd;
 		std::vector<ChainPtr> subchains;
+		bool queued;
 	};
 
 	typedef std::unique_ptr<Node> NodePtr;
@@ -49,7 +50,7 @@ private:
 	friend class CmdStack;
 	public:
 		bool IsOpen() const;
-		void AddCmd(CmdPtr& pCmd, bool bStart);
+		void AddCmd(CmdPtr& pCmd, bool bStart, bool bQueue = false);
 		Cmd* RemoveCmd(); // Returns cmd to undo.
 		Cmd* GetCurrentCmd();
 		const Cmd* GetCurrentCmd() const { return const_cast<Chain*>(this)->GetCurrentCmd(); }

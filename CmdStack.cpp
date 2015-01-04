@@ -44,7 +44,7 @@ CmdStack::Chain* CmdStack::Chain::GetOpenChild()
 	return nullptr;
 }
 
-void CmdStack::Chain::AddCmd(CmdPtr& pCmd, bool bStart)
+void CmdStack::Chain::AddCmd(CmdPtr& pCmd, bool bStart, bool bQueue)
 {
 	Chain* pChain = this;
 	if (empty()) // New root chain. 
@@ -57,7 +57,7 @@ void CmdStack::Chain::AddCmd(CmdPtr& pCmd, bool bStart)
 
 		if (Chain* pChild = GetOpenChild())
 		{
-			pChild->AddCmd(pCmd, bStart); 
+			pChild->AddCmd(pCmd, bStart, bQueue);
 			return;
 		}
 
@@ -67,29 +67,38 @@ void CmdStack::Chain::AddCmd(CmdPtr& pCmd, bool bStart)
 			pChain = GetLastNode().subchains.back().get();
 		}
 	}
-	pChain->push_back(NodePtr(new Node(pCmd)));
+	pChain->push_back(NodePtr(new Node(pCmd, bQueue)));
 }
 
 Cmd* CmdStack::Chain::RemoveCmd() 
 {
-	if (Chain* pChild = GetLastChild())
+	Cmd* undo = nullptr;
+
+	Chain* pChild = GetLastChild();
+	if (pChild && !(back()->queued && pChild->size() == 1)) // Otherwise, just remove queued.
 	{
-		Cmd* pUndo = pChild->RemoveCmd();
+		undo = pChild->RemoveCmd();
 		if (pChild->empty()) // Delete empty child.
-			back()->subchains.pop_back();
-		return pUndo;
+			back()->subchains.pop_back(); 
 	}
-	pop_back(); // Abort current cmd, or reopen chain if closed. 
-	return empty() ? nullptr : back()->pCmd.get(); // Don't undo if empty.
+	else
+	{
+		pop_back(); // Abort current cmd, or reopen chain if closed. 
+		undo = empty() ? nullptr : back()->pCmd.get(); 
+	}
+	VERIFY(!undo || undo->CanUndo());
+	return undo;
 }
 
+// Can we undo the command before the current one? 
 bool CmdStack::Chain::CanRemoveCmd() const
 {
-	if (const Chain* pChild = const_cast<CmdStack::Chain*>(this)->GetLastChild())
-		return pChild->CanRemoveCmd();
-	
 	VERIFY_MODEL_MSG("empty chain", !empty());
 
+	if (const Chain* pChild = const_cast<CmdStack::Chain*>(this)->GetLastChild())
+		if (!(back()->queued && pChild->size() == 1)) // Otherwise, queued would be removed.
+			return pChild->CanRemoveCmd();
+	
 	return size() == 1 || (*(end() - 2))->pCmd->CanUndo();
 }
 
@@ -145,7 +154,7 @@ CmdStack::CmdStack()
 {
 }
 
-void CmdStack::StartCmd(CmdPtr& pCmd)
+void CmdStack::StartCmd(CmdPtr pCmd)
 {
 	VERIFY_MODEL(!!pCmd);
 
@@ -158,14 +167,22 @@ void CmdStack::StartCmd(CmdPtr& pCmd)
 	VERIFY_MODEL(!!GetCurrentCmd());
 }
 
-void CmdStack::AddCmd(CmdPtr& pCmd)
+// queued: start a subchain pCmd, resume queued when subchain closed. 
+void CmdStack::AddCmd(CmdPtr pCmd, CmdPtr queued)
 {
 	VERIFY_MODEL_MSG("no chains", !m_chains.empty());
 	VERIFY_MODEL_MSG("chain not open", m_chains.back()->IsOpen());
 	
 	Purge();
 
-	m_chains.back()->AddCmd(pCmd, false); 
+	if (queued) 
+	{
+		// Add pCmd on subchain of queued.
+		m_chains.back()->AddCmd(queued, false, true);
+		m_chains.back()->AddCmd(pCmd, true);
+	}
+	else
+		m_chains.back()->AddCmd(pCmd, false); 
 	
 	AssertValid();
 	VERIFY_MODEL(!pCmd || GetCurrentCmd());
@@ -236,6 +253,7 @@ void CmdStack::Load(const Serial::LoadNode& node)
 void CmdStack::Node::Save(Serial::SaveNode& node) const
 {
 	node.SaveObject("cmd", pCmd);
+	node.SaveType("queued", queued);
 	if (!subchains.empty())
 		node.SaveCntr("subchains", subchains, Serial::ClassPtrSaver());
 }
@@ -243,6 +261,7 @@ void CmdStack::Node::Save(Serial::SaveNode& node) const
 void CmdStack::Node::Load(const Serial::LoadNode& node)
 {
 	node.LoadObject("cmd", pCmd);
+	node.LoadType("queued", queued);
 	node.LoadCntr("subchains", subchains, Serial::ClassPtrLoader());
 }
 

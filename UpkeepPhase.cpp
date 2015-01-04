@@ -31,7 +31,7 @@ void UpkeepPhase::StartCmd(CmdPtr pCmd, CommitSession& session)
 	VERIFY_MODEL(!pCmd->IsAction());
 
 	Colour c = pCmd->GetColour();
-	GetCmdStack(c).StartCmd(pCmd);
+	GetCmdStack(c).StartCmd(std::move(pCmd));
 
 	GetCurrentCmd(c)->UpdateClient(session.GetController(), GetGame());
 }

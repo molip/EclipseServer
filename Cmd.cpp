@@ -48,7 +48,7 @@ void Cmd::DoRecord(RecordPtr pRec, CommitSession& session)
 
 void Cmd::PopRecord(CommitSession& session)
 {
-	VERIFY_MODEL(m_bHasRecord);
+	VERIFY_MODEL(m_bHasRecord && CanUndo());
 	session.PopAndUndoRecord();
 	m_bHasRecord = false;
 }
