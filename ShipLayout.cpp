@@ -164,4 +164,4 @@ DEFINE_ENUM_NAMES2(ShipPart, -2) {	"Empty", "Blocked",
 								"Nuclear drive", "Tachyon drive", "Fusion drive", "Conformal drive",
 								"Nuclear source", "Tachyon source", "Fusion source", "Hypergrid source",
 								"Phase shield", "Gauss shield", "Flux shield",
-								"Hull", "Improved hull", "" };
+								"Hull", "Improved hull", "Shard hull", "" };

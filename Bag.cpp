@@ -13,7 +13,7 @@ void DiscoveryBag::Init()
 		m_vec.push_back(DiscoveryType::AncientTech);
 		m_vec.push_back(DiscoveryType::AncientCruiser);
 	}
-	m_vec.push_back(DiscoveryType::AxiomComputer);
+	m_vec.push_back(DiscoveryType::AxionComputer);
 	m_vec.push_back(DiscoveryType::HypergridSource);
 	m_vec.push_back(DiscoveryType::ShardHull);
 	m_vec.push_back(DiscoveryType::IonTurret);

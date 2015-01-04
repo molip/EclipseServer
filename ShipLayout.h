@@ -16,7 +16,7 @@ enum class ShipPart {	Empty = -2, Blocked,
 						NuclearDrive, TachyonDrive, FusionDrive, ConformalDrive,
 						NuclearSource, TachyonSource, FusionSource, HypergridSource,
 						PhaseShield, GaussShield, FluxShield,
-						Hull, ImprovedHull, 
+						Hull, ImprovedHull, ShardHull,
 						_Count };
 
 class SlotRange;
