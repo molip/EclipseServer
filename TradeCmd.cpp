@@ -65,7 +65,7 @@ void TradeCmd::UpdateClient(const Controller& controller, const LiveGame& game) 
 	controller.SendMessage(Output::ChooseTrade(GetTeam(game)), GetPlayer(game));
 }
 
-CmdPtr TradeCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
+Cmd::ProcessResult TradeCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
 {
 	const Team& team = session.GetGame().GetTeam(m_colour);
 	auto& storage = team.GetStorage();

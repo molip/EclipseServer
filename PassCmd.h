@@ -11,6 +11,6 @@ public:
 	virtual bool IsAction() const { return true; } 
 	virtual bool CostsInfluence() const { return false; } 
 	virtual bool IsAutoProcess() const { return true; } 
-	virtual CmdPtr Process(const Input::CmdMessage& msg, CommitSession& session) override;
+	virtual ProcessResult Process(const Input::CmdMessage& msg, CommitSession& session) override;
 };
 

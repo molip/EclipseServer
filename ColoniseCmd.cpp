@@ -24,12 +24,12 @@ void ColoniseCmd::UpdateClient(const Controller& controller, const LiveGame& gam
 	controller.SendMessage(Output::ChooseColonisePos(m_positions), GetPlayer(game));
 }
 
-CmdPtr ColoniseCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
+Cmd::ProcessResult ColoniseCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
 {
 	auto& m = VerifyCastInput<const Input::CmdColonisePos>(msg);
 	VERIFY_INPUT_MSG("invalid pos index", m.m_iPos == -1 || InRange(m_positions, m.m_iPos));
 	
-	return CmdPtr(new ColoniseSquaresCmd(m_colour, session.GetGame(), m_positions[m.m_iPos]));
+	return ProcessResult(new ColoniseSquaresCmd(m_colour, session.GetGame(), m_positions[m.m_iPos]));
 }
 
 void ColoniseCmd::Save(Serial::SaveNode& node) const 
@@ -130,7 +130,7 @@ void ColoniseSquaresCmd::UpdateClient(const Controller& controller, const LiveGa
 	controller.SendMessage(Output::ChooseColoniseSquares(m_pos, m_squareCounts, pop, nShips), GetPlayer(game));
 }
 
-CmdPtr ColoniseSquaresCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
+Cmd::ProcessResult ColoniseSquaresCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
 {
 	auto& m = VerifyCastInput<const Input::CmdColoniseSquares>(msg);
 

@@ -19,7 +19,7 @@ public:
 	ExploreCmd(Colour colour, const LiveGame& game, int iPhase = 0);
 
 	virtual void UpdateClient(const Controller& controller, const LiveGame& game) const override;
-	virtual CmdPtr Process(const Input::CmdMessage& msg, CommitSession& session) override;
+	virtual ProcessResult Process(const Input::CmdMessage& msg, CommitSession& session) override;
 	virtual bool IsAction() const override { return true; } 
 	virtual std::string GetActionName() const override { return "Explore"; }
 	virtual bool CanUndo() const override { return !HasRecord(); }
@@ -39,7 +39,7 @@ public:
 	ExploreHexCmd(Colour colour, const LiveGame& game, const MapPos& pos, std::vector<int> hexIDs, int iPhase);
 
 	virtual void UpdateClient(const Controller& controller, const LiveGame& game) const override;
-	virtual CmdPtr Process(const Input::CmdMessage& msg, CommitSession& session) override;
+	virtual ProcessResult Process(const Input::CmdMessage& msg, CommitSession& session) override;
 	virtual bool CanUndo() const override { return !m_bTaken && m_discovery == DiscoveryType::None; }
 
 	virtual void Save(Serial::SaveNode& node) const override;

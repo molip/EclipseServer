@@ -31,7 +31,7 @@ void MoveCmd::UpdateClient(const Controller& controller, const LiveGame& game) c
 	controller.SendMessage(Output::ChooseMoveSrc(srcs, m_iPhase > 0), GetPlayer(game));
 }
 
-CmdPtr MoveCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
+Cmd::ProcessResult MoveCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
 {
 	if (dynamic_cast<const Input::CmdAbort*>(&msg))
 	{
@@ -47,7 +47,7 @@ CmdPtr MoveCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
 	VERIFY_INPUT_MSG("invalid hex", CanMoveFrom(hex, game));
 	VERIFY_INPUT_MSG("invalid ship", hex.HasShip(m_colour, m.m_ship));
 
-	return CmdPtr(new MoveDstCmd(m_colour, game, pos, m.m_ship, m_iPhase));
+	return ProcessResult(new MoveDstCmd(m_colour, game, pos, m.m_ship, m_iPhase));
 }
 
 void MoveCmd::Save(Serial::SaveNode& node) const 
@@ -147,7 +147,7 @@ void MoveDstCmd::UpdateClient(const Controller& controller, const LiveGame& game
 	controller.SendMessage(Output::ChooseMoveDst(dsts), GetPlayer(game));
 }
 
-CmdPtr MoveDstCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
+Cmd::ProcessResult MoveDstCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
 {
 	auto& m = VerifyCastInput<const Input::CmdMoveDst>(msg);
 	MapPos dst(m.m_x, m.m_y);
@@ -161,7 +161,7 @@ CmdPtr MoveDstCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
 
 	const Team& team = GetTeam(game);
 	if (!team.HasPassed() && m_iPhase + 1 < Race(team.GetRace()).GetMoves())
-		return CmdPtr(new MoveCmd(m_colour, game, m_iPhase + 1));
+		return ProcessResult(new MoveCmd(m_colour, game, m_iPhase + 1));
 
 	return nullptr;
 }

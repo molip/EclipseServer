@@ -38,7 +38,7 @@ PassCmd::PassCmd(Colour colour, const LiveGame& game) : Cmd(colour)
 {
 }
 
-CmdPtr PassCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
+Cmd::ProcessResult PassCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
 {	
 	VERIFY_INPUT(!GetTeam(session.GetGame()).HasPassed());
 

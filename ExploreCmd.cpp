@@ -78,7 +78,7 @@ void ExploreCmd::UpdateClient(const Controller& controller, const LiveGame& game
 	controller.SendMessage(Output::ChooseExplorePos(GetPositions(game), m_iPhase > 0), GetPlayer(game));
 }
 
-CmdPtr ExploreCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
+Cmd::ProcessResult ExploreCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
 {
 	if (dynamic_cast<const Input::CmdAbort*>(&msg))
 	{
@@ -99,7 +99,7 @@ CmdPtr ExploreCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
 
 	std::vector<int> hexIDs;
 	hexIDs.push_back(pRec->GetHexID());
-	return CmdPtr(new ExploreHexCmd(m_colour, session.GetGame(), pos, hexIDs, m_iPhase));
+	return ProcessResult(new ExploreHexCmd(m_colour, session.GetGame(), pos, hexIDs, m_iPhase));
 }
 
 void ExploreCmd::Save(Serial::SaveNode& node) const 
@@ -208,7 +208,7 @@ public:
 	DiscoverAndExploreCmd() {}
 	DiscoverAndExploreCmd(Colour colour, const LiveGame& game, DiscoveryType discovery) : DiscoverCmd(colour, game, discovery){}
 private:
-	virtual CmdPtr GetNextCmd(const LiveGame& game) const override { return CmdPtr(new ExploreCmd(m_colour, game, 1)); }
+	virtual Cmd* GetNextCmd(const LiveGame& game) const override { return new ExploreCmd(m_colour, game, 1); }
 };
 
 REGISTER_DYNAMIC(DiscoverAndExploreCmd)
@@ -277,7 +277,7 @@ void ExploreHexCmd::UpdateClient(const Controller& controller, const LiveGame& g
 }
 
 
-CmdPtr ExploreHexCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
+Cmd::ProcessResult ExploreHexCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
 {
 	m_discovery = DiscoveryType::None;
 
@@ -295,7 +295,7 @@ CmdPtr ExploreHexCmd::Process(const Input::CmdMessage& msg, CommitSession& sessi
 		std::vector<int> hexIDs = m_hexIDs;
 		hexIDs.insert(hexIDs.begin(), idHex); // At front so it appears first.
 		m_bTaken = true;
-		return CmdPtr(new ExploreHexCmd(m_colour, game, m_pos, hexIDs, m_iPhase));
+		return ProcessResult(new ExploreHexCmd(m_colour, game, m_pos, hexIDs, m_iPhase));
 	}
 
 	bool bReject = !!dynamic_cast<const Input::CmdAbort*>(&msg);
@@ -324,9 +324,9 @@ CmdPtr ExploreHexCmd::Process(const Input::CmdMessage& msg, CommitSession& sessi
 	const bool bFinish = m_iPhase + 1 == Race(GetTeam(game).GetRace()).GetExploreRate();
 
 	if (m_discovery != DiscoveryType::None)
-		return CmdPtr(bFinish ? new DiscoverCmd(m_colour, game, m_discovery) : new DiscoverAndExploreCmd(m_colour, game, m_discovery));
+		return ProcessResult(bFinish ? new DiscoverCmd(m_colour, game, m_discovery) : new DiscoverAndExploreCmd(m_colour, game, m_discovery));
 
-	return CmdPtr(bFinish ? nullptr : new ExploreCmd(m_colour, game, 1));
+	return ProcessResult(bFinish ? nullptr : new ExploreCmd(m_colour, game, 1));
 }
 
 void ExploreHexCmd::Save(Serial::SaveNode& node) const 

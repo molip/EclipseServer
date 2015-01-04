@@ -118,7 +118,7 @@ void ResearchCmd::UpdateClient(const Controller& controller, const LiveGame& gam
 	controller.SendMessage(Output::ChooseResearch(m_techs, m_iPhase > 0), GetPlayer(game));
 }
 
-CmdPtr ResearchCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
+Cmd::ProcessResult ResearchCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
 {
 	if (dynamic_cast<const Input::CmdAbort*>(&msg))
 	{
@@ -135,10 +135,10 @@ CmdPtr ResearchCmd::Process(const Input::CmdMessage& msg, CommitSession& session
 	const LiveGame& game = session.GetGame();
 
 	if (m_techs[m.m_iTech].first == TechType::ArtifactKey)
-		return CmdPtr(new ResearchArtifactCmd(m_colour, game, m_iPhase));
+		return ProcessResult(new ResearchArtifactCmd(m_colour, game, m_iPhase));
 
 	if (m_iPhase + 1 < Race(GetTeam(game).GetRace()).GetResearchRate())
-		return CmdPtr(new ResearchCmd(m_colour, game, m_iPhase + 1));
+		return ProcessResult(new ResearchCmd(m_colour, game, m_iPhase + 1));
 
 	return nullptr;
 }
@@ -214,7 +214,7 @@ void ResearchArtifactCmd::UpdateClient(const Controller& controller, const LiveG
 	controller.SendMessage(Output::ChooseResearchArtifact(m_nArtifacts), GetPlayer(game));
 }
 
-CmdPtr ResearchArtifactCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
+Cmd::ProcessResult ResearchArtifactCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
 {
 	auto& m = VerifyCastInput<const Input::CmdResearchArtifact>(msg);
 
@@ -223,7 +223,7 @@ CmdPtr ResearchArtifactCmd::Process(const Input::CmdMessage& msg, CommitSession&
 
 	const LiveGame& game = session.GetGame();
 	if (m_iPhase + 1 < Race(GetTeam(game).GetRace()).GetResearchRate())
-		return CmdPtr(new ResearchCmd(m_colour, game, m_iPhase + 1));
+		return ProcessResult(new ResearchCmd(m_colour, game, m_iPhase + 1));
 
 	return nullptr;
 }

@@ -145,7 +145,7 @@ void BuildCmd::UpdateClient(const Controller& controller, const LiveGame& game) 
 	controller.SendMessage(Output::ChooseBuild(ships, hexes, m_iPhase > 0), GetPlayer(game));
 }
 
-CmdPtr BuildCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
+Cmd::ProcessResult BuildCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
 {
 	if (dynamic_cast<const Input::CmdAbort*>(&msg))
 	{
@@ -170,7 +170,7 @@ CmdPtr BuildCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
 	DoRecord(RecordPtr(pRec), session);
 
 	if (!team.HasPassed() && m_iPhase + 1 < Race(team.GetRace()).GetBuildRate())
-		return CmdPtr(new BuildCmd(m_colour, game, m_iPhase + 1));
+		return ProcessResult(new BuildCmd(m_colour, game, m_iPhase + 1));
 
 	return nullptr;
 }

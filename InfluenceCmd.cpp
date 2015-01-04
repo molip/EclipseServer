@@ -87,7 +87,7 @@ void InfluenceCmd::UpdateClient(const Controller& controller, const LiveGame& ga
 	controller.SendMessage(Output::ChooseInfluenceSrc(GetSources(game), canChooseTrack, GetMaxFlips(game)), GetPlayer(game));
 }
 
-CmdPtr InfluenceCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
+Cmd::ProcessResult InfluenceCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
 {
 	if (dynamic_cast<const Input::CmdAbort*>(&msg))
 		return nullptr;
@@ -98,7 +98,7 @@ CmdPtr InfluenceCmd::Process(const Input::CmdMessage& msg, CommitSession& sessio
 		VERIFY_INPUT(flips > 0);
 		DoRecord(RecordPtr(new InfluenceFlipRecord(m_colour, flips)), session);
 		
-		return m_iPhase > 1 ? nullptr : CmdPtr(new InfluenceCmd(m_colour, session.GetGame(), m_iPhase, m_flipsLeft - flips));
+		return ProcessResult(m_iPhase > 1 ? nullptr : new InfluenceCmd(m_colour, session.GetGame(), m_iPhase, m_flipsLeft - flips));
 	}
 
 	auto& m = VerifyCastInput<const Input::CmdInfluenceSrc>(msg);
@@ -107,7 +107,7 @@ CmdPtr InfluenceCmd::Process(const Input::CmdMessage& msg, CommitSession& sessio
 	VERIFY_INPUT_MSG("invalid pos index", m.m_iPos == -1 || InRange(srcs, m.m_iPos));
 
 	const LiveGame& game = session.GetGame();
-	return CmdPtr(new InfluenceDstCmd(m_colour, game, m.m_iPos < 0 ? nullptr : &srcs[m.m_iPos], m_iPhase, m_flipsLeft));
+	return ProcessResult(new InfluenceDstCmd(m_colour, game, m.m_iPos < 0 ? nullptr : &srcs[m.m_iPos], m_iPhase, m_flipsLeft));
 }
 
 void InfluenceCmd::Save(Serial::SaveNode& node) const 
@@ -243,7 +243,7 @@ public:
 	DiscoverAndInfluenceCmd(Colour colour, const LiveGame& game, DiscoveryType discovery, int flipsLeft) :
 		DiscoverCmd(colour, game, discovery), m_flipsLeft(flipsLeft) {}
 private:
-	virtual CmdPtr GetNextCmd(const LiveGame& game) const override { return CmdPtr(new InfluenceCmd(m_colour, game, 1, m_flipsLeft)); }
+	virtual Cmd* GetNextCmd(const LiveGame& game) const override { return new InfluenceCmd(m_colour, game, 1, m_flipsLeft); }
 
 	virtual void Save(Serial::SaveNode& node) const override
 	{
@@ -303,7 +303,7 @@ void InfluenceDstCmd::UpdateClient(const Controller& controller, const LiveGame&
 	controller.SendMessage(Output::ChooseInfluenceDst(GetDests(game), !!m_pSrcPos), GetPlayer(game));
 }
 
-CmdPtr InfluenceDstCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
+Cmd::ProcessResult InfluenceDstCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
 {
 	auto& m = VerifyCastInput<const Input::CmdInfluenceDst>(msg);
 
@@ -322,9 +322,9 @@ CmdPtr InfluenceDstCmd::Process(const Input::CmdMessage& msg, CommitSession& ses
 
 	const LiveGame& game = session.GetGame();
 	if (m_discovery != DiscoveryType::None)
-		return CmdPtr(bFinish ? new DiscoverCmd(m_colour, game, m_discovery) : new DiscoverAndInfluenceCmd(m_colour, game, m_discovery, m_flipsLeft));
+		return ProcessResult(bFinish ? new DiscoverCmd(m_colour, game, m_discovery) : new DiscoverAndInfluenceCmd(m_colour, game, m_discovery, m_flipsLeft));
 
-	return CmdPtr(bFinish ? nullptr : new InfluenceCmd(m_colour, game, m_iPhase + 1, m_flipsLeft));
+	return ProcessResult(bFinish ? nullptr : new InfluenceCmd(m_colour, game, m_iPhase + 1, m_flipsLeft));
 }
 
 void InfluenceDstCmd::Save(Serial::SaveNode& node) const 

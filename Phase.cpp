@@ -33,10 +33,10 @@ void Phase::ProcessCmdMessage(const Input::CmdMessage& msg, CommitSession& sessi
 	Cmd* pCmd = GetCurrentCmd(colour);
 	VERIFY_MODEL_MSG("No current command", !!pCmd);
 
-	CmdPtr pNext = pCmd->Process(msg, session); // Might be null.
+	Cmd::ProcessResult result = pCmd->Process(msg, session); // Might be null.
 
 	CmdStack& cmdStack = GetCmdStack(colour);
-	cmdStack.AddCmd(std::move(pNext));
+	cmdStack.AddCmd(std::move(result.next));
 	
 	if (cmdStack.GetCurrentCmd() == nullptr)
 		OnCmdFinished(session); 

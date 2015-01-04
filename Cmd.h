@@ -23,12 +23,21 @@ typedef std::unique_ptr<Record> RecordPtr;
 class Cmd : public Dynamic
 {
 public:
+	struct ProcessResult
+	{
+		ProcessResult(Cmd* _next = nullptr) : next(_next) {}
+		ProcessResult(ProcessResult&& rhs) : next(std::move(rhs.next)) {}
+		ProcessResult(const ProcessResult& rhs) = delete;
+		const ProcessResult& operator=(const ProcessResult& rhs) = delete;
+		CmdPtr next;
+	};
+	
 	Cmd();
 	Cmd(Colour colour);
 	virtual ~Cmd() {}
 	
 	virtual void UpdateClient(const Controller& controller, const LiveGame& game) const {}
-	virtual CmdPtr Process(const Input::CmdMessage& msg, CommitSession& session) = 0;
+	virtual ProcessResult Process(const Input::CmdMessage& msg, CommitSession& session) = 0;
 	
 	virtual bool IsAutoProcess() const { return false; } 
 	virtual bool IsAction() const { return false; } 

@@ -21,11 +21,11 @@ void DiscoverCmd::UpdateClient(const Controller& controller, const LiveGame& gam
 	controller.SendMessage(msg, GetPlayer(game));
 }
 
-CmdPtr DiscoverCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
+Cmd::ProcessResult DiscoverCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
 {
 	auto& m = VerifyCastInput<const Input::CmdExploreDiscovery>(msg);
 
-	return GetNextCmd(session.GetGame());
+	return ProcessResult(GetNextCmd(session.GetGame()));
 }
 
 void DiscoverCmd::Save(Serial::SaveNode& node) const 

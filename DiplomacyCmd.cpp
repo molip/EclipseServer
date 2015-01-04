@@ -15,7 +15,7 @@ void DiplomacyCmd::UpdateClient(const Controller& controller, const LiveGame& ga
 	controller.SendMessage(Output::ChooseDiplomacy(), GetPlayer(game));
 }
 
-CmdPtr DiplomacyCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
+Cmd::ProcessResult DiplomacyCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
 {
 	auto& m = VerifyCastInput<const Input::CmdDiplomacy>(msg);
 	
