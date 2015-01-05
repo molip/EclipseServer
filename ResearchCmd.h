@@ -21,7 +21,8 @@ public:
 	virtual void Load(const Serial::LoadNode& node) override;
 
 private:
-	mutable std::vector<std::pair<TechType, int>> m_techs;
+	typedef std::vector<std::pair<TechType, int>> TechVec;
+	TechVec GetTechs(const LiveGame& game) const;
 };
 
 class ResearchArtifactCmd : public PhaseCmd

@@ -97,13 +97,12 @@ ResearchCmd::ResearchCmd(Colour colour, const LiveGame& game, int iPhase) : Phas
 	VERIFY_INPUT(!team.HasPassed());
 }
 
-void ResearchCmd::UpdateClient(const Controller& controller, const LiveGame& game) const
+ResearchCmd::TechVec ResearchCmd::GetTechs(const LiveGame& game) const
 {
-	m_techs.clear();
-	
+	TechVec techs;
 	const Team& team = GetTeam(game);
 	const int nScience = team.GetStorage()[Resource::Science];
-	
+
 	for (auto it : game.GetTechnologies())
 	{
 		TechType t = it.first;
@@ -111,11 +110,15 @@ void ResearchCmd::UpdateClient(const Controller& controller, const LiveGame& gam
 		{
 			int nCost = team.GetTechTrack().GetCost(t);
 			if (nCost <= nScience)
-				m_techs.push_back(std::make_pair(t, nCost));
+				techs.push_back(std::make_pair(t, nCost));
 		}
 	}
+	return techs;
+}
 
-	controller.SendMessage(Output::ChooseResearch(m_techs, m_iPhase > 0), GetPlayer(game));
+void ResearchCmd::UpdateClient(const Controller& controller, const LiveGame& game) const
+{
+	controller.SendMessage(Output::ChooseResearch(GetTechs(game), m_iPhase > 0), GetPlayer(game));
 }
 
 Cmd::ProcessResult ResearchCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
@@ -126,15 +129,17 @@ Cmd::ProcessResult ResearchCmd::Process(const Input::CmdMessage& msg, CommitSess
 		return nullptr;
 	}
 
-	auto& m = VerifyCastInput<const Input::CmdResearch>(msg);
-	VERIFY_INPUT_MSG("invalid tech index", InRange(m_techs, m.m_iTech));
+	const LiveGame& game = session.GetGame();
+	ResearchCmd::TechVec techs = GetTechs(game);
 
-	ResearchRecord* pRec = new ResearchRecord(m_colour, m_techs[m.m_iTech].first);
+	auto& m = VerifyCastInput<const Input::CmdResearch>(msg);
+	VERIFY_INPUT_MSG("invalid tech index", InRange(techs, m.m_iTech));
+	TechType tech = techs[m.m_iTech].first;
+
+	ResearchRecord* pRec = new ResearchRecord(m_colour, tech);
 	DoRecord(RecordPtr(pRec), session);
 	
-	const LiveGame& game = session.GetGame();
-
-	if (m_techs[m.m_iTech].first == TechType::ArtifactKey)
+	if (tech == TechType::ArtifactKey)
 		return ProcessResult(new ResearchArtifactCmd(m_colour, game, m_iPhase));
 
 	if (m_iPhase + 1 < Race(GetTeam(game).GetRace()).GetResearchRate())
