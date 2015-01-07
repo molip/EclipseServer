@@ -84,6 +84,8 @@ function OnCommandUpdate(elem)
 		OnCommandUpdatePopulationTrack(elem)
 	else if (param == "reputation_track")
 		OnCommandUpdateReputationTrack(elem)
+	else if (param == "victory_point_tiles")
+		OnCommandUpdateVictoryTiles(elem)
 	else if (param == "passed")
 		OnCommandUpdatePassed(elem)
 	else if (param == "map")
@@ -125,7 +127,7 @@ function OnCommandChoose(elem)
 	else if (param == "explore_hex")
 		Explore.OnCommandChooseHex(elem)
 	else if (param == "discovery")
-		Explore.OnCommandChooseDiscovery(elem)
+		Discovery.OnCommandChooseDiscovery(elem)
 	else if (param == "influence_src")
 		Influence.OnCommandChooseSrc(elem)
 	else if (param == "influence_dst")
@@ -345,6 +347,15 @@ function OnCommandUpdateReputationTrack(elem)
 	
 	if (IsCurrentTeam(elem.id))
 		Team.UpdateReputation()
+}
+
+function OnCommandUpdateVictoryTiles(elem)
+{
+	var team = data.teams[elem.id]
+	team.victory_tiles = elem.victory_tiles
+	
+	if (IsCurrentTeam(elem.id))
+		Team.UpdateVictoryTiles()
 }
 
 function OnCommandUpdateMap(elem)

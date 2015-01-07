@@ -296,7 +296,10 @@ Cmd::ProcessResult InfluenceDstCmd::Process(const Input::CmdMessage& msg, Commit
 	Cmd* nextInfluenceCmd = bFinish ? nullptr : new InfluenceCmd(m_colour, game, m_iPhase + 1, m_flipsLeft);
 
 	if (m_discovery != DiscoveryType::None)
-		return ProcessResult(new DiscoverCmd(m_colour, game, m_discovery), nextInfluenceCmd);
+	{
+		int idHex = session.GetGame().GetMap().GetHex(*pDstPos).GetID();
+		return ProcessResult(new DiscoverCmd(m_colour, game, m_discovery, idHex), nextInfluenceCmd);
+	}
 
 	return ProcessResult(nextInfluenceCmd);
 }

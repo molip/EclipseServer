@@ -19,6 +19,8 @@ class Hex;
 class Battle;
 class Dice;
 
+enum class ShipPart;
+
 namespace Output
 {
 
@@ -73,6 +75,7 @@ struct UpdateStorageTrack : Update { UpdateStorageTrack(const Team& team); };
 struct UpdateTechnologyTrack : Update { UpdateTechnologyTrack(const Team& team); };
 struct UpdatePopulationTrack : Update { UpdatePopulationTrack(const Team& team); };
 struct UpdateReputationTrack : Update { UpdateReputationTrack(const Team& team, bool bSendValues); };
+struct UpdateVictoryPointTiles : Update { UpdateVictoryPointTiles(const Team& team); };
 struct UpdateColonyShips : Update { UpdateColonyShips(const Team& team); };
 struct UpdatePassed : Update { UpdatePassed(const Team& team); };
 struct UpdateBlueprints : Update { UpdateBlueprints(const Team& team); };
@@ -104,7 +107,7 @@ struct ChooseExploreHex : Choose
 private:
 	Json::Array m_hexes;
 };
-struct ChooseDiscovery : Choose { ChooseDiscovery(bool bCanUndo); };
+struct ChooseDiscovery : Choose { ChooseDiscovery(DiscoveryType discovery, bool canKeep, bool canUse); };
 struct ChooseColonisePos : Choose { ChooseColonisePos(const std::vector<MapPos>& hexes); };
 struct ChooseColoniseSquares : Choose { ChooseColoniseSquares(const MapPos& pos, const EnumArray<SquareType, int>& squares, const Population& pop, int nShips); };
 
@@ -119,7 +122,7 @@ struct ChooseBuild : Choose { ChooseBuild(const std::set<ShipType>& ships, const
 struct ChooseDiplomacy : Choose { ChooseDiplomacy(); };
 struct ChooseMoveSrc : Choose { ChooseMoveSrc(std::map<MapPos, std::set<ShipType>>& srcs, bool bCanSkip); };
 struct ChooseMoveDst : Choose { ChooseMoveDst(const std::set<MapPos>& dsts); };
-struct ChooseUpgrade : Choose { ChooseUpgrade(const Team& team); };
+struct ChooseUpgrade : Choose { ChooseUpgrade(const Team& team, std::vector<ShipPart> parts, int allowedUpgrades, bool canRemove); };
 struct ChooseTrade : Choose { ChooseTrade(const Team& team); };
 
 struct ChooseUpkeep : Choose { ChooseUpkeep(const Team& team, bool canUndo); };

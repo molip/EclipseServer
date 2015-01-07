@@ -97,6 +97,13 @@ Team.UpdateReputation = function()
 	Team.SetDivHTML('reputation', html)
 }
 
+Team.UpdateVictoryTiles = function()
+{
+	var team = GetCurrentTeam()
+	var html = '<b>Victory point tiles:</b> {0}<br/>'.format(team.victory_tiles)
+	Team.SetDivHTML('victory_tiles', html)
+}
+
 Team.UpdateBlueprints = function()
 {
 	var team = GetCurrentTeam()

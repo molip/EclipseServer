@@ -162,9 +162,11 @@ struct CmdExploreHex : CmdMessage
 
 struct CmdExploreHexTake : CmdMessage {};
 
-struct CmdExploreDiscovery : CmdMessage
+struct CmdDiscovery : CmdMessage
 {
-	CmdExploreDiscovery(const Json::Element& node);
+	CmdDiscovery(const Json::Element& node);
+	enum class Action { None, Points, Use, Keep };
+	Action m_action;
 };
 
 struct CmdColonisePos : CmdMessage

@@ -144,6 +144,17 @@ int ShipLayout::GetSlotCount(ShipType t)
 	return 0;
 }
 
+bool ShipLayout::IsAncientShipPart(ShipPart p)
+{
+	return
+		p == ShipPart::AxionComp ||
+		p == ShipPart::ConformalDrive ||
+		p == ShipPart::FluxShield ||
+		p == ShipPart::HypergridSource ||
+		p == ShipPart::IonTurret ||
+		p == ShipPart::ShardHull;
+}
+
 void ShipLayout::Save(Serial::SaveNode& node) const
 {
 	node.SaveEnum("type", m_type); 

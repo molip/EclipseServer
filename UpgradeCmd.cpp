@@ -62,13 +62,20 @@ private:
 		for (auto& c : m_changes)
 		{
 			Blueprint& bp = teamState.GetBlueprint(c.ship);
+			bool ancient = ShipLayout::IsAncientShipPart(c.newPart);
 			if (bDo)
 			{
 				c.oldPart = bp.GetSlot(c.slot);
 				bp.SetSlot(c.slot, c.newPart);
+				if (ancient)
+					VERIFY(teamState.m_discoveredShipParts.erase(c.newPart) == 1);
 			}
 			else
+			{
 				bp.SetSlot(c.slot, c.oldPart);
+				if (ancient)
+					VERIFY(teamState.m_discoveredShipParts.insert(c.newPart).second);
+			}
 		}
 	}
 
@@ -92,9 +99,24 @@ UpgradeCmd::UpgradeCmd(Colour colour, const LiveGame& game) : Cmd(colour)
 {
 }
 
+std::vector<ShipPart> UpgradeCmd::GetParts(const Team& team) const
+{
+	std::vector<ShipPart> parts;
+	for (auto part : EnumRange<ShipPart>())
+		if (team.CanUseShipPart(part))
+			parts.push_back(part);
+	return parts;
+}
+
+int UpgradeCmd::GetAllowedUpgradeCount(const Team& team) const
+{
+	return team.HasPassed() ? 1 : Race(team.GetRace()).GetUpgradeRate();
+}
+
 void UpgradeCmd::UpdateClient(const Controller& controller, const LiveGame& game) const
 {
-	controller.SendMessage(Output::ChooseUpgrade(GetTeam(game)), GetPlayer(game));
+	const Team& team = GetTeam(game);
+	controller.SendMessage(Output::ChooseUpgrade(team, GetParts(team), GetAllowedUpgradeCount(team), CanRemoveParts()), GetPlayer(game));
 }
 
 Cmd::ProcessResult UpgradeCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
@@ -103,16 +125,20 @@ Cmd::ProcessResult UpgradeCmd::Process(const Input::CmdMessage& msg, CommitSessi
 	
 	const Team& team = GetTeam(session.GetGame());
 
-	const int allowedUpgrades = team.HasPassed() ? 1 : Race(team.GetRace()).GetUpgradeRate();
-	VERIFY_INPUT_MSG("too many upgrades", (int)m.m_changes.size() <= allowedUpgrades);
+	VERIFY_INPUT_MSG("too many upgrades", (int)m.m_changes.size() <= GetAllowedUpgradeCount(team));
 
 	// Apply changes to temporary blueprints and validate them.
 	std::vector<BlueprintPtr> blueprints;
 	for (ShipType type : PlayerShipTypesRange())
 		blueprints.push_back(BlueprintPtr(new Blueprint(team.GetBlueprint(type))));
 
+	const std::vector<ShipPart> parts = GetParts(team);
+		
 	for (auto& c : m.m_changes)
+	{
+		VERIFY_INPUT(std::find(parts.begin(), parts.end(), c.part) != parts.end());
 		blueprints[(int)c.ship]->SetSlot(c.slot, c.part);
+	}
 
 	for (auto& bp : blueprints)
 		VERIFY_INPUT_MSG("invalid blueprint", bp->IsValid());
@@ -134,3 +160,25 @@ void UpgradeCmd::Load(const Serial::LoadNode& node)
 }
 
 REGISTER_DYNAMIC(UpgradeCmd)
+
+//-----------------------------------------------------------------------------
+UpgradeDiscoveryCmd::UpgradeDiscoveryCmd(Colour colour, const LiveGame& game, ShipPart part) : UpgradeCmd(colour, game), m_part(part) {}
+
+std::vector<ShipPart> UpgradeDiscoveryCmd::GetParts(const Team& team) const 
+{
+	return std::vector<ShipPart>(1, m_part); 
+}
+
+void UpgradeDiscoveryCmd::Save(Serial::SaveNode& node) const
+{
+	__super::Save(node);
+	node.SaveEnum("part", m_part);
+}
+
+void UpgradeDiscoveryCmd::Load(const Serial::LoadNode& node)
+{
+	__super::Load(node);
+	node.LoadEnum("part", m_part);
+}
+
+REGISTER_DYNAMIC(UpgradeDiscoveryCmd)

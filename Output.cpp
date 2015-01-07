@@ -209,6 +209,12 @@ UpdateReputationTrack::UpdateReputationTrack(const Team& team, bool bSendValues)
 	m_root.SetAttribute("send_values", bSendValues);
 }
 
+UpdateVictoryPointTiles::UpdateVictoryPointTiles(const Team& team) : Update("victory_point_tiles")
+{
+	m_root.SetAttribute("id", team.GetPlayer().GetID());
+	m_root.SetAttribute("victory_tiles", team.GetVictoryPointTiles());
+}
+
 UpdatePassed::UpdatePassed(const Team& team) : Update("passed")
 {
 	m_root.SetAttribute("id", team.GetPlayer().GetID());
@@ -446,9 +452,11 @@ void ChooseExploreHex::AddHexChoice(int idHex, const std::vector<int>& rotations
 		rotationsNode.Append(r);
 }
 
-ChooseDiscovery::ChooseDiscovery(bool bCanUndo) : Choose("discovery") 
+ChooseDiscovery::ChooseDiscovery(DiscoveryType discovery, bool canKeep, bool canUse) : Choose("discovery")
 {
-	m_root.SetAttribute("can_undo", bCanUndo);
+	m_root.SetAttribute("discovery", EnumToString(discovery));
+	m_root.SetAttribute("can_keep", canKeep);
+	m_root.SetAttribute("can_use", canUse);
 }
 
 ChooseColonisePos::ChooseColonisePos(const std::vector<MapPos>& hexes) : Choose("colonise_pos") 
@@ -558,7 +566,7 @@ ChooseMoveDst::ChooseMoveDst(const std::set<MapPos>& dsts) : Choose("move_dst")
 		AppendPointElement(h.GetX(), h.GetY(), hexesNode);
 }
 
-ChooseUpgrade::ChooseUpgrade(const Team& team) : Choose("upgrade")
+ChooseUpgrade::ChooseUpgrade(const Team& team, std::vector<ShipPart> parts, int allowedUpgrades, bool canRemove) : Choose("upgrade")
 {
 	auto appendPart = [](Json::Array& array, ShipPart part)
 	{
@@ -569,12 +577,12 @@ ChooseUpgrade::ChooseUpgrade(const Team& team) : Choose("upgrade")
 		partNode.SetAttribute("is_drive", ShipLayout::IsDrive(part));
 	};
 
-	m_root.SetAttribute("max_upgrades", team.HasPassed() ? 1 : Race(team.GetRace()).GetUpgradeRate());
+	m_root.SetAttribute("max_upgrades", allowedUpgrades);
+	m_root.SetAttribute("can_remove", canRemove);
 
 	auto partsNode = m_root.AddArray("parts");
-	for (auto part : EnumRange<ShipPart>())
-		if (team.CanUseShipPart(part))
-			appendPart(partsNode, part);
+	for (auto part : parts)
+		appendPart(partsNode, part);
 
 	auto blueprintsNode = m_root.AddArray("blueprints");
 	for (auto type : PlayerShipTypesRange())

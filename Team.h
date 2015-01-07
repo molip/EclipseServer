@@ -66,6 +66,8 @@ public:
 	int GetUsedColonyShips() const { return m_state->m_nColonyShipsUsed; }
 	int GetUnusedColonyShips() const { return GetColonyShips() - m_state->m_nColonyShipsUsed; }
 
+	int GetVictoryPointTiles() const { return m_state->m_victoryPointTiles; }
+
 	bool HasPassed() const { return m_state->m_bPassed; }
 
 	const Blueprint& GetBlueprint(ShipType s) const { return m_state->GetBlueprint(s); }

@@ -6,11 +6,13 @@
 #include <vector> 
 #include <set> 
 
+enum class TechType;
+
 class DiscoverCmd : public Cmd
 {
 public:
-	DiscoverCmd() : m_discovery(DiscoveryType::None) {}
-	DiscoverCmd(Colour colour, const LiveGame& game, DiscoveryType discovery);
+	DiscoverCmd() : m_discovery(DiscoveryType::None), m_idHex(0) {}
+	DiscoverCmd(Colour colour, const LiveGame& game, DiscoveryType discovery, int idHex);
 
 	virtual void UpdateClient(const Controller& controller, const LiveGame& game) const override;
 	virtual ProcessResult Process(const Input::CmdMessage& msg, CommitSession& session) override;
@@ -19,16 +21,10 @@ public:
 	virtual void Load(const Serial::LoadNode& node) override;
 
 private:
-	virtual Cmd* GetNextCmd(const LiveGame& game) const { return nullptr; }
+	bool CanKeep() const;
+	bool CanUse(const LiveGame& game) const;
+	std::vector<TechType> GetAncientTechs(const LiveGame& game) const;
 
 	DiscoveryType m_discovery;
-		//std::unique_ptr<DiscoveryChoice> m_pDiscoveryChoice;
-		
-		//Take victory points
-		//Take discovery
-		//	Tech 
-		//		choose tech
-		//	Ship part: 
-		//		Choose slot
-		//		Save for later
+	int m_idHex;
 };

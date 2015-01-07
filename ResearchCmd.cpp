@@ -11,18 +11,20 @@ class ResearchRecord : public TeamRecord
 {
 public:
 	ResearchRecord() : m_tech(TechType::None) {}
-	ResearchRecord(Colour colour, TechType t) : TeamRecord(colour), m_tech(t) {}
+	ResearchRecord(Colour colour, TechType t, bool free) : TeamRecord(colour), m_tech(t), m_free(free) {}
 
 	virtual void Save(Serial::SaveNode& node) const override 
 	{
 		__super::Save(node);
 		node.SaveEnum("tech", m_tech);
+		node.SaveType("free", m_free);
 	}
 	
 	virtual void Load(const Serial::LoadNode& node) override 
 	{
 		__super::Load(node);
 		node.LoadEnum("tech", m_tech);
+		node.LoadType("free", m_free);
 	}
 
 private:
@@ -45,19 +47,23 @@ private:
 			++it->second;
 		}
 
-		// Add/remove tech and science cost from team.
-		int nCost = 0;
-		if (bDo)
+		if (!m_free)
 		{
-			nCost = team.GetTechTrack().GetCost(m_tech);
-			teamState.GetTechTrack().Add(m_tech);
+			// Add/remove tech and science cost from team.
+			int nCost = 0;
+			if (bDo)
+			{
+				nCost = team.GetTechTrack().GetCost(m_tech);
+				teamState.GetTechTrack().Add(m_tech);
+			}
+			else
+			{
+				teamState.GetTechTrack().Remove(m_tech);
+				nCost = -team.GetTechTrack().GetCost(m_tech);
+			}
+			teamState.GetStorage()[Resource::Science] -= nCost;
+
 		}
-		else
-		{
-			teamState.GetTechTrack().Remove(m_tech);
-			nCost = -team.GetTechTrack().GetCost(m_tech);
-		}
-		teamState.GetStorage()[Resource::Science] -= nCost;
 
 		// Add/remove influence discs.
 		if (int nDiscs = GetInfluenceDiscs())
@@ -85,6 +91,7 @@ private:
 	}
 
 	TechType m_tech;
+	bool m_free;
 };
 
 REGISTER_DYNAMIC(ResearchRecord)
@@ -135,17 +142,23 @@ Cmd::ProcessResult ResearchCmd::Process(const Input::CmdMessage& msg, CommitSess
 	auto& m = VerifyCastInput<const Input::CmdResearch>(msg);
 	VERIFY_INPUT_MSG("invalid tech index", InRange(techs, m.m_iTech));
 	TechType tech = techs[m.m_iTech].first;
+	bool free = techs[m.m_iTech].second == 0;
 
-	ResearchRecord* pRec = new ResearchRecord(m_colour, tech);
+	ResearchRecord* pRec = new ResearchRecord(m_colour, tech, free);
 	DoRecord(RecordPtr(pRec), session);
 	
 	if (tech == TechType::ArtifactKey)
 		return ProcessResult(new ResearchArtifactCmd(m_colour, game, m_iPhase));
 
-	if (m_iPhase + 1 < Race(GetTeam(game).GetRace()).GetResearchRate())
+	if (CanResearchAgain(game))
 		return ProcessResult(new ResearchCmd(m_colour, game, m_iPhase + 1));
 
 	return nullptr;
+}
+
+bool ResearchCmd::CanResearchAgain(const LiveGame& game) const
+{
+	return m_iPhase + 1 < Race(GetTeam(game).GetRace()).GetResearchRate();
 }
 
 void ResearchCmd::Save(Serial::SaveNode& node) const 
@@ -159,6 +172,34 @@ void ResearchCmd::Load(const Serial::LoadNode& node)
 }
 
 REGISTER_DYNAMIC(ResearchCmd)
+
+//-----------------------------------------------------------------------------
+
+ResearchDiscoveryCmd::ResearchDiscoveryCmd(Colour colour, const LiveGame& game, std::vector<TechType> techs) : ResearchCmd(colour, game), m_techs(techs)
+{
+}
+
+ResearchCmd::TechVec ResearchDiscoveryCmd::GetTechs(const LiveGame& game) const
+{
+	TechVec techs;
+	for (auto&& tech : m_techs)
+		techs.push_back(std::make_pair(tech, 0));
+	return techs;
+}
+
+void ResearchDiscoveryCmd::Save(Serial::SaveNode& node) const
+{
+	__super::Save(node);
+	node.SaveCntr("techs", m_techs, Serial::EnumSaver());
+}
+
+void ResearchDiscoveryCmd::Load(const Serial::LoadNode& node)
+{
+	__super::Load(node);
+	node.LoadCntr("techs", m_techs, Serial::EnumLoader());
+}
+
+REGISTER_DYNAMIC(ResearchDiscoveryCmd)
 
 //-----------------------------------------------------------------------------
 

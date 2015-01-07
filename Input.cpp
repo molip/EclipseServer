@@ -75,8 +75,8 @@ MessagePtr CreateCommand(const Json::Element& root)
 		return MessagePtr(new CmdExploreHex(root));
 	if (type == "cmd_explore_hex_take")
 		return MessagePtr(new CmdExploreHexTake());
-	if (type == "cmd_explore_discovery")
-		return MessagePtr(new CmdExploreDiscovery(root));
+	if (type == "cmd_discovery")
+		return MessagePtr(new CmdDiscovery(root));
 	if (type == "cmd_influence_src")
 		return MessagePtr(new CmdInfluenceSrc(root));
 	if (type == "cmd_influence_flip")
@@ -415,8 +415,14 @@ CmdExploreHex::CmdExploreHex(const Json::Element& node) : m_iRot(0), m_iHex(0), 
 	m_bInfluence = node.GetAttributeBool("influence");
 }
 
-CmdExploreDiscovery::CmdExploreDiscovery(const Json::Element& node)
+CmdDiscovery::CmdDiscovery(const Json::Element& node)
 {
+	std::string action = node.GetAttributeStr("action");
+	m_action =
+		action == "points" ? Action::Points :
+		action == "use" ? Action::Use :
+		action == "keep" ? Action::Keep :
+		Action::None;
 }
 
 CmdColonisePos::CmdColonisePos(const Json::Element& node)

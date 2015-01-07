@@ -20,9 +20,25 @@ public:
 	virtual void Save(Serial::SaveNode& node) const override;
 	virtual void Load(const Serial::LoadNode& node) override;
 
-private:
+protected:
 	typedef std::vector<std::pair<TechType, int>> TechVec;
-	TechVec GetTechs(const LiveGame& game) const;
+	virtual TechVec GetTechs(const LiveGame& game) const;
+	virtual bool CanResearchAgain(const LiveGame& game) const;
+};
+
+class ResearchDiscoveryCmd : public ResearchCmd
+{
+public:
+	ResearchDiscoveryCmd() {}
+	ResearchDiscoveryCmd(Colour colour, const LiveGame& game, std::vector<TechType> techs);
+
+	virtual void Save(Serial::SaveNode& node) const override;
+	virtual void Load(const Serial::LoadNode& node) override;
+
+private:
+	virtual TechVec GetTechs(const LiveGame& game) const override;
+	virtual bool CanResearchAgain(const LiveGame& game) const override { return false; }
+	std::vector<TechType> m_techs;
 };
 
 class ResearchArtifactCmd : public PhaseCmd

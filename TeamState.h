@@ -64,6 +64,7 @@ public:
 
 	int m_nColonyShipsUsed;
 	bool m_bPassed;
+	int m_victoryPointTiles;
 
 private:
 	void InitHex(const Team& team, const MapPos& pos, int rotation, Map& map);

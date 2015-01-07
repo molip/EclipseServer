@@ -131,23 +131,6 @@ Explore.ChooseHexStage.prototype.UpdateInfluenceCheckbox = function()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-
-Explore.ChooseDiscoveryStage = function(canUndo)
-{
-	this.flagNoSubAction = true;
-	this.flagCantUndo = !canUndo
-}
-
-Explore.ChooseDiscoveryStage.prototype.SendDiscovery = function()
-{
-	var json = CreateCommandJSON('cmd_explore_discovery')
-
-	ExitAction()
-	
-	SendJSON(json)
-}
-
-///////////////////////////////////////////////////////////////////////////////
 // Input
 
 Explore.OnCommandChoosePos = function(elem)
@@ -178,14 +161,3 @@ Explore.OnCommandChooseHex = function(elem)
 
 	Map.DrawSelectLayer()
 }
-
-Explore.OnCommandChooseDiscovery = function(elem)
-{
-	data.action = new Explore.ChooseDiscoveryStage(elem.can_undo)
-
-	ShowActionElement('choose_explore_discovery')
-	
-	Map.DrawActionLayer()
-	Map.DrawSelectLayer()
-}
-

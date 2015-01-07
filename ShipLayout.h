@@ -57,6 +57,8 @@ public:
 
 	static int GetSlotCount(ShipType t);
 
+	static bool IsAncientShipPart(ShipPart p);
+
 	void Save(Serial::SaveNode& node) const;
 	void Load(const Serial::LoadNode& node);
 

@@ -285,6 +285,7 @@ Cmd::ProcessResult ExploreHexCmd::Process(const Input::CmdMessage& msg, CommitSe
 		return ProcessResult(new ExploreHexCmd(m_colour, game, m_pos, hexIDs, m_iPhase));
 	}
 
+	int idHex = 0;
 	bool bReject = !!dynamic_cast<const Input::CmdAbort*>(&msg);
 	if (bReject)
 	{
@@ -301,8 +302,8 @@ Cmd::ProcessResult ExploreHexCmd::Process(const Input::CmdMessage& msg, CommitSe
 	
 		VERIFY_INPUT(InRange(hc.m_rotations, m.m_iRot));
 		m_iRot = m.m_iRot;
-
-		ExploreHexRecord* pRec = new ExploreHexRecord(m_colour, m_pos, m_hexChoices[m_iHex].m_idHex, hc.m_rotations[m_iRot], m.m_bInfluence);
+		idHex = m_hexChoices[m_iHex].m_idHex;
+		ExploreHexRecord* pRec = new ExploreHexRecord(m_colour, m_pos, idHex, hc.m_rotations[m_iRot], m.m_bInfluence);
 		DoRecord(RecordPtr(pRec), session);
 
 		m_discovery = pRec->GetDiscovery();
@@ -312,7 +313,7 @@ Cmd::ProcessResult ExploreHexCmd::Process(const Input::CmdMessage& msg, CommitSe
 	Cmd* nextExploreCmd = bFinish ? nullptr : new ExploreCmd(m_colour, game, m_iPhase + 1);
 
 	if (m_discovery != DiscoveryType::None)
-		return ProcessResult(new DiscoverCmd(m_colour, game, m_discovery), nextExploreCmd);
+		return ProcessResult(new DiscoverCmd(m_colour, game, m_discovery, idHex), nextExploreCmd);
 
 	return nextExploreCmd;
 }

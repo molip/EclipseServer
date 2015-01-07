@@ -21,6 +21,7 @@
 <script src="combat.js"></script>
 <script src="team.js"></script>
 <script src="population.js"></script>
+<script src="discovery.js"></script>
 
 <script>
     data.playerID = %PLAYER_ID%
@@ -126,6 +127,7 @@
 				<div id="team_storage"></div>
 				<div id="team_technology"></div>
 				<div id="team_reputation"></div>
+				<div id="team_victory_tiles"></div>
 				<div id="team_influence" onclick="if (data.action && data.action.OnClickInfluenceTrack) data.action.OnClickInfluenceTrack()"></div>
 				<div id="team_actions"></div>
 				<div id="team_colony_ships"></div>
@@ -185,9 +187,11 @@
 				<button type="button" onclick="data.action.SendHex()">Next</button>
 				<button type="button" onclick="SendAbort()">Reject</button>
 			</div>
-			<div id="choose_explore_discovery" style="display:none">
-				You have discovered something!
-				<button id="choose_explore_discovery" type="button" onclick="data.action.SendDiscovery()">Next</button>
+			<div id="choose_discovery" style="display:none">
+				You have discovered: <span id="choose_discovery_item"></span><br>
+				<button id="choose_discovery_points" type="button" onclick="data.action.SendDiscovery('points')">Points</button>
+				<button id="choose_discovery_use" type="button" onclick="data.action.SendDiscovery('use')">Use</button>
+				<button id="choose_discovery_keep" type="button" onclick="data.action.SendDiscovery('keep')">Keep</button>
 			</div>
 			<div id="choose_influence_src" style="display:none">
 				Choose disc to move...
