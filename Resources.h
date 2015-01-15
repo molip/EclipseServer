@@ -2,6 +2,7 @@
 
 #include <vector>
 #include "EnumRange.h"
+#include "EnumArray.h"
 
 namespace Serial { class SaveNode; class LoadNode; }
 
@@ -12,17 +13,11 @@ struct OrbitalResourcesRange : EnumRange<Resource>
 	OrbitalResourcesRange() : EnumRange<Resource>(Resource::Money, Resource::Materials) {}
 };
 
-class Resources : private std::vector<int>
+class Resources : public EnumIntArray<Resource>
 {
 public:
-	const int& operator[] (Resource r) const { return at(r); }
-	int& operator[] (Resource r) { return at(r); }
-
 	void operator+=(const Resources& rhs);
 	void operator-=(const Resources& rhs);
-
-	int GetTotal() const { int n = 0; for (auto& r : *this) n += r; return n; }
-	bool IsEmpty() const { for (auto& r : *this) if (r) return false; return true; }
 
 	void Save(Serial::SaveNode& node) const;
 	void Load(const Serial::LoadNode& node);
@@ -30,19 +25,8 @@ public:
 	static bool IsOrbitalType(Resource r);
 
 protected:
-	Resources(int money = 0, int sci = 0, int mat = 0) 
-	{
-		// Same order as enum.
-		push_back(money);
-		push_back(sci);
-		push_back(mat);
-	}
-	bool operator==(const Resources& rhs) const { for (size_t i = 0; i < 3; ++i) if (__super::at(i) != rhs.__super::at(i)) return false; return true; }
-
-	const int& at(Resource r) const { return __super::at((int)r); }
-	int& at(Resource r) { return __super::at((int)r); }
-
-private:
+	Resources() {}
+	Resources(int money, int sci, int mat) : EnumIntArray<Resource>({ money, sci, mat }) {}
 };
 
 class Population : public Resources
@@ -50,7 +34,7 @@ class Population : public Resources
 public:
 	Population() {}
 	Population(int money, int sci, int mat) : Resources(money, sci, mat) {}
-	bool operator==(const Population& rhs) const { return __super::operator==(rhs); }
+	bool operator==(const Population& rhs) const { return std::operator==(*this, rhs); }
 };
 
 class Storage : public Resources
@@ -58,5 +42,5 @@ class Storage : public Resources
 public:
 	Storage() {}
 	Storage(int money, int sci, int mat) : Resources(money, sci, mat) {}
-	bool operator==(const Storage& rhs) const { return __super::operator==(rhs); }
+	bool operator==(const Storage& rhs) const { return std::operator==(*this, rhs); }
 };
