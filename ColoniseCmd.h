@@ -40,5 +40,5 @@ public:
 
 private:
 	MapPos m_pos;
-	EnumArray<SquareType, int> m_squareCounts;
+	SquareCounts m_squareCounts;
 };

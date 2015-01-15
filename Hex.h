@@ -2,6 +2,7 @@
 
 #include "Resources.h"
 #include "MapPos.h"
+#include "Types.h"
 
 #include <vector>
 #include <bitset>
@@ -25,7 +26,6 @@ extern Edge RotateEdge(Edge e, int n);
 class EdgeSet;
 class SquareDef;
 class Hex;
-enum class SquareType { Money, Science, Materials, Any, Orbital, _Count };
 
 namespace Serial { class SaveNode; class LoadNode; }
 
