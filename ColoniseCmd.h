@@ -39,6 +39,7 @@ public:
 	virtual void Load(const Serial::LoadNode& node) override;
 
 private:
+	SquareCounts GetSquareCounts(const LiveGame& game) const;
+
 	MapPos m_pos;
-	SquareCounts m_squareCounts;
 };

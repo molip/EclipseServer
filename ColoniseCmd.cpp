@@ -113,13 +113,18 @@ REGISTER_DYNAMIC(ColoniseRecord)
 
 ColoniseSquaresCmd::ColoniseSquaresCmd(Colour colour, const LiveGame& game, const MapPos& pos) : Cmd(colour), m_pos(pos)
 {
-	const Hex& hex = game.GetMap().GetHex(pos);
-	
-	auto squares = hex.GetAvailableSquares(GetTeam(game));
+}
+
+SquareCounts ColoniseSquaresCmd::GetSquareCounts(const LiveGame& game) const
+{
+	auto squares = game.GetMap().GetHex(m_pos).GetAvailableSquares(GetTeam(game));
 	VERIFY_INPUT_MSG("no squares available", !squares.empty());
 
+	SquareCounts squareCounts;
 	for (auto& pSquare : squares)
-		++m_squareCounts[pSquare->GetType()];
+		++squareCounts[pSquare->GetType()];
+
+	return squareCounts;
 }
 
 void ColoniseSquaresCmd::UpdateClient(const Controller& controller, const LiveGame& game) const
@@ -127,7 +132,8 @@ void ColoniseSquaresCmd::UpdateClient(const Controller& controller, const LiveGa
 	auto& team = GetTeam(game);
 	const Population& pop = team.GetPopulationTrack().GetPopulation();
 	int nShips = team.GetUnusedColonyShips();
-	controller.SendMessage(Output::ChooseColoniseSquares(m_pos, m_squareCounts, pop, nShips), GetPlayer(game));
+	SquareCounts squareCounts = GetSquareCounts(game);
+	controller.SendMessage(Output::ChooseColoniseSquares(m_pos, squareCounts, pop, nShips), GetPlayer(game));
 }
 
 Cmd::ProcessResult ColoniseSquaresCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
@@ -142,7 +148,7 @@ Cmd::ProcessResult ColoniseSquaresCmd::Process(const Input::CmdMessage& msg, Com
 	ColoniseRecord* pRec = new ColoniseRecord(m_colour, m_pos);
 
 	// Allocate population cubes to squares.
-	auto squareCounts = m_squareCounts;
+	auto squareCounts = GetSquareCounts(session.GetGame());
 	for (auto&& s : EnumRange<SquareType>())
 	{
 		int& squareCount = squareCounts[s];
@@ -174,14 +180,12 @@ void ColoniseSquaresCmd::Save(Serial::SaveNode& node) const
 {
 	__super::Save(node);
 	node.SaveType("pos", m_pos);
-	node.SaveArray("square_counts", m_squareCounts, Serial::TypeSaver());
 }
 
 void ColoniseSquaresCmd::Load(const Serial::LoadNode& node) 
 {
 	__super::Load(node);
 	node.LoadType("pos", m_pos);
-	node.LoadArray("square_counts", m_squareCounts, Serial::TypeLoader());
 }
 
 REGISTER_DYNAMIC(ColoniseSquaresCmd)
