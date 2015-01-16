@@ -12,36 +12,42 @@
 
 ColoniseCmd::ColoniseCmd(Colour colour, const LiveGame& game) : Cmd(colour)
 {
+}
+
+std::vector<MapPos> ColoniseCmd::GetPositions(const LiveGame& game) const
+{
+	std::vector<MapPos> positions;
 	const Team& team = GetTeam(game);
 	for (auto& h : game.GetMap().GetHexes())
 		if (h.second->IsOwnedBy(team))
 			if (!h.second->GetAvailableSquares(team).empty()) // TODO: Check pop cubes
-				m_positions.push_back(h.first);
+				positions.push_back(h.first);
+	return positions;
 }
 
 void ColoniseCmd::UpdateClient(const Controller& controller, const LiveGame& game) const
 {
-	controller.SendMessage(Output::ChooseColonisePos(m_positions), GetPlayer(game));
+	controller.SendMessage(Output::ChooseColonisePos(GetPositions(game)), GetPlayer(game));
 }
 
 Cmd::ProcessResult ColoniseCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
 {
 	auto& m = VerifyCastInput<const Input::CmdColonisePos>(msg);
-	VERIFY_INPUT_MSG("invalid pos index", m.m_iPos == -1 || InRange(m_positions, m.m_iPos));
 	
-	return ProcessResult(new ColoniseSquaresCmd(m_colour, session.GetGame(), m_positions[m.m_iPos]));
+	auto positions = GetPositions(session.GetGame());
+	VERIFY_INPUT_MSG("invalid pos index", m.m_iPos == -1 || InRange(positions, m.m_iPos));
+	
+	return ProcessResult(new ColoniseSquaresCmd(m_colour, session.GetGame(), positions[m.m_iPos]));
 }
 
 void ColoniseCmd::Save(Serial::SaveNode& node) const 
 {
 	__super::Save(node);
-	node.SaveCntr("positions", m_positions, Serial::TypeSaver());
 }
 
 void ColoniseCmd::Load(const Serial::LoadNode& node) 
 {
 	__super::Load(node);
-	node.LoadCntr("positions", m_positions, Serial::TypeLoader());
 }
 
 REGISTER_DYNAMIC(ColoniseCmd)

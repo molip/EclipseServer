@@ -23,7 +23,7 @@ public:
 	virtual void Load(const Serial::LoadNode& node) override;
 
 private:
-	std::vector<MapPos> m_positions;
+	std::vector<MapPos> GetPositions(const LiveGame& game) const;
 };
 
 class ColoniseSquaresCmd : public Cmd
