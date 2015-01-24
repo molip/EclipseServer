@@ -175,11 +175,20 @@ struct CmdColonisePos : CmdMessage
 	int m_iPos;
 };
 
-struct CmdColoniseSquares : CmdMessage
+struct CmdColoniseBase : CmdMessage
 {
-	CmdColoniseSquares(const Json::Element& node);
+	CmdColoniseBase(const Json::Element& node);
 	
 	Population m_moved;
+};
+
+struct CmdColoniseSquares : CmdColoniseBase
+{
+	CmdColoniseSquares(const Json::Element& node);
+};
+struct CmdUncolonise : CmdColoniseBase
+{
+	CmdUncolonise(const Json::Element& node);
 };
 
 struct CmdAbort : CmdMessage

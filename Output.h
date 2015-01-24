@@ -130,6 +130,8 @@ struct ChooseUpkeep : Choose { ChooseUpkeep(const Team& team, bool canUndo); };
 struct ChooseCombat : Choose { ChooseCombat(const LiveGame& game); };
 struct ChooseDice : Choose { ChooseDice(const LiveGame& game, const Dice& dice, int activePlayerId); };
 
+struct ChooseUncolonise : Choose { ChooseUncolonise(const SquareCounts& squares, const Population& pop); };
+
 struct ShowGameList : Show { ShowGameList(); };
 struct ShowLobby : Show { ShowLobby(); };
 struct ShowChoose : Show { ShowChoose(); };

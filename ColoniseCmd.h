@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Cmd.h"
+#include "MovePopulationCommand.h"
 #include "MapPos.h"
 #include "Discovery.h"
 #include "Hex.h"
@@ -26,7 +26,7 @@ private:
 	std::vector<MapPos> GetPositions(const LiveGame& game) const;
 };
 
-class ColoniseSquaresCmd : public Cmd
+class ColoniseSquaresCmd : public MovePopulationCommand
 {
 public:
 	ColoniseSquaresCmd() {}

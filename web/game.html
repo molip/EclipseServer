@@ -22,6 +22,7 @@
 <script src="team.js"></script>
 <script src="population.js"></script>
 <script src="discovery.js"></script>
+<script src="uncolonise.js"></script>
 
 <script>
     data.playerID = %PLAYER_ID%
@@ -290,6 +291,27 @@
 			<div id="choose_dice" style="display:none">
 				Assign Dice
 				<button id="choose_dice_ok" type="button" onclick="data.action.Send()">OK</button>
+			</div>
+			<div id="choose_uncolonise" style="display:none">
+				Uncolonise / graveyard...<br>
+				<div style="float:left">
+					<div style="background-color:#ff7200; padding:5px; margin:2px">
+						<button id="choose_uncolonise_remove_Money" type="button" onclick="data.action.OnButton('Money', -1)">-</button>
+						<button id="choose_uncolonise_add_Money" type="button" onclick="data.action.OnButton('Money', 1)">+</button>
+					</div>
+					<div style="background-color:#fe98a9; padding:5px; margin:2px">
+						<button id="choose_uncolonise_remove_Science" type="button" onclick="data.action.OnButton('Science', -1)">-</button>
+						<button id="choose_uncolonise_add_Science" type="button" onclick="data.action.OnButton('Science', 1)">+</button>
+					</div>
+					<div style="background-color:#a6603e; padding:5px; margin:2px">
+						<button id="choose_uncolonise_remove_Materials" type="button" onclick="data.action.OnButton('Materials', -1)">-</button>
+						<button id="choose_uncolonise_add_Materials" type="button" onclick="data.action.OnButton('Materials',1)">+</button>
+					</div>
+				</div>
+				<div id="choose_uncolonise_content" style="margin-top:auto; margin-bottom:auto; float:left">
+<!-- 					<canvas id="population_ui_canvas" width="250px" height="100px" style="background-color:black "></canvas> -->
+				</div>
+				<button id="choose_uncolonise_btn" type="button" onclick="data.action.Send()">Next</button>
 			</div>
 		</div>
 		<div id="review_ui">

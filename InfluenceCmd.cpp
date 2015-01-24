@@ -10,6 +10,7 @@
 #include "DiscoverCmd.h"
 #include "Record.h"
 #include "CommitSession.h"
+#include "UncoloniseCmd.h"
 
 class InfluenceFlipRecord : public TeamRecord
 {
@@ -294,12 +295,16 @@ Cmd::ProcessResult InfluenceDstCmd::Process(const Input::CmdMessage& msg, Commit
 
 	const bool bFinish = m_iPhase == 1 && GetMaxFlips(session.GetGame()) == 0;
 	Cmd* nextInfluenceCmd = bFinish ? nullptr : new InfluenceCmd(m_colour, game, m_iPhase + 1, m_flipsLeft);
-
+	
+	const Map& map = session.GetGame().GetMap();
+	
 	if (m_discovery != DiscoveryType::None)
 	{
-		int idHex = session.GetGame().GetMap().GetHex(*pDstPos).GetID();
+		int idHex = map.GetHex(*pDstPos).GetID();
 		return ProcessResult(new DiscoverCmd(m_colour, game, m_discovery, idHex), nextInfluenceCmd);
 	}
+	else if (m_pSrcPos && map.GetHex(*m_pSrcPos).HasAnyOccupiedSquares())
+		return ProcessResult(new UncoloniseCmd(m_colour, *m_pSrcPos), nextInfluenceCmd);
 
 	return ProcessResult(nextInfluenceCmd);
 }

@@ -89,6 +89,8 @@ MessagePtr CreateCommand(const Json::Element& root)
 		return MessagePtr(new CmdColonisePos(root));
 	if (type == "cmd_colonise_squares")
 		return MessagePtr(new CmdColoniseSquares(root));
+	if (type == "cmd_uncolonise")
+		return MessagePtr(new CmdUncolonise(root));
 	if (type == "cmd_research")
 		return MessagePtr(new CmdResearch(root));
 	if (type == "cmd_research_artifact")
@@ -430,10 +432,18 @@ CmdColonisePos::CmdColonisePos(const Json::Element& node)
 	m_iPos = node.GetAttributeInt("pos_idx");
 }
 
-CmdColoniseSquares::CmdColoniseSquares(const Json::Element& node)
+CmdColoniseBase::CmdColoniseBase(const Json::Element& node)
 {
 	for (auto r : EnumRange<Resource>())
 		m_moved[r] = node.GetChildElement("moved").GetAttributeInt(::EnumToString(r));
+}
+
+CmdColoniseSquares::CmdColoniseSquares(const Json::Element& node) : CmdColoniseBase(node)
+{
+}
+
+CmdUncolonise::CmdUncolonise(const Json::Element& node) : CmdColoniseBase(node)
+{
 }
 
 CmdInfluenceSrc::CmdInfluenceSrc(const Json::Element& node)

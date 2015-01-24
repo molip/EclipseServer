@@ -156,6 +156,8 @@ function OnCommandChoose(elem)
 		Combat.OnCommand(elem)
 	else if (param == "dice")
 		Combat.OnDiceCommand(elem)
+	else if (param == "uncolonise")
+		Uncolonise.OnCommand(elem)
 	else
 		alert('OnCommandChoose: unknown param: ' + param)
 

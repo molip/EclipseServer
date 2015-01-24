@@ -305,6 +305,21 @@
     <ClInclude Include="GameStateAccess.h">
       <Filter>Model</Filter>
     </ClInclude>
+    <ClInclude Include="Types.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="MovePopulationCommand.h">
+      <Filter>Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="MovePopulationRecord.h">
+      <Filter>Model\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="MoveHexPopulationRecord.h">
+      <Filter>Model\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="UncoloniseCmd.h">
+      <Filter>Commands</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -570,6 +585,18 @@
     </ClCompile>
     <ClCompile Include="GameStateAccess.cpp">
       <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="MovePopulationCommand.cpp">
+      <Filter>Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="MovePopulationRecord.cpp">
+      <Filter>Model\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="MoveHexPopulationRecord.cpp">
+      <Filter>Model\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="UncoloniseCmd.cpp">
+      <Filter>Commands</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

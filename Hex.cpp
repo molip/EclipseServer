@@ -20,6 +20,7 @@ const SquareDef& Square::GetDef() const
 }
 
 TechType Square::GetRequiredTech() const { return GetDef().GetRequiredTech(); }
+bool Square::CanOccupy(const Team& team) const { return GetRequiredTech() == TechType::None || team.HasTech(GetRequiredTech()); }
 bool Square::IsOccupied() const { return m_hex.IsSquareOccupied(m_index); }
 void Square::SetOccupied(bool b) { m_hex.SetSquareOccupied(m_index, b); }
 SquareType Square::GetType() const { return GetDef().GetType(); }
@@ -223,11 +224,36 @@ std::vector<Square*> Hex::GetAvailableSquares(const Team& team)
 	std::vector<Square*> squares;
 
 	for (Square& s : m_squares)
-		if (!s.IsOccupied() && (s.GetRequiredTech() == TechType::None || team.HasTech(s.GetRequiredTech())))
+		if (!s.IsOccupied() && s.CanOccupy(team))
 			squares.push_back(&s);
 	return squares;
 }
 
+SquareCounts Hex::GetAvailableSquareCounts(const Team& team) const
+{
+	SquareCounts counts;
+	for (auto& s : m_squares)
+		if (!s.IsOccupied() && s.CanOccupy(team))
+			++counts[s.GetType()];
+	return counts;
+}
+
+SquareCounts Hex::GetOccupiedSquareCounts() const
+{
+	SquareCounts counts;
+	for (auto& s : m_squares)
+		if (s.IsOccupied())
+			++counts[s.GetType()];
+	return counts;
+}
+
+bool Hex::HasAnyOccupiedSquares() const
+{
+	for (auto& s : m_squares)
+		if (s.IsOccupied())
+			return true;;
+	return false;
+}
 Fleet* Hex::FindFleet(Colour c) 
 {
 	for (auto& f : m_fleets)

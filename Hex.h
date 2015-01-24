@@ -36,6 +36,7 @@ public:
 	Square(Hex& hex, int index);
 	bool operator==(const Square& rhs) const { return m_index == rhs.m_index; }
 	TechType GetRequiredTech() const;
+	bool CanOccupy(const Team& team) const;
 	bool IsOccupied() const;
 	void SetOccupied(bool b);
 	SquareType GetType() const;
@@ -115,6 +116,10 @@ public:
 
 	std::vector<Square*> GetAvailableSquares(const Team& team);
 	const std::vector<Square*> GetAvailableSquares(const Team& team) const { return const_cast<Hex*>(this)->GetAvailableSquares(team); }
+
+	SquareCounts GetAvailableSquareCounts(const Team& team) const;
+	SquareCounts GetOccupiedSquareCounts() const;
+	bool HasAnyOccupiedSquares() const;
 
 	Colour GetColour() const { return m_colour; }
 	void SetColour(Colour c);

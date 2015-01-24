@@ -16,6 +16,7 @@ public:
 	void Remove(Resource r, int nRemove) { Add(r, -nRemove); }
 
 	const Population& GetPopulation() const { return m_pop; }
+	Population GetEmptySpaces() const;
 
 	static int GetIncome(int nPop);
 

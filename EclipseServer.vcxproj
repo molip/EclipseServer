@@ -91,6 +91,9 @@
     <ClInclude Include="Blueprint.h" />
     <ClInclude Include="BlueprintDefs.h" />
     <ClInclude Include="BuildCmd.h" />
+    <ClInclude Include="MovePopulationCommand.h" />
+    <ClInclude Include="MovePopulationRecord.h" />
+    <ClInclude Include="MoveHexPopulationRecord.h" />
     <ClInclude Include="CombatCmd.h" />
     <ClInclude Include="CombatPhase.h" />
     <ClInclude Include="Debug.h" />
@@ -166,6 +169,8 @@
     <ClInclude Include="tinyxml.h" />
     <ClInclude Include="TradeCmd.h" />
     <ClInclude Include="Turn.h" />
+    <ClInclude Include="Types.h" />
+    <ClInclude Include="UncoloniseCmd.h" />
     <ClInclude Include="UpgradeCmd.h" />
     <ClInclude Include="UpkeepPhase.h" />
     <ClInclude Include="Util.h" />
@@ -185,6 +190,9 @@
     <ClCompile Include="Blueprint.cpp" />
     <ClCompile Include="BlueprintDefs.cpp" />
     <ClCompile Include="BuildCmd.cpp" />
+    <ClCompile Include="MovePopulationCommand.cpp" />
+    <ClCompile Include="MovePopulationRecord.cpp" />
+    <ClCompile Include="MoveHexPopulationRecord.cpp" />
     <ClCompile Include="CombatCmd.cpp" />
     <ClCompile Include="CombatPhase.cpp" />
     <ClCompile Include="Debug.cpp" />
@@ -262,6 +270,7 @@
     <ClCompile Include="tinyxmlparser.cpp" />
     <ClCompile Include="TradeCmd.cpp" />
     <ClCompile Include="Turn.cpp" />
+    <ClCompile Include="UncoloniseCmd.cpp" />
     <ClCompile Include="UpgradeCmd.cpp" />
     <ClCompile Include="UpkeepPhase.cpp" />
     <ClCompile Include="Util.cpp" />

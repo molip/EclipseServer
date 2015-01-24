@@ -41,6 +41,13 @@ Storage PopulationTrack::GetIncome() const
 	return income;
 }
 
+Population PopulationTrack::GetEmptySpaces() const
+{
+	Population pop(MaxPop, MaxPop, MaxPop);
+	pop -= m_pop;
+	return pop;
+}
+
 void PopulationTrack::Save(Serial::SaveNode& node) const
 {
 	node.SaveClass("pop", m_pop);

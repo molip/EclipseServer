@@ -650,6 +650,17 @@ ChooseDice::ChooseDice(const LiveGame& game, const Dice& dice, int activePlayerI
 	}
 }
 
+ChooseUncolonise::ChooseUncolonise(const SquareCounts& squares, const Population& pop) : Choose("uncolonise")
+{
+	auto eCounts = m_root.AddElement("square_counts");
+	for (auto t : EnumRange<SquareType>())
+		eCounts.SetAttribute(::EnumToString(t), squares[t]);
+
+	auto eCubes = m_root.AddElement("max_cubes");
+	for (auto r : EnumRange<Resource>())
+		eCubes.SetAttribute(::EnumToString(r), pop[r]);
+}
+
 } // namespace
 
 

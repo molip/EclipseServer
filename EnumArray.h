@@ -9,7 +9,7 @@ class EnumArray : public std::array<T, (int)E::_Count>
 {
 	typedef std::array<T, (int)E::_Count> Base;
 public:
-	EnumArray() {}
+	EnumArray() : Base({}) {}
 	EnumArray(std::initializer_list<T> i) 
 	{
 		VERIFY(i.size() == (int)E::_Count); 
