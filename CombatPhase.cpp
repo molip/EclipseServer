@@ -82,11 +82,11 @@ void CombatPhase::FinishBattle(CommitSession& session)
 	if (battle.CanAutoDestroyPopulation(GetGame()))
 		session.DoAndPushRecord(RecordPtr(new AttackPopulationRecord(Battle::PopulationHits(true))));
 
-	const Battle* prevBattle = nullptr;
+	BattlePtr prevBattle;
 	auto hex = GetGame().GetMap().FindPendingBattleHex(GetGame());
 	if (hex && hex->GetID() == GetGame().GetBattle().GetHexId()) // Continue battles in this hex.
 	{
-		prevBattle = &GetGame().GetBattle();
+		prevBattle.reset(new Battle(GetGame().GetBattle()));
 	}
 	else
 	{
@@ -96,7 +96,7 @@ void CombatPhase::FinishBattle(CommitSession& session)
 	session.DoAndPushRecord(RecordPtr(new FinishBattleRecord));
 
 	if (hex)
-		StartBattle(session, prevBattle);
+		StartBattle(session, prevBattle.get());
 	else
 	{
 		LiveGame& game = GetGame();
