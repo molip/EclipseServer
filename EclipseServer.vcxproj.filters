@@ -323,6 +323,9 @@
     <ClInclude Include="UncoloniseCmd.h">
       <Filter>Commands</Filter>
     </ClInclude>
+    <ClInclude Include="IncomeRecord.h">
+      <Filter>Model\Records</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -603,6 +606,9 @@
     </ClCompile>
     <ClCompile Include="UncoloniseCmd.cpp">
       <Filter>Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="IncomeRecord.cpp">
+      <Filter>Model\Records</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

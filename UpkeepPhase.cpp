@@ -8,6 +8,7 @@
 #include "StartRoundRecord.h"
 #include "CommitSession.h"
 #include "GraveyardCmd.h"
+#include "IncomeRecord.h"
 
 UpkeepPhase::UpkeepPhase(LiveGame* pGame) : Phase(pGame)
 {
@@ -59,6 +60,8 @@ void UpkeepPhase::UpdateClient(const Controller& controller, const Player* pPlay
 void UpkeepPhase::FinishUpkeep(CommitSession& session, const Player& player)
 {
 	const Team& team = GetGame().GetTeam(player);
+	session.DoAndPushRecord(RecordPtr(new IncomeRecord(team.GetColour())));
+
 	if (team.GetGraveyard().IsEmpty())
 		FinishGraveyard(session, player);
 	else

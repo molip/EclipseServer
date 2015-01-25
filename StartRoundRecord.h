@@ -23,7 +23,6 @@ private:
 	struct TeamData
 	{
 		int actions, colonyShips;
-		Storage income;
 
 		void Save(Serial::SaveNode& node) const;
 		void Load(const Serial::LoadNode& node);

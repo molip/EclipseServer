@@ -42,7 +42,7 @@ void StartRoundRecord::Apply(bool bDo, const Game& game, GameState& gameState)
 		{
 			for (auto& team : game.GetTeams())
 			{
-				TeamData data{ team->GetActionTrack().GetDiscCount(), team->GetUsedColonyShips(), team->GetIncome() };
+				TeamData data{ team->GetActionTrack().GetDiscCount(), team->GetUsedColonyShips() };
 				m_teamData.insert(std::make_pair(team->GetColour(), data));
 			}
 		}
@@ -57,14 +57,12 @@ void StartRoundRecord::Apply(bool bDo, const Game& game, GameState& gameState)
 				teamState.GetActionTrack().RemoveDiscs(data.actions);
 				teamState.GetInfluenceTrack().AddDiscs(data.actions);
 				teamState.ReturnColonyShips(data.colonyShips);
-				teamState.GetStorage() += data.income;
 			}
 			else
 			{
 				teamState.GetActionTrack().AddDiscs(data.actions);
 				teamState.GetInfluenceTrack().RemoveDiscs(data.actions);
 				teamState.UseColonyShips(data.colonyShips);
-				teamState.GetStorage() -= data.income;
 			}
 
 			teamState.SetPassed(!bDo);
@@ -107,14 +105,12 @@ void StartRoundRecord::TeamData::Save(Serial::SaveNode& node) const
 {
 	node.SaveType("actions", actions);
 	node.SaveType("colony_ships", colonyShips);
-	node.SaveClass("income", income);
 }
 
 void StartRoundRecord::TeamData::Load(const Serial::LoadNode& node)
 {
 	node.LoadType("actions", actions);
 	node.LoadType("colony_ships", colonyShips);
-	node.LoadClass("income", income);
 }
 
 REGISTER_DYNAMIC(StartRoundRecord)
