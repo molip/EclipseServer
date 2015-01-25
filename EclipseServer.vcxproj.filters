@@ -305,6 +305,9 @@
     <ClInclude Include="GameStateAccess.h">
       <Filter>Model</Filter>
     </ClInclude>
+    <ClInclude Include="GraveyardCmd.h">
+      <Filter>Commands</Filter>
+    </ClInclude>
     <ClInclude Include="Types.h">
       <Filter>Model</Filter>
     </ClInclude>
@@ -585,6 +588,9 @@
     </ClCompile>
     <ClCompile Include="GameStateAccess.cpp">
       <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="GraveyardCmd.cpp">
+      <Filter>Commands</Filter>
     </ClCompile>
     <ClCompile Include="MovePopulationCommand.cpp">
       <Filter>Commands</Filter>

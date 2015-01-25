@@ -39,7 +39,7 @@ void Phase::ProcessCmdMessage(const Input::CmdMessage& msg, CommitSession& sessi
 	cmdStack.AddCmd(std::move(result.next), std::move(result.queue));
 	
 	if (cmdStack.GetCurrentCmd() == nullptr)
-		OnCmdFinished(session); 
+		OnCmdFinished(*pCmd, session); 
 
 	// This phase might have finished, get potentially new phase.
 	game.GetPhase().UpdateClient(session.GetController(), &player);

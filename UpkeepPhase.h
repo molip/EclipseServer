@@ -14,9 +14,11 @@ public:
 	virtual void Save(Serial::SaveNode& node) const override;
 	virtual void Load(const Serial::LoadNode& node) override;
 
-	void FinishTurn(CommitSession& session, const Player& player);
+	void FinishUpkeep(CommitSession& session, const Player& player);
+	void FinishGraveyard(CommitSession& session, const Player& player);
 
 protected:
+	virtual void OnCmdFinished(const Cmd& cmd, CommitSession& session) override;
 	virtual CmdStack& GetCmdStack(Colour c) override;
 	const CmdStack& GetCmdStack(Colour c) const { return const_cast<UpkeepPhase*>(this)->GetCmdStack(c); }
 

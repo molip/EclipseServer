@@ -7,6 +7,7 @@
 #include "Reputation.h"
 #include "App.h"
 #include "Blueprint.h"
+#include "Types.h"
 
 #include <array>
 #include <set>
@@ -56,6 +57,8 @@ public:
 	ReputationTrack m_repTrack;
 	TechTrack m_techTrack;
 	Storage m_storage;
+
+	SquareCounts m_graveyard;
 
 	std::array<BlueprintPtr, 4> m_blueprints;
 	int m_nShips[4];

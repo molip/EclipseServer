@@ -45,8 +45,12 @@ void AttackPopulationRecord::Apply(bool bDo, const Game& game, GameState& gameSt
 		VERIFY_MODEL(m_cubeCount > 0);
 	}
 
+	auto& graveyard = gameState.GetTeamState(m_targetColour).m_graveyard;
 	for (int squareIndex : m_hits)
+	{
 		squares[squareIndex].SetOccupied(!bDo);
+		graveyard[squares[squareIndex].GetType()] += bDo ? 1 : -1;
+	}
 }
 
 void AttackPopulationRecord::Update(const Game& game, const RecordContext& context) const

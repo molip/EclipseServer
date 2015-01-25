@@ -56,6 +56,8 @@ public:
 	const DiscTrack& GetActionTrack() const { return m_state->m_actionTrack; }
 	const TechTrack& GetTechTrack() const { return m_state->m_techTrack; }
 
+	const SquareCounts& GetGraveyard() const { return m_state->m_graveyard; }
+
 	int GetUnusedShips(ShipType type) const;
 
 	Storage GetIncome() const;

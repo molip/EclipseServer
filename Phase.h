@@ -48,7 +48,7 @@ protected:
 	const CmdStack& GetCmdStack(Colour c) const { return const_cast<Phase*>(this)->GetCmdStack(c); }
 
 	virtual CmdStack& GetCmdStack(Colour c) = 0;
-	virtual void OnCmdFinished(CommitSession& session) {}
+	virtual void OnCmdFinished(const Cmd& cmd, CommitSession& session) {}
 	virtual Cmd* RemoveCmd(CommitSession& session, Colour c);
 
 	const LiveGame& GetGame() const { return *m_pGame; }

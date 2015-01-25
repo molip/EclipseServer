@@ -351,7 +351,7 @@ bool Commit::Process(Controller& controller, Player& player) const
 bool FinishUpkeep::Process(Controller& controller, Player& player) const
 {
 	CommitSession session(GetLiveGame(player), controller);
-	session.Open().GetUpkeepPhase().FinishTurn(session, player);
+	session.Open().GetUpkeepPhase().FinishUpkeep(session, player);
 	session.Commit();
 	return true;
 }

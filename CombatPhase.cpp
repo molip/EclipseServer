@@ -58,7 +58,7 @@ void CombatPhase::StartTurn(CommitSession& session)
 		StartCmd(CmdPtr(new CombatCmd(GetGame().GetBattle().GetFiringColour(), GetGame())), session);
 }
 
-void CombatPhase::OnCmdFinished(CommitSession& session)
+void CombatPhase::OnCmdFinished(const Cmd& cmd, CommitSession& session)
 {
 	FinishTurn(session);
 }

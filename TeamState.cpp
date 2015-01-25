@@ -13,7 +13,7 @@ TeamState::TeamState() : m_nColonyShipsUsed(0), m_bPassed(false), m_victoryPoint
 TeamState::TeamState(const TeamState& rhs) :
 m_allies(rhs.m_allies), m_popTrack(rhs.m_popTrack), m_infTrack(rhs.m_infTrack), m_actionTrack(rhs.m_actionTrack), m_repTrack(rhs.m_repTrack),
 m_techTrack(rhs.m_techTrack), m_storage(rhs.m_storage), m_nColonyShipsUsed(rhs.m_nColonyShipsUsed), m_bPassed(rhs.m_bPassed), 
-m_victoryPointTiles(rhs.m_victoryPointTiles), m_discoveredShipParts(rhs.m_discoveredShipParts)
+m_victoryPointTiles(rhs.m_victoryPointTiles), m_discoveredShipParts(rhs.m_discoveredShipParts), m_graveyard(rhs.m_graveyard)
 {
 	for (int i = 0; i < 4; ++i)
 	{
@@ -42,7 +42,8 @@ bool TeamState::operator==(const TeamState& rhs) const
 		m_discoveredShipParts == rhs.m_discoveredShipParts &&
 		m_nColonyShipsUsed == rhs.m_nColonyShipsUsed &&
 		m_bPassed == rhs.m_bPassed &&
-		m_victoryPointTiles == rhs.m_victoryPointTiles)
+		m_victoryPointTiles == rhs.m_victoryPointTiles && 
+		m_graveyard == rhs.m_graveyard)
 		return true;
 
 	return false;
@@ -134,6 +135,7 @@ void TeamState::Save(Serial::SaveNode& node) const
 	node.SaveType("colony_ships_used", m_nColonyShipsUsed);
 	node.SaveType("passed", m_bPassed);
 	node.SaveType("discovery_point_tiles", m_victoryPointTiles);
+	node.SaveArray("graveyard", m_graveyard, Serial::TypeSaver());
 }
 
 void TeamState::Load(const Serial::LoadNode& node)
@@ -151,4 +153,5 @@ void TeamState::Load(const Serial::LoadNode& node)
 	node.LoadType("colony_ships_used", m_nColonyShipsUsed);
 	node.LoadType("passed", m_bPassed);
 	node.LoadType("discovery_point_tiles", m_victoryPointTiles);
+	node.LoadArray("graveyard", m_graveyard, Serial::TypeLoader());
 }

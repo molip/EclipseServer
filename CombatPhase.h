@@ -22,7 +22,7 @@ public:
 
 protected:
 	virtual const Team& GetCurrentTeam() const override;
-	virtual void OnCmdFinished(CommitSession& session) override;
+	virtual void OnCmdFinished(const Cmd& cmd, CommitSession& session) override;
 
 private:
 	void StartBattle(CommitSession& session, const Battle* oldBattle = nullptr);

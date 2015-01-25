@@ -7,6 +7,7 @@
 #include "Player.h"
 #include "StartRoundRecord.h"
 #include "CommitSession.h"
+#include "GraveyardCmd.h"
 
 UpkeepPhase::UpkeepPhase(LiveGame* pGame) : Phase(pGame)
 {
@@ -55,7 +56,22 @@ void UpkeepPhase::UpdateClient(const Controller& controller, const Player* pPlay
 	}
 }
 
-void UpkeepPhase::FinishTurn(CommitSession& session, const Player& player)
+void UpkeepPhase::FinishUpkeep(CommitSession& session, const Player& player)
+{
+	const Team& team = GetGame().GetTeam(player);
+	if (team.GetGraveyard().IsEmpty())
+		FinishGraveyard(session, player);
+	else
+		StartCmd(CmdPtr(new GraveyardCmd(team.GetColour(), GetGame())), session);
+}
+
+void UpkeepPhase::OnCmdFinished(const Cmd& cmd, CommitSession& session)
+{
+	if (dynamic_cast<const GraveyardCmd*>(&cmd))
+		FinishGraveyard(session, session.GetGame().GetTeam(cmd.GetColour()).GetPlayer());
+}
+
+void UpkeepPhase::FinishGraveyard(CommitSession& session, const Player& player)
 {
 	LiveGame& game = GetGame();
 	
