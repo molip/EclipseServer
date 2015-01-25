@@ -158,6 +158,7 @@ UpdateInfluenceTrack::UpdateInfluenceTrack(const Team& team) : Update("influence
 {
 	m_root.SetAttribute("id", team.GetPlayer().GetID());
 	m_root.SetAttribute("discs", team.GetInfluenceTrack().GetDiscCount());
+	m_root.SetAttribute("upkeep", team.GetInfluenceTrack().GetUpkeep());
 }
 
 UpdateActionTrack::UpdateActionTrack(const Team& team) : Update("action_track")

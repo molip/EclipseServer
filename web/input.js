@@ -286,6 +286,7 @@ function OnCommandUpdateInfluenceTrack(elem)
 {
 	var team = data.teams[elem.id]
 	team.discs = elem.discs
+	team.upkeep = elem.upkeep
 	
 	if (IsCurrentTeam(elem.id))
 		Team.UpdateInfluence()

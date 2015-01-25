@@ -39,7 +39,7 @@ Team.UpdatePassed = function()
 Team.UpdateInfluence = function()
 {
 	var team = GetCurrentTeam()
-	var html = '<b>Influence discs:</b> {0}<br/>'.format(team.discs)
+	var html = '<b>Influence discs:</b> {0} (upkeep -{1})<br/>'.format(team.discs, team.upkeep)
 	Team.SetDivHTML('influence', html)
 }
 
