@@ -44,7 +44,9 @@ void LiveGame::StartChooseTeamGamePhase()
 	m_pPhase = PhasePtr(new ChooseTeamPhase(this));
 
 	// Decide team order.
-	std::shuffle(m_teams.begin(), m_teams.end(), GetRandom());
+	for (size_t i = 0; i < m_teams.size(); ++i)
+		m_turnOrder.push_back(i);
+	std::shuffle(m_turnOrder.begin(), m_turnOrder.end(), GetRandom());
 
 	//for (int i = 0; i < FakePlayers; ++i)
 	//{
@@ -121,18 +123,19 @@ void LiveGame::FinishActionPhase(const std::vector<Colour>& passOrder)
 	VERIFY_MODEL(passOrder.size() == m_teams.size());
 	
 #if 0	// Special passing rule.
-	std::map<Colour, TeamPtr> map;
-	for (auto& team : m_teams)
-		map[team->GetColour()] = std::move(team);
-
-	m_teams.clear();
+	m_turnOrder.clear();
 	for (Colour c : passOrder)
-		m_teams.push_back(std::move(map[c]));
+		for (size_t i = 0; i < m_teams.size(); ++i)
+			if (m_teams[i]->GetColour() == c)
+			{
+				m_turnOrder.push_back(i);
+				break;
+			}
 #else // Normal passing rule.
-	for (auto it = m_teams.begin(); it != m_teams.end(); ++it)
-		if ((*it)->GetColour() == passOrder.front())
+	for (auto it = m_turnOrder.begin(); it != m_turnOrder.end(); ++it)
+		if (m_teams[*it]->GetColour() == passOrder.front())
 		{
-			std::rotate(m_teams.begin(), it, m_teams.end());
+			std::rotate(m_turnOrder.begin(), it, m_turnOrder.end());
 			break;
 		}
 #endif
@@ -195,6 +198,12 @@ LiveGame::LogVec LiveGame::GetLogs() const
 	return logs;
 }
 
+const Team& LiveGame::GetTeamForTurn(int i) const
+{
+	VERIFY(m_turnOrder.size() == m_teams.size() && i < (int)m_turnOrder.size());
+	return *m_teams[m_turnOrder[i]];
+}
+
 void LiveGame::Save() const
 {
 	std::ostringstream ss;
@@ -209,6 +218,7 @@ void LiveGame::Save(Serial::SaveNode& node) const
 	node.SaveObject("phase", m_pPhase);
 	node.SaveEnum("game_phase", m_gamePhase);
 	node.SaveType("next_record_id", m_nextRecordID);
+	node.SaveCntr("turn_order", m_turnOrder, Serial::TypeSaver());
 	__super::Save(node);
 
 	node.SaveClass("state", m_state);
@@ -220,6 +230,7 @@ void LiveGame::Load(const Serial::LoadNode& node)
 	node.LoadObject("phase", m_pPhase);
 	node.LoadEnum("game_phase", m_gamePhase);
 	node.LoadType("next_record_id", m_nextRecordID);
+	node.LoadCntr("turn_order", m_turnOrder, Serial::TypeLoader());
 	__super::Load(node);
 
 	GameState state(*this);

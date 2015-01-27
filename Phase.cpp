@@ -95,7 +95,7 @@ TurnPhase::TurnPhase() : m_iTurn(0)
 
 const Team& TurnPhase::GetCurrentTeam(const LiveGame& game) const
 {
-	return *game.GetTeams()[m_iTurn % game.GetTeams().size()];
+	return game.GetTeamForTurn(m_iTurn % game.GetTeams().size());
 }
 
 void TurnPhase::AdvanceTurn()

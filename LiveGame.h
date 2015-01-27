@@ -62,6 +62,8 @@ public:
 	void FinishActionPhase(const std::vector<Colour>& passOrder);
 	void FinishCombatPhase();
 
+	const Team& GetTeamForTurn(int i) const;
+
 	virtual void Save(Serial::SaveNode& node) const override;
 	virtual void Load(const Serial::LoadNode& node) override;
 
@@ -73,6 +75,7 @@ private:
 	GamePhase m_gamePhase;
 	PhasePtr m_pPhase;
 	int m_nextRecordID;
+	std::vector<int> m_turnOrder;
 
 	// Not saved.
 	mutable std::mutex m_mutex;
