@@ -1,9 +1,10 @@
 var Uncolonise = {}
 
-Uncolonise.Stage = function(x, y, num_ships, max_cubes, square_counts)
+Uncolonise.Stage = function(x, y, max_cubes, square_counts)
 {
+	this.flagNoSubAction = true;
 	this.selected = new Point(x, y)
-	this.coloniser = new Coloniser(num_ships, max_cubes, square_counts)
+	this.coloniser = new Coloniser(100, max_cubes, square_counts)
 
 	this.Update()
 }
@@ -39,7 +40,7 @@ Uncolonise.Stage.prototype.Update = function()
 		document.getElementById('choose_uncolonise_add_' + t).disabled = !c.CanAdd(t)
 		document.getElementById('choose_uncolonise_remove_' + t).disabled = !c.CanRemove(t)
 	}
-	document.getElementById('choose_uncolonise_btn').disabled = total_moved == 0
+	document.getElementById('choose_uncolonise_btn').disabled = total_moved < this.coloniser.planet_count
 }
 
 Uncolonise.Stage.prototype.Send = function()
@@ -75,6 +76,6 @@ Uncolonise.OnCommand = function(elem)
 	ShowActionElement('choose_uncolonise')
 	Map.selecting = false
 
-	data.action = new Uncolonise.Stage(elem.x, elem.y, elem.ships, elem.max_cubes, elem.square_counts)
+	data.action = new Uncolonise.Stage(elem.x, elem.y, elem.max_cubes, elem.square_counts)
 	Map.DrawSelectLayer()
 }

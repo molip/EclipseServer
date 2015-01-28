@@ -9,6 +9,10 @@
 		
 	for (var t in max_moves)
 		 this.moved[t] = 0
+
+	this.planet_count = 0
+	for (var p in this.planets)
+		this.planet_count += planets[p]
 }
 
 Coloniser.prototype.CanAdd = function(type)
