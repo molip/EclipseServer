@@ -38,7 +38,8 @@ public:
 	
 	Hex* FindHex(int hexId);
 	const Hex* FindHex(int hexId) const { return const_cast<Map*>(this)->FindHex(hexId); }
-	const Hex* FindPendingBattleHex(const Game& game) const;
+	const Hex* FindPendingBattleHex(const Game& game, int lastHex) const;
+	bool HasPendingBattle(const Game& game) const;
 
 	void GetInfluencableNeighbours(const MapPos& pos, const Team& team, std::set<MapPos>& neighbours) const;
 	void GetEmptyNeighbours(const MapPos& pos, bool bHasWormholeGen, std::set<MapPos>& neighbours) const;

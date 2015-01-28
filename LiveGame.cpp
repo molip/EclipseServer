@@ -142,7 +142,7 @@ void LiveGame::FinishActionPhase(const std::vector<Colour>& passOrder)
 
 	//Test::AddShipsToCentre(*this);
 
-	if (GetMap().FindPendingBattleHex(*this))
+	if (GetMap().HasPendingBattle(*this))
 		m_pPhase = PhasePtr(new CombatPhase(this));
 	else
 		m_pPhase = PhasePtr(new UpkeepPhase(this));

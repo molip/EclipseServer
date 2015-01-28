@@ -10,14 +10,14 @@ AttackShipsRecord::AttackShipsRecord() : m_missilePhase(false)
 {
 }
 
-AttackShipsRecord::AttackShipsRecord(const Battle::Hits& hits) : AttackShipsRecord()
+AttackShipsRecord::AttackShipsRecord(const ShipBattle::Hits& hits) : AttackShipsRecord()
 {
 	m_hits = hits;
 }
 
 void AttackShipsRecord::Apply(bool bDo, const Game& game, GameState& gameState)
 {
-	Battle& battle = gameState.GetBattle();
+	ShipBattle& battle = gameState.GetShipBattle();
 
 	if (m_firingShipType == ShipType::None)
 	{

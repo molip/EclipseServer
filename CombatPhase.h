@@ -8,8 +8,7 @@ class Hex;
 class CombatPhase : public OrderedPhase
 {
 public:
-	CombatPhase();
-	CombatPhase(LiveGame* pGame);
+	CombatPhase(LiveGame* pGame = nullptr);
 
 	virtual ~CombatPhase();
 
@@ -25,8 +24,11 @@ protected:
 	virtual void OnCmdFinished(const Cmd& cmd, CommitSession& session) override;
 
 private:
+	const Hex* GetNextBattleHex() const;
 	void StartBattle(CommitSession& session, const Battle* oldBattle = nullptr);
 	void StartTurn(CommitSession& session);
 	void FinishTurn(CommitSession& session);
 	void FinishBattle(CommitSession& session);
+
+	int m_lastPopulationBattleHexId;
 };

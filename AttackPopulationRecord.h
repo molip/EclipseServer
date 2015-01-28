@@ -1,14 +1,13 @@
 #pragma once
 
 #include "AttackRecord.h"
-#include "Battle.h"
-
+#include "PopulationBattle.h"
 
 class AttackPopulationRecord : public AttackRecord
 {
 public:
 	AttackPopulationRecord();
-	AttackPopulationRecord(const Battle::PopulationHits& hits);
+	AttackPopulationRecord(const PopulationBattle::Hits& hits);
 	
 private:
 	virtual void Apply(bool bDo, const Game& game, GameState& gameState);
@@ -19,5 +18,5 @@ private:
 	virtual void Load(const Serial::LoadNode& node) override;
 
 	int m_cubeCount;
-	Battle::PopulationHits m_hits;
+	PopulationBattle::Hits m_hits;
 };

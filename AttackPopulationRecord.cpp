@@ -10,7 +10,7 @@ AttackPopulationRecord::AttackPopulationRecord() : m_cubeCount(0)
 {
 }
 
-AttackPopulationRecord::AttackPopulationRecord(const Battle::PopulationHits& hits) : AttackPopulationRecord()
+AttackPopulationRecord::AttackPopulationRecord(const PopulationBattle::Hits& hits) : AttackPopulationRecord()
 {
 	m_hits = hits;
 }

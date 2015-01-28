@@ -10,8 +10,6 @@
 #include "Battle.h"
 #include "Dice.h"
 #include "Player.h"
-#include "AttackShipsRecord.h"
-#include "AttackPopulationRecord.h"
 
 CombatCmd::CombatCmd(Colour colour, const LiveGame& game) : Cmd(colour)
 {
@@ -59,17 +57,8 @@ Cmd::ProcessResult CombatDiceCmd::Process(const Input::CmdMessage& msg, CommitSe
 
 	// TODO: manually assign hits.
 	
-	auto& battle = session.GetGame().GetBattle();
-	if (battle.IsPopulationPhase())
-	{
-		const Battle::PopulationHits hits = battle.AutoAssignPopulationHits(m_dice, session.GetGame());
-		DoRecord(RecordPtr(new AttackPopulationRecord(hits)), session);
-	}
-	else
-	{
-		const Battle::Hits hits = battle.AutoAssignHits(m_dice, session.GetGame());
-		DoRecord(RecordPtr(new AttackShipsRecord(hits)), session);
-	}
+	DoRecord(session.GetGame().GetBattle().CreateAttackRecord(session.GetGame(), m_dice), session);
+
 	// TODO: Send attack animation 
 
 	return nullptr;

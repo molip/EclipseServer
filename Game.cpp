@@ -8,7 +8,6 @@
 #include "Record.h"
 #include "Serial.h"
 #include "Output.h"
-#include "Battle.h"
 
 #include <algorithm>
 

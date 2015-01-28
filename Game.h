@@ -67,6 +67,8 @@ public:
 	void AddPlayer(const Player* player) const { m_players.insert(player); }
 	void RemovePlayer(const Player* player) const { m_players.erase(player); }
 
+	const ShipBattle& GetShipBattle() const { return const_cast<GameState&>(m_state).GetShipBattle(); }
+	const PopulationBattle& GetPopulationBattle() const { return const_cast<GameState&>(m_state).GetPopulationBattle(); }
 	const Battle& GetBattle() const { return const_cast<GameState&>(m_state).GetBattle(); }
 	bool HasBattle() const { return !!m_state.m_battle; }
 

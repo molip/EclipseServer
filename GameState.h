@@ -8,6 +8,8 @@
 class Game;
 class Battle;
 class TeamState;
+class ShipBattle;
+class PopulationBattle;
 
 DEFINE_UNIQUE_PTR(Battle)
 DEFINE_UNIQUE_PTR(TeamState)
@@ -33,6 +35,8 @@ public:
 	Battle& GetBattle();
 	void AttachBattle(BattlePtr battle);
 	BattlePtr DetachBattle();
+	ShipBattle& GetShipBattle();
+	PopulationBattle& GetPopulationBattle();
 
 	BagState<ReputationBag>& GetReputationBag() { return m_repBagState; }
 	BagState<TechnologyBag>& GetTechnologyBag() { return m_techBagState; }

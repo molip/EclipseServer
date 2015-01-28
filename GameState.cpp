@@ -1,6 +1,7 @@
 #include "GameState.h"
 
-#include "Battle.h"
+#include "ShipBattle.h"
+#include "PopulationBattle.h"
 #include "Team.h"
 #include "TeamState.h"
 #include "Serial.h"
@@ -13,7 +14,7 @@ GameState::GameState(Game& game) : m_map(game), m_iRound(-1)
 
 GameState::GameState(const GameState& rhs, Game& game) :
 m_map(rhs.m_map, game), m_techs(rhs.m_techs), m_iRound(rhs.m_iRound),
-m_battle(rhs.m_battle ? new Battle(*rhs.m_battle) : nullptr),
+m_battle(rhs.m_battle ? rhs.m_battle->Clone() : nullptr),
 m_repBagState(rhs.m_repBagState), m_techBagState(rhs.m_techBagState), m_discBagState(rhs.m_discBagState), m_hexBagStates(rhs.m_hexBagStates)
 {
 	InitBags(game);
@@ -91,6 +92,20 @@ Battle& GameState::GetBattle()
 	return *m_battle;
 }
 
+ShipBattle& GameState::GetShipBattle()
+{
+	ShipBattle* shipBattle = dynamic_cast<ShipBattle*>(m_battle.get());
+	VERIFY_MODEL(shipBattle != nullptr);
+	return *shipBattle;
+}
+
+PopulationBattle& GameState::GetPopulationBattle()
+{
+	PopulationBattle* populationBattle = dynamic_cast<PopulationBattle*>(m_battle.get());
+	VERIFY_MODEL(populationBattle != nullptr);
+	return *populationBattle;
+}
+
 void GameState::AttachBattle(BattlePtr battle)
 {
 	m_battle = std::move(battle);
@@ -132,7 +147,7 @@ void GameState::Save(Serial::SaveNode& node) const
 	node.SaveClass("map", m_map);
 	node.SaveMap("techs", m_techs, Serial::EnumSaver(), Serial::TypeSaver());
 	node.SaveType("round", m_iRound);
-	node.SaveClassPtr("battle", m_battle);
+	node.SaveObject("battle", m_battle);
 	node.SaveMap("team_states", m_teamStates, Serial::EnumSaver(), Serial::ClassPtrSaver());
 
 	node.SaveClass("rep_bag", m_repBagState);
@@ -146,7 +161,7 @@ void GameState::Load(const Serial::LoadNode& node)
 	node.LoadClass("map", m_map);
 	node.LoadMap("techs", m_techs, Serial::EnumLoader(), Serial::TypeLoader());
 	node.LoadType("round", m_iRound);
-	node.LoadClassPtr("battle", m_battle);
+	node.LoadObject("battle", m_battle);
 	node.LoadMap("team_states", m_teamStates, Serial::EnumLoader(), Serial::ClassPtrLoader());
 
 	node.LoadClass("rep_bag", m_repBagState);

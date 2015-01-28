@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Dice.h"
+#include "App.h"
+#include "Dynamic.h"
 
 #include <vector>
 #include <map>
@@ -15,41 +17,16 @@ class Game;
 
 namespace Serial { class SaveNode; class LoadNode; }
 
+class Battle;
+class Record;
+DEFINE_UNIQUE_PTR(Battle);
+DEFINE_UNIQUE_PTR(Record);
+
 enum class BattlePhase { Missile, Main, Population };
 
-class Battle
+class Battle : public Dynamic
 {
 public:
-
-	struct Hit
-	{
-	public:
-		Hit();
-		Hit(ShipType _shipType, int _shipIndex, const Dice& _dice);
-
-		void Save(Serial::SaveNode& node) const;
-		void Load(const Serial::LoadNode& node);
-
-		ShipType shipType;
-		int shipIndex;
-		Dice dice;
-	};
-
-	struct Hits : public std::vector<Hit> 
-	{
-		void Save(Serial::SaveNode& node) const;
-		void Load(const Serial::LoadNode& node);
-	};
-
-	struct PopulationHits : public std::vector<int>
-	{
-		PopulationHits(bool _autoHit = false) : autoHit(_autoHit) {}
-		void Save(Serial::SaveNode& node) const;
-		void Load(const Serial::LoadNode& node);
-
-		bool autoHit;
-	};
-
 	struct Group
 	{
 		Group();
@@ -82,14 +59,10 @@ public:
 		void Load(const Serial::LoadNode& node);
 	};
 
-//	typedef std::map<ShipType, int> Targets; // Dice roll required to hit ship type.
-
 	Battle();
 	Battle(const Hex& hex, const Game& game, const GroupVec& oldGroups);
-	bool operator==(const Battle& rhs) const;
-
-	//const ShipVec& GetDefenderShips() const { return m_defenderShips; }
-	//const ShipVec& GetInvaderShips() const { return m_invaderShips; }
+	virtual bool operator==(const Battle& rhs) const;
+	virtual BattlePtr Clone() const = 0;
 
 	int GetHexId() const { return m_hexId; }
 
@@ -108,32 +81,29 @@ public:
 	Colour GetTargetColour() const { return GetColour(!GetCurrentGroup().invader); }
 
 	bool IsMissilePhase() const { return m_turn.phase == BattlePhase::Missile; }
-	bool IsPopulationPhase() const { return m_turn.phase == BattlePhase::Population; }
 	bool IsFinished() const { return m_turn.groupIndex < 0; }
-	bool IsMainPhaseFinished() const;
-	bool CanAutoDestroyPopulation(const Game& game) const;
 
 	void RollDice(const LiveGame& game, Dice& dice) const;
-	Hits AutoAssignHits(const Dice& dice, const Game& game) const;
-	PopulationHits AutoAssignPopulationHits(const Dice& dice, const Game& game) const;
 
-	void Save(Serial::SaveNode& node) const;
-	void Load(const Serial::LoadNode& node);
+	virtual RecordPtr CreateAttackRecord(const Game& game, const Dice& dice) const = 0;
+	virtual RecordPtr CreateAutoAttackRecord(const Game& game) const;
+	virtual bool IsPopulationBattle() const { return false; }
+
+	virtual void Save(Serial::SaveNode& node) const override;
+	virtual void Load(const Serial::LoadNode& node) override;
 
 	// Non-const.
-	Group* FindTargetGroup(ShipType shipType);
-	void SetCurrentGroupIndex(int group);
 	Turn AdvanceTurn(const Game& game); // Returns old turn.
 	void SetTurn(const Turn& turn);
 
-private:
+protected:
 	void AddGroups(bool invader, const Hex& hex, const Game& game);
 	void AddOldGroups(const GroupVec& oldGroups, const Hex& hex, const Game& game);
 	int FindFirstMissileGroup() const;
 	int GetToHitRoll(ShipType shipType, const Game& game) const;
-	std::vector<int> GetShipIndicesWeakestFirst(const Group& group) const; // Dead ships ignored. 
-	std::vector<int> GetTargetGroupIndicesBiggestFirst() const; // Dead groups included.
-	Hits GetHitsToDestroy(const Group& group, Dice& hitDice, int toHit) const;
+	bool IsMainPhaseFinished() const;
+
+	virtual void DoAdvanceTurn(const Game& game) = 0;
 
 	Colour m_defender, m_invader;
 	int m_hexId;

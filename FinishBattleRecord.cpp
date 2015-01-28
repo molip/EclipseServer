@@ -16,7 +16,7 @@ void FinishBattleRecord::Apply(bool bDo, const Game& game, GameState& gameState)
 	}
 	else
 	{
-		gameState.AttachBattle(BattlePtr(new Battle(*m_battle)));
+		gameState.AttachBattle(m_battle->Clone());
 	}
 }
 
@@ -33,13 +33,13 @@ std::string FinishBattleRecord::GetMessage(const Game& game) const
 void FinishBattleRecord::Save(Serial::SaveNode& node) const
 {
 	__super::Save(node);
-	node.SaveClassPtr("battle", m_battle);
+	node.SaveObject("battle", m_battle);
 }
 
 void FinishBattleRecord::Load(const Serial::LoadNode& node)
 {
 	__super::Load(node);
-	node.LoadClassPtr("battle", m_battle);
+	node.LoadObject("battle", m_battle);
 }
 
 REGISTER_DYNAMIC(FinishBattleRecord)

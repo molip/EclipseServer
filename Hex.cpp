@@ -316,6 +316,9 @@ bool Hex::HasShip(const Colour& c, bool bMoveableOnly) const
 
 bool Hex::HasPendingBattle(const Game& game) const
 {
+	if (IsOwned() && HasForeignShip(m_colour))
+		return true;
+
 	if (m_fleets.size() < 2)
 		return false;
 
@@ -331,16 +334,25 @@ bool Hex::GetPendingBattle(Colour& defender, Colour& invader, const Game& game) 
 	if (!HasPendingBattle(game))
 		return false;
 
-	std::list<Colour> colours;
-	for (auto& f : m_fleets)
-		if (f.GetColour() == m_colour)
-			colours.push_front(f.GetColour());
-		else
-			colours.push_back(f.GetColour());
-	
-	invader = colours.back();
-	colours.pop_back();
-	defender = colours.back();
+	if (m_fleets.size() == 1)
+	{
+		invader = m_fleets.front().GetColour();
+		defender = m_colour;
+		VERIFY(invader != defender);
+	}
+	else
+	{
+		std::list<Colour> colours;
+		for (auto& f : m_fleets)
+			if (f.GetColour() == m_colour)
+				colours.push_front(f.GetColour());
+			else
+				colours.push_back(f.GetColour());
+
+		invader = colours.back();
+		colours.pop_back();
+		defender = colours.back();
+	}
 	return true;
 }
 

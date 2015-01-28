@@ -1,13 +1,13 @@
 #pragma once
 
 #include "AttackRecord.h"
-#include "Battle.h"
+#include "ShipBattle.h"
 
 class AttackShipsRecord : public AttackRecord
 {
 public:
 	AttackShipsRecord();
-	AttackShipsRecord(const Battle::Hits& hits);
+	AttackShipsRecord(const ShipBattle::Hits& hits);
 	
 private:
 	virtual void Apply(bool bDo, const Game& game, GameState& gameState);
@@ -17,7 +17,7 @@ private:
 	virtual void Save(Serial::SaveNode& node) const override;
 	virtual void Load(const Serial::LoadNode& node) override;
 
-	Battle::Hits m_hits;
+	ShipBattle::Hits m_hits;
 	bool m_missilePhase;
 	std::set<int> m_killIndices;
 };

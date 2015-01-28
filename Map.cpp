@@ -35,15 +35,26 @@ Hex* Map::FindHex(const MapPos& pos)
 	return h == m_hexes.end() ? nullptr : h->second.get();
 }
 
-const Hex* Map::FindPendingBattleHex(const Game& game) const
+// Ignores hex IDs greater or equal to lastHex.
+const Hex* Map::FindPendingBattleHex(const Game& game, int lastHex) const
 {
 	std::map<int, const Hex*> map;
 
 	for (auto& h : m_hexes)
-		if (h.second->HasPendingBattle(game))
-			map.insert(std::make_pair(h.second->GetID(), h.second.get()));
+		if (lastHex == 0 || h.second->GetID() < lastHex)
+			if (h.second->HasPendingBattle(game))
+				map.insert(std::make_pair(h.second->GetID(), h.second.get()));
 
 	return map.empty() ? nullptr : map.rbegin()->second;
+}
+
+// May still return true after battles are complete, if population wasn't destroyed. 
+bool Map::HasPendingBattle(const Game& game) const
+{
+	for (auto& h : m_hexes)
+		if (h.second->HasPendingBattle(game))
+			return true;
+	return false;
 }
 
 Hex& Map::GetHex(const MapPos& pos)

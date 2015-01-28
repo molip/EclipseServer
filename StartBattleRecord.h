@@ -6,7 +6,8 @@
 class StartBattleRecord : public Record
 {
 public:
-	StartBattleRecord(const Battle* oldBattle = nullptr);
+	StartBattleRecord() : m_hexId(0) {}
+	StartBattleRecord(const Battle* oldBattle, int hexId);
 	
 private:
 	virtual void Apply(bool bDo, const Game& game, GameState& gameState);
@@ -17,4 +18,5 @@ private:
 	virtual void Load(const Serial::LoadNode& node) override;
 
 	Battle::GroupVec m_oldGroups;
+	int m_hexId;
 };

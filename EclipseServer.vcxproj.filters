@@ -326,6 +326,12 @@
     <ClInclude Include="IncomeRecord.h">
       <Filter>Model\Records</Filter>
     </ClInclude>
+    <ClInclude Include="ShipBattle.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="PopulationBattle.h">
+      <Filter>Model</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -609,6 +615,12 @@
     </ClCompile>
     <ClCompile Include="IncomeRecord.cpp">
       <Filter>Model\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="ShipBattle.cpp">
+      <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="PopulationBattle.cpp">
+      <Filter>Model</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
