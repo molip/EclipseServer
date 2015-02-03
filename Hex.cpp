@@ -247,7 +247,7 @@ SquareCounts Hex::GetOccupiedSquareCounts() const
 	return counts;
 }
 
-bool Hex::HasAnyOccupiedSquares() const
+bool Hex::HasPopulation() const
 {
 	for (auto& s : m_squares)
 		if (s.IsOccupied())

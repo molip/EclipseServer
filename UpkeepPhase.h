@@ -7,6 +7,8 @@ class UpkeepPhase : public Phase
 public:
 	UpkeepPhase(LiveGame* pGame = nullptr);
 
+	virtual void Init(CommitSession& session) override;
+
 	virtual void StartCmd(CmdPtr pCmd, CommitSession& session) override;
 
 	virtual void UpdateClient(const Controller& controller, const Player* pPlayer) const override;

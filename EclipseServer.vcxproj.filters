@@ -332,6 +332,9 @@
     <ClInclude Include="PopulationBattle.h">
       <Filter>Model</Filter>
     </ClInclude>
+    <ClInclude Include="InfluenceRecord.h">
+      <Filter>Model\Records</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -621,6 +624,9 @@
     </ClCompile>
     <ClCompile Include="PopulationBattle.cpp">
       <Filter>Model</Filter>
+    </ClCompile>
+    <ClCompile Include="InfluenceRecord.cpp">
+      <Filter>Model\Records</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

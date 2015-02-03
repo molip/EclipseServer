@@ -2,12 +2,11 @@
 
 #include "PhaseCmd.h"
 #include "MapPos.h"
-#include "Discovery.h"
 
 #include <vector> 
-#include <set> 
 
 class Hex;
+enum class DiscoveryType;
 
 class InfluenceCmd : public PhaseCmd
 {
@@ -33,12 +32,12 @@ private:
 class InfluenceDstCmd : public PhaseCmd
 {
 public:
-	InfluenceDstCmd() : m_discovery(DiscoveryType::None), m_flipsLeft(0) {}
+	InfluenceDstCmd();
 	InfluenceDstCmd(Colour colour, const LiveGame& game, const MapPos* pSrcPos, int iPhase, int flipsLeft);
 
 	virtual void UpdateClient(const Controller& controller, const LiveGame& game) const override;
 	virtual ProcessResult Process(const Input::CmdMessage& msg, CommitSession& session) override;
-	virtual bool CanUndo() const override { return m_discovery == DiscoveryType::None; }
+	virtual bool CanUndo() const override;
 
 	virtual void Save(Serial::SaveNode& node) const override;
 	virtual void Load(const Serial::LoadNode& node) override;

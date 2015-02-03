@@ -92,6 +92,7 @@
     <ClInclude Include="BlueprintDefs.h" />
     <ClInclude Include="BuildCmd.h" />
     <ClInclude Include="IncomeRecord.h" />
+    <ClInclude Include="InfluenceRecord.h" />
     <ClInclude Include="MovePopulationCommand.h" />
     <ClInclude Include="MovePopulationRecord.h" />
     <ClInclude Include="MoveHexPopulationRecord.h" />
@@ -195,6 +196,7 @@
     <ClCompile Include="BlueprintDefs.cpp" />
     <ClCompile Include="BuildCmd.cpp" />
     <ClCompile Include="IncomeRecord.cpp" />
+    <ClCompile Include="InfluenceRecord.cpp" />
     <ClCompile Include="MovePopulationCommand.cpp" />
     <ClCompile Include="MovePopulationRecord.cpp" />
     <ClCompile Include="MoveHexPopulationRecord.cpp" />

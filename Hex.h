@@ -119,7 +119,7 @@ public:
 
 	SquareCounts GetAvailableSquareCounts(const Team& team) const;
 	SquareCounts GetOccupiedSquareCounts() const;
-	bool HasAnyOccupiedSquares() const;
+	bool HasPopulation() const;
 
 	Colour GetColour() const { return m_colour; }
 	void SetColour(Colour c);

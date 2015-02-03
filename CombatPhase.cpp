@@ -108,7 +108,8 @@ void CombatPhase::FinishBattle(CommitSession& session)
 	else
 	{
 		LiveGame& game = GetGame();
-		game.FinishCombatPhase(); // Deletes this. TODO: influence hexes.
+		game.FinishCombatPhase(); // Deletes this.
+		game.GetPhase().Init(session);
 		game.GetPhase().UpdateClient(session.GetController(), nullptr); // Show next phase UI (upkeep).
 	}
 }

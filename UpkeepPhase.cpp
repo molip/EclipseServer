@@ -9,6 +9,7 @@
 #include "CommitSession.h"
 #include "GraveyardCmd.h"
 #include "IncomeRecord.h"
+#include "InfluenceRecord.h"
 
 UpkeepPhase::UpkeepPhase(LiveGame* pGame) : Phase(pGame)
 {
@@ -36,6 +37,18 @@ void UpkeepPhase::StartCmd(CmdPtr pCmd, CommitSession& session)
 	GetCmdStack(c).StartCmd(std::move(pCmd));
 
 	GetCurrentCmd(c)->UpdateClient(session.GetController(), GetGame());
+}
+
+void UpkeepPhase::Init(CommitSession& session)
+{
+	// "If you have at least one Ship in a hex that has no population, remove the previous controller’s Influence Disc."
+	auto& game = session.GetGame();
+	for (auto& pair : game.GetMap().GetHexes())
+	{
+		auto& hex = pair.second;
+		if (hex->IsOwned() && !hex->HasPopulation() && hex->HasForeignShip(hex->GetColour()))
+			session.DoAndPushRecord(RecordPtr(new InfluenceRecord(hex->GetColour(), &hex->GetPos(), nullptr)));
+	}
 }
 
 void UpkeepPhase::UpdateClient(const Controller& controller, const Player* pPlayer) const
