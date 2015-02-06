@@ -52,10 +52,10 @@ public:
 	void PopRecord(CommitSession& session);
 	Colour GetColour() const { return m_colour; }
 
-protected:
 	Team& GetTeam(LiveGame& game);
 	const Team& GetTeam(const LiveGame& game) const;
 
+protected:
 	Player& GetPlayer(LiveGame& game);
 	const Player& GetPlayer(const LiveGame& game) const;
 

@@ -9,8 +9,6 @@ public:
 
 	virtual ~OrderedPhase();
 
-	virtual void StartCmd(CmdPtr pCmd, CommitSession& session) override;
-
 	bool IsTeamActive(Colour c) const;
 
 	Cmd* GetCurrentCmd();

@@ -32,7 +32,7 @@ public:
 	
 	virtual void Init(CommitSession& session) {}
 
-	virtual void StartCmd(CmdPtr pCmd, CommitSession& session) { ASSERT(false); }
+	virtual void StartCmd(CmdPtr pCmd, CommitSession& session);
 
 	virtual bool CanRemoveCmd(Colour c) const;
 

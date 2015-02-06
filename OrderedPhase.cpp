@@ -44,20 +44,6 @@ bool OrderedPhase::CanRemoveCmd() const
 	return m_pCmdStack->CanRemoveCmd();
 }
 
-void OrderedPhase::StartCmd(CmdPtr pCmd, CommitSession& session)
-{
-	VERIFY_MODEL_MSG("Team not active", IsTeamActive(pCmd->GetColour()));
-
-	m_pCmdStack->StartCmd(std::move(pCmd));
-
-	Cmd* pStartedCmd = GetCurrentCmd();
-
-	if (pStartedCmd->IsAutoProcess())
-		ProcessCmdMessage(Input::CmdMessage(), session, GetCurrentPlayer());
-	else
-		pStartedCmd->UpdateClient(session.GetController(), GetGame());
-}
-
 void OrderedPhase::Save(Serial::SaveNode& node) const 
 {
 	Phase::Save(node);

@@ -87,6 +87,22 @@ bool Phase::CanRemoveCmd(Colour c) const
 	return GetCmdStack(c).CanRemoveCmd();
 }
 
+void Phase::StartCmd(CmdPtr pCmd, CommitSession& session)
+{
+	Colour c = pCmd->GetColour();
+	GetCmdStack(c).StartCmd(std::move(pCmd));
+
+	Cmd* pStartedCmd = GetCurrentCmd(c);
+
+	if (pStartedCmd->IsAutoProcess())
+	{
+		const Player& player = Players::Get(pStartedCmd->GetTeam(session.GetGame()).GetPlayerID());
+		ProcessCmdMessage(Input::CmdMessage(), session, player);
+	}
+	else
+		pStartedCmd->UpdateClient(session.GetController(), GetGame());
+}
+
 //-----------------------------------------------------------------------------
 
 TurnPhase::TurnPhase() : m_iTurn(0)

@@ -14,6 +14,7 @@ class Player
 {
 public:
 	Player();
+	Player(const Player&) = delete;
 	Player(int id, const std::string& name, const std::string& password);
 
 	int GetID() const { return m_id; }

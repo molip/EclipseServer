@@ -32,11 +32,7 @@ CmdStack& UpkeepPhase::GetCmdStack(Colour c)
 void UpkeepPhase::StartCmd(CmdPtr pCmd, CommitSession& session)
 {
 	VERIFY_MODEL(!pCmd->IsAction());
-
-	Colour c = pCmd->GetColour();
-	GetCmdStack(c).StartCmd(std::move(pCmd));
-
-	GetCurrentCmd(c)->UpdateClient(session.GetController(), GetGame());
+	__super::StartCmd(std::move(pCmd), session);
 }
 
 void UpkeepPhase::Init(CommitSession& session)
