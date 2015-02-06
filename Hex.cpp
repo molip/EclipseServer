@@ -316,7 +316,7 @@ bool Hex::HasShip(const Colour& c, bool bMoveableOnly) const
 
 bool Hex::HasPendingBattle(const Game& game) const
 {
-	if (IsOwned() && HasForeignShip(m_colour))
+	if (IsOwned() && HasForeignShip(m_colour) && HasPopulation())
 		return true;
 
 	if (m_fleets.size() < 2)
