@@ -43,7 +43,7 @@ public:
 	virtual bool IsAction() const { return false; } 
 	virtual bool CostsInfluence() const { return IsAction(); } 
 	virtual std::string GetActionName() const;
-	virtual bool HasRecord() const { return m_bHasRecord; }
+	virtual int GetRecordCount() const { return m_recordCount; }
 	virtual bool CanUndo() const { return true; } 
 	
 	virtual void Save(Serial::SaveNode& node) const override;
@@ -62,5 +62,5 @@ protected:
 	void DoRecord(RecordPtr pRec, CommitSession& session);
 
 	Colour m_colour;
-	bool m_bHasRecord;
+	int m_recordCount;
 };

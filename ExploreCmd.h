@@ -22,7 +22,7 @@ public:
 	virtual ProcessResult Process(const Input::CmdMessage& msg, CommitSession& session) override;
 	virtual bool IsAction() const override { return true; } 
 	virtual std::string GetActionName() const override { return "Explore"; }
-	virtual bool CanUndo() const override { return !HasRecord(); } // Can undo abort, but not hex reveal.
+	virtual bool CanUndo() const override { return GetRecordCount() == 0; } // Can undo abort, but not hex reveal.
 
 	virtual void Save(Serial::SaveNode& node) const override;
 	virtual void Load(const Serial::LoadNode& node) override;

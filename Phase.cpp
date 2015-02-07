@@ -56,7 +56,7 @@ void Phase::UndoCmd(CommitSession& session, Player& player)
 	const Controller& controller = session.GetController();
 	if (Cmd* pUndo = RemoveCmd(session, colour))
 	{
-		if (pUndo->HasRecord())
+		while (pUndo->GetRecordCount())
 		{
 			// Update review games before record gets popped. 
 			for (auto& g : game.GetReviewGames())

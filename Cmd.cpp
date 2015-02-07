@@ -6,9 +6,9 @@
 #include "Record.h"
 #include "CommitSession.h"
 
-Cmd::Cmd() : m_colour(Colour::None), m_bHasRecord(false) {}
+Cmd::Cmd() : m_colour(Colour::None), m_recordCount(0) {}
 
-Cmd::Cmd(Colour colour) : m_colour(colour), m_bHasRecord(false)
+Cmd::Cmd(Colour colour) : m_colour(colour), m_recordCount(0)
 {
 }
 
@@ -40,27 +40,25 @@ std::string Cmd::GetActionName() const
 
 void Cmd::DoRecord(RecordPtr pRec, CommitSession& session)
 {
-	VERIFY_MODEL(!m_bHasRecord);
-
 	session.DoAndPushRecord(std::move(pRec));
-	m_bHasRecord = true;
+	++m_recordCount;
 }
 
 void Cmd::PopRecord(CommitSession& session)
 {
-	VERIFY_MODEL(m_bHasRecord && CanUndo());
+	VERIFY_MODEL(m_recordCount > 0 && CanUndo());
 	session.PopAndUndoRecord();
-	m_bHasRecord = false;
+	--m_recordCount;
 }
 
 void Cmd::Save(Serial::SaveNode& node) const 
 {
 	node.SaveEnum("colour", m_colour);
-	node.SaveType("has_record", m_bHasRecord);
+	node.SaveType("record_count", m_recordCount);
 }
 
 void Cmd::Load(const Serial::LoadNode& node) 
 {
 	node.LoadEnum("colour", m_colour);
-	node.LoadType("has_record", m_bHasRecord);
+	node.LoadType("record_count", m_recordCount);
 }
