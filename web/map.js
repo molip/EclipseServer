@@ -52,9 +52,7 @@ Map.Hex.prototype.GetDescription = function()
 		{
 			if (!teams[ship.colour])
 				teams[ship.colour] = {}
-			if (!teams[ship.colour][ship.type])
-				teams[ship.colour][ship.type] = 0;
-			++teams[ship.colour][ship.type]
+			teams[ship.colour][ship.type] = ship.count;
 		}
 	}
 	

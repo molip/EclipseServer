@@ -275,6 +275,7 @@ UpdateMap::UpdateMap(const Game& game) : Update("map")
 				auto eShip = eShips.AppendElement();
 				eShip.SetAttribute("colour", ::EnumToString(fleet.GetColour()));
 				eShip.SetAttribute("type", ::EnumToString(squadron.GetType()));
+				eShip.SetAttribute("count", squadron.GetShipCount());
 			}
 
 		//DiscoveryType GetDiscoveryTile() const { return m_discovery; }
