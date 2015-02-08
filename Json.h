@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 struct cJSON;
 
@@ -76,6 +77,9 @@ public:
 
 	ElementIter begin() const;
 	ElementIter end() const;
+
+	std::vector<int> GetAsInts() const;
+	std::vector<bool> GetAsBools() const;
 
 protected:
 	Array(cJSON* pElem);

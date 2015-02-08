@@ -239,6 +239,34 @@ void Array::Append(int val)
 	cJSON_AddItemToArray(m_pElem, pElem);
 }
 
+std::vector<int> Array::GetAsInts() const
+{
+	VERIFY_SERIAL(!!m_pElem);
+
+	std::vector<int> vec;
+	for (cJSON* p = m_pElem->child; p; p = p->next)
+	{
+		VERIFY_SERIAL(p->type == cJSON_Number);
+		vec.push_back(p->valueint);
+	}
+
+	return vec;
+}
+
+std::vector<bool> Array::GetAsBools() const
+{
+	VERIFY_SERIAL(!!m_pElem);
+
+	std::vector<bool> vec;
+	for (cJSON* p = m_pElem->child; p; p = p->next)
+	{
+		VERIFY_SERIAL(p->type == cJSON_True || p->type == cJSON_False);
+		vec.push_back(p->type == cJSON_True);
+	}
+
+	return vec;
+}
+
 ElementIter Array::begin() const { return ElementIter(m_pElem ? m_pElem->child : nullptr); }
 ElementIter Array::end() const { return ElementIter(); }
 
