@@ -45,6 +45,7 @@ public:
 	virtual std::string GetActionName() const;
 	virtual int GetRecordCount() const { return m_recordCount; }
 	virtual bool CanUndo() const { return true; } 
+	virtual bool CanUnstart() const { return true; }
 	
 	virtual void Save(Serial::SaveNode& node) const override;
 	virtual void Load(const Serial::LoadNode& node) override;

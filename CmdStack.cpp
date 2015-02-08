@@ -99,7 +99,10 @@ bool CmdStack::Chain::CanRemoveCmd() const
 		if (!(back()->queued && pChild->size() == 1)) // Otherwise, queued would be removed.
 			return pChild->CanRemoveCmd();
 	
-	return size() == 1 || (*(end() - 2))->pCmd->CanUndo();
+	if (size() == 1)
+		return back()->pCmd->CanUnstart();
+
+	return (*(end() - 2))->pCmd->CanUndo();
 }
 
 void CmdStack::Chain::AssertValid() const
