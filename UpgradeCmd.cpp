@@ -133,10 +133,15 @@ Cmd::ProcessResult UpgradeCmd::Process(const Input::CmdMessage& msg, CommitSessi
 		blueprints.push_back(BlueprintPtr(new Blueprint(team.GetBlueprint(type))));
 
 	const std::vector<ShipPart> parts = GetParts(team);
-		
+	std::set<ShipPart> ancientParts;
+
 	for (auto& c : m.m_changes)
 	{
 		VERIFY_INPUT(std::find(parts.begin(), parts.end(), c.part) != parts.end());
+
+		if (ShipLayout::IsAncientShipPart(c.part))
+			VERIFY_INPUT_MSG("Ancient ship part specified more than once", ancientParts.insert(c.part).second);
+
 		blueprints[(int)c.ship]->SetSlot(c.slot, c.part);
 	}
 
