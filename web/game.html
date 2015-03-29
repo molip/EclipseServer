@@ -23,6 +23,7 @@
 <script src="population.js"></script>
 <script src="discovery.js"></script>
 <script src="uncolonise.js"></script>
+<script src="autoinfluence.js"></script>
 
 <script>
     data.playerID = %PLAYER_ID%
@@ -312,6 +313,10 @@
 <!-- 					<canvas id="population_ui_canvas" width="250px" height="100px" style="background-color:black "></canvas> -->
 				</div>
 				<button id="choose_uncolonise_btn" type="button" onclick="data.action.Send()">Next</button>
+			</div>
+			<div id="choose_auto_influence" style="display:none">
+				Choose disc destinations...
+				<button id="choose_auto_influence_btn" type="button" onclick="data.action.Send()">Finish</button>
 			</div>
 		</div>
 		<div id="review_ui">

@@ -158,7 +158,6 @@ UpdateInfluenceTrack::UpdateInfluenceTrack(const Team& team) : Update("influence
 {
 	m_root.SetAttribute("id", team.GetPlayer().GetID());
 	m_root.SetAttribute("discs", team.GetInfluenceTrack().GetDiscCount());
-	m_root.SetAttribute("upkeep", team.GetInfluenceTrack().GetUpkeep());
 }
 
 UpdateActionTrack::UpdateActionTrack(const Team& team) : Update("action_track")
@@ -424,13 +423,16 @@ ChooseFinished::ChooseFinished() : Choose("finished")
 {
 }
 
-ChooseExplorePos::ChooseExplorePos(const std::vector<MapPos>& positions, bool bCanSkip) : Choose("explore_pos") 
+ChoosePositions::ChoosePositions(const std::vector<MapPos>& positions, const std::string& param) : Choose(param)
 {
-	m_root.SetAttribute("can_skip", bCanSkip);
-
 	auto positionsNode = m_root.AddArray("positions");
 	for (auto& pos : positions)
 		AppendPointElement(pos.GetX(), pos.GetY(), positionsNode);
+}
+
+ChooseExplorePos::ChooseExplorePos(const std::vector<MapPos>& positions, bool bCanSkip) : ChoosePositions(positions, "explore_pos")
+{
+	m_root.SetAttribute("can_skip", bCanSkip);
 }
 
 ChooseExploreHex::ChooseExploreHex(int x, int y, bool bCanTake, bool bCanUndo) : Choose("explore_hex") 
@@ -483,13 +485,9 @@ ChooseColoniseSquares::ChooseColoniseSquares(const MapPos& pos, const SquareCoun
 		eCubes.SetAttribute(::EnumToString(r), pop[r]);
 }
 
-ChooseInfluencePos::ChooseInfluencePos(const std::vector<MapPos>& positions, bool bEnableTrack, const std::string& param) : Choose(param) 
+ChooseInfluencePos::ChooseInfluencePos(const std::vector<MapPos>& positions, bool bEnableTrack, const std::string& param) : ChoosePositions(positions, param)
 {
 	m_root.SetAttribute("can_select_track", bEnableTrack);
-
-	auto positionsNode = m_root.AddArray("positions");
-	for (auto& pos : positions)
-		AppendPointElement(pos.GetX(), pos.GetY(), positionsNode);
 }
 
 ChooseInfluenceSrc::ChooseInfluenceSrc(const std::vector<MapPos>& positions, bool bEnableTrack, int flips) :
@@ -661,6 +659,10 @@ ChooseUncolonise::ChooseUncolonise(const SquareCounts& squares, const Population
 	auto eCubes = m_root.AddElement("max_cubes");
 	for (auto r : EnumRange<Resource>())
 		eCubes.SetAttribute(::EnumToString(r), pop[r]);
+}
+
+ChooseAutoInfluence::ChooseAutoInfluence(const std::vector<MapPos>& positions) : ChoosePositions(positions, "auto_influence")
+{
 }
 
 } // namespace

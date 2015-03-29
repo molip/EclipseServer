@@ -99,7 +99,9 @@ struct ChooseTeam : Choose { ChooseTeam(const Game& game, bool bActive); };
 struct ChooseAction : Choose { ChooseAction(const LiveGame& game); };
 struct ChooseFinished : Choose { ChooseFinished(); };
 
-struct ChooseExplorePos : Choose { ChooseExplorePos(const std::vector<MapPos>& positions, bool bCanSkip); };
+struct ChoosePositions : Choose { ChoosePositions(const std::vector<MapPos>& positions, const std::string& param); };
+
+struct ChooseExplorePos : ChoosePositions { ChooseExplorePos(const std::vector<MapPos>& positions, bool bCanSkip); };
 struct ChooseExploreHex : Choose 
 {
 	ChooseExploreHex(int x, int y, bool bCanTake, bool bCanUndo);
@@ -111,7 +113,7 @@ struct ChooseDiscovery : Choose { ChooseDiscovery(DiscoveryType discovery, bool 
 struct ChooseColonisePos : Choose { ChooseColonisePos(const std::vector<MapPos>& hexes); };
 struct ChooseColoniseSquares : Choose { ChooseColoniseSquares(const MapPos& pos, const SquareCounts& squares, const Population& pop, int nShips); };
 
-struct ChooseInfluencePos : Choose { ChooseInfluencePos(const std::vector<MapPos>& positions, bool bEnableTrack, const std::string& param); };
+struct ChooseInfluencePos : ChoosePositions { ChooseInfluencePos(const std::vector<MapPos>& positions, bool bEnableTrack, const std::string& param); };
 struct ChooseInfluenceSrc : ChooseInfluencePos { ChooseInfluenceSrc(const std::vector<MapPos>& positions, bool bEnableTrack, int flips); };
 struct ChooseInfluenceDst : ChooseInfluencePos { ChooseInfluenceDst(const std::vector<MapPos>& positions, bool bEnableTrack); };
 
@@ -131,6 +133,8 @@ struct ChooseCombat : Choose { ChooseCombat(const LiveGame& game); };
 struct ChooseDice : Choose { ChooseDice(const LiveGame& game, const Dice& dice, int activePlayerId); };
 
 struct ChooseUncolonise : Choose { ChooseUncolonise(const SquareCounts& squares, const Population& pop); };
+
+struct ChooseAutoInfluence : ChoosePositions { ChooseAutoInfluence(const std::vector<MapPos>& positions); };
 
 struct ShowGameList : Show { ShowGameList(); };
 struct ShowLobby : Show { ShowLobby(); };

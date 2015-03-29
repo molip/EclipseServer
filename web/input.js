@@ -158,6 +158,8 @@ function OnCommandChoose(elem)
 		Combat.OnDiceCommand(elem)
 	else if (param == "uncolonise")
 		Uncolonise.OnCommand(elem)
+	else if (param == "auto_influence")
+		AutoInfluence.OnCommand(elem)
 	else
 		alert('OnCommandChoose: unknown param: ' + param)
 
@@ -286,7 +288,6 @@ function OnCommandUpdateInfluenceTrack(elem)
 {
 	var team = data.teams[elem.id]
 	team.discs = elem.discs
-	team.upkeep = elem.upkeep
 	
 	if (IsCurrentTeam(elem.id))
 		Team.UpdateInfluence()

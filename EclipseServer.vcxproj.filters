@@ -335,6 +335,9 @@
     <ClInclude Include="InfluenceRecord.h">
       <Filter>Model\Records</Filter>
     </ClInclude>
+    <ClInclude Include="AutoInfluenceCmd.h">
+      <Filter>Commands</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -627,6 +630,9 @@
     </ClCompile>
     <ClCompile Include="InfluenceRecord.cpp">
       <Filter>Model\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="AutoInfluenceCmd.cpp">
+      <Filter>Commands</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

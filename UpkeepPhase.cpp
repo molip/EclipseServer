@@ -10,6 +10,7 @@
 #include "GraveyardCmd.h"
 #include "IncomeRecord.h"
 #include "InfluenceRecord.h"
+#include "AutoInfluenceCmd.h"
 
 UpkeepPhase::UpkeepPhase(LiveGame* pGame) : Phase(pGame)
 {
@@ -37,14 +38,25 @@ void UpkeepPhase::StartCmd(CmdPtr pCmd, CommitSession& session)
 
 void UpkeepPhase::Init(CommitSession& session)
 {
-	// "If you have at least one Ship in a hex that has no population, remove the previous controller’s Influence Disc."
 	auto& game = session.GetGame();
+	std::set<Colour> influenceableHexes; // Team -> hex IDs.
+
 	for (auto& pair : game.GetMap().GetHexes())
 	{
 		auto& hex = pair.second;
+
+		// "If you have at least one Ship in a hex that has no population, remove the previous controller’s Influence Disc."
 		if (hex->IsOwned() && !hex->HasPopulation() && hex->HasForeignShip(hex->GetColour()))
 			session.DoAndPushRecord(RecordPtr(new InfluenceRecord(hex->GetColour(), &hex->GetPos(), nullptr)));
+
+		// If at the end of the Combat Phase your Ship is in a hex without an Influence Disc, you may place a disc there."
+		Colour c = AutoInfluenceCmd::GetAutoInfluenceColour(*hex);
+		if (c != Colour::None)
+			influenceableHexes.insert(c);
 	}
+
+	for (auto& c : influenceableHexes)
+		StartCmd(CmdPtr(new AutoInfluenceCmd(c, game)), session); // TODO: Stop user undoing.
 }
 
 void UpkeepPhase::UpdateClient(const Controller& controller, const Player* pPlayer) const

@@ -273,4 +273,10 @@ struct CmdDice : CmdMessage
 	CmdDice(const Json::Element& node);
 };
 
+struct CmdAutoInfluence : CmdMessage
+{
+	CmdAutoInfluence(const Json::Element& node);
+	std::vector<bool> m_selected;
+};
+
 }

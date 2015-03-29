@@ -1,5 +1,7 @@
 var Team = {}
 
+Team.upkeep = [30, 25, 21, 17, 13, 10, 7, 5, 3, 2, 1, 0, 0, 0, 0, 0]
+
 Team.SetDivHTML = function(elem_suffix, html)
 {
 	document.getElementById('team_' + elem_suffix).innerHTML = html
@@ -39,7 +41,12 @@ Team.UpdatePassed = function()
 Team.UpdateInfluence = function()
 {
 	var team = GetCurrentTeam()
-	var html = '<b>Influence discs:</b> {0} (upkeep -{1})<br/>'.format(team.discs, team.upkeep)
+	var discs = team.discs
+	
+	if (IsCurrentTeam(data.playerID) && data.action && typeof(data.action.ModifyInfluence) === 'function')
+		discs = data.action.ModifyInfluence(discs)
+
+	var html = '<b>Influence discs:</b> {0} (upkeep {1})<br/>'.format(discs, -Team.upkeep[discs])
 	Team.SetDivHTML('influence', html)
 }
 

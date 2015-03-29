@@ -230,6 +230,11 @@ Map.DrawCentred = function(ctx, img, pos, rotation, offset, scale)
 	ctx.restore()
 }
 
+Map.DrawInfluenceDisc = function(ctx, pos, colour)
+{
+	Map.DrawCentred(ctx, data.disc_imgs[colour], pos, 0, new Point(7, -7))
+}
+
 Map.DrawHex = function(ctx, hex)
 {
 	var size_x = Map.hex_width, size_y = Map.hex_height
@@ -247,7 +252,7 @@ Map.DrawHex = function(ctx, hex)
 	Map.DrawCentred(ctx, hex.img, hex.pos, hex.rotation);
 	
 	if (hex.team != null)
-		Map.DrawCentred(ctx, data.disc_imgs[hex.team], hex.pos, 0, new Point(7, -7))
+		Map.DrawInfluenceDisc(ctx, hex.pos, hex.team)
 	else if (ancients || gcds)
 		Map.DrawCentred(ctx, gcds ? data.gcds_img : data.ancient_img, hex.pos, hex.rotation)
 	

@@ -111,7 +111,9 @@ MessagePtr CreateCommand(const Json::Element& root)
 		return MessagePtr(new CmdCombat(root));
 	if (type == "cmd_dice")
 		return MessagePtr(new CmdDice(root));
-
+	if (type == "cmd_auto_influence")
+		return MessagePtr(new CmdAutoInfluence(root));
+	
 	VERIFY_INPUT_MSG(type, false);
 	return nullptr;
 }
@@ -513,6 +515,11 @@ CmdCombat::CmdCombat(const Json::Element& node)
 
 CmdDice::CmdDice(const Json::Element& node)
 {
-
 }
+
+CmdAutoInfluence::CmdAutoInfluence(const Json::Element& node)
+{
+	m_selected = node.GetChildArray("selected").GetAsBools();
+}
+
 } // namespace
