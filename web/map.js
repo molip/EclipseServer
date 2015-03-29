@@ -8,7 +8,7 @@ Map.selecting = false
 Map.hex_width = 445
 Map.hex_height = 387
 Map.disc_rad = 40
-Map.zoom = 5
+Map.zoom = 4
 Map.scale = 1
 Map.pan_x = 0
 Map.pan_y = 0
@@ -119,9 +119,9 @@ Map.ClearCanvas = function(canvas)
 Map.ClearContext = function(ctx)
 {
 	ctx.setTransform(1, 0, 0, 1, 0, 0)
-	ctx.clearRect(0, 0, 600, 600);
+	ctx.clearRect(0, 0, Map.canvas.width, Map.canvas.height);
 
-	ctx.translate(300, 300)
+	ctx.translate(Map.canvas.width / 2, Map.canvas.height / 2)
 	ctx.scale(Map.scale, Map.scale)
 	ctx.translate(-Map.pan_x, -Map.pan_y)
 }
@@ -175,8 +175,8 @@ Map.OnMouseMove = function(evt)
 		
 	var pt = Canvas.RelMouseCoords(evt, Map.canvas)
 	
-	pt.x = (pt.x - 300) / Map.scale + Map.pan_x
-	pt.y = (pt.y - 300) / Map.scale + Map.pan_y
+	pt.x = (pt.x - Map.canvas.width / 2) / Map.scale + Map.pan_x
+	pt.y = (pt.y - Map.canvas.height / 2) / Map.scale + Map.pan_y
 
 	coords = Map.HitTestHex(pt)
 	

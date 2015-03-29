@@ -203,7 +203,7 @@ Combat.DrawDice = function()
 
 	var wide = count > 10
 	
-	ctx.translate(300 - (wide ? 45 : 20), 10)
+	ctx.translate(Map.canvas.width / 2 - (wide ? 45 : 20), 10)
 	
 	var right = false
 	for (var i = 0, type; type = Combat.dice[i]; ++i)

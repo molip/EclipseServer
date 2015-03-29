@@ -95,7 +95,7 @@
 	<div id="choose_team_content"></div>
 	<div id="choose_team"></div>
 </div>
-<div id="game_panel" class="panel" style="height:660px">
+<div id="game_panel" class="panel" style="height:1000px">
 	<div id="influence" style="position:relative; width:77px; height:787px; float:left" onclick="if (data.action && data.action.OnClickInfluenceTrack) data.action.OnClickInfluenceTrack()">
 		<img src="/images/boards/influence.png" width="67px" height="787px" style="position:absolute">
 		<canvas id="influence_canvas" width="67px" height="787px" style="position:absolute"></canvas>
@@ -118,12 +118,12 @@
 			</div>
 			
 			<!-- Canvas position is absolute, otherwise layers are created in wrong place -->
-			<div style="position: relative; width:600px; height:600px;"> 
+			<div style="position: relative; width:1200px; height:900px;"> 
 				<div id="map">
-					<canvas id="map_canvas" width="600" height="600" style="background-color:black; position: absolute;"></canvas>
+					<canvas id="map_canvas" width="1200" height="900" style="background-color:black; position: absolute;"></canvas>
 				</div>
 				<div id="combat">
-					<canvas id="combat_canvas" width="600" height="600" style="background-color:black; position: absolute;"></canvas>
+					<canvas id="combat_canvas" width="1200" height="900" style="background-color:black; position: absolute;"></canvas>
 				</div>
 			</div>
 		</div>
@@ -336,9 +336,9 @@
 			</div>
 		</div>
 		<div id="log" style="margin:5px; float:right;">
-			<div id="output" style="width:300px; height:230px;">
+			<div id="output" style="width:400px; height:500px;">
 			</div>
-			<input type="text" id="chat" onkeydown="if (event.keyCode == 13) { SendChat(); return false; }">
+			<input type="text" id="chat" style="width:400px" onkeydown="if (event.keyCode == 13) { SendChat(); return false; }">
 		</div>
 	</div>
 </div>
