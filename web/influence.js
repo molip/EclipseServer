@@ -3,24 +3,22 @@ var Influence = {}
 ///////////////////////////////////////////////////////////////////////////////
 // Stages
 
-Influence.Stage = function(positions, can_select_track, max_flips, btn_id, command)
+Influence.Stage = function(positions, can_select_track, max_flips, is_dst)
 {
 	this.positions = positions
 	this.can_select_track = can_select_track
 	this.max_flips = max_flips
-	this.btn_id = btn_id
-	this.command = command
+	this.btn_id = is_dst ? 'choose_influence_dst_btn' : 'choose_influence_src_btn', 
+	this.is_dst = is_dst
 	this.selected = null
 	this.track_selected = false
 	this.pos_idx = can_select_track ? -1 : 0
 
-	document.getElementById(btn_id).disabled = true
+	document.getElementById(this.btn_id).disabled = true
 	
 	var flipBtn = document.getElementById('choose_influence_flip_btn')
 	flipBtn.disabled = max_flips <= 0
 	flipBtn.textContent = 'Flip {0} colony ship{1}'.format(max_flips, max_flips == 1 ? '' : 's')
-
-	this.UpdateTrackSelection()
 }
 
 Influence.Stage.prototype.OnClickInfluenceTrack = function()
@@ -59,7 +57,7 @@ Influence.Stage.prototype.OnDraw = function(ctx)
 
 Influence.Stage.prototype.Send = function()
 {
-	var json = CreateCommandJSON(this.command)
+	var json = CreateCommandJSON(this.is_dst ? 'cmd_influence_dst' : 'cmd_influence_src')
 	json.pos_idx = this.pos_idx
 
 	ExitAction()
@@ -76,11 +74,8 @@ Influence.Stage.prototype.SendFlip = function()
 
 Influence.Stage.prototype.UpdateTrackSelection = function()
 {
-	data.teams[data.playerID].can_select_influence_track = this.can_select_track
-	data.teams[data.playerID].influence_track_selected = this.track_selected
-		
 	if (IsCurrentTeam(data.playerID))
-		Team.UpdateInfluenceSelection()
+		Team.UpdateInfluence()
 }
 
 Influence.Stage.prototype.CleanUp = function()
@@ -99,7 +94,8 @@ Influence.OnCommandChooseSrc = function(elem)
 	ShowActionElement('choose_influence_src')
 	Map.selecting = true
 
-	data.action = new Influence.Stage(elem.positions, elem.can_select_track, elem.max_flips, 'choose_influence_src_btn', 'cmd_influence_src')
+	data.action = new Influence.Stage(elem.positions, elem.can_select_track, elem.max_flips, false)
+	data.action.UpdateTrackSelection()
 	Map.DrawActionLayer()
 }
 
@@ -108,6 +104,7 @@ Influence.OnCommandChooseDst = function(elem)
 	ShowActionElement('choose_influence_dst')
 	Map.selecting = true
 
-	data.action = new Influence.Stage(elem.positions, elem.can_select_track, 0, 'choose_influence_dst_btn', 'cmd_influence_dst')
+	data.action = new Influence.Stage(elem.positions, elem.can_select_track, 0, true)
+	data.action.UpdateTrackSelection()
 	Map.DrawActionLayer()
 }

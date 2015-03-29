@@ -20,7 +20,6 @@ Team.UpdateAll = function()
 	Team.UpdateReputation()
 	Team.UpdateBlueprints()
 	
-	Team.UpdateInfluenceSelection()
 	Team.UpdateEditBlueprints()
 }
 
@@ -46,8 +45,7 @@ Team.UpdateInfluence = function()
 	if (IsCurrentTeam(data.playerID) && data.action && typeof(data.action.ModifyInfluence) === 'function')
 		discs = data.action.ModifyInfluence(discs)
 
-	var html = '<b>Influence discs:</b> {0} (upkeep {1})<br/>'.format(discs, -Team.upkeep[discs])
-	Team.SetDivHTML('influence', html)
+	InfluenceTrack.Draw(discs, team.colour)
 }
 
 Team.UpdateActions = function()
@@ -122,18 +120,6 @@ Team.UpdateBlueprints = function()
 	for (var ship = 0; ship < 4; ++ship)
 		for (var slot = 0, part; part = team.blueprints[ship][slot]; ++slot)
 			Blueprints.SetPart(ship, slot, part)
-}
-
-Team.UpdateInfluenceSelection = function()
-{
-	var team = GetCurrentTeam()
-
-	var style = ""
-	
-	if (team.can_select_influence_track)
-		style = team.influence_track_selected ? "2px solid red" : "2px solid green"
-		
-	document.getElementById('team_influence').style.border = style
 }
 
 Team.UpdateEditBlueprints = function()

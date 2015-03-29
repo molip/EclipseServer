@@ -24,6 +24,7 @@
 <script src="discovery.js"></script>
 <script src="uncolonise.js"></script>
 <script src="autoinfluence.js"></script>
+<script src="influencetrack.js"></script>
 
 <script>
     data.playerID = %PLAYER_ID%
@@ -95,33 +96,38 @@
 	<div id="choose_team"></div>
 </div>
 <div id="game_panel" class="panel" style="height:660px">
-	<div id="population" style="position:relative; height:50px">
-		<img src="/images/boards/population.png" width="1740px" height="50px" style="position:absolute">
-		<canvas id="population_canvas" width="1740px" height="50px" style="position:absolute"></canvas>
+	<div id="influence" style="position:relative; width:77px; height:787px; float:left" onclick="if (data.action && data.action.OnClickInfluenceTrack) data.action.OnClickInfluenceTrack()">
+		<img src="/images/boards/influence.png" width="77px" height="787px" style="position:absolute">
+		<canvas id="influence_canvas" width="77px" height="787px" style="position:absolute"></canvas>
 	</div>
-	<div id="map_panel" style="margin:5px; float:left;">
-		<div id="map_ctrls" style="height:27px"> <!-- Ensure map_canvas doesn't move after loading-->
-			<input type = "image" id="map_zoom_in_btn" src="/images/btn_zoom_in.png" onclick="Map.Zoom(-1)">
-			<input type = "image" id="map_zoom_out_btn" src="/images/btn_zoom_out.png" onclick="Map.Zoom(1)">
-			<input type = "image" id="map_pan_left_btn" src="/images/btn_pan_l.png" onclick="Map.PanX(-1)">
-			<input type = "image" id="map_pan_right_btn" src="/images/btn_pan_r.png" onclick="Map.PanX(1)">
-			<input type = "image" id="map_pan_up_btn" src="/images/btn_pan_u.png" onclick="Map.PanY(-1)">
-			<input type = "image" id="map_pan_down_btn" src="/images/btn_pan_d.png" onclick="Map.PanY(1)">
-			<input type = "image" id="map_pan_centre_btn" src="/images/btn_pan_centre.png" onclick="Map.PanCentre()">
-			<span style="float:right">Round:<span id="round_count"></span></span>
+	<div>
+		<div id="population" style="position:relative; height:50px">
+			<img src="/images/boards/population.png" width="1740px" height="50px" style="position:absolute">
+			<canvas id="population_canvas" width="1740px" height="50px" style="position:absolute"></canvas>
 		</div>
-		
-		<!-- Canvas position is absolute, otherwise layers are created in wrong place -->
-		<div style="position: relative; width:600px; height:600px;"> 
-			<div id="map">
-				<canvas id="map_canvas" width="600" height="600" style="background-color:black; position: absolute;"></canvas>
+		<div id="map_panel" style="margin:5px; float:left;">
+			<div id="map_ctrls" style="height:27px"> <!-- Ensure map_canvas doesn't move after loading-->
+				<input type = "image" id="map_zoom_in_btn" src="/images/btn_zoom_in.png" onclick="Map.Zoom(-1)">
+				<input type = "image" id="map_zoom_out_btn" src="/images/btn_zoom_out.png" onclick="Map.Zoom(1)">
+				<input type = "image" id="map_pan_left_btn" src="/images/btn_pan_l.png" onclick="Map.PanX(-1)">
+				<input type = "image" id="map_pan_right_btn" src="/images/btn_pan_r.png" onclick="Map.PanX(1)">
+				<input type = "image" id="map_pan_up_btn" src="/images/btn_pan_u.png" onclick="Map.PanY(-1)">
+				<input type = "image" id="map_pan_down_btn" src="/images/btn_pan_d.png" onclick="Map.PanY(1)">
+				<input type = "image" id="map_pan_centre_btn" src="/images/btn_pan_centre.png" onclick="Map.PanCentre()">
+				<span style="float:right">Round:<span id="round_count"></span></span>
 			</div>
-			<div id="combat">
-				<canvas id="combat_canvas" width="600" height="600" style="background-color:black; position: absolute;"></canvas>
+			
+			<!-- Canvas position is absolute, otherwise layers are created in wrong place -->
+			<div style="position: relative; width:600px; height:600px;"> 
+				<div id="map">
+					<canvas id="map_canvas" width="600" height="600" style="background-color:black; position: absolute;"></canvas>
+				</div>
+				<div id="combat">
+					<canvas id="combat_canvas" width="600" height="600" style="background-color:black; position: absolute;"></canvas>
+				</div>
 			</div>
 		</div>
-	</div>
-	<div id="players" style="border:1px solid; margin:5px 5px 5px 610px; padding:5px; float:none; height:350px"> <!-- "float:none" uses all remaining width -->
+		<div id="players" style="border:1px solid; margin:5px; padding:5px; overflow:auto; height:350px"> <!-- "overflow:auto" uses all remaining width -->
 		<div id="game_tabs"></div>
 		<div id="team_page">
 			<div id="team_general">
@@ -130,7 +136,6 @@
 				<div id="team_technology"></div>
 				<div id="team_reputation"></div>
 				<div id="team_victory_tiles"></div>
-				<div id="team_influence" onclick="if (data.action && data.action.OnClickInfluenceTrack) data.action.OnClickInfluenceTrack()"></div>
 				<div id="team_actions"></div>
 				<div id="team_colony_ships"></div>
 				<div id="team_passed"></div>
@@ -142,198 +147,199 @@
 			</div>
 		</div>
 		<div id="supply_page">
-			<b>Technologies</b><br>
-			<div id="supply_technologies"></div>
+				<b>Technologies</b><br>
+				<div id="supply_technologies"></div>
+			</div>
 		</div>
-	</div>
 
-	<div id="ui" style="margin:5px; float:left; width:315px">
-		<div id="live_ui">
-			<a href="Back to game list" onclick="SendExitGame();return false;">Back to game list</a>
-			<a href="Review game" onclick="SendStartReview();return false;">Review game</a>
-			<div id="choose_upkeep" style="display:none">
-				Upkeep Phase
-				<button type="button" id="finish_upkeep_btn" onclick="SendFinishUpkeep()">Finish</button>
-			</div>
-			<div id="choose_undo" style="display:none">
-				<button type="button" id="choose_undo_btn" onclick="SendChooseUndo()">Undo</button>
-			</div>
-			<div id="choose_subaction" style="display:none">
-				<button id="choose_action_colonise_btn" type="button" onclick="SendChooseAction('colonise')">Colonise</button>
-				<button id="choose_action_diplomacy_btn" type="button" onclick="SendChooseAction('diplomacy')">Diplomacy</button>
-				<button id="choose_action_trade_btn" type="button" onclick="SendChooseAction('trade')">Trade</button>
-				<button id="choose_action_bankrupt_btn" type="button" onclick="alert('NYI')">Bankrupt</button>
-			</div>
-			<div id="choose_action" style="display:none">
-				<button id="choose_action_explore_btn" type="button" onclick="SendChooseAction('explore')">Explore</button>
-				<button id="choose_action_influence_btn" type="button" onclick="SendChooseAction('influence')">Influence</button>
-				<button id="choose_action_research_btn" type="button" onclick="SendChooseAction('research')">Research</button>
-				<button id="choose_action_upgrade_btn" type="button" onclick="SendChooseAction('upgrade')">Upgrade</button>
-				<button id="choose_action_build_btn" type="button" onclick="SendChooseAction('build')">Build</button>
-				<button id="choose_action_move_btn" type="button" onclick="SendChooseAction('move')">Move</button>
-				<button id="choose_action_pass_btn" type="button" onclick="SendChooseAction('pass')">Pass</button>
-				<button id="choose_end_turn_btn" type="button" onclick="SendChooseCommit()">End Turn</button>
-			</div>
-			<div id="choose_explore_pos" style="display:none">
-				Choose hex to explore...
-				<button id="choose_explore_pos_btn" type="button" onclick="data.action.SendPos()">Next</button>
-				<button id="choose_explore_pos_reject_btn" type="button" onclick="SendAbort()">Skip</button>
-			</div>
-			<div id="choose_explore_hex" style="display:none">
-				Choose hex placement...
-				<button type="button" onclick="data.action.Rotate(-1)">&lt;-</button>
-				<button type="button" onclick="data.action.Rotate(1)">-&gt;</button>
-				<button id="choose_explore_hex_switch_btn" type="button" onclick="data.action.Switch()">Switch Hex</button>
-				<button id="choose_explore_hex_take_btn" type="button" onclick="data.action.SendTake()">Take another</button>
-				<input type = "checkbox" id="choose_explore_hex_influence_check">Influence</input>
-				<button type="button" onclick="data.action.SendHex()">Next</button>
-				<button type="button" onclick="SendAbort()">Reject</button>
-			</div>
-			<div id="choose_discovery" style="display:none">
-				You have discovered: <span id="choose_discovery_item"></span><br>
-				<button id="choose_discovery_points" type="button" onclick="data.action.SendDiscovery('points')">Points</button>
-				<button id="choose_discovery_use" type="button" onclick="data.action.SendDiscovery('use')">Use</button>
-				<button id="choose_discovery_keep" type="button" onclick="data.action.SendDiscovery('keep')">Keep</button>
-			</div>
-			<div id="choose_influence_src" style="display:none">
-				Choose disc to move...
-				<button id="choose_influence_src_btn" type="button" onclick="data.action.Send()">Next</button>
-				<button id="choose_influence_flip_btn" type="button" onclick="data.action.SendFlip()"></button>
-				<button type="button" onclick="SendAbort()">Finish</button>
-			</div>
-			<div id="choose_influence_dst" style="display:none">
-				Choose disc destination...
-				<button id="choose_influence_dst_btn" type="button" onclick="data.action.Send()">Next</button>
-			</div>
-			<div id="choose_colonise_pos" style="display:none">
-				Choose hex to colonise...
-				<button id="choose_colonise_pos_btn" type="button" onclick="data.action.Send()">Next</button>
-			</div>
-			<div id="choose_colonise_squares" style="display:none">
-				Choose squares to colonise...<br>
-				<div style="float:left">
-					<div style="background-color:#ff7200; padding:5px; margin:2px">
-						<button id="choose_colonise_squares_remove_Money" type="button" onclick="data.action.OnButton('Money', -1)">-</button>
-						<button id="choose_colonise_squares_add_Money" type="button" onclick="data.action.OnButton('Money', 1)">+</button>
-					</div>
-					<div style="background-color:#fe98a9; padding:5px; margin:2px">
-						<button id="choose_colonise_squares_remove_Science" type="button" onclick="data.action.OnButton('Science', -1)">-</button>
-						<button id="choose_colonise_squares_add_Science" type="button" onclick="data.action.OnButton('Science', 1)">+</button>
-					</div>
-					<div style="background-color:#a6603e; padding:5px; margin:2px">
-						<button id="choose_colonise_squares_remove_Materials" type="button" onclick="data.action.OnButton('Materials', -1)">-</button>
-						<button id="choose_colonise_squares_add_Materials" type="button" onclick="data.action.OnButton('Materials',1)">+</button>
-					</div>
+		<div id="ui" style="margin:5px; float:left; width:315px">
+			<div id="live_ui">
+				<a href="Back to game list" onclick="SendExitGame();return false;">Back to game list</a>
+				<a href="Review game" onclick="SendStartReview();return false;">Review game</a>
+				<div id="choose_upkeep" style="display:none">
+					Upkeep Phase
+					<button type="button" id="finish_upkeep_btn" onclick="SendFinishUpkeep()">Finish</button>
 				</div>
-				<div id="choose_colonise_squares_content" style="margin-top:auto; margin-bottom:auto; float:left">
-<!-- 					<canvas id="population_ui_canvas" width="250px" height="100px" style="background-color:black "></canvas> -->
+				<div id="choose_undo" style="display:none">
+					<button type="button" id="choose_undo_btn" onclick="SendChooseUndo()">Undo</button>
 				</div>
-				<button id="choose_colonise_squares_btn" type="button" onclick="data.action.Send()">Next</button>
-			</div>
-			<div id="choose_research" style="display:none">
-				Choose technology to research...
-				<select id="select_tech"></select>
-				<button id="choose_research_btn" type="button" onclick="data.action.Send()">Next</button>
-				<button id="choose_research_reject_btn" type="button" onclick="SendAbort()">Finish</button>
-			</div>
-			<div id="choose_research_artifact" style="display:none">
-				Choose artifact distribution (<span id="choose_research_artifactkey_count"></span> remaining):<br>
-				<input id="choose_research_artifact_text0" type="text" value="0" size="1" disabled> 
-				<button id="choose_research_artifact_minus0" type="button" onclick="data.action.OnButton(this, 0, -1)">-</button>
-				<button id="choose_research_artifact_plus0" type="button" onclick="data.action.OnButton(this, 0, 1)">+</button>
+				<div id="choose_subaction" style="display:none">
+					<button id="choose_action_colonise_btn" type="button" onclick="SendChooseAction('colonise')">Colonise</button>
+					<button id="choose_action_diplomacy_btn" type="button" onclick="SendChooseAction('diplomacy')">Diplomacy</button>
+					<button id="choose_action_trade_btn" type="button" onclick="SendChooseAction('trade')">Trade</button>
+					<button id="choose_action_bankrupt_btn" type="button" onclick="alert('NYI')">Bankrupt</button>
+				</div>
+				<div id="choose_action" style="display:none">
+					<button id="choose_action_explore_btn" type="button" onclick="SendChooseAction('explore')">Explore</button>
+					<button id="choose_action_influence_btn" type="button" onclick="SendChooseAction('influence')">Influence</button>
+					<button id="choose_action_research_btn" type="button" onclick="SendChooseAction('research')">Research</button>
+					<button id="choose_action_upgrade_btn" type="button" onclick="SendChooseAction('upgrade')">Upgrade</button>
+					<button id="choose_action_build_btn" type="button" onclick="SendChooseAction('build')">Build</button>
+					<button id="choose_action_move_btn" type="button" onclick="SendChooseAction('move')">Move</button>
+					<button id="choose_action_pass_btn" type="button" onclick="SendChooseAction('pass')">Pass</button>
+					<button id="choose_end_turn_btn" type="button" onclick="SendChooseCommit()">End Turn</button>
+				</div>
+				<div id="choose_explore_pos" style="display:none">
+					Choose hex to explore...
+					<button id="choose_explore_pos_btn" type="button" onclick="data.action.SendPos()">Next</button>
+					<button id="choose_explore_pos_reject_btn" type="button" onclick="SendAbort()">Skip</button>
+				</div>
+				<div id="choose_explore_hex" style="display:none">
+					Choose hex placement...
+					<button type="button" onclick="data.action.Rotate(-1)">&lt;-</button>
+					<button type="button" onclick="data.action.Rotate(1)">-&gt;</button>
+					<button id="choose_explore_hex_switch_btn" type="button" onclick="data.action.Switch()">Switch Hex</button>
+					<button id="choose_explore_hex_take_btn" type="button" onclick="data.action.SendTake()">Take another</button>
+					<input type = "checkbox" id="choose_explore_hex_influence_check">Influence</input>
+					<button type="button" onclick="data.action.SendHex()">Next</button>
+					<button type="button" onclick="SendAbort()">Reject</button>
+				</div>
+				<div id="choose_discovery" style="display:none">
+					You have discovered: <span id="choose_discovery_item"></span><br>
+					<button id="choose_discovery_points" type="button" onclick="data.action.SendDiscovery('points')">Points</button>
+					<button id="choose_discovery_use" type="button" onclick="data.action.SendDiscovery('use')">Use</button>
+					<button id="choose_discovery_keep" type="button" onclick="data.action.SendDiscovery('keep')">Keep</button>
+				</div>
+				<div id="choose_influence_src" style="display:none">
+					Choose disc to move...
+					<button id="choose_influence_src_btn" type="button" onclick="data.action.Send()">Next</button>
+					<button id="choose_influence_flip_btn" type="button" onclick="data.action.SendFlip()"></button>
+					<button type="button" onclick="SendAbort()">Finish</button>
+				</div>
+				<div id="choose_influence_dst" style="display:none">
+					Choose disc destination...
+					<button id="choose_influence_dst_btn" type="button" onclick="data.action.Send()">Next</button>
+				</div>
+				<div id="choose_colonise_pos" style="display:none">
+					Choose hex to colonise...
+					<button id="choose_colonise_pos_btn" type="button" onclick="data.action.Send()">Next</button>
+				</div>
+				<div id="choose_colonise_squares" style="display:none">
+					Choose squares to colonise...<br>
+					<div style="float:left">
+						<div style="background-color:#ff7200; padding:5px; margin:2px">
+							<button id="choose_colonise_squares_remove_Money" type="button" onclick="data.action.OnButton('Money', -1)">-</button>
+							<button id="choose_colonise_squares_add_Money" type="button" onclick="data.action.OnButton('Money', 1)">+</button>
+						</div>
+						<div style="background-color:#fe98a9; padding:5px; margin:2px">
+							<button id="choose_colonise_squares_remove_Science" type="button" onclick="data.action.OnButton('Science', -1)">-</button>
+							<button id="choose_colonise_squares_add_Science" type="button" onclick="data.action.OnButton('Science', 1)">+</button>
+						</div>
+						<div style="background-color:#a6603e; padding:5px; margin:2px">
+							<button id="choose_colonise_squares_remove_Materials" type="button" onclick="data.action.OnButton('Materials', -1)">-</button>
+							<button id="choose_colonise_squares_add_Materials" type="button" onclick="data.action.OnButton('Materials',1)">+</button>
+						</div>
+					</div>
+					<div id="choose_colonise_squares_content" style="margin-top:auto; margin-bottom:auto; float:left">
+	<!-- 					<canvas id="population_ui_canvas" width="250px" height="100px" style="background-color:black "></canvas> -->
+					</div>
+					<button id="choose_colonise_squares_btn" type="button" onclick="data.action.Send()">Next</button>
+				</div>
+				<div id="choose_research" style="display:none">
+					Choose technology to research...
+					<select id="select_tech"></select>
+					<button id="choose_research_btn" type="button" onclick="data.action.Send()">Next</button>
+					<button id="choose_research_reject_btn" type="button" onclick="SendAbort()">Finish</button>
+				</div>
+				<div id="choose_research_artifact" style="display:none">
+					Choose artifact distribution (<span id="choose_research_artifactkey_count"></span> remaining):<br>
+					<input id="choose_research_artifact_text0" type="text" value="0" size="1" disabled> 
+					<button id="choose_research_artifact_minus0" type="button" onclick="data.action.OnButton(this, 0, -1)">-</button>
+					<button id="choose_research_artifact_plus0" type="button" onclick="data.action.OnButton(this, 0, 1)">+</button>
 
-				<input id="choose_research_artifact_text1" type="text" value="0" size="1" disabled> 
-				<button id="choose_research_artifact_minus1" type="button" onclick="data.action.OnButton(this, 1, -1)">-</button>
-				<button id="choose_research_artifact_plus1" type="button" onclick="data.action.OnButton(this, 1, 1)">+</button>
+					<input id="choose_research_artifact_text1" type="text" value="0" size="1" disabled> 
+					<button id="choose_research_artifact_minus1" type="button" onclick="data.action.OnButton(this, 1, -1)">-</button>
+					<button id="choose_research_artifact_plus1" type="button" onclick="data.action.OnButton(this, 1, 1)">+</button>
 
-				<input id="choose_research_artifact_text2" type="text" value="0" size="1" disabled> 
-				<button id="choose_research_artifact_minus2" type="button" onclick="data.action.OnButton(this, 2, -1)">-</button>
-				<button id="choose_research_artifact_plus2" type="button" onclick="data.action.OnButton(this, 2, 1)">+</button>
-				<button id="choose_research_artifact_next" type="button" onclick="data.action.Send()">Next</button>
-			</div>
-			<div id="choose_build" style="display:none">
-				Choose hex and thing to build:
-				<select id="select_build"></select>
-				<button id="choose_build_btn" type="button" onclick="data.action.Send()">Next</button>
-				<button id="choose_build_reject_btn" type="button" onclick="SendAbort()">Finish</button>
-			</div>
-			<div id="choose_move_src" style="display:none">
-				Choose hex and ship to move:
-				<select id="select_move_ship"></select>
-				<button id="choose_move_src_btn" type="button" onclick="data.action.SendPos()">Next</button>
-				<button id="choose_move_src_reject_btn" type="button" onclick="SendAbort()">Skip</button>
-			</div>
-			<div id="choose_move_dst" style="display:none">
-				Choose hex to move to:
-				<button id="choose_move_dst_btn" type="button" onclick="data.action.SendPos()">Next</button>
-			</div>
-			<div id="choose_upgrade" style="display:none">
-				Upgrades remaining: <span id="choose_upgrade_remaining"></span>
-				<button id="choose_upgrade_btn" type="button" onclick="data.action.Send()">Finish</button>
-				<div id="choose_upgrade_parts" style="overflow:auto; height:180px">
+					<input id="choose_research_artifact_text2" type="text" value="0" size="1" disabled> 
+					<button id="choose_research_artifact_minus2" type="button" onclick="data.action.OnButton(this, 2, -1)">-</button>
+					<button id="choose_research_artifact_plus2" type="button" onclick="data.action.OnButton(this, 2, 1)">+</button>
+					<button id="choose_research_artifact_next" type="button" onclick="data.action.Send()">Next</button>
 				</div>
-			</div>
-			<div id="choose_diplomacy" style="display:none">
-				Diplomacy
-			</div>
-			<div id="choose_trade" style="display:none">
-				Trade: convert <select id="select_trade_from" onchange="data.action.OnSelectFrom()"></select> x 
-				<input id="choose_trade_text" type="text" value="0" size="1" disabled> 
-				<button id="choose_trade_minus" type="button" onclick="data.action.OnButton(this, -1)">-</button>
-				<button id="choose_trade_plus" type="button" onclick="data.action.OnButton(this, 1)">+</button>
-				into <select id="select_trade_to"></select> x <span id="trade_result_content"></span>
-				<button id="choose_trade_finish" type="button" onclick="data.action.Send()">Finish</button>
-			</div>
-			<div id="choose_combat" style="display:none">
-				<button id="choose_combat_missiles" type="button" onclick="data.action.Send(true)">Fire Missiles</button>
-				<button id="choose_combat_cannons" type="button" onclick="data.action.Send(true)">Fire Cannons</button>
-				<button id="choose_combat_retreat" type="button" onclick="data.action.Send(false)">Retreat</button>
-			</div>
-			<div id="choose_dice" style="display:none">
-				Assign Dice
-				<button id="choose_dice_ok" type="button" onclick="data.action.Send()">OK</button>
-			</div>
-			<div id="choose_uncolonise" style="display:none">
-				Uncolonise / graveyard...<br>
-				<div style="float:left">
-					<div style="background-color:#ff7200; padding:5px; margin:2px">
-						<button id="choose_uncolonise_remove_Money" type="button" onclick="data.action.OnButton('Money', -1)">-</button>
-						<button id="choose_uncolonise_add_Money" type="button" onclick="data.action.OnButton('Money', 1)">+</button>
-					</div>
-					<div style="background-color:#fe98a9; padding:5px; margin:2px">
-						<button id="choose_uncolonise_remove_Science" type="button" onclick="data.action.OnButton('Science', -1)">-</button>
-						<button id="choose_uncolonise_add_Science" type="button" onclick="data.action.OnButton('Science', 1)">+</button>
-					</div>
-					<div style="background-color:#a6603e; padding:5px; margin:2px">
-						<button id="choose_uncolonise_remove_Materials" type="button" onclick="data.action.OnButton('Materials', -1)">-</button>
-						<button id="choose_uncolonise_add_Materials" type="button" onclick="data.action.OnButton('Materials',1)">+</button>
+				<div id="choose_build" style="display:none">
+					Choose hex and thing to build:
+					<select id="select_build"></select>
+					<button id="choose_build_btn" type="button" onclick="data.action.Send()">Next</button>
+					<button id="choose_build_reject_btn" type="button" onclick="SendAbort()">Finish</button>
+				</div>
+				<div id="choose_move_src" style="display:none">
+					Choose hex and ship to move:
+					<select id="select_move_ship"></select>
+					<button id="choose_move_src_btn" type="button" onclick="data.action.SendPos()">Next</button>
+					<button id="choose_move_src_reject_btn" type="button" onclick="SendAbort()">Skip</button>
+				</div>
+				<div id="choose_move_dst" style="display:none">
+					Choose hex to move to:
+					<button id="choose_move_dst_btn" type="button" onclick="data.action.SendPos()">Next</button>
+				</div>
+				<div id="choose_upgrade" style="display:none">
+					Upgrades remaining: <span id="choose_upgrade_remaining"></span>
+					<button id="choose_upgrade_btn" type="button" onclick="data.action.Send()">Finish</button>
+					<div id="choose_upgrade_parts" style="overflow:auto; height:180px">
 					</div>
 				</div>
-				<div id="choose_uncolonise_content" style="margin-top:auto; margin-bottom:auto; float:left">
-<!-- 					<canvas id="population_ui_canvas" width="250px" height="100px" style="background-color:black "></canvas> -->
+				<div id="choose_diplomacy" style="display:none">
+					Diplomacy
 				</div>
-				<button id="choose_uncolonise_btn" type="button" onclick="data.action.Send()">Next</button>
+				<div id="choose_trade" style="display:none">
+					Trade: convert <select id="select_trade_from" onchange="data.action.OnSelectFrom()"></select> x 
+					<input id="choose_trade_text" type="text" value="0" size="1" disabled> 
+					<button id="choose_trade_minus" type="button" onclick="data.action.OnButton(this, -1)">-</button>
+					<button id="choose_trade_plus" type="button" onclick="data.action.OnButton(this, 1)">+</button>
+					into <select id="select_trade_to"></select> x <span id="trade_result_content"></span>
+					<button id="choose_trade_finish" type="button" onclick="data.action.Send()">Finish</button>
+				</div>
+				<div id="choose_combat" style="display:none">
+					<button id="choose_combat_missiles" type="button" onclick="data.action.Send(true)">Fire Missiles</button>
+					<button id="choose_combat_cannons" type="button" onclick="data.action.Send(true)">Fire Cannons</button>
+					<button id="choose_combat_retreat" type="button" onclick="data.action.Send(false)">Retreat</button>
+				</div>
+				<div id="choose_dice" style="display:none">
+					Assign Dice
+					<button id="choose_dice_ok" type="button" onclick="data.action.Send()">OK</button>
+				</div>
+				<div id="choose_uncolonise" style="display:none">
+					Uncolonise / graveyard...<br>
+					<div style="float:left">
+						<div style="background-color:#ff7200; padding:5px; margin:2px">
+							<button id="choose_uncolonise_remove_Money" type="button" onclick="data.action.OnButton('Money', -1)">-</button>
+							<button id="choose_uncolonise_add_Money" type="button" onclick="data.action.OnButton('Money', 1)">+</button>
+						</div>
+						<div style="background-color:#fe98a9; padding:5px; margin:2px">
+							<button id="choose_uncolonise_remove_Science" type="button" onclick="data.action.OnButton('Science', -1)">-</button>
+							<button id="choose_uncolonise_add_Science" type="button" onclick="data.action.OnButton('Science', 1)">+</button>
+						</div>
+						<div style="background-color:#a6603e; padding:5px; margin:2px">
+							<button id="choose_uncolonise_remove_Materials" type="button" onclick="data.action.OnButton('Materials', -1)">-</button>
+							<button id="choose_uncolonise_add_Materials" type="button" onclick="data.action.OnButton('Materials',1)">+</button>
+						</div>
+					</div>
+					<div id="choose_uncolonise_content" style="margin-top:auto; margin-bottom:auto; float:left">
+	<!-- 					<canvas id="population_ui_canvas" width="250px" height="100px" style="background-color:black "></canvas> -->
+					</div>
+					<button id="choose_uncolonise_btn" type="button" onclick="data.action.Send()">Next</button>
+				</div>
+				<div id="choose_auto_influence" style="display:none">
+					Choose disc destinations...
+					<button id="choose_auto_influence_btn" type="button" onclick="data.action.Send()">Finish</button>
+				</div>
 			</div>
-			<div id="choose_auto_influence" style="display:none">
-				Choose disc destinations...
-				<button id="choose_auto_influence_btn" type="button" onclick="data.action.Send()">Finish</button>
+			<div id="review_ui">
+				<a href="Back to game" onclick="SendExitReview();return false;">Back to game</a>
+				<button id="retreat_review" type="button" onclick="SendRetreatReview()">&lt;&lt;</button>
+				<button id="advance_review" type="button" onclick="SendAdvanceReview()">&gt;&gt;</button>
+			</div>
+			<br>
+			<div id="hex_info" class="panel" style="display:none">
+				<b>Hex information</b>
+				<div id="hex_info_content"></div>
 			</div>
 		</div>
-		<div id="review_ui">
-			<a href="Back to game" onclick="SendExitReview();return false;">Back to game</a>
-			<button id="retreat_review" type="button" onclick="SendRetreatReview()">&lt;&lt;</button>
-			<button id="advance_review" type="button" onclick="SendAdvanceReview()">&gt;&gt;</button>
+		<div id="log" style="margin:5px; float:right;">
+			<div id="output" style="width:300px; height:230px;">
+			</div>
+			<input type="text" id="chat" onkeydown="if (event.keyCode == 13) { SendChat(); return false; }">
 		</div>
-		<br>
-		<div id="hex_info" class="panel" style="display:none">
-			<b>Hex information</b>
-			<div id="hex_info_content"></div>
-		</div>
-	</div>
-	<div id="log" style="margin:5px; float:right;">
-		<div id="output" style="width:300px; height:230px;">
-		</div>
-		<input type="text" id="chat" onkeydown="if (event.keyCode == 13) { SendChat(); return false; }">
 	</div>
 </div>
 </body>

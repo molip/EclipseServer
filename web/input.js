@@ -246,6 +246,7 @@ function OnCommandUpdateTeams(elem)
 
 	Blueprints.Init()
 	Population.Init()
+	InfluenceTrack.Init()
 
 	html_tabs +='	<button type="button" onclick="ShowSupplyPage()">Supply</button>\
 					<div style="float:right">\
