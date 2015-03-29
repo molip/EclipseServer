@@ -575,6 +575,7 @@ ChooseUpgrade::ChooseUpgrade(const Team& team, std::vector<ShipPart> parts, int 
 		partNode.SetAttribute("power_source", ShipLayout::GetPowerSource(part));
 		partNode.SetAttribute("power_drain", ShipLayout::GetPowerDrain(part));
 		partNode.SetAttribute("is_drive", ShipLayout::IsDrive(part));
+		partNode.SetAttribute("is_ancient", ShipLayout::IsAncientShipPart(part));
 	};
 
 	m_root.SetAttribute("max_upgrades", allowedUpgrades);
