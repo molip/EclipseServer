@@ -485,7 +485,7 @@ function OnCommandChooseAction(elem)
 
 	ShowElementById('choose_subaction', true)
 	ShowElementById('choose_action_diplomacy_btn', true, true)
-	ShowElementById('choose_action_bankrupt_btn', false, true)
+	ShowElementById('choose_action_bankrupt', false, false)
 
 	ShowElementById('choose_undo', true)
 	ShowActionElement('choose_action')
@@ -505,11 +505,11 @@ function OnCommandChooseUpkeep(elem)
 
 	ShowElementById('choose_subaction', true)
 	ShowElementById('choose_action_diplomacy_btn', false, true)
-	ShowElementById('choose_action_bankrupt_btn', true, true)
+	ShowElementById('choose_action_bankrupt', elem.is_bankrupt, false)
 
 	document.getElementById('choose_action_colonise_btn').disabled = !elem.can_colonise
 	document.getElementById('choose_action_trade_btn').disabled = !elem.can_trade
-	document.getElementById('choose_action_bankrupt_btn').disabled = !elem.can_bankrupt
+	document.getElementById('finish_upkeep_btn').disabled = elem.is_bankrupt
 	document.getElementById('choose_undo_btn').disabled = !elem.can_undo
 	
 	ExitAction()

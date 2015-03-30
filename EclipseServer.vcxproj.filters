@@ -338,6 +338,9 @@
     <ClInclude Include="AutoInfluenceCmd.h">
       <Filter>Commands</Filter>
     </ClInclude>
+    <ClInclude Include="BankruptCmd.h">
+      <Filter>Commands</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -632,6 +635,9 @@
       <Filter>Model\Records</Filter>
     </ClCompile>
     <ClCompile Include="AutoInfluenceCmd.cpp">
+      <Filter>Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="BankruptCmd.cpp">
       <Filter>Commands</Filter>
     </ClCompile>
   </ItemGroup>

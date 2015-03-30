@@ -64,6 +64,15 @@ Hex& Map::GetHex(const MapPos& pos)
 	return *pHex;
 }
 
+std::vector<MapPos> Map::GetOwnedHexPositions(const Team& team) const
+{
+	std::vector<MapPos> result;
+	for (auto& h : m_hexes)
+		if (h.second->IsOwnedBy(team))
+			result.push_back(h.first);
+	return result;
+}
+
 std::vector<MapPos> Map::GetTeamStartPositions() const
 {
 	const int nTeams = m_game.GetTeams().size();

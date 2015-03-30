@@ -69,6 +69,11 @@ Storage Team::GetIncome() const
 	return income;
 }
 
+bool Team::IsBankrupt() const
+{
+	return GetStorage()[Resource::Money] + GetIncome()[Resource::Money] < 0;
+}
+
 int Team::GetColonyShips() const
 {
 	return Race(m_race).GetStartColonyShips();

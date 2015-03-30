@@ -490,10 +490,11 @@ ChooseInfluencePos::ChooseInfluencePos(const std::vector<MapPos>& positions, boo
 	m_root.SetAttribute("can_select_track", bEnableTrack);
 }
 
-ChooseInfluenceSrc::ChooseInfluenceSrc(const std::vector<MapPos>& positions, bool bEnableTrack, int flips) :
+ChooseInfluenceSrc::ChooseInfluenceSrc(const std::vector<MapPos>& positions, bool bEnableTrack, bool bCanAbort, int flips) :
 	ChooseInfluencePos(positions, bEnableTrack, "influence_src") 
 {
 	m_root.SetAttribute("max_flips", flips);
+	m_root.SetAttribute("can_abort", bCanAbort);
 }
 
 ChooseInfluenceDst::ChooseInfluenceDst(const std::vector<MapPos>& positions, bool bEnableTrack) : 
@@ -621,7 +622,7 @@ ChooseUpkeep::ChooseUpkeep(const Team& team, bool canUndo) : Choose("upkeep")
 	m_root.SetAttribute("can_undo", canUndo);
 	m_root.SetAttribute("can_colonise", team.GetUnusedColonyShips() > 0);
 	m_root.SetAttribute("can_trade", true);
-	m_root.SetAttribute("can_bankrupt", false);
+	m_root.SetAttribute("is_bankrupt", team.IsBankrupt());
 }
 
 ChooseCombat::ChooseCombat(const LiveGame& game) : Choose("combat")

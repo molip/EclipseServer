@@ -29,7 +29,9 @@ public:
 
 	typedef std::map<MapPos, HexPtr> HexMap;
 	const HexMap& GetHexes() const { return m_hexes; }
-	
+
+	std::vector<MapPos> GetOwnedHexPositions(const Team& team) const;
+
 	Hex& GetHex(const MapPos& pos);
 	Hex* FindHex(const MapPos& pos);
 	

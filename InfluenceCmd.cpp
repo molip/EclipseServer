@@ -63,18 +63,10 @@ InfluenceCmd::InfluenceCmd(Colour colour, const LiveGame& game, int iPhase, int 
 
 std::vector<MapPos> InfluenceCmd::GetSources(const LiveGame& game) const
 {
-	std::vector<MapPos> srcs;
-
-	if (m_iPhase <= 1)
-	{
-		const Team& team = GetTeam(game);
-		const Map& map = game.GetMap();
-		const Map::HexMap& hexes = map.GetHexes();
-		for (auto& h : hexes)
-			if (h.second->IsOwnedBy(team))
-				srcs.push_back(h.first);
-	}
-	return srcs;
+	if (m_iPhase > 1)
+		return std::vector<MapPos>();
+	
+	return game.GetMap().GetOwnedHexPositions(GetTeam(game));
 }
 
 int InfluenceCmd::GetMaxFlips(const LiveGame& game) const
@@ -85,7 +77,7 @@ int InfluenceCmd::GetMaxFlips(const LiveGame& game) const
 void InfluenceCmd::UpdateClient(const Controller& controller, const LiveGame& game) const
 {
 	bool canChooseTrack = GetTeam(game).GetInfluenceTrack().GetDiscCount() > 0;
-	controller.SendMessage(Output::ChooseInfluenceSrc(GetSources(game), canChooseTrack, GetMaxFlips(game)), GetPlayer(game));
+	controller.SendMessage(Output::ChooseInfluenceSrc(GetSources(game), canChooseTrack, true, GetMaxFlips(game)), GetPlayer(game));
 }
 
 Cmd::ProcessResult InfluenceCmd::Process(const Input::CmdMessage& msg, CommitSession& session)

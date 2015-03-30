@@ -61,6 +61,7 @@ public:
 	int GetUnusedShips(ShipType type) const;
 
 	Storage GetIncome() const;
+	bool IsBankrupt() const;
 
 	void PopulateStartHex(Hex& hex);
 

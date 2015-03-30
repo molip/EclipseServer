@@ -88,6 +88,7 @@
     <ClInclude Include="AttackShipsRecord.h" />
     <ClInclude Include="AutoInfluenceCmd.h" />
     <ClInclude Include="Bag.h" />
+    <ClInclude Include="BankruptCmd.h" />
     <ClInclude Include="Battle.h" />
     <ClInclude Include="Blueprint.h" />
     <ClInclude Include="BlueprintDefs.h" />
@@ -193,6 +194,7 @@
     <ClCompile Include="AttackShipsRecord.cpp" />
     <ClCompile Include="AutoInfluenceCmd.cpp" />
     <ClCompile Include="Bag.cpp" />
+    <ClCompile Include="BankruptCmd.cpp" />
     <ClCompile Include="Battle.cpp" />
     <ClCompile Include="Blueprint.cpp" />
     <ClCompile Include="BlueprintDefs.cpp" />

@@ -3,9 +3,10 @@ var Influence = {}
 ///////////////////////////////////////////////////////////////////////////////
 // Stages
 
-Influence.Stage = function(positions, can_select_track, max_flips, is_dst)
+Influence.Stage = function(positions, can_select_track, can_abort, max_flips, is_dst)
 {
 	this.positions = positions
+	this.flagNoSubAction = !can_abort
 	this.can_select_track = can_select_track
 	this.max_flips = max_flips
 	this.btn_id = is_dst ? 'choose_influence_dst_btn' : 'choose_influence_src_btn', 
@@ -15,6 +16,7 @@ Influence.Stage = function(positions, can_select_track, max_flips, is_dst)
 	this.pos_idx = can_select_track ? -1 : 0
 
 	document.getElementById(this.btn_id).disabled = true
+	document.getElementById('choose_influence_finish_btn').disabled = !can_abort
 	
 	var flipBtn = document.getElementById('choose_influence_flip_btn')
 	flipBtn.disabled = max_flips <= 0
@@ -94,7 +96,7 @@ Influence.OnCommandChooseSrc = function(elem)
 	ShowActionElement('choose_influence_src')
 	Map.selecting = true
 
-	data.action = new Influence.Stage(elem.positions, elem.can_select_track, elem.max_flips, false)
+	data.action = new Influence.Stage(elem.positions, elem.can_select_track, elem.can_abort, elem.max_flips, false)
 	data.action.UpdateTrackSelection()
 	Map.DrawActionLayer()
 }

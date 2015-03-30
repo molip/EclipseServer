@@ -26,6 +26,7 @@
 #include "Record.h"
 #include "CommitSession.h"
 #include "MessageRecord.h"
+#include "BankruptCmd.h"
 
 #include <sstream>
 
@@ -324,6 +325,8 @@ bool StartAction::Process(Controller& controller, Player& player) const
 		pCmd = new TradeCmd(colour, game);
 	else if (m_action == "pass") 
 		pCmd = new PassCmd(colour, game);
+	else if (m_action == "bankrupt") 
+		pCmd = new BankruptCmd(colour, game);
 
 	VERIFY_INPUT_MSG("No command created", !!pCmd);
 	
@@ -353,6 +356,9 @@ bool Commit::Process(Controller& controller, Player& player) const
 bool FinishUpkeep::Process(Controller& controller, Player& player) const
 {
 	CommitSession session(GetLiveGame(player), controller);
+
+	VERIFY_INPUT(!session.GetGame().GetTeam(player).IsBankrupt());
+
 	session.Open().GetUpkeepPhase().FinishUpkeep(session, player);
 	session.Commit();
 	return true;
