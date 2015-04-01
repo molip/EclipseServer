@@ -185,9 +185,9 @@ function OnCommandUpdateGameList(elem)
 		Assert(game.players && game.id && game.name && game.owner)
 		var players = ''
 		for (var j in game.players)
-			players += game.players[j] + ','
+			players += EscapeHtml(game.players[j]) + ','
 
-		html += game_str.format(game.id, game.name, game.started ? '[started]' : '', game.owner, players)
+		html += game_str.format(game.id, EscapeHtml(game.name), game.started ? '[started]' : '', EscapeHtml(game.owner), players)
 	}
 	
 	html += '<br/><button type="button" onclick="SendCreateGame()">Create Game</button>'
@@ -199,9 +199,9 @@ function OnCommandUpdateLobby(elem)
 {		
 	Assert(elem.game && elem.players && elem.owner)
 
-	var html = '<h2>{0}</h2><br/><b>{1}</b>,'.format(elem.game, elem.owner)
+	var html = '<h2>{0}</h2><br/><b>{1}</b>,'.format(EscapeHtml(elem.game), EscapeHtml(elem.owner))
 	for (var i = 0, player;  player = elem.players[i]; ++i)
-		html += player + ','
+		html += EscapeHtml(player) + ','
 
 	document.getElementById('lobby_content').innerHTML = html
 }
@@ -218,12 +218,12 @@ function OnCommandUpdateChooseTeam(elem)
 {		
 	Assert(elem.game && elem.teams)
 
-	var html = '<h2>{0}</h2><br/>'.format(elem.game)
+	var html = '<h2>{0}</h2><br/>'.format(EscapeHtml(elem.game))
 
 	for (var i = 0, team; team = elem.teams[i]; ++i)
 	{
 		Assert(team.name)
-		html += '{0}:{1}:{2}<br/>'.format(team.name, team.race || '', team.colour || '')
+		html += '{0}:{1}:{2}<br/>'.format(EscapeHtml(team.name), team.race || '', team.colour || '')
 	}
 	document.getElementById('choose_team_content').innerHTML = html
 }
@@ -237,7 +237,7 @@ function OnCommandUpdateTeams(elem)
 
 	for (var i = 0, team; team = elem.teams[i]; ++i)
 	{
-		html_tabs += fmt_tab.format(team.id, team.name, team.id == data.playerID ? 'font-weight: bold' : '')
+		html_tabs += fmt_tab.format(team.id, EscapeHtml(team.name), team.id == data.playerID ? 'font-weight: bold' : '')
 
 		data.teams[team.id] = {}
 		data.teams[team.id].population = {}
@@ -431,7 +431,7 @@ function OnCommandAddLog(elem)
 	var div = document.getElementById('output')
 	for (var i = 0, item; item = elem.items[i]; ++i)
 	{
-		var msg = item.message.replace('\n', '<br>')
+		var msg = EscapeHtml(item.message).replace('\n', '<br>')
 		var html = '<div id="log_item_{0}" style="color:{1}">'.format(item.id, item.id == 0 ? 'red' : colour) + msg + '<br></div>'
 		div.innerHTML += html
 	}

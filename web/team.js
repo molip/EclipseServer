@@ -26,7 +26,7 @@ Team.UpdateAll = function()
 Team.UpdateSummary = function()
 {
 	var team = GetCurrentTeam()
-	var html = '<b>Team:</b> {0}, <b>Race:</b> {1}, <b>Colour:</b> {2}<br/><br/>'.format(team.name, team.race, team.colour)
+	var html = '<b>Team:</b> {0}, <b>Race:</b> {1}, <b>Colour:</b> {2}<br/><br/>'.format(EscapeHtml(team.name), team.race, team.colour)
 	Team.SetDivHTML('summary', html)
 }
 
