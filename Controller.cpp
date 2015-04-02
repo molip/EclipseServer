@@ -18,13 +18,9 @@ Controller::Controller()
 
 void Controller::SendUpdateGameList(const Player* pPlayer) const
 {
-	StringPtr msg = std::make_shared<std::string>(Output::UpdateGameList().GetXML());
-
-	if (pPlayer)
-		SendMessage(msg, *pPlayer);
-	else
-		for (auto& player : m_pServer->GetPlayers())
-			SendMessage(msg, *player);
+	for (auto& player : m_pServer->GetPlayers())
+		if (!pPlayer || pPlayer == player)
+			SendMessage(std::make_shared<std::string>(Output::UpdateGameList(*player).GetXML()), *player);
 }
 
 void Controller::OnMessage(const Input::MessagePtr& pMsg, Player& player)
@@ -105,7 +101,7 @@ void Controller::SendUpdateGame(const Game& game, const Player* pPlayer) const
 		if (pPlayer)
 		{
 			SendMessage(Output::ShowLobby(), *pPlayer);
-			SendMessage(Output::UpdateLobbyControls(pPlayer == &game.GetOwner()), *pPlayer);
+			SendMessage(Output::UpdateLobbyControls(*pPlayer), *pPlayer);
 		}
 		return;
 	}

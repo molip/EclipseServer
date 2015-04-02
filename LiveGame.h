@@ -26,7 +26,7 @@ public:
 	LiveGame(int id, const std::string& name, const Player& owner);
 	virtual ~LiveGame();
 
-	void AddPlayer(const Player& player);
+	void EnjoinPlayer(const Player& player, bool join);
 
 	void StartChooseTeamGamePhase();
 	void StartMainGamePhase();

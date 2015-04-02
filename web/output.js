@@ -12,9 +12,9 @@ function SendJSON(json, noBlanket)
 		ShowBlanket(true)
 }
 
-function SendJoinGame(id)
+function SendEnterGame(id)
 {
-	var json = CreateCommandJSON('join_game')
+	var json = CreateCommandJSON('enter_game')
 	json.game = id
 	SendJSON(json)
 }
@@ -54,6 +54,16 @@ function SendRetreatReview()
 function SendStartGame()
 {
 	SendJSON(CreateCommandJSON('start_game'))
+}
+
+function SendJoinGame()
+{
+	SendJSON(CreateCommandJSON('join_game'))
+}
+
+function SendUnjoinGame()
+{
+	SendJSON(CreateCommandJSON('unjoin_game'))
 }
 
 function SendChooseTeam()

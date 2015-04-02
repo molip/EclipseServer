@@ -39,10 +39,14 @@ MessagePtr CreateCommand(const Json::Element& root)
 
 	if (type == "register")
 		return MessagePtr(new Register(root));
-	if (type == "join_game")
-		return MessagePtr(new JoinGame(root));
+	if (type == "enter_game")
+		return MessagePtr(new EnterGame(root));
 	if (type == "exit_game")
 		return MessagePtr(new ExitGame);
+	if (type == "join_game")
+		return MessagePtr(new JoinGame(true));
+	if (type == "unjoin_game")
+		return MessagePtr(new JoinGame(false));
 	if (type == "start_review")
 		return MessagePtr(new StartReview);
 	if (type == "exit_review")
@@ -144,7 +148,7 @@ Register::Register(const Json::Element& node) : m_idPlayer(0)
 	VERIFY_INPUT(m_idPlayer > 0);
 }
 
-JoinGame::JoinGame(const Json::Element& node) : m_idGame(0)
+EnterGame::EnterGame(const Json::Element& node) : m_idGame(0)
 {
 	node.GetAttribute("game", m_idGame);
 	VERIFY_INPUT(m_idGame > 0);
@@ -152,27 +156,17 @@ JoinGame::JoinGame(const Json::Element& node) : m_idGame(0)
 
 namespace 
 {
-	void DoJoinGame(Controller& controller, Player& player, const LiveGame& game)
+	void DoEnterGame(Controller& controller, Player& player, const LiveGame& game)
 	{
 		VERIFY_INPUT_MSG(player.GetName(), !player.GetCurrentGame());
 		player.SetCurrentGame(&game);
-		if (!game.HasStarted())
-		{
-			// Might already have joined,  doesn't matter.
-			CommitSession session(game, controller);
-			session.Open().AddPlayer(player);
-			session.Commit();
-			
-			controller.SendMessage(Output::UpdateLobby(game), game);
-			controller.SendUpdateGameList();
-		}
 		controller.SendUpdateGame(game, &player);
 	}
 }
 
-bool JoinGame::Process(Controller& controller, Player& player) const 
+bool EnterGame::Process(Controller& controller, Player& player) const
 {
-	DoJoinGame(controller, player, Games::GetLive(m_idGame));
+	DoEnterGame(controller, player, Games::GetLive(m_idGame));
 	return true;
 }
 
@@ -184,6 +178,25 @@ bool ExitGame::Process(Controller& controller, Player& player) const
 	player.SetCurrentGame(nullptr);
 	controller.SendMessage(Output::ShowGameList(), player);
 	controller.SendUpdateGameList(&player);
+	return true;
+}
+
+bool JoinGame::Process(Controller& controller, Player& player) const
+{
+	const LiveGame* game = player.GetCurrentLiveGame();
+	VERIFY_INPUT(game);
+
+	if (game->HasStarted()) // TODO: Notify player. 
+		return true; 
+
+	CommitSession session(*game, controller);
+	session.Open().EnjoinPlayer(player, m_join);
+	session.Commit();
+
+	controller.SendMessage(Output::UpdateLobby(*game), *game);
+	controller.SendUpdateGameList();
+	controller.SendMessage(Output::UpdateLobbyControls(player), player);
+
 	return true;
 }
 
@@ -240,7 +253,7 @@ bool CreateGame::Process(Controller& controller, Player& player) const
 	ss << "Game " <<  Games::GetLiveGames().size() + 1;
 	LiveGame& game = Games::Add(ss.str(), player);
 
-	DoJoinGame(controller, player, game);
+	DoEnterGame(controller, player, game);
 
 	return true;	
 }

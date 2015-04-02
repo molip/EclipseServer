@@ -79,14 +79,27 @@
 <div id="shroud" class="blanket shroud"><div class="shroud_text">Lost connection</div></div>
 <div id="game_list_panel" class="panel">
 	<h2>Game List</h2> 
-	<div id="game_list_content">
-	</div>
+	<h3>My Games</h3> 
+	<div id="game_list_mine"></div>
+	<h3>Open Games</h3> 
+	<div id="game_list_open"></div>
+	<h3>Other Games</h3> 
+	<div id="game_list_other"></div>
+	<br>
+	<button type="button" onclick="SendCreateGame()">Create Game</button>
 </div>
 <div id="lobby_panel" class="panel">
 	<h2>Lobby</h2> 
-	<a href="Back to game list" onclick="SendExitGame();return false;">Back to game list</a>
-	<div id="lobby_content">
-	</div>
+	<b>Game: </b> <span id="lobby_content_game"></span><br>
+	<b>Owner: </b><span id="lobby_content_owner"></span><br> 
+	<b>Players:</b><br>
+	<div id="lobby_content_players"></div><br>
+	<a href="Back to game list" onclick="SendExitGame();return false;">Back to game list</a><br>
+	<button id="lobby_content_join" type="button" onclick="SendJoinGame()">Join</button>
+	<button id="lobby_content_unjoin" type="button" onclick="SendUnjoinGame()">Leave</button>
+	<br>
+	<button id="lobby_content_start" type="button" onclick="SendStartGame()">Start</button>
+	
 	<div id="lobby_owner_controls">
 	</div>
 </div>

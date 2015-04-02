@@ -173,45 +173,51 @@ function OnCommandChoose(elem)
 
 function OnCommandUpdateGameList(elem)
 {
-	Assert(elem.games)
+	Assert(elem.mine && elem.open&& elem.other)
 	
-	var game_str = '<a href="Join Game" onclick="SendJoinGame({0});return false;">{1}</a>{2}(<b> {3}</b>, {4})<br/>'
+	var game_str = '<a href="Show Game" onclick="SendEnterGame({0});return false;">{1}</a>({2})<br/>'
 	
-	var html = ''
-
-	for (var i in elem.games)
+	var AddGames = function(games, id)
 	{
-		var game = elem.games[i]
-		Assert(game.players && game.id && game.name && game.owner)
-		var players = ''
-		for (var j in game.players)
-			players += EscapeHtml(game.players[j]) + ','
-
-		html += game_str.format(game.id, EscapeHtml(game.name), game.started ? '[started]' : '', EscapeHtml(game.owner), players)
+		var html = ''
+		for (var i in games)
+		{
+			var game = games[i]
+			Assert(game.id && game.name && game.owner)
+			html += game_str.format(game.id, EscapeHtml(game.name), EscapeHtml(game.owner))
+		}
+		
+		document.getElementById(id).innerHTML = html
 	}
-	
-	html += '<br/><button type="button" onclick="SendCreateGame()">Create Game</button>'
 
-	document.getElementById('game_list_content').innerHTML = html
+	AddGames(elem.mine, 'game_list_mine')
+	AddGames(elem.open, 'game_list_open')
+	AddGames(elem.other, 'game_list_other')
 }
 
 function OnCommandUpdateLobby(elem)
 {		
 	Assert(elem.game && elem.players && elem.owner)
 
-	var html = '<h2>{0}</h2><br/><b>{1}</b>,'.format(EscapeHtml(elem.game), EscapeHtml(elem.owner))
-	for (var i = 0, player;  player = elem.players[i]; ++i)
-		html += EscapeHtml(player) + ','
+	document.getElementById('lobby_content_game').innerText = EscapeHtml(elem.game)
+	document.getElementById('lobby_content_owner').innerText = EscapeHtml(elem.owner)
 
-	document.getElementById('lobby_content').innerHTML = html
+	var players = ''
+	for (var i = 0, player;  player = elem.players[i]; ++i)
+		players += EscapeHtml(player) + '<br>'
+
+	document.getElementById('lobby_content_players').innerHTML = players
 }
 
 function OnCommandUpdateLobbyControls(elem)
 {	
-	Assert(elem.show != null)
+	Assert(elem.is_owner != null && elem.has_joined != null)
 
-	var html = elem.show ? '<br/><br/><button type="button" onclick="SendStartGame()">Start Game</button>' : ''
-	document.getElementById('lobby_owner_controls').innerHTML = html
+	ShowElementById('lobby_content_start', elem.is_owner, true)
+	ShowElementById('lobby_content_join', !elem.has_joined, true)
+	ShowElementById('lobby_content_unjoin', elem.has_joined, true)
+
+	document.getElementById('lobby_content_start').disabled = !elem.can_start
 }
 
 function OnCommandUpdateChooseTeam(elem)

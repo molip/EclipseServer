@@ -63,9 +63,9 @@ struct Choose : Command
 	Choose(const std::string& param);
 };
 
-struct UpdateGameList : Update { UpdateGameList(); };
+struct UpdateGameList : Update { UpdateGameList(const Player& player); };
 struct UpdateLobby : Update { UpdateLobby(const Game& game); };
-struct UpdateLobbyControls : Update { UpdateLobbyControls(bool bShow); };
+struct UpdateLobbyControls : Update { UpdateLobbyControls(const Player& player); };
 struct UpdateChoose : Update { UpdateChoose(const LiveGame& game); };
 struct UpdateTeams : Update { UpdateTeams(const Game& game); };
 struct UpdateTeam : Update { UpdateTeam(const Team& team); };

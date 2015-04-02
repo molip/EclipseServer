@@ -42,9 +42,9 @@ private:
 	int m_idPlayer;
 };
 
-struct JoinGame: Message 
+struct EnterGame : Message
 {
-	JoinGame(const Json::Element& node);
+	EnterGame(const Json::Element& node);
 	virtual bool Process(Controller& controller, Player& player) const override; 
 	int m_idGame;
 };
@@ -52,6 +52,13 @@ struct JoinGame: Message
 struct ExitGame : Message // Returns player to game list - they're still in the game.
 {
 	virtual bool Process(Controller& controller, Player& player) const override; 
+};
+
+struct JoinGame : Message
+{
+	JoinGame(bool join) : m_join(join) {}
+	virtual bool Process(Controller& controller, Player& player) const override;
+	bool m_join;
 };
 
 struct StartReview : Message 

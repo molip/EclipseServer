@@ -28,11 +28,16 @@ LiveGame::~LiveGame()
 {
 }
 
-void LiveGame::AddPlayer(const Player& player)
+void LiveGame::EnjoinPlayer(const Player& player, bool join)
 {
 	VERIFY_MODEL_MSG(m_name, !HasStarted());
-	if (!FindTeam(player))
+	Team* team = FindTeam(player);
+	VERIFY_MODEL(join == !team);
+
+	if (join)
 		m_teams.push_back(TeamPtr(new Team(player.GetID())));
+	else
+		m_teams.erase(std::find_if(m_teams.begin(), m_teams.end(), [&](const TeamPtr& t) { return t.get() == team; } ));
 }
 
 void LiveGame::StartChooseTeamGamePhase()

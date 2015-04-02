@@ -16,12 +16,11 @@
 
 namespace
 {
-	void AddNonOwnerPlayers(const Game& game, Json::Element& root)
+	void AddPlayers(const Game& game, Json::Element& root)
 	{
 		auto playersNode = root.AddArray("players");
 		for (auto& i : game.GetTeams())
-			if (i->GetPlayerID() != game.GetOwner().GetID())
-				playersNode.Append(i->GetPlayer().GetName());
+			playersNode.Append(i->GetPlayer().GetName());
 	}
 	void AddPointElement(int x, int y, const std::string& name, Json::Element& root)
 	{
@@ -73,18 +72,25 @@ Choose::Choose(const std::string& param) : Command("choose")
 	m_root.SetAttribute("param", param);
 }
 
-UpdateGameList::UpdateGameList() : Update("game_list")
+UpdateGameList::UpdateGameList(const Player& player) : Update("game_list")
 {
-	auto gamesNode = m_root.AddArray("games");
+	auto mine = m_root.AddArray("mine");
+	auto open = m_root.AddArray("open");
+	auto other = m_root.AddArray("other");
+
 	for (auto& g : Games::GetLiveGames())
 	{
-		auto gameNode = gamesNode.AppendElement();
+		auto& node =
+			g->FindTeam(player) ? mine :
+			g->HasStarted() ? other :
+			open;
+		
+		auto gameNode = node.AppendElement();
 		gameNode.SetAttribute("name", g->GetName());
 		gameNode.SetAttribute("id", g->GetID());
 		gameNode.SetAttribute("owner", g->GetOwner().GetName());
-		gameNode.SetAttribute("started", g->HasStarted());
 	
-		AddNonOwnerPlayers(*g, gameNode);
+		AddPlayers(*g, gameNode);
 	}
 }
 
@@ -92,12 +98,17 @@ UpdateLobby::UpdateLobby(const Game& game) : Update("lobby")
 {
 	m_root.SetAttribute("owner", game.GetOwner().GetName());
 	m_root.SetAttribute("game", game.GetName());
-	AddNonOwnerPlayers(game, m_root);
+	AddPlayers(game, m_root);
 }
 
-UpdateLobbyControls::UpdateLobbyControls(bool bShow) : Update("lobby_controls")
+UpdateLobbyControls::UpdateLobbyControls(const Player& player) : Update("lobby_controls")
 {
-	m_root.SetAttribute("show", bShow);
+	const LiveGame* game = player.GetCurrentLiveGame();
+	VERIFY(game);
+
+	m_root.SetAttribute("is_owner", &player == &game->GetOwner());
+	m_root.SetAttribute("can_start", !game->GetTeams().empty());
+	m_root.SetAttribute("has_joined", game->FindTeam(player) != nullptr);
 }
 
 UpdateChoose::UpdateChoose(const LiveGame& game) : Update("choose_team")
