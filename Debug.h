@@ -24,6 +24,7 @@ private:
 	Type m_type;
 };
 
+extern void Verify(const std::string& msg, Exception::Type type, const void* condition);
 extern void Verify(const std::string& msg, Exception::Type type, bool condition);
 
 #define _VERIFY(condition, type, msg) \

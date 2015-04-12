@@ -5,6 +5,11 @@
 
 bool _DebugBreak() { DebugBreak(); return false; }
 
+void Verify(const std::string& msg, Exception::Type type, const void* condition)
+{
+	Verify(msg, type, condition != nullptr);
+}
+
 void Verify(const std::string& msg, Exception::Type type, bool condition)
 {
 	if (!ASSERT(condition))
