@@ -159,6 +159,8 @@ function OnClose()
 
 function load()
 {
+	document.getElementById('player_name_span').innerText = EscapeHtml(data.playerName)
+
 	if ("WebSocket" in window)
 	{
 		ws = new WebSocket(webSocketURL);

@@ -52,6 +52,8 @@ function OnCommandShow(elem)
 
 		document.getElementById('output').innerText = ''
 	}
+	
+	ShowElementById('exit_game_link', panel != 'game_list_panel', true)
 }
 
 function OnCommandUpdate(elem)

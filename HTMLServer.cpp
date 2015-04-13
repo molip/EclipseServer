@@ -7,6 +7,7 @@
 #include "Controller.h"
 #include "Players.h"
 #include "Invitations.h"
+#include "Util.h"
 
 namespace
 {
@@ -22,15 +23,6 @@ namespace
 			file.close();
 		}
 		return s;
-	}
-
-	bool ReplaceToken(std::string& str, const std::string& token, const std::string& real)
-	{
-		size_t pos = str.find(token);
-		if (pos == std::string::npos)
-			return false;
-		str.replace(pos, token.size(), real);
-		return true;
 	}
 }
 
@@ -120,8 +112,9 @@ std::string HTMLServer::OnHTTPRequest(const std::string& url, const std::string&
 		std::string wsURL = std::string("ws://") + host.substr(0, host.size() - 4) + "8998";
 			
 		std::string sPage = LoadFile("web\\game.html");
-		ReplaceToken(sPage, "%PLAYER_ID%", FormatInt(player->GetID()));
-		ReplaceToken(sPage, "%WSURL%", wsURL);
+		sPage = Util::ReplaceAll(sPage, "%PLAYER_ID%", FormatInt(player->GetID()));
+		sPage = Util::ReplaceAll(sPage, "%PLAYER_NAME%", Util::ReplaceAll(player->GetName(), "'", "\'"));
+		sPage = Util::ReplaceAll(sPage, "%WSURL%", wsURL);
 
 		return CreateOKResponse(sPage);
 	}

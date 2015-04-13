@@ -29,7 +29,8 @@
 
 <script>
     data.playerID = %PLAYER_ID%
-    var webSocketURL = "%WSURL%"
+    data.playerName = '%PLAYER_NAME%'
+    var webSocketURL = '%WSURL%'
 </script>
 
 </head>
@@ -77,7 +78,11 @@
 </style>
 <div id="blanket" class="blanket throbber"></div>
 <div id="shroud" class="blanket shroud"><div class="shroud_text">Lost connection</div></div>
-<div id="game_list_panel" class="panel">
+<div style="margin-bottom: 5px">
+	<a id="exit_game_link" style="display:none" href="Back to game list" onclick="SendExitGame();return false;">Back to game list</a>
+	<span style="float:right" id="player_name_span"></span>
+</div>
+<div id="game_list_panel" class="panel" style="clear:both">
 	<h2>Game List</h2> 
 	<h3>My Games</h3> 
 	<div id="game_list_mine"></div>
@@ -94,7 +99,6 @@
 	<b>Owner: </b><span id="lobby_content_owner"></span><br> 
 	<b>Players:</b><br>
 	<div id="lobby_content_players"></div><br>
-	<a href="Back to game list" onclick="SendExitGame();return false;">Back to game list</a><br>
 	<button id="lobby_content_join" type="button" onclick="SendJoinGame()">Join</button>
 	<button id="lobby_content_unjoin" type="button" onclick="SendUnjoinGame()">Leave</button>
 	<br>
@@ -105,7 +109,6 @@
 </div>
 <div id="choose_panel" class="panel">
 	<h2>Choose Team</h2> 
-	<a href="Back to game list" onclick="SendExitGame();return false;">Back to game list</a>
 	<div id="choose_team_content"></div>
 	<div id="choose_team"></div>
 </div>
@@ -168,7 +171,6 @@
 
 		<div id="ui" style="margin:5px; float:left; width:315px">
 			<div id="live_ui">
-				<a href="Back to game list" onclick="SendExitGame();return false;">Back to game list</a>
 				<a href="Review game" onclick="SendStartReview();return false;">Review game</a>
 				<div id="choose_upkeep" style="display:none">
 					Upkeep Phase
