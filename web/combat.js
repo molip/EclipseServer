@@ -243,9 +243,9 @@ Combat.Stage = function(missiles, can_fire, can_retreat)
 	this.flagNoSubAction = true;
 	this.flagCantUndo = true
 
-	ShowElementById('choose_combat_missiles', missiles, true)
-	ShowElementById('choose_combat_cannons', !missiles, true)
-	ShowElementById('choose_combat_retreat', !missiles, true)
+	ShowElementById('choose_combat_missiles', missiles)
+	ShowElementById('choose_combat_cannons', !missiles)
+	ShowElementById('choose_combat_retreat', !missiles)
 
 	document.getElementById('choose_combat_cannons').disabled = !can_fire
 	document.getElementById('choose_combat_retreat').disabled = !can_retreat

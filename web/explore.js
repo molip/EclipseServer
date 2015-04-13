@@ -141,7 +141,7 @@ Explore.OnCommandChoosePos = function(elem)
 	data.action = new Explore.ChoosePosStage(elem.positions)
 	
 	document.getElementById('choose_explore_pos_btn').disabled = true
-	ShowElementById('choose_explore_pos_reject_btn', elem.can_skip, true)
+	ShowElementById('choose_explore_pos_reject_btn', elem.can_skip)
 
 	Map.DrawActionLayer()
 }
@@ -153,8 +153,8 @@ Explore.OnCommandChooseHex = function(elem)
 
 	data.action = new Explore.ChooseHexStage(new Point(elem.x, elem.y), elem.can_undo, elem.hexes)
 
-	ShowElementById('choose_explore_hex_switch_btn', elem.hexes.length > 1, true)
-	ShowElementById('choose_explore_hex_take_btn', elem.can_take, true)
+	ShowElementById('choose_explore_hex_switch_btn', elem.hexes.length > 1)
+	ShowElementById('choose_explore_hex_take_btn', elem.can_take)
 	
 	data.action.UpdateInfluenceCheckbox()
 	data.action.UpdateHex()

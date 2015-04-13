@@ -81,7 +81,7 @@ Research.OnCommand = function(elem)
 {
 	ShowActionElement('choose_research')
 
-	ShowElementById('choose_research_reject_btn', elem.can_skip, true)
+	ShowElementById('choose_research_reject_btn', elem.can_skip)
 
 	data.action = new Research.Stage()
 

@@ -181,10 +181,10 @@ function load()
 		alert("DOMParser not supported");
 }
 
-function ShowElementById(id, show, inline)
+function ShowElementById(id, show)
 {
 	var e = document.getElementById(id)
-	ShowElement(e, show, inline)
+	ShowElement(e, show)
 	return e;
 }
 
@@ -195,10 +195,10 @@ function ToggleElementById(id)
 		e.style.display = e.style.display == 'none' ? '' : 'none' 
 }
 
-function ShowElement(e, show, inline)
+function ShowElement(e, show)
 {
 	if (e != null)
-		e.style.display = show ? inline ? "inline" : "block" : "none"
+		e.style.display = show ? '' : 'none' // Can only override display set by inline style or JS - not CSS.
 }
 
 function IsElementVisible(id)

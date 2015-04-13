@@ -53,7 +53,7 @@ function OnCommandShow(elem)
 		document.getElementById('output').innerText = ''
 	}
 	
-	ShowElementById('exit_game_link', panel != 'game_list_panel', true)
+	ShowElementById('exit_game_link', panel != 'game_list_panel')
 }
 
 function OnCommandUpdate(elem)
@@ -215,9 +215,9 @@ function OnCommandUpdateLobbyControls(elem)
 {	
 	Assert(elem.is_owner != null && elem.has_joined != null)
 
-	ShowElementById('lobby_content_start', elem.is_owner, true)
-	ShowElementById('lobby_content_join', !elem.has_joined, true)
-	ShowElementById('lobby_content_unjoin', elem.has_joined, true)
+	ShowElementById('lobby_content_start', elem.is_owner)
+	ShowElementById('lobby_content_join', !elem.has_joined)
+	ShowElementById('lobby_content_unjoin', elem.has_joined)
 
 	document.getElementById('lobby_content_start').disabled = !elem.can_start
 }
@@ -492,8 +492,8 @@ function OnCommandChooseAction(elem)
 	document.getElementById('choose_end_turn_btn').disabled = !elem.can_end_turn
 
 	ShowElementById('choose_subaction', true)
-	ShowElementById('choose_action_diplomacy_btn', true, true)
-	ShowElementById('choose_action_bankrupt', false, false)
+	ShowElementById('choose_action_diplomacy_btn', true)
+	ShowElementById('choose_action_bankrupt', false)
 
 	ShowElementById('choose_undo', true)
 	ShowActionElement('choose_action')
@@ -512,8 +512,8 @@ function OnCommandChooseUpkeep(elem)
 	ShowElementById('choose_undo', true)
 
 	ShowElementById('choose_subaction', true)
-	ShowElementById('choose_action_diplomacy_btn', false, true)
-	ShowElementById('choose_action_bankrupt', elem.is_bankrupt, false)
+	ShowElementById('choose_action_diplomacy_btn', false)
+	ShowElementById('choose_action_bankrupt', elem.is_bankrupt)
 
 	document.getElementById('choose_action_colonise_btn').disabled = !elem.can_colonise
 	document.getElementById('choose_action_trade_btn').disabled = !elem.can_trade

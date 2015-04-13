@@ -73,7 +73,7 @@ Build.OnCommand = function(elem)
 {
 	ShowActionElement('choose_build')
 
-	ShowElementById('choose_build_reject_btn', elem.can_skip, true)
+	ShowElementById('choose_build_reject_btn', elem.can_skip)
 		
 	data.action = new Build.Stage(elem.ships, elem.hexes)
 

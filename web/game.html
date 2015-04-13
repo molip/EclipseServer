@@ -60,7 +60,6 @@
 		top:0px;
 		left:0px;
 		z-index:1000;
-		display:none;
 	}
 	.throbber {
         background-image:url(images/throbber6.gif);
@@ -76,8 +75,8 @@
 		display:table-cell;
 	}
 </style>
-<div id="blanket" class="blanket throbber"></div>
-<div id="shroud" class="blanket shroud"><div class="shroud_text">Lost connection</div></div>
+<div id="blanket" class="blanket throbber" style="display:none"></div>
+<div id="shroud" class="blanket shroud" style="display:none"><div class="shroud_text">Lost connection</div></div>
 <div style="margin-bottom: 5px">
 	<a id="exit_game_link" style="display:none" href="Back to game list" onclick="SendExitGame();return false;">Back to game list</a>
 	<span style="float:right" id="player_name_span"></span>
