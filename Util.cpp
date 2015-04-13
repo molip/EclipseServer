@@ -23,4 +23,24 @@ std::vector<std::string> SplitString(const std::string& str, char sep)
 	return v;
 }
 
+std::string ReplaceAll(const std::string& str, const std::string& oldSubStr, const std::string& newSubStr)
+{
+	std::string result;
+	size_t pos = 0;
+	
+	while (pos != str.length())
+	{
+		size_t found = str.find(oldSubStr, pos);
+		if (found == std::string::npos)
+		{
+			result += str.substr(pos);
+			break;
+		}
+		result += str.substr(pos, found - pos);
+		result += newSubStr;
+		pos = found + oldSubStr.length();
+	}
+	return result;
+}
+
 }
