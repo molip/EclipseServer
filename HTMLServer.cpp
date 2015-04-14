@@ -67,6 +67,17 @@ std::string HTMLServer::OnHTTPRequest(const std::string& url, const std::string&
 		return CreateRedirectResponse("/login.html?failed=1");
 	}
 	
+	if (url == "/logout")
+	{
+		if (const Player* player = Authenticate(cookies))
+		{
+			Cookies newCookies;
+			newCookies.Delete("name");
+			newCookies.Delete("session");
+			return CreateRedirectResponse("/", newCookies);
+		}
+	}
+
 	if (url == "/register")
 	{
 		auto postData = request.GetPostData();
