@@ -14,6 +14,7 @@ public:
 	static Player& Add(const std::string& name, const std::string& password);
 
 	static Player& Get(int idPlayer);
+	static Player* Find(int idPlayer);
 	static Player* Find(const std::string& name);
 
 	static void RejoinCurrentGame();

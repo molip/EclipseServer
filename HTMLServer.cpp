@@ -41,7 +41,7 @@ Player* HTMLServer::Authenticate(const std::string& name, const std::string& pas
 
 Player* HTMLServer::Authenticate(const StringMap& cookies)
 {
-	Player* pPlayer = Players::Find(cookies.Get("name"));
+	Player* pPlayer = Players::Find(std::atoi(cookies.Get("id").c_str()));
 	return pPlayer && pPlayer->GetPasswordHash() == cookies.Get("session") ? pPlayer : nullptr;
 }
 
@@ -59,7 +59,7 @@ std::string HTMLServer::OnHTTPRequest(const std::string& url, const std::string&
 		if (Player* player = Authenticate(name, password))
 		{
 			Cookies newCookies;
-			newCookies.Set("name", name);
+			newCookies.Set("id", FormatInt(player->GetID()), true);
 			newCookies.Set("session", player->GetPasswordHash(), true);
 			return CreateRedirectResponse("/", newCookies);
 		}
@@ -72,7 +72,7 @@ std::string HTMLServer::OnHTTPRequest(const std::string& url, const std::string&
 		if (const Player* player = Authenticate(cookies))
 		{
 			Cookies newCookies;
-			newCookies.Delete("name");
+			newCookies.Delete("id");
 			newCookies.Delete("session");
 			return CreateRedirectResponse("/", newCookies);
 		}
@@ -105,7 +105,7 @@ std::string HTMLServer::OnHTTPRequest(const std::string& url, const std::string&
 		Invitations::Remove(code);
 
 		Cookies newCookies;
-		newCookies.Set("name", name, true);
+		newCookies.Set("id", FormatInt(player.GetID()), true);
 		newCookies.Set("session", player.GetPasswordHash(), true);
 		return CreateRedirectResponse("/", newCookies);
 	}

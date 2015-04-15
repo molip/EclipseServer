@@ -23,6 +23,12 @@ Player& Players::Get(int idPlayer)
 	return *i->second;
 }
 
+Player* Players::Find(int idPlayer)
+{
+	auto i = s_map.find(idPlayer);
+	return i == s_map.end() ? nullptr : i->second.get();
+}
+
 Player* Players::Find(const std::string& name) 
 {
 	for (auto& i : s_map)
