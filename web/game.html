@@ -79,8 +79,9 @@
 <div id="shroud" class="blanket shroud" style="display:none"><div class="shroud_text">Lost connection</div></div>
 <div style="margin-bottom: 5px">
 	<a id="exit_game_link" style="display:none" href="Back to game list" onclick="SendExitGame();return false;">Back to game list</a>
-	<a id="logout_link" href="logout?id=%PLAYER_ID%" style="float:right">Log out</a>
-	<span style="float:right; margin-right:5px" id="player_name_span"></span>
+	<a href="logout?player=%PLAYER_ID%" style="float:right; margin-left:5px">Log out</a>
+	<a href="login.html" style="float:right; margin-left:5px">Switch</a>
+	<span style="float:right;" id="player_name_span"></span>
 </div>
 <div id="game_list_panel" class="panel" style="clear:both">
 	<h2>Game List</h2> 

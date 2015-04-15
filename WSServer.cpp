@@ -15,7 +15,12 @@ WSServer::WSServer(Controller& controller) : MongooseServer(8998), m_controller(
 
 bool WSServer::OnWebSocketConnect(const std::string& url, const StringMap& cookies)
 {
-	return HTMLServer::Authenticate(cookies) != nullptr;
+	size_t i = url.find_last_of('/');
+	if (i == std::string::npos || i + 1 >= url.length())
+		return false;
+
+	int playerId = std::atoi(url.substr(i + 1).c_str());
+	return HTMLServer::Authenticate(playerId, cookies);
 }
 
 void WSServer::OnWebSocketReady(ClientID client, const std::string& url)

@@ -148,6 +148,7 @@
     <ClInclude Include="PassCmd.h" />
     <ClInclude Include="PhaseCmd.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="PlayerList.h" />
     <ClInclude Include="Players.h" />
     <ClInclude Include="PopulationBattle.h" />
     <ClInclude Include="PopulationTrack.h" />
@@ -253,6 +254,7 @@
     <ClCompile Include="PassCmd.cpp" />
     <ClCompile Include="PhaseCmd.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="PlayerList.cpp" />
     <ClCompile Include="Players.cpp" />
     <ClCompile Include="PopulationBattle.cpp" />
     <ClCompile Include="PopulationTrack.cpp" />

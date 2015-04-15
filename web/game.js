@@ -82,18 +82,6 @@ function CompareObjects(lhs, rhs)
 	return lhs == null ? rhs == null : lhs.equals(rhs)
 }
 
-if(!String.prototype.format) {
-  String.prototype.format = function() {
-    var args = arguments;
-    return this.replace(/{(\d+)}/g, function (match, number) {
-          return typeof args[number]!= 'undefined'
-        ? args[number]
-        : match
-		;
-});
-};
-}
-
 function Assert(test, msg)
 {
 	if (!test)
@@ -163,7 +151,8 @@ function load()
 
 	if ("WebSocket" in window)
 	{
-		ws = new WebSocket(webSocketURL);
+		var url = webSocketURL + '/' + data.playerID;
+		ws = new WebSocket(url);
 		ws.onopen = function() { SendRegister(); }
 		ws.onmessage = OnMessage;
 		ws.onclose = OnClose;

@@ -9,17 +9,30 @@ function OnLoad()
 {
 	if (GetURLParameter("failed") != null)
 		document.getElementById('failed_msg').style.display = ''
+		
+	var players = [%PLAYER_LIST%]
+	var html = ''
+	for (var i = 0, player; player = players[i]; ++i)
+		html += '<a href="/?player={0}">{1}</a> <br>'.format(player.id, EscapeHtml(player.name))
+	
+	document.getElementById('player_list').innerHTML = html
 }
 </script>
 
 </head>
 <body onload="OnLoad()">
-	<h1>Eclipsoid: Sign in</h1>
-	<span id="failed_msg" style="display:none">Login failed!<br></span>
-	<form action="login" method="POST">
-	  <input type="text" placeholder="User name" name="player" autofocus><br>
-	  <input type="password" placeholder="Password" name="password"><br>
-	  <button type="submit" value="Submit">Sign in</button>
-	</form> 
+	<div style="float:left">
+		<h1>Eclipsoid: Sign in</h1>
+		<span id="failed_msg" style="display:none">Login failed!<br></span>
+		<form action="login" method="POST">
+		  <input type="text" placeholder="User name" name="player" autofocus><br>
+		  <input type="password" placeholder="Password" name="password"><br>
+		  <button type="submit" value="Submit">Sign in</button>
+		</form> 
+	</div>
+	<div>
+		<h2>Logged-in Players</h2>
+		<div id="player_list"></div>
+	</div>
 </body>
 </html>

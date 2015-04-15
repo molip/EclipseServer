@@ -341,6 +341,7 @@
     <ClInclude Include="BankruptCmd.h">
       <Filter>Commands</Filter>
     </ClInclude>
+    <ClInclude Include="PlayerList.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -640,6 +641,7 @@
     <ClCompile Include="BankruptCmd.cpp">
       <Filter>Commands</Filter>
     </ClCompile>
+    <ClCompile Include="PlayerList.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="md5.inl">

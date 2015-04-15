@@ -92,7 +92,7 @@ bool MongooseServer::SendMessage(ClientID client, const std::string& msg) const
 	return mg_websocket_write(pConn, WEBSOCKET_OPCODE_TEXT, msg.c_str(), msg.size()) == msg.size();
 }
 
-std::string MongooseServer::CreateOKResponse(const std::string& content, const Cookies& cookies) const
+std::string MongooseServer::CreateOKResponse(const std::string& content, const Cookies& cookies)
 {
 	return ::FormatString(
 		"HTTP/1.1 200 OK\r\n"
@@ -104,7 +104,7 @@ std::string MongooseServer::CreateOKResponse(const std::string& content, const C
 		content.size(), content.c_str(), cookies);
 }
 
-std::string MongooseServer::CreateRedirectResponse(const std::string& url, const Cookies& cookies) const
+std::string MongooseServer::CreateRedirectResponse(const std::string& url, const Cookies& cookies)
 {
 	return ::FormatString(
 		"HTTP/1.1 302 Found\r\n"
@@ -124,7 +124,7 @@ std::string MongooseServer::CreateMD5(const std::string& string1, const std::str
 class MongooseRequest : public IServer::Request
 {
 public:
-	MongooseRequest(struct mg_connection* conn) : m_conn(conn) {}
+	MongooseRequest(const mg_connection* conn) : m_conn(const_cast<mg_connection*>(conn)) {}
 
 	virtual IServer::StringMap GetQueries() const override
 	{
@@ -153,7 +153,7 @@ public:
 		return postData;
 	}
 private:
-	struct mg_connection* m_conn;
+	mg_connection* m_conn;
 };
 
 int begin_request_handler(struct mg_connection *conn)
@@ -190,11 +190,8 @@ int websocket_connect_handler(const struct mg_connection *conn)
 	const mg_request_info *request_info = mg_get_request_info(const_cast<mg_connection*>(conn));
 	MongooseServer* pServer = reinterpret_cast<MongooseServer*>(request_info->user_data);
 
-	IServer::StringMap cookies;
-	if (const char* cookiesString = mg_get_header(conn, "Cookie"))
-		cookies = IServer::SplitString(cookiesString, ';');
-
-	return pServer->OnWebSocketConnect(request_info->uri, cookies) ? 0 : 1;
+	auto request = std::make_unique<MongooseRequest>(conn);
+	return pServer->OnWebSocketConnect(request_info->uri, request->GetCookies()) ? 0 : 1;
 }
 
 void websocket_ready_handler(mg_connection *conn)

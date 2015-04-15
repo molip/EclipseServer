@@ -14,6 +14,10 @@ public:
 			auto it = find(name);
 			return it == end() ? "" : it->second;
 		}
+		int GetInt(const std::string& name) const
+		{
+			return std::atoi(Get(name).c_str());
+		}
 	};
 
 	class Cookies : public std::string
@@ -55,8 +59,8 @@ public:
 	bool SendMessage(ClientID client, const std::string& msg) const;
 	bool PopAbort(mg_connection* pConn);
 	
-	std::string CreateOKResponse(const std::string& content, const Cookies& cookies = Cookies()) const;
-	std::string CreateRedirectResponse(const std::string& newUrl, const Cookies& cookies = Cookies()) const;
+	static std::string CreateOKResponse(const std::string& content, const Cookies& cookies = Cookies());
+	static std::string CreateRedirectResponse(const std::string& newUrl, const Cookies& cookies = Cookies());
 
 	static std::string CreateMD5(const std::string& string1, const std::string& string2);
 
