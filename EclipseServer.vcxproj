@@ -53,7 +53,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);TIXML_USE_STL;USE_WEBSOCKET</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>civetweb/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>civetweb/include;cJSON</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -70,7 +70,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions);TIXML_USE_STL;USE_WEBSOCKET</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>civetweb/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>civetweb/include;cJSON</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -96,6 +96,7 @@
     <ClInclude Include="BlueprintDefs.h" />
     <ClInclude Include="BuildCmd.h" />
     <ClInclude Include="civetweb\include\civetweb.h" />
+    <ClInclude Include="cJSON\cJSON.h" />
     <ClInclude Include="IncomeRecord.h" />
     <ClInclude Include="InfluenceRecord.h" />
     <ClInclude Include="MovePopulationCommand.h" />
@@ -113,7 +114,6 @@
     <ClInclude Include="Invitations.h" />
     <ClInclude Include="MessageRecord.h" />
     <ClInclude Include="ChooseTeamPhase.h" />
-    <ClInclude Include="cJSON.h" />
     <ClInclude Include="Cmd.h" />
     <ClInclude Include="CmdStack.h" />
     <ClInclude Include="ColoniseCmd.h" />
@@ -206,6 +206,10 @@
       <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4996</DisableSpecificWarnings>
       <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4996</DisableSpecificWarnings>
     </ClCompile>
+    <ClCompile Include="cJSON\cJSON.c">
+      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4996</DisableSpecificWarnings>
+      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4996</DisableSpecificWarnings>
+    </ClCompile>
     <ClCompile Include="IncomeRecord.cpp" />
     <ClCompile Include="InfluenceRecord.cpp" />
     <ClCompile Include="MovePopulationCommand.cpp" />
@@ -222,10 +226,6 @@
     <ClCompile Include="Invitations.cpp" />
     <ClCompile Include="MessageRecord.cpp" />
     <ClCompile Include="ChooseTeamPhase.cpp" />
-    <ClCompile Include="cJSON.c">
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);TIXML_USE_STL;USE_WEBSOCKET; _CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions);TIXML_USE_STL;USE_WEBSOCKET; _CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
-    </ClCompile>
     <ClCompile Include="Cmd.cpp" />
     <ClCompile Include="CmdStack.cpp" />
     <ClCompile Include="ColoniseCmd.cpp" />

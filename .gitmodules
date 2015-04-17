@@ -4,3 +4,6 @@
 [submodule "civetweb"]
 	path = civetweb
 	url = https://github.com/sunsetbrew/civetweb
+[submodule "cJSON"]
+	path = cJSON
+	url = https://github.com/kbranigan/cJSON
