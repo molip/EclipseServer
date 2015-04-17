@@ -24,6 +24,9 @@
     <Filter Include="Model\Records">
       <UniqueIdentifier>{82653a8d-829f-45a9-b267-8d42e006b2b5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="External\Civetweb">
+      <UniqueIdentifier>{e54d794f-4bdd-40f5-876f-f335d7bbbded}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -218,9 +221,6 @@
     <ClInclude Include="DiscTrack.h">
       <Filter>Model</Filter>
     </ClInclude>
-    <ClInclude Include="civetweb.h">
-      <Filter>External</Filter>
-    </ClInclude>
     <ClInclude Include="cJSON.h">
       <Filter>External</Filter>
     </ClInclude>
@@ -341,6 +341,9 @@
     <ClInclude Include="PlayerList.h" />
     <ClInclude Include="tinyxml2\tinyxml2.h">
       <Filter>External</Filter>
+    </ClInclude>
+    <ClInclude Include="civetweb\include\civetweb.h">
+      <Filter>External\Civetweb</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -524,9 +527,6 @@
     <ClCompile Include="DiscTrack.cpp">
       <Filter>Model</Filter>
     </ClCompile>
-    <ClCompile Include="civetweb.c">
-      <Filter>External</Filter>
-    </ClCompile>
     <ClCompile Include="cJSON.c">
       <Filter>External</Filter>
     </ClCompile>
@@ -636,10 +636,13 @@
     <ClCompile Include="tinyxml2\tinyxml2.cpp">
       <Filter>External</Filter>
     </ClCompile>
+    <ClCompile Include="civetweb\src\civetweb.c">
+      <Filter>External\Civetweb</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="md5.inl">
-      <Filter>External</Filter>
+    <None Include="civetweb\src\md5.inl">
+      <Filter>External\Civetweb</Filter>
     </None>
   </ItemGroup>
 </Project>

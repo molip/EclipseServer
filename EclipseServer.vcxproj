@@ -53,6 +53,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);TIXML_USE_STL;USE_WEBSOCKET</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <AdditionalIncludeDirectories>civetweb/include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -69,6 +70,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions);TIXML_USE_STL;USE_WEBSOCKET</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <AdditionalIncludeDirectories>civetweb/include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -93,6 +95,7 @@
     <ClInclude Include="Blueprint.h" />
     <ClInclude Include="BlueprintDefs.h" />
     <ClInclude Include="BuildCmd.h" />
+    <ClInclude Include="civetweb\include\civetweb.h" />
     <ClInclude Include="IncomeRecord.h" />
     <ClInclude Include="InfluenceRecord.h" />
     <ClInclude Include="MovePopulationCommand.h" />
@@ -110,7 +113,6 @@
     <ClInclude Include="Invitations.h" />
     <ClInclude Include="MessageRecord.h" />
     <ClInclude Include="ChooseTeamPhase.h" />
-    <ClInclude Include="civetweb.h" />
     <ClInclude Include="cJSON.h" />
     <ClInclude Include="Cmd.h" />
     <ClInclude Include="CmdStack.h" />
@@ -200,6 +202,10 @@
     <ClCompile Include="Blueprint.cpp" />
     <ClCompile Include="BlueprintDefs.cpp" />
     <ClCompile Include="BuildCmd.cpp" />
+    <ClCompile Include="civetweb\src\civetweb.c">
+      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4996</DisableSpecificWarnings>
+      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4996</DisableSpecificWarnings>
+    </ClCompile>
     <ClCompile Include="IncomeRecord.cpp" />
     <ClCompile Include="InfluenceRecord.cpp" />
     <ClCompile Include="MovePopulationCommand.cpp" />
@@ -216,7 +222,6 @@
     <ClCompile Include="Invitations.cpp" />
     <ClCompile Include="MessageRecord.cpp" />
     <ClCompile Include="ChooseTeamPhase.cpp" />
-    <ClCompile Include="civetweb.c" />
     <ClCompile Include="cJSON.c">
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);TIXML_USE_STL;USE_WEBSOCKET; _CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions);TIXML_USE_STL;USE_WEBSOCKET; _CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
@@ -292,7 +297,7 @@
     <ClCompile Include="Xml.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="md5.inl" />
+    <None Include="civetweb\src\md5.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
