@@ -39,7 +39,7 @@ void SaveThread::Go()
 
 		while (const LiveGame* game = Pop())
 		{
-			std::lock_guard<std::mutex> lock(game->GetMutex());
+			std::lock_guard<std::mutex> gameLock(game->GetMutex());
 			game->Save();
 			std::cout << "Saved game: " << game->GetName() << std::endl;
 		}
