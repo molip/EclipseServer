@@ -1,22 +1,24 @@
 #include "Xml.h"
 #include "App.h"
-#include "tinyxml.h"
+#include "tinyxml2/tinyxml2.h"
+
+using namespace tinyxml2;
 
 namespace Xml
 {
 
 Document::Document()
 {
-	m_pDoc.reset(new TiXmlDocument);
+	m_pDoc.reset(new XMLDocument);
 }
 
 Document::~Document() {}
 
 std::string Document::SaveToString() const
 {
-	TiXmlPrinter printer;
+	XMLPrinter printer;
 	m_pDoc->Accept(&printer);
-	return printer.Str();
+	return printer.CStr();
 }
 
 bool Document::LoadFromString(const std::string str) const
@@ -27,120 +29,115 @@ bool Document::LoadFromString(const std::string str) const
 
 bool Document::LoadFromFile(const std::string& path)
 {
-	return m_pDoc->LoadFile(path);
+	return m_pDoc->LoadFile(path.c_str()) == XML_NO_ERROR;
 }
 
 bool Document::SaveToFile(const std::string& path) const
 {
-	return m_pDoc->SaveFile(path);
+	return m_pDoc->SaveFile(path.c_str()) == XML_NO_ERROR;
 }
 
 Element Document::AddElement(const std::string& name)
 {
-	TiXmlElement* pElem = new TiXmlElement(name);
+	XMLElement* pElem = m_pDoc->NewElement(name.c_str());
 	m_pDoc->LinkEndChild(pElem);
-	return Element(pElem);
+	return Element(pElem, m_pDoc.get());
 }
 
 Element Document::GetRoot()
 {
 	auto pRoot = m_pDoc->RootElement();
 	VERIFY_SERIAL(!!pRoot);
-	return Element(pRoot);
+	return Element(pRoot, m_pDoc.get());
 }
 
 //-----------------------------------------------------------------------------
 
-Element::Element(TiXmlElement* pElem) : m_pElem(pElem)
+Element::Element(XMLElement* pElem, tinyxml2::XMLDocument* pDoc) : m_pElem(pElem), m_pDoc(pDoc)
 {
 }
 
-const std::string& Element::GetName() const
+std::string Element::GetName() const
 {
 	VERIFY_SERIAL(!!m_pElem);
-	return m_pElem->ValueStr();
+	return m_pElem->Name();
 }
 
 Element Element::AddElement(const std::string& name)
 {
 	VERIFY_SERIAL(!!m_pElem);
-	TiXmlElement* pElem = new TiXmlElement(name);
+	XMLElement* pElem = m_pDoc->NewElement(name.c_str());
 	m_pElem->LinkEndChild(pElem);
-	return Element(pElem);
+	return Element(pElem, m_pDoc);
 }
 
 void Element::SetAttribute(const std::string& name, const std::string& val)
 {
 	VERIFY_SERIAL(!!m_pElem);
-	m_pElem->SetAttribute(name, val);
+	m_pElem->SetAttribute(name.c_str(), val.c_str());
 }
 
 void Element::SetAttribute(const std::string& name, int val)
 {
 	VERIFY_SERIAL(!!m_pElem);
-	m_pElem->SetAttribute(name, val);
+	m_pElem->SetAttribute(name.c_str(), val);
 }
 
-bool Element::GetAttribute(const std::string& name, std::string& val) const
+bool Element::QueryAttribute(const std::string& name, std::string& val) const
 {
 	VERIFY_SERIAL(!!m_pElem);
-	if (auto pStr = m_pElem->Attribute(name))
+	if (auto str = m_pElem->Attribute(name.c_str()))
 	{
-		val = *pStr;
+		val = str;
 		return true;
 	}
 	return false;
 }
 
-bool Element::GetAttribute(const std::string& name, int& val) const
+bool Element::QueryAttribute(const std::string& name, int& val) const
 {
 	VERIFY_SERIAL(!!m_pElem);
-	return !!m_pElem->Attribute(name, &val);
+	return m_pElem->QueryIntAttribute(name.c_str(), &val) == XML_NO_ERROR;
 }
 
-bool Element::GetAttribute(const std::string& name, bool& val) const
+bool Element::QueryAttribute(const std::string& name, bool& val) const
 {
 	VERIFY_SERIAL(!!m_pElem);
-	return m_pElem->QueryBoolAttribute(name.c_str(), &val) == TIXML_SUCCESS;
+	return m_pElem->QueryBoolAttribute(name.c_str(), &val) == XML_NO_ERROR;
 }
 
-const std::string& Element::GetAttributeStr(const std::string& name) const
+std::string Element::GetAttributeStr(const std::string& name) const
 {
-	VERIFY_SERIAL(!!m_pElem);
-	auto pStr = m_pElem->Attribute(name);
-	VERIFY_SERIAL(!!pStr);
-	return *pStr;
+	std::string val;
+	VERIFY_SERIAL(QueryAttribute(name, val));
+	return val;
 }
 
 int Element::GetAttributeInt(const std::string& name) const
 {
-	VERIFY_SERIAL(!!m_pElem);
-	int val = 0;
-	auto pStr = m_pElem->Attribute(name, &val);
-	VERIFY_SERIAL(!!pStr);
+	int val;
+	VERIFY_SERIAL(QueryAttribute(name, val));
 	return val;
 }
 
 bool Element::GetAttributeBool(const std::string& name) const
 {
-	VERIFY_SERIAL(!!m_pElem);
-	bool val = false;
-	bool bOK = m_pElem->QueryBoolAttribute(name.c_str(), &val) == TIXML_SUCCESS;
-	VERIFY_SERIAL(bOK);
+	bool val;
+	VERIFY_SERIAL(QueryAttribute(name, val));
 	return val;
 }
 
 Element Element::GetFirstChild(const std::string& name) const
 {
 	VERIFY_SERIAL(!!m_pElem);
-	auto pEl = m_pElem->FirstChildElement(name);
-	return Element(pEl);
+	auto pEl = m_pElem->FirstChildElement(name.c_str());
+	return Element(pEl, m_pDoc);
 }
 
 Element Element::GetNextSibling(const std::string& name) const
 {
 	VERIFY_SERIAL(!!m_pElem);
-	return Element(m_pElem->NextSiblingElement(name));
+	return Element(m_pElem->NextSiblingElement(name.c_str()), m_pDoc);
 }
 
 }

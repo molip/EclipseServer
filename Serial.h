@@ -307,7 +307,7 @@ struct PtrLoader
 		pObj = nullptr;
 
 		bool bNull = false;
-		e.GetAttribute("_null", bNull);
+		e.QueryAttribute("_null", bNull);
 		if (!bNull)
 		{
 			pObj = new T;
@@ -350,9 +350,7 @@ struct ObjectLoader
 {
 	template <typename T> bool operator ()(const Xml::Element& e, T*& pObj) 
 	{ 
-		std::string id;
-		if (!e.GetAttribute("_class", id))
-			VERIFY_SERIAL(false);
+		std::string id = e.GetAttributeStr("_class");
 
 		delete pObj;
 		pObj = nullptr;
@@ -391,7 +389,7 @@ struct PairLoader
 template <typename T> bool LoadNode::LoadType(const std::string& name, T& val) const
 {
 	std::string attr;
-	if (!m_elem.GetAttribute(name, attr))
+	if (!m_elem.QueryAttribute(name, attr))
 		return false;
 	val = FromString<T>(attr);
 	return true;

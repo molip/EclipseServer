@@ -174,7 +174,7 @@
     <ClInclude Include="Technology.h" />
     <ClInclude Include="TechTrack.h" />
     <ClInclude Include="Test.h" />
-    <ClInclude Include="tinyxml.h" />
+    <ClInclude Include="tinyxml2\tinyxml2.h" />
     <ClInclude Include="TradeCmd.h" />
     <ClInclude Include="Turn.h" />
     <ClInclude Include="Types.h" />
@@ -281,9 +281,7 @@
     <ClCompile Include="Technology.cpp" />
     <ClCompile Include="TechTrack.cpp" />
     <ClCompile Include="Test.cpp" />
-    <ClCompile Include="tinyxml.cpp" />
-    <ClCompile Include="tinyxmlerror.cpp" />
-    <ClCompile Include="tinyxmlparser.cpp" />
+    <ClCompile Include="tinyxml2\tinyxml2.cpp" />
     <ClCompile Include="TradeCmd.cpp" />
     <ClCompile Include="Turn.cpp" />
     <ClCompile Include="UncoloniseCmd.cpp" />

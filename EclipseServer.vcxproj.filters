@@ -194,9 +194,6 @@
     <ClInclude Include="WSServer.h">
       <Filter>Input/output</Filter>
     </ClInclude>
-    <ClInclude Include="tinyxml.h">
-      <Filter>External</Filter>
-    </ClInclude>
     <ClInclude Include="IndexRange.h">
       <Filter>General</Filter>
     </ClInclude>
@@ -342,6 +339,9 @@
       <Filter>Commands</Filter>
     </ClInclude>
     <ClInclude Include="PlayerList.h" />
+    <ClInclude Include="tinyxml2\tinyxml2.h">
+      <Filter>External</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -506,15 +506,6 @@
     <ClCompile Include="WSServer.cpp">
       <Filter>Input/output</Filter>
     </ClCompile>
-    <ClCompile Include="tinyxml.cpp">
-      <Filter>External</Filter>
-    </ClCompile>
-    <ClCompile Include="tinyxmlparser.cpp">
-      <Filter>External</Filter>
-    </ClCompile>
-    <ClCompile Include="tinyxmlerror.cpp">
-      <Filter>External</Filter>
-    </ClCompile>
     <ClCompile Include="PassCmd.cpp">
       <Filter>Commands</Filter>
     </ClCompile>
@@ -642,6 +633,9 @@
       <Filter>Commands</Filter>
     </ClCompile>
     <ClCompile Include="PlayerList.cpp" />
+    <ClCompile Include="tinyxml2\tinyxml2.cpp">
+      <Filter>External</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="md5.inl">

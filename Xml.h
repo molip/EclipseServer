@@ -3,8 +3,11 @@
 #include <memory>
 #include <string>
 
-class TiXmlDocument;
-class TiXmlElement;
+namespace tinyxml2
+{
+	class XMLDocument;
+	class XMLElement;
+}
 
 namespace Xml
 {
@@ -14,9 +17,9 @@ class Element
 	friend class Document;
 
 public:
-	Element() : m_pElem(nullptr) {}
+	Element() : m_pElem(nullptr), m_pDoc(nullptr) {}
 
-	const std::string& GetName() const;
+	std::string GetName() const;
 	
 	Element AddElement(const std::string& name);
 
@@ -26,11 +29,11 @@ public:
 	void SetAttribute(const std::string& name, const std::string& val);
 	void SetAttribute(const std::string& name, int val);
 
-	bool GetAttribute(const std::string& name, std::string& val) const;
-	bool GetAttribute(const std::string& name, int& val) const;
-	bool GetAttribute(const std::string& name, bool& val) const;
+	bool QueryAttribute(const std::string& name, std::string& val) const;
+	bool QueryAttribute(const std::string& name, int& val) const;
+	bool QueryAttribute(const std::string& name, bool& val) const;
 
-	const std::string& GetAttributeStr(const std::string& name) const;
+	std::string GetAttributeStr(const std::string& name) const;
 	int GetAttributeInt(const std::string& name) const;
 	bool GetAttributeBool(const std::string& name) const;
 
@@ -39,9 +42,10 @@ public:
 	bool operator != (const Element& rhs) const { return !operator ==(rhs); }
 
 private:
-	Element(TiXmlElement* pElem);
+	Element(tinyxml2::XMLElement* pElem, tinyxml2::XMLDocument* pDoc);
 
-	TiXmlElement* m_pElem; 
+	tinyxml2::XMLElement* m_pElem;
+	tinyxml2::XMLDocument* m_pDoc;
 };
 
 class Document
@@ -61,7 +65,7 @@ public:
 	Element GetRoot();
 
 private:
-	std::unique_ptr<TiXmlDocument> m_pDoc; 
+	std::unique_ptr<tinyxml2::XMLDocument> m_pDoc;
 };
 
 class ElementIter

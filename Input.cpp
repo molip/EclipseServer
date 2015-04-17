@@ -144,7 +144,7 @@ const LiveGame& Message::GetLiveGame(const Player& player) const
 	
 Register::Register(const Json::Element& node) : m_idPlayer(0)
 {
-	node.GetAttribute("player", m_idPlayer);
+	m_idPlayer = node.GetAttributeInt("player");
 	VERIFY_INPUT(m_idPlayer > 0);
 }
 
