@@ -68,7 +68,6 @@ void LiveGame::StartChooseTeamGamePhase()
 
 	//m_hexBag[1].ReturnTile(206); // Discovery, no ancients, 1 materials square.
 
-	m_repBag.Init();
 	m_techBag.Init();
 	m_discBag.Init();
 }

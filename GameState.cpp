@@ -15,7 +15,7 @@ GameState::GameState(Game& game) : m_map(game), m_iRound(-1)
 GameState::GameState(const GameState& rhs, Game& game) :
 m_map(rhs.m_map, game), m_techs(rhs.m_techs), m_iRound(rhs.m_iRound),
 m_battle(rhs.m_battle ? rhs.m_battle->Clone() : nullptr),
-m_repBagState(rhs.m_repBagState), m_techBagState(rhs.m_techBagState), m_discBagState(rhs.m_discBagState), m_hexBagStates(rhs.m_hexBagStates)
+m_repBag(rhs.m_repBag), m_techBagState(rhs.m_techBagState), m_discBagState(rhs.m_discBagState), m_hexBagStates(rhs.m_hexBagStates)
 {
 	InitBags(game);
 
@@ -41,7 +41,6 @@ bool GameState::operator==(const GameState& rhs) const
 
 void GameState::InitBags(const Game& game)
 {
-	m_repBagState.SetBag(game.GetReputationBag());
 	m_techBagState.SetBag(game.GetTechnologyBag());
 	m_discBagState.SetBag(game.GetDiscoveryBag());
 	for (auto&& ring : EnumRange<HexRing>())
@@ -61,7 +60,7 @@ void GameState::Init(const Game& game)
 	{
 		std::vector<int> repTiles;
 		for (int j = 0; j < Race(team->GetRace()).GetStartReputationTiles(); ++j)
-			repTiles.push_back(m_repBagState.TakeTile());
+			repTiles.push_back(m_repBag.ChooseAndTakeTile());
 
 		auto pair = m_teamStates.insert(std::make_pair(team->GetColour(), TeamStatePtr(new TeamState)));
 		VERIFY(pair.second);
@@ -150,7 +149,7 @@ void GameState::Save(Serial::SaveNode& node) const
 	node.SaveObject("battle", m_battle);
 	node.SaveMap("team_states", m_teamStates, Serial::EnumSaver(), Serial::ClassPtrSaver());
 
-	node.SaveClass("rep_bag", m_repBagState);
+	node.SaveClass("rep_bag", m_repBag);
 	node.SaveClass("tech_bag", m_techBagState);
 	node.SaveClass("disc_bag", m_discBagState);
 	node.SaveArray("hex_bag", m_hexBagStates, Serial::ClassSaver());
@@ -164,7 +163,7 @@ void GameState::Load(const Serial::LoadNode& node)
 	node.LoadObject("battle", m_battle);
 	node.LoadMap("team_states", m_teamStates, Serial::EnumLoader(), Serial::ClassPtrLoader());
 
-	node.LoadClass("rep_bag", m_repBagState);
+	node.LoadClass("rep_bag", m_repBag);
 	node.LoadClass("tech_bag", m_techBagState);
 	node.LoadClass("disc_bag", m_discBagState);
 	node.LoadArray("hex_bag", m_hexBagStates, Serial::ClassLoader());

@@ -47,7 +47,6 @@ public:
 	virtual bool IsLive() const { return false; }
 	virtual std::vector<std::pair<int, std::string>> GetLogs() const = 0;
 
-	const ReputationBag& GetReputationBag() const { return m_repBag; }
 	const TechnologyBag& GetTechnologyBag() const { return m_techBag; }
 	const DiscoveryBag& GetDiscoveryBag() const { return m_discBag; }
 	const HexBag& GetHexBag(HexRing ring) const { return m_hexBag[(int)ring]; }
@@ -80,7 +79,6 @@ protected:
 	int m_id; 
 	std::string m_name;
 	int m_idOwner;
-	ReputationBag m_repBag;
 	TechnologyBag m_techBag;
 	DiscoveryBag m_discBag;
 	HexBag m_hexBag[(int)HexRing::_Count];

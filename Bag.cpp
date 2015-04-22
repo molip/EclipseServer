@@ -3,6 +3,8 @@
 #include "App.h"
 #include "Game.h"
 
+#include <numeric>
+
 void DiscoveryBag::Init()
 {
 	for (int i = 0; i < 3; ++i)
@@ -19,17 +21,6 @@ void DiscoveryBag::Init()
 	m_vec.push_back(DiscoveryType::IonTurret);
 	m_vec.push_back(DiscoveryType::ConformalDrive);
 	m_vec.push_back(DiscoveryType::FluxShield);
-
-	std::shuffle(m_vec.begin(), m_vec.end(), GetRandom());
-}
-
-void ReputationBag::Init()
-{
-	const int num[] = { 12, 9, 7, 4 };
-
-	for (int val = 1; val <= 4; ++val)
-		for (int i = 0; i < num[val - 1]; ++i)
-			m_vec.push_back(val);
 
 	std::shuffle(m_vec.begin(), m_vec.end(), GetRandom());
 }
@@ -83,4 +74,73 @@ HexBag::HexBag(HexRing r, int nPlayers)
 		const int outers[] = { 5, 5, 10, 14, 16, 18 };
 		m_vec.resize(outers[nPlayers - 1]);
 	}
+}
+
+ReputationBag::ReputationBag() : m_counts { 12, 9, 7, 4 }
+{
+}
+
+int ReputationBag::GetTileCount() const
+{
+	return std::accumulate(m_counts.begin(), m_counts.end(), 0);
+}
+
+int ReputationBag::ChooseBestTile(int count) const
+{
+	VERIFY(count >= 1 && count <= 5);
+
+	auto counts = m_counts;
+
+	int tileCount = GetTileCount();
+	VERIFY_MODEL(tileCount > 0);
+	count = std::min(count, tileCount);
+
+	int best = 0;
+
+	for (int i = 0; i < count; ++i)
+	{
+		// Choose a random tile. 
+		int index = ::GetRandom()() % tileCount;
+		int val = 0;
+		for (;; ++val)
+		{
+			index -= counts[val];
+			if (index < 0)
+				break;
+		}
+
+		--counts[val];
+		--tileCount;
+		best = std::max(best, val);
+	}
+
+	return best + 1;
+}
+
+int ReputationBag::ChooseAndTakeTile()
+{
+	int val = ChooseBestTile(1);
+	TakeTile(val);
+	return val;
+}
+
+void ReputationBag::TakeTile(int val)
+{
+	VERIFY_MODEL(m_counts[val - 1] > 0);
+	--m_counts[val - 1];
+}
+
+void ReputationBag::ReplaceTile(int val)
+{
+	++m_counts[val - 1];
+}
+
+void ReputationBag::Save(Serial::SaveNode& node) const
+{
+	node.SaveArray("counts", m_counts, Serial::TypeSaver());
+}
+
+void ReputationBag::Load(const Serial::LoadNode& node)
+{
+	node.LoadArray("counts", m_counts, Serial::TypeLoader());
 }

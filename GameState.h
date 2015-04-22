@@ -38,7 +38,7 @@ public:
 	ShipBattle& GetShipBattle();
 	PopulationBattle& GetPopulationBattle();
 
-	BagState<ReputationBag>& GetReputationBag() { return m_repBagState; }
+	ReputationBag& GetReputationBag() { return m_repBag; }
 	BagState<TechnologyBag>& GetTechnologyBag() { return m_techBagState; }
 	BagState<DiscoveryBag>& GetDiscoveryBag() { return m_discBagState; }
 	BagState<HexBag>& GetHexBag(HexRing ring) { return m_hexBagStates[ring]; }
@@ -59,7 +59,7 @@ public:
 private:
 	void InitBags(const Game& game);
 		
-	BagState<ReputationBag> m_repBagState;
+	ReputationBag m_repBag;
 	BagState<TechnologyBag> m_techBagState;
 	BagState<DiscoveryBag> m_discBagState;
 	EnumArray<HexRing, BagState<HexBag>> m_hexBagStates;

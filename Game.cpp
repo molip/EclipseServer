@@ -23,7 +23,7 @@ Game::Game(int id, const std::string& name, const Player& owner) :
 
 Game::Game(int id, const std::string& name, const Player& owner, const Game& rhs) :
 	m_id(id), m_name(name), m_idOwner(owner.GetID()), m_state(rhs.m_state, *this),
-	 m_repBag(rhs.m_repBag), m_techBag(rhs.m_techBag), m_discBag(rhs.m_discBag)
+	 m_techBag(rhs.m_techBag), m_discBag(rhs.m_discBag)
 {
 	for (auto& t : rhs.m_teams)
 	{
@@ -81,7 +81,6 @@ void Game::Save(Serial::SaveNode& node) const
 	node.SaveType("name", m_name);
 	node.SaveType("owner", m_idOwner);
 	node.SaveCntr("teams", m_teams, Serial::ClassPtrSaver());
-	node.SaveClass("rep_bag", m_repBag);
 	node.SaveClass("tech_bag", m_techBag);
 	node.SaveClass("disc_bag", m_discBag);
 	node.SaveArray("hex_bags", m_hexBag, Serial::ClassSaver());
@@ -93,7 +92,6 @@ void Game::Load(const Serial::LoadNode& node)
 	node.LoadType("name", m_name);
 	node.LoadType("owner", m_idOwner);
 	node.LoadCntr("teams", m_teams, Serial::ClassPtrLoader());
-	node.LoadClass("rep_bag", m_repBag);
 	node.LoadClass("tech_bag", m_techBag);
 	node.LoadClass("disc_bag", m_discBag);
 	node.LoadArray("hex_bags", m_hexBag, Serial::ClassLoader());

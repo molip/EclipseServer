@@ -52,12 +52,6 @@ public:
 	void Init();
 };
 
-class ReputationBag : public IntBag
-{
-public:
-	void Init();
-};
-
 class TechnologyBag : public EnumBag<TechType>
 {
 public:
@@ -109,4 +103,24 @@ public:
 private:
 	const BagType* m_bag;
 	size_t m_taken;
+};
+
+class ReputationBag
+{
+public:
+	ReputationBag();
+
+	bool IsEmpty() const { return GetTileCount() == 0; }
+	int GetTileCount() const;
+	int ChooseBestTile(int count) const;
+
+	int ChooseAndTakeTile();
+	void TakeTile(int val);
+	void ReplaceTile(int val);
+
+	void Save(Serial::SaveNode& node) const;
+	void Load(const Serial::LoadNode& node);
+
+private:
+	std::array<int, 4> m_counts;
 };
