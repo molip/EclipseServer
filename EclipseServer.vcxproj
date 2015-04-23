@@ -157,6 +157,7 @@
     <ClInclude Include="Race.h" />
     <ClInclude Include="Record.h" />
     <ClInclude Include="Reputation.h" />
+    <ClInclude Include="ReputationRecord.h" />
     <ClInclude Include="ResearchCmd.h" />
     <ClInclude Include="Resources.h" />
     <ClInclude Include="ReviewGame.h" />
@@ -266,6 +267,7 @@
     <ClCompile Include="Race.cpp" />
     <ClCompile Include="Record.cpp" />
     <ClCompile Include="Reputation.cpp" />
+    <ClCompile Include="ReputationRecord.cpp" />
     <ClCompile Include="ResearchCmd.cpp" />
     <ClCompile Include="Resources.cpp" />
     <ClCompile Include="ReviewGame.cpp" />

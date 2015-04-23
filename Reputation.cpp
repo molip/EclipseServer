@@ -70,23 +70,45 @@ int ReputationTrack::GetFirstReputationTileSlot() const
 	return nAmbassadorSlots + nEitherSlotsUsed;
 }
 
-bool ReputationTrack::AddReputationTile(int val)
+int ReputationTrack::GetEmptyReputationTileSlots() const
 {
-	int nEmptyRepTileSlots = GetSlotCount() - GetFirstReputationTileSlot() - GetReputationTileCount();
+	return GetSlotCount() - GetFirstReputationTileSlot() - GetReputationTileCount();
+}
 
-	if (nEmptyRepTileSlots > 0)
-	{
-		m_repTiles.push_back(val);
-		std::sort(m_repTiles.begin(), m_repTiles.end(), std::greater<int>());
+bool ReputationTrack::CanAddReputationTile(int val) const
+{
+	VERIFY(val >= 1 && val <= 4);
+
+	if (GetEmptyReputationTileSlots() > 0)
 		return true;
+	
+	VERIFY(!m_repTiles.empty());
+	return val > m_repTiles.back();
+}
+
+int ReputationTrack::AddReputationTile(int val)
+{
+	VERIFY(CanAddReputationTile(val));
+
+	int old = 0;
+
+	if (GetEmptyReputationTileSlots() == 0)
+	{
+		old = m_repTiles.back();
+		m_repTiles.pop_back();
 	}
 
-	if (!m_repTiles.empty() && val > m_repTiles.back())
-	{
-		m_repTiles.back() = val;
-		return true;
-	}
-	return false;
+	m_repTiles.push_back(val);
+	std::sort(m_repTiles.begin(), m_repTiles.end(), std::greater<int>());
+
+	return old;
+}
+
+void ReputationTrack::RemoveReputationTile(int val)
+{
+	auto it = std::find(m_repTiles.begin(), m_repTiles.end(), val);
+	VERIFY_MODEL(it != m_repTiles.end());
+	m_repTiles.erase(it);
 }
 
 bool ReputationTrack::CanAddAmbassador() const
@@ -97,7 +119,7 @@ bool ReputationTrack::CanAddAmbassador() const
 
 bool ReputationTrack::OnAmbassadorAdded()
 {
-	int nEmptyRepTileSlots = GetSlotCount() - GetFirstReputationTileSlot() - GetReputationTileCount();
+	int nEmptyRepTileSlots = GetEmptyReputationTileSlots();
 	if (nEmptyRepTileSlots == -1)
 	{
 		m_repTiles.pop_back();

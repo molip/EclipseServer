@@ -116,7 +116,7 @@ public:
 
 	int ChooseAndTakeTile();
 	void TakeTile(int val);
-	void ReplaceTile(int val);
+	void ReturnTile(int val);
 
 	void Save(Serial::SaveNode& node) const;
 	void Load(const Serial::LoadNode& node);

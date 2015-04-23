@@ -35,7 +35,9 @@ public:
 	int GetReputationTileCount() const { return m_repTiles.size(); }
 	int GetReputationTile(int i) const { return m_repTiles[i]; }
 
-	bool AddReputationTile(int val);
+	bool CanAddReputationTile(int val) const;
+	int AddReputationTile(int val);
+	void RemoveReputationTile(int val);
 	bool CanAddAmbassador() const;
 	bool OnAmbassadorAdded();
 
@@ -44,6 +46,7 @@ public:
 
 private:
 	ReputationSlots GetSlots() const;
+	int GetEmptyReputationTileSlots() const;
 
 	std::vector<int> m_repTiles;
 	const Team* m_team;

@@ -33,6 +33,11 @@ bool Battle::Group::IsDead() const
 	return true;
 }
 
+int Battle::Group::GetDeadShipCount() const
+{
+	return std::count_if(lifeCounts.begin(), lifeCounts.end(), [](int c) { return c == 0; });
+}
+
 void Battle::Group::Save(Serial::SaveNode& node) const
 {
 	using namespace Serial;
@@ -215,6 +220,21 @@ RecordPtr Battle::CreateAutoAttackRecord(const Game& game) const
 	return nullptr;
 }
 
+void Battle::AddReputationResults(ReputationResults& results) const
+{
+	VERIFY_MODEL(IsFinished());
+		
+	for (auto& group : m_groups)
+	{
+		int& count = results[GetColour(!group.invader)]; // Assign rep tiles to the other team. 
+		count += ::GetShipTypeReputationTileCount(group.shipType) * group.GetDeadShipCount();
+	}
+
+	// TODO: Only do this if not retreated. 
+	++results[m_defender];
+	++results[m_invader];
+}
+
 void Battle::Save(Serial::SaveNode& node) const
 {
 	using namespace Serial;
@@ -224,7 +244,6 @@ void Battle::Save(Serial::SaveNode& node) const
 	node.SaveCntr("groups", m_groups, ClassSaver());
 	node.SaveClass("turn", m_turn);
 	node.SaveType("hex_id", m_hexId);
-
 }
 
 void Battle::Load(const Serial::LoadNode& node)

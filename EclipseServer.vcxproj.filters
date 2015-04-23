@@ -351,6 +351,7 @@
     <ClInclude Include="cJSON\cJSON.h">
       <Filter>External\cJSON</Filter>
     </ClInclude>
+    <ClInclude Include="ReputationRecord.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -645,6 +646,7 @@
     <ClCompile Include="cJSON\cJSON.c">
       <Filter>External\cJSON</Filter>
     </ClCompile>
+    <ClCompile Include="ReputationRecord.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="civetweb\src\md5.inl">

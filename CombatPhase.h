@@ -32,4 +32,5 @@ private:
 	void FinishBattle(CommitSession& session);
 
 	int m_lastPopulationBattleHexId;
+	Battle::ReputationResults m_hexReputationResults;
 };

@@ -40,6 +40,7 @@ public:
 		std::vector<int> lifeCounts; // Remaining lives per ship. Dead if <= 0.
 
 		bool IsDead() const;
+		int GetDeadShipCount() const;
 
 		void Save(Serial::SaveNode& node) const;
 		void Load(const Serial::LoadNode& node);
@@ -84,6 +85,9 @@ public:
 	bool IsFinished() const { return m_turn.groupIndex < 0; }
 
 	void RollDice(const LiveGame& game, Dice& dice) const;
+
+	typedef std::map<Colour, int> ReputationResults;
+	void AddReputationResults(ReputationResults& results) const;
 
 	virtual RecordPtr CreateAttackRecord(const Game& game, const Dice& dice) const = 0;
 	virtual RecordPtr CreateAutoAttackRecord(const Game& game) const;

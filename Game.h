@@ -47,6 +47,7 @@ public:
 	virtual bool IsLive() const { return false; }
 	virtual std::vector<std::pair<int, std::string>> GetLogs() const = 0;
 
+	const ReputationBag& GetReputationBag() const { return const_cast<GameState&>(m_state).GetReputationBag(); }
 	const TechnologyBag& GetTechnologyBag() const { return m_techBag; }
 	const DiscoveryBag& GetDiscoveryBag() const { return m_discBag; }
 	const HexBag& GetHexBag(HexRing ring) const { return m_hexBag[(int)ring]; }

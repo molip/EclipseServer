@@ -15,6 +15,7 @@
 #include "AttackShipsRecord.h"
 #include "AttackPopulationRecord.h"
 #include "AdvanceCombatTurnRecord.h"
+#include "ReputationRecord.h"
 
 CombatPhase::CombatPhase(LiveGame* pGame) : OrderedPhase(pGame), m_lastPopulationBattleHexId(0)
 {
@@ -89,19 +90,28 @@ void CombatPhase::FinishBattle(CommitSession& session)
 
 	if (battle.IsPopulationBattle())
 		m_lastPopulationBattleHexId = battle.GetHexId();
-	
+	else
+		battle.AddReputationResults(m_hexReputationResults);
+
 	BattlePtr prevHexBattle;
 	auto hex = GetNextBattleHex();
 	if (hex && hex->GetID() == GetGame().GetBattle().GetHexId()) // Continue battles in this hex.
 	{
 		prevHexBattle = GetGame().GetBattle().Clone();
 	}
-	else
-	{
-		// TODO: assign reputation tiles.
-	}
 
 	session.DoAndPushRecord(RecordPtr(new FinishBattleRecord));
+
+	if (prevHexBattle == nullptr) // Finished battles in this hex. 
+	{
+		ReputationRecord::TileValues values;
+		for (auto pair : m_hexReputationResults)
+			values[pair.first] = session.GetGame().GetReputationBag().ChooseBestTile(std::min(pair.second, 5));
+
+		session.DoAndPushRecord(RecordPtr(new ReputationRecord(values)));
+		m_hexReputationResults.clear();
+	}
+
 
 	if (hex)
 		StartBattle(session, prevHexBattle.get());
@@ -136,12 +146,14 @@ void CombatPhase::Save(Serial::SaveNode& node) const
 {
 	__super::Save(node);
 	node.SaveType("last_population_battle_hex_id", m_lastPopulationBattleHexId);
+	node.SaveMap("hex_reputation_results", m_hexReputationResults, Serial::EnumSaver(), Serial::TypeSaver());
 }
 
 void CombatPhase::Load(const Serial::LoadNode& node)
 {
 	__super::Load(node);
 	node.LoadType("last_population_battle_hex_id", m_lastPopulationBattleHexId);
+	node.LoadMap("hex_reputation_results", m_hexReputationResults, Serial::EnumLoader(), Serial::TypeLoader());
 }
 
 REGISTER_DYNAMIC(CombatPhase)

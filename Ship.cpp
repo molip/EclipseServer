@@ -17,3 +17,18 @@ int GetShipTypeSize(ShipType shipType)
 	return 0;
 }
 
+int GetShipTypeReputationTileCount(ShipType shipType)
+{
+	switch (shipType)
+	{
+	case ShipType::Interceptor:	
+	case ShipType::Starbase:	
+	case ShipType::Ancient:		return 1;
+	case ShipType::Cruiser:		return 2;
+	case ShipType::GCDS:		
+	case ShipType::Dreadnought:	return 3;
+	}
+
+	return 0;
+}
+

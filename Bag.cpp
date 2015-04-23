@@ -130,7 +130,7 @@ void ReputationBag::TakeTile(int val)
 	--m_counts[val - 1];
 }
 
-void ReputationBag::ReplaceTile(int val)
+void ReputationBag::ReturnTile(int val)
 {
 	++m_counts[val - 1];
 }

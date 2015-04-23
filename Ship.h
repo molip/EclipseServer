@@ -18,3 +18,4 @@ struct PlayerShipTypesRange : EnumRange<ShipType>
 };
 
 extern int GetShipTypeSize(ShipType shipType);
+extern int GetShipTypeReputationTileCount(ShipType shipType);
