@@ -12,6 +12,7 @@ public:
 	static std::string GetPath();
 
 	static Player& Add(const std::string& name, const std::string& password);
+	static Player& AddTest();
 
 	static Player& Get(int idPlayer);
 	static Player* Find(int idPlayer);
@@ -21,6 +22,6 @@ public:
 
 private:
 	static std::map<int, PlayerPtr> s_map;
-	static int s_nNextID;
+	static int s_nNextID, s_nNextTestID;
 };
 

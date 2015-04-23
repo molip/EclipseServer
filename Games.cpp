@@ -6,6 +6,7 @@
 #include "Serial.h"
 
 int Games::s_nNextGameID = 1;
+int Games::s_nNextTestGameID = -1;
 std::vector<LiveGamePtr> Games::s_liveGames;
 std::vector<ReviewGamePtr> Games::s_reviewGames;
 
@@ -32,6 +33,13 @@ void Games::Load()
 LiveGame& Games::Add(const std::string& name, Player& owner)
 {
 	s_liveGames.push_back(LiveGamePtr(new LiveGame(s_nNextGameID++, name, owner)));
+	return *s_liveGames.back().get();
+}
+
+LiveGame& Games::AddTest(Player& owner)
+{
+	s_liveGames.push_back(LiveGamePtr(new LiveGame(s_nNextTestGameID, ::FormatString("Test %0", -s_nNextTestGameID), owner)));
+	--s_nNextTestGameID;
 	return *s_liveGames.back().get();
 }
 

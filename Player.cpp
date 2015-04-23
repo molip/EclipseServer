@@ -21,6 +21,9 @@ Player::Player(int id, const std::string& name, const std::string& password) :
 
 bool Player::CheckPassword(const std::string& password) const
 {
+	if (password.empty())
+		return false;
+
 	std::string hash = HashPassword(password);
 	return hash == m_passwordHash;
 }
@@ -70,6 +73,9 @@ const Team* Player::GetCurrentTeam() const
 
 void Player::Save() const
 {
+	if (m_id < 0)
+		return;
+
 	std::string path = ::FormatString("%0%1.xml", Players::GetPath(), m_id);
 	VERIFY_SERIAL_MSG(path, Serial::SaveClass(path, *this));
 }

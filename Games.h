@@ -17,6 +17,7 @@ class Games
 public:
 	static void Load();
 	static LiveGame& Add(const std::string& name, Player& owner);
+	static LiveGame& AddTest(Player& owner);
 	static ReviewGame& AddReview(Player& owner, const LiveGame& live);
 	static void DeleteReview(int idGame);
 	static const std::vector<LiveGamePtr>& GetLiveGames() { return s_liveGames; }
@@ -31,5 +32,5 @@ public:
 private:
 	static std::vector<LiveGamePtr> s_liveGames;
 	static std::vector<ReviewGamePtr> s_reviewGames;
-	static int s_nNextGameID;
+	static int s_nNextGameID, s_nNextTestGameID;
 };

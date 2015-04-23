@@ -6,5 +6,5 @@ class GameState;
 class GameStateAccess
 {
 public:
-	GameState& GetGameState(Game& game) const;
+	static GameState& GetGameState(Game& game);
 };

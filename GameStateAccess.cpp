@@ -2,7 +2,7 @@
 
 #include "Game.h"
 
-GameState& GameStateAccess::GetGameState(Game& game) const
+GameState& GameStateAccess::GetGameState(Game& game)
 { 
 	return game.m_state; 
 }

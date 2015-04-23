@@ -210,6 +210,9 @@ const Team& LiveGame::GetTeamForTurn(int i) const
 
 void LiveGame::Save() const
 {
+	if (m_id < 0)
+		return;
+
 	std::ostringstream ss;
 	ss << "data/games/live/" << m_id << ".xml";
 	bool bOK = Serial::SaveClass(ss.str(), *this);

@@ -16,6 +16,8 @@ public:
 
 	virtual void UpdateClient(const Controller& controller, const Player* pPlayer) const override;
 
+	void FinishTurn(CommitSession& session);
+
 	virtual void Save(Serial::SaveNode& node) const override;
 	virtual void Load(const Serial::LoadNode& node) override;
 
@@ -27,7 +29,6 @@ private:
 	const Hex* GetNextBattleHex() const;
 	void StartBattle(CommitSession& session, const Battle* oldBattle = nullptr);
 	void StartTurn(CommitSession& session);
-	void FinishTurn(CommitSession& session);
 	void FinishBattle(CommitSession& session);
 
 	int m_lastPopulationBattleHexId;

@@ -6,6 +6,7 @@
 #include "Serial.h"
 
 int Players::s_nNextID = 1;
+int Players::s_nNextTestID = -1;
 std::map<int, PlayerPtr> Players::s_map;
 
 Player& Players::Add(const std::string& name, const std::string& password)
@@ -13,6 +14,14 @@ Player& Players::Add(const std::string& name, const std::string& password)
 	Player* p = new Player(s_nNextID, name, password);
 	ASSERT(s_map.insert(std::make_pair(s_nNextID, PlayerPtr(p))).second);
 	++s_nNextID;
+	return *p;
+}
+
+Player& Players::AddTest()
+{
+	Player* p = new Player(s_nNextTestID, ::FormatString("Test %0", -s_nNextTestID), "");
+	ASSERT(s_map.insert(std::make_pair(s_nNextTestID, PlayerPtr(p))).second);
+	--s_nNextTestID;
 	return *p;
 }
 

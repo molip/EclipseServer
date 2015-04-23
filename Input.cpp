@@ -151,7 +151,7 @@ Register::Register(const Json::Element& node) : m_idPlayer(0)
 EnterGame::EnterGame(const Json::Element& node) : m_idGame(0)
 {
 	node.GetAttribute("game", m_idGame);
-	VERIFY_INPUT(m_idGame > 0);
+	VERIFY_INPUT(m_idGame != 0);
 }
 
 namespace 

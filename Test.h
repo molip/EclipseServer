@@ -1,9 +1,12 @@
 #pragma once
 
-class LiveGame;
-enum class ShipType;
+#include "GameStateAccess.h"
 
-namespace Test
+class LiveGame;
+
+class Test : public GameStateAccess
 {
-	void AddShipsToCentre(LiveGame& game);
-}
+public:
+	static void Run();
+	static void AddShipsToCentre(LiveGame& game);
+};
