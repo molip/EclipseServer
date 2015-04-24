@@ -54,6 +54,8 @@ function OnCommandShow(elem)
 	}
 	
 	ShowElementById('exit_game_link', panel != 'game_list_panel')
+	ShowElementById('review_link', panel == 'game_panel')
+	ShowElementById('review_ui', false)
 }
 
 function OnCommandUpdate(elem)
@@ -268,6 +270,7 @@ function OnCommandUpdateTeams(elem)
 	ShowTeamGeneral()
 
 	ShowElementById('live_ui', elem.game_type == "live")
+	ShowElementById('review_link', elem.game_type == "live")
 	ShowElementById('review_ui', elem.game_type == "review")
 	
 	ShowCombat(false)

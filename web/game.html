@@ -78,9 +78,15 @@
 <div id="blanket" class="blanket throbber" style="display:none"></div>
 <div id="shroud" class="blanket shroud" style="display:none"><div class="shroud_text">Lost connection</div></div>
 <div style="margin-bottom: 5px">
-	<a id="exit_game_link" style="display:none" href="Back to game list" onclick="SendExitGame();return false;">Back to game list</a>
-	<a href="logout?player=%PLAYER_ID%" style="float:right; margin-left:5px">Log out</a>
-	<a href="login.html" style="float:right; margin-left:5px">Switch</a>
+	<a id="exit_game_link" style="display:none; margin-right:10px" href="Back to game list" onclick="SendExitGame();return false;">Back to game list</a>
+	<a id="review_link" href="Review game" style="display:none" onclick="SendStartReview();return false;">Review game</a>
+	<span id="review_ui" style="display:none">
+		<a href="Back to game" onclick="SendExitReview();return false;">Back to game</a>
+		<button id="retreat_review" type="button" onclick="SendRetreatReview()">&lt;&lt;</button>
+		<button id="advance_review" type="button" onclick="SendAdvanceReview()">&gt;&gt;</button>
+	</span>
+	<a href="logout?player=%PLAYER_ID%" style="float:right; margin-left:10px">Log out</a>
+	<a href="login.html" style="float:right; margin-left:10px">Switch</a>
 	<span style="float:right;" id="player_name_span"></span>
 </div>
 <div id="game_list_panel" class="panel" style="clear:both">
@@ -172,7 +178,6 @@
 
 		<div id="ui" style="margin:5px; float:left; width:315px">
 			<div id="live_ui">
-				<a href="Review game" onclick="SendStartReview();return false;">Review game</a>
 				<div id="choose_upkeep" style="display:none">
 					Upkeep Phase
 					<button type="button" id="finish_upkeep_btn" onclick="SendFinishUpkeep()">Finish</button>
@@ -344,11 +349,6 @@
 					Choose disc destinations...
 					<button id="choose_auto_influence_btn" type="button" onclick="data.action.Send()">Finish</button>
 				</div>
-			</div>
-			<div id="review_ui">
-				<a href="Back to game" onclick="SendExitReview();return false;">Back to game</a>
-				<button id="retreat_review" type="button" onclick="SendRetreatReview()">&lt;&lt;</button>
-				<button id="advance_review" type="button" onclick="SendAdvanceReview()">&gt;&gt;</button>
 			</div>
 			<br>
 			<div id="hex_info" class="panel" style="display:none">
