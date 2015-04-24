@@ -27,8 +27,10 @@ private:
 extern void Verify(const std::string& msg, Exception::Type type, const void* condition);
 extern void Verify(const std::string& msg, Exception::Type type, bool condition);
 
+extern std::string _FormatFileAndLine(const char* file, int line);
+
 #define _VERIFY(condition, type, msg) \
-	::Verify(::FormatString("[%0:%1] %2", (strrchr(__FILE__,'\\') + 1), __LINE__, msg), type, condition)
+	::Verify(_FormatFileAndLine(__FILE__, __LINE__) + msg, type, condition)
 
 #define VERIFY(condition) _VERIFY(condition, Exception::Type::Generic, "")
 #define VERIFY_INPUT(condition) _VERIFY(condition, Exception::Type::Input, "")
