@@ -151,7 +151,7 @@ public:
 	std::vector<Square>& GetSquares() { return m_squares; }
 	const std::vector<Fleet>& GetFleets() const { return m_fleets; }
 	DiscoveryType GetDiscoveryTile() const { return m_discovery; }
-	const EdgeSet& GetWormholes() const; // Non-rotated.
+	EdgeSet GetWormholes() const; // Non-rotated.
 	int GetVictoryPoints() const;
 	bool HasArtifact() const;
 	bool HasDiscovery() const;

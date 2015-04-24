@@ -460,7 +460,7 @@ Square* Hex::FindSquare(SquareType type, bool bOccupied)
 	return nullptr;
 }
 
-const EdgeSet& Hex::GetWormholes() const { return GetDef().GetWormholes(); } 
+EdgeSet Hex::GetWormholes() const { return GetDef().GetWormholes(); } 
 int Hex::GetVictoryPoints() const { return GetDef().GetVictoryPoints(); }
 bool Hex::HasArtifact() const { return GetDef().HasArtifact(); }
 bool Hex::HasDiscovery() const { return GetDef().HasDiscovery(); }
