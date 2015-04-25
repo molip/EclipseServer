@@ -49,6 +49,10 @@ public:
 	std::set<MapPos> GetNeighbours(const MapPos& pos, bool bHasWormholeGen) const;
 	bool HasNeighbour(const MapPos& pos, bool bWormholeGen) const;
 
+	int GetHexVictoryPoints(const Team& team) const;
+	int GetMonolithVictoryPoints(const Team & team) const;
+	int GetRaceVictoryPoints(const Team & team) const;
+
 	void Save(Serial::SaveNode& node) const;
 	void Load(const Serial::LoadNode& node);
 

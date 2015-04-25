@@ -59,10 +59,23 @@ int TechTrack::GetDiscount(int tier)
 	return tier < 5 ? tier : 6 + (tier - 5) * 2;
 }
 
+int TechTrack::GetVictoryPoints(int tier)
+{
+	return tier < 3 ? 0 : tier < 6 ? tier - 3 : 5;
+}
+
 int TechTrack::GetCost(TechType t) const
 {
 	Technology::Class c = Technology::GetClass(t);
 	return std::max(Technology::GetMinCost(t), Technology::GetMaxCost(t) - GetNextDiscount(c));
+}
+
+int TechTrack::GetVictoryPoints() const
+{
+	int score = 0;
+	for (auto c : EnumRange<Technology::Class>())
+		score += GetVictoryPoints(GetCount(c));
+	return 0;
 }
 
 void TechTrack::Save(Serial::SaveNode& node) const

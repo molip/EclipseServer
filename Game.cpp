@@ -82,6 +82,16 @@ bool Game::HasFinished() const
 	return m_state.m_iRound == Game::RoundCount; 
 }
 
+Game::Scores Game::GetScores() const
+{
+	Scores scores;
+
+	for (auto& team : GetTeams())
+		scores.insert(std::make_pair(team->GetScore(*this), team.get()));
+
+	return scores;
+}
+
 void Game::Save(Serial::SaveNode& node) const 
 {
 	node.SaveType("id", m_id);

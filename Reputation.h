@@ -34,6 +34,8 @@ public:
 	int GetFirstReputationTileSlot() const;
 	int GetReputationTileCount() const { return m_repTiles.size(); }
 	int GetReputationTile(int i) const { return m_repTiles[i]; }
+	int GetReputationVictoryPoints() const;
+	int GetAmbassadorVictoryPoints() const;
 
 	bool CanAddReputationTile(int val) const;
 	int AddReputationTile(int val);

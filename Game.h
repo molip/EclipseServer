@@ -61,6 +61,9 @@ public:
 	int GetRound() const { return m_state.m_iRound; }
 	bool HasFinished() const;
 
+	typedef std::multimap<Score, const Team*, std::greater<Score>> Scores;
+	Scores GetScores() const;
+
 	virtual void Save(Serial::SaveNode& node) const;
 	virtual void Load(const Serial::LoadNode& node);
 
@@ -91,4 +94,3 @@ protected:
 };
 
 typedef std::unique_ptr<Game> GamePtr;
-

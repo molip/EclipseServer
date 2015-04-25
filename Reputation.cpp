@@ -7,6 +7,7 @@
 #include "Race.h"
 
 #include <algorithm>
+#include <numeric>
 
 ReputationSlots::ReputationSlots(int a, int e, int r)
 {
@@ -73,6 +74,16 @@ int ReputationTrack::GetFirstReputationTileSlot() const
 int ReputationTrack::GetEmptyReputationTileSlots() const
 {
 	return GetSlotCount() - GetFirstReputationTileSlot() - GetReputationTileCount();
+}
+
+int ReputationTrack::GetReputationVictoryPoints() const
+{
+	return std::accumulate(m_repTiles.begin(), m_repTiles.end(), 0);
+}
+
+int ReputationTrack::GetAmbassadorVictoryPoints() const
+{
+	return 0;
 }
 
 bool ReputationTrack::CanAddReputationTile(int val) const

@@ -441,6 +441,53 @@ function OnCommandUpdateCombat(elem)
 function OnCommandUpdateScore(elem)
 {
 	ShowScore(elem.show)
+	
+	if (!elem.show)
+		return;
+
+	var Add = function(tr, item)
+	{
+		var td = document.createElement('td')
+		tr.appendChild(td)
+		td.innerText = item
+	}
+	
+	document.getElementById('score_table').innerHTML = ''
+	
+	var tr = document.createElement('tr');
+	Add(tr, 'Player')
+	Add(tr, 'Team')
+	Add(tr, 'Reputation')
+	Add(tr, 'Ambassador')
+	Add(tr, 'Hex')
+	Add(tr, 'Discovery')
+	Add(tr, 'Monolith')
+	Add(tr, 'Technology')
+	Add(tr, 'Traitor')
+	Add(tr, 'Race')
+	Add(tr, 'Total')
+	Add(tr, 'Storage')
+	document.getElementById('score_table').appendChild(tr)
+
+	for (var i = 0, team; team = elem.teams[i]; ++i)
+	{
+		var tr = document.createElement('tr');
+		
+		Add(tr, team.name)
+		Add(tr, team.colour)
+		Add(tr, team.reputation)
+		Add(tr, team.ambassador)
+		Add(tr, team.hex)
+		Add(tr, team.discovery)
+		Add(tr, team.monolith)
+		Add(tr, team.technology)
+		Add(tr, team.traitor)
+		Add(tr, team.race)
+		Add(tr, team.total)
+		Add(tr, team.storage)
+		
+		document.getElementById('score_table').appendChild(tr)
+	}
 }
 
 function OnCommandAddLog(elem)

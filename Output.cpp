@@ -351,6 +351,32 @@ UpdateCombat::UpdateCombat(const Game& game, const Battle& battle) : Update("com
 UpdateScore::UpdateScore(const Game& game, bool show) : Update("score")
 {
 	m_root.SetAttribute("show", show);
+
+	if (!show)
+		return;
+
+	auto teamsArray = m_root.AddArray("teams");
+
+	for (auto& pair : game.GetScores())
+	{
+		auto& score = pair.first;
+		auto* team = pair.second;
+
+		auto e = teamsArray.AppendElement();
+		e.SetAttribute("name", team->GetPlayer().GetName());
+		e.SetAttribute("colour", ::EnumToString(team->GetColour()));
+		
+		e.SetAttribute("reputation",	score[ScoreCategory::Reputation]);
+		e.SetAttribute("ambassador",	score[ScoreCategory::Ambassador]);
+		e.SetAttribute("hex",			score[ScoreCategory::Hex]);
+		e.SetAttribute("discovery",		score[ScoreCategory::Discovery]);
+		e.SetAttribute("monolith",		score[ScoreCategory::Monolith]);
+		e.SetAttribute("technology",	score[ScoreCategory::Technology]);
+		e.SetAttribute("traitor",		score[ScoreCategory::Traitor]);
+		e.SetAttribute("race",			score[ScoreCategory::Race]);
+		e.SetAttribute("total",			score.GetTotal());
+		e.SetAttribute("storage",		score.GetStorage());
+	}		
 }
 
 AddLog::AddLog(int id, const std::string& msg) : AddLog(Vec { Vec::value_type(id, msg) } )

@@ -119,6 +119,24 @@ bool Team::IsAncientAlliance(const Team* pTeam1, const Team* pTeam2)
 	return (!pTeam1 || !pTeam2) && Race((pTeam1 ? pTeam1 : pTeam2)->GetRace()).IsAncientsAlly();
 }
 
+Score Team::GetScore(const Game& game) const
+{
+	Score score;
+
+	score[ScoreCategory::Reputation] = GetReputationTrack().GetReputationVictoryPoints();
+	score[ScoreCategory::Ambassador] = GetReputationTrack().GetAmbassadorVictoryPoints();
+	score[ScoreCategory::Hex] = game.GetMap().GetHexVictoryPoints(*this);
+	score[ScoreCategory::Discovery] = m_state->m_victoryPointTiles * 2;
+	score[ScoreCategory::Monolith] = game.GetMap().GetMonolithVictoryPoints(*this);
+	score[ScoreCategory::Technology] = GetTechTrack().GetVictoryPoints();
+	score[ScoreCategory::Traitor] = 0;
+	score[ScoreCategory::Race] = game.GetMap().GetRaceVictoryPoints(*this);
+
+	score.SetStorage(GetStorage().GetTotal());
+
+	return score;
+}
+
 void Team::Save(Serial::SaveNode& node) const
 {
 	node.SaveType("player", m_idPlayer);

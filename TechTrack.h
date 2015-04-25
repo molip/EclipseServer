@@ -22,8 +22,10 @@ public:
 
 	int GetNextDiscount(Technology::Class c) const;
 	static int GetDiscount(int tier);
+	static int GetVictoryPoints(int tier);
 	int GetCount(Technology::Class c) const;
 	int GetCost(TechType t) const;
+	int GetVictoryPoints() const;
 
 	const std::vector<TechType>& GetClass(Technology::Class c) const { return m_classes[c]; }
 

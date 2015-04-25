@@ -12,9 +12,36 @@
 
 enum class Colour { None = -1, Red, Blue, Green, Yellow, White, Black, _Count };
 enum class Buildable { None = -1, Interceptor, Cruiser, Dreadnought, Starbase, Orbital, Monolith, _Count };
+enum class ScoreCategory { Reputation, Ambassador, Hex, Discovery, Monolith, Technology, Traitor, Race, _Count };
 
 enum class RaceType;
 enum class ShipPart;
+
+class Score : public EnumIntArray<ScoreCategory>
+{
+public:
+	Score() : m_total(-100), m_storage(0) {}
+	bool operator<(const Score& rhs) 
+	{
+		if (GetTotal() < rhs.GetTotal())
+			return true;
+		return m_storage < rhs.m_storage;
+	}
+
+	int GetTotal() const
+	{
+		if (m_total == -100)
+			m_total = __super::GetTotal();
+		return m_total;
+	}
+
+	int GetStorage() const { return m_storage; }
+	void SetStorage(int val) { m_storage = val; }
+
+private:
+	mutable int m_total;
+	int m_storage;
+};
 
 namespace Serial { class SaveNode; class LoadNode; }
 
@@ -77,6 +104,8 @@ public:
 	bool CanUseShipPart(ShipPart part) const;
 
 	static bool IsAncientAlliance(const Team* pTeam1, const Team* pTeam2);
+
+	Score GetScore(const Game& game) const;
 
 	void Save(Serial::SaveNode& node) const;
 	void Load(const Serial::LoadNode& node);

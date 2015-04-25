@@ -179,6 +179,39 @@ bool Map::HasNeighbour(const MapPos& pos, bool bWormholeGen) const
 	return false;
 }
 
+int Map::GetHexVictoryPoints(const Team & team) const
+{
+	int score = 0;
+	for (auto& h : m_hexes)
+		if (h.second->IsOwnedBy(team))
+			score += h.second->GetVictoryPoints();
+	return score;
+}
+
+int Map::GetMonolithVictoryPoints(const Team & team) const
+{
+	int score = 0;
+	for (auto& h : m_hexes)
+		if (h.second->IsOwnedBy(team))
+			score += h.second->HasMonolith() * 3;
+	return score;
+}
+
+int Map::GetRaceVictoryPoints(const Team & team) const
+{
+	const RaceType& race = team.GetRace();
+	if (race != RaceType::Planta && race != RaceType::Descendants)
+		return 0;
+
+	int score = 0;
+	for (auto& h : m_hexes)
+		if (race == RaceType::Planta)
+			score += h.second->IsOwnedBy(team);
+		else if (race == RaceType::Descendants)
+			score += h.second->GetShipCount(Colour::None, ShipType::Ancient);
+	return score;
+}
+
 std::vector<const Hex*> Map::GetValidExploreOriginNeighbours(const MapPos& pos, const Team& team) const
 {
 	std::vector<const Hex*> hexes;
