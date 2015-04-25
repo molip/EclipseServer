@@ -352,6 +352,9 @@
       <Filter>External\cJSON</Filter>
     </ClInclude>
     <ClInclude Include="ReputationRecord.h" />
+    <ClInclude Include="ScorePhase.h">
+      <Filter>Model\Phases</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -647,6 +650,9 @@
       <Filter>External\cJSON</Filter>
     </ClCompile>
     <ClCompile Include="ReputationRecord.cpp" />
+    <ClCompile Include="ScorePhase.cpp">
+      <Filter>Model\Phases</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="civetweb\src\md5.inl">

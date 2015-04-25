@@ -12,6 +12,7 @@
 #include "ChooseTeamPhase.h"
 #include "UpkeepPhase.h"
 #include "Test.h"
+#include "ScorePhase.h"
 
 #include <algorithm>
 
@@ -155,6 +156,11 @@ void LiveGame::FinishActionPhase(const std::vector<Colour>& passOrder)
 void LiveGame::FinishCombatPhase()
 {
 	m_pPhase = PhasePtr(new UpkeepPhase(this));
+}
+
+void LiveGame::StartScorePhase()
+{
+	m_pPhase = PhasePtr(new ScorePhase(this));
 }
 
 int LiveGame::PushRecord(std::unique_ptr<Record> pRec)

@@ -242,3 +242,10 @@ function ShowCombat(show)
 	ShowElementById('map', !show)
 	document.getElementById('map_ctrls').style.visibility = show ? 'hidden' : 'visible'
 }
+
+function ShowScore(show)
+{
+	ShowElementById('game_panel_score', show)
+	ShowElementById('game_panel_play', !show)
+}
+

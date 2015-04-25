@@ -61,6 +61,7 @@ public:
 	void StartActionPhase();
 	void FinishActionPhase(const std::vector<Colour>& passOrder);
 	void FinishCombatPhase();
+	void StartScorePhase();
 
 	const Team& GetTeamForTurn(int i) const;
 

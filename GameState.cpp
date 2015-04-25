@@ -80,9 +80,9 @@ bool GameState::IncrementRound(bool bDo)
 {
 	m_iRound += bDo ? 1 : -1;
 
-	VERIFY_MODEL(m_iRound <= 9);
+	VERIFY_MODEL(m_iRound <= Game::RoundCount);
 
-	return m_iRound == 9;
+	return m_iRound == Game::RoundCount - 1 + bDo;
 }
 
 Battle& GameState::GetBattle()

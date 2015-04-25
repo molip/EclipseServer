@@ -59,6 +59,7 @@ public:
 	const std::map<TechType, int>& GetTechnologies() const { return m_state.m_techs; }
 
 	int GetRound() const { return m_state.m_iRound; }
+	bool HasFinished() const;
 
 	virtual void Save(Serial::SaveNode& node) const;
 	virtual void Load(const Serial::LoadNode& node);
@@ -71,6 +72,8 @@ public:
 	const PopulationBattle& GetPopulationBattle() const { return const_cast<GameState&>(m_state).GetPopulationBattle(); }
 	const Battle& GetBattle() const { return const_cast<GameState&>(m_state).GetBattle(); }
 	bool HasBattle() const { return !!m_state.m_battle; }
+
+	static const int RoundCount;
 
 protected:
 	std::vector<TeamPtr> m_teams;

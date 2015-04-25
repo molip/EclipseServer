@@ -25,7 +25,8 @@ void StartRoundRecord::Load(const Serial::LoadNode& node)
 
 void StartRoundRecord::Apply(bool bDo, const Game& game, GameState& gameState) 
 {
-	gameState.IncrementRound(bDo);
+	if (gameState.IncrementRound(bDo)) // Finished.
+		return;
 
 	const int startTech[] = { 12, 12, 14, 16, 18, 20 };
 	const int roundTech[] = { 4, 4, 6, 7, 8, 9 };
@@ -94,6 +95,7 @@ void StartRoundRecord::Update(const Game& game, const RecordContext& context) co
 
 	context.SendMessage(Output::UpdateRound(game));
 	context.SendMessage(Output::UpdateTechnologies(game));
+	context.SendMessage(Output::UpdateScore(game, game.HasFinished()));
 }
 
 std::string StartRoundRecord::GetMessage(const Game& game) const

@@ -145,6 +145,9 @@ void Controller::SendUpdateGame(const Game& game, const Player* pPlayer) const
 	if (isBattle)
 		SendMessage(Output::UpdateCombat(game, game.GetBattle()), game, pPlayer);
 
+	if (game.HasFinished())
+		SendMessage(Output::UpdateScore(game, true), game, pPlayer);
+
 	if (pLive)
 		pLive->GetPhase().UpdateClient(*this, pPlayer);
 	else if (auto pReview = dynamic_cast<const ReviewGame*>(&game))

@@ -106,6 +106,8 @@ function OnCommandUpdate(elem)
 		OnCommandUpdateShowCombat(elem)
 	else if (param == "combat")
 		OnCommandUpdateCombat(elem)
+	else if (param == "score")
+		OnCommandUpdateScore(elem)
 	else if (param == "add_log")
 		OnCommandAddLog(elem)
 	else if (param == "remove_log")
@@ -274,6 +276,7 @@ function OnCommandUpdateTeams(elem)
 	ShowElementById('review_ui', elem.game_type == "review")
 	
 	ShowCombat(false)
+	ShowScore(false)
 }
 
 function OnCommandUpdateTeam(elem)
@@ -433,6 +436,11 @@ function OnCommandUpdateShowCombat(elem)
 function OnCommandUpdateCombat(elem)
 {
 	Combat.Update(elem.invader, elem.defender)
+}
+
+function OnCommandUpdateScore(elem)
+{
+	ShowScore(elem.show)
 }
 
 function OnCommandAddLog(elem)

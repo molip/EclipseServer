@@ -348,6 +348,11 @@ UpdateCombat::UpdateCombat(const Game& game, const Battle& battle) : Update("com
 	}
 }
 
+UpdateScore::UpdateScore(const Game& game, bool show) : Update("score")
+{
+	m_root.SetAttribute("show", show);
+}
+
 AddLog::AddLog(int id, const std::string& msg) : AddLog(Vec { Vec::value_type(id, msg) } )
 {
 }

@@ -11,6 +11,8 @@
 
 #include <algorithm>
 
+const int Game::RoundCount = 9;
+
 Game::Game() : 
 	m_id(0), m_idOwner(0), m_state(*this)
 {
@@ -73,6 +75,11 @@ Team& Game::GetTeam(Colour c)
 	Team* pTeam = FindTeam(c);
 	VERIFY_MODEL_MSG("colour not in game: ", !!pTeam);
 	return *pTeam;
+}
+
+bool Game::HasFinished() const 
+{ 
+	return m_state.m_iRound == Game::RoundCount; 
 }
 
 void Game::Save(Serial::SaveNode& node) const 

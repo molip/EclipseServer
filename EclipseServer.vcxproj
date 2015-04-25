@@ -163,6 +163,7 @@
     <ClInclude Include="ReviewGame.h" />
     <ClInclude Include="Phase.h" />
     <ClInclude Include="SaveThread.h" />
+    <ClInclude Include="ScorePhase.h" />
     <ClInclude Include="Serial.h" />
     <ClInclude Include="Ship.h" />
     <ClInclude Include="ShipBattle.h" />
@@ -273,6 +274,7 @@
     <ClCompile Include="ReviewGame.cpp" />
     <ClCompile Include="Phase.cpp" />
     <ClCompile Include="SaveThread.cpp" />
+    <ClCompile Include="ScorePhase.cpp" />
     <ClCompile Include="Serial.cpp" />
     <ClCompile Include="Ship.cpp" />
     <ClCompile Include="ShipBattle.cpp" />

@@ -85,6 +85,7 @@ struct UpdateTechnologies : Update { UpdateTechnologies(const Game& game); };
 struct UpdateRound : Update { UpdateRound(const Game& game); };
 struct UpdateShowCombat : Update { UpdateShowCombat(const Game& game, bool show); };
 struct UpdateCombat : Update { UpdateCombat(const Game& game, const Battle& battle); };
+struct UpdateScore : Update { UpdateScore(const Game& game, bool show); };
 
 struct AddLog : Update 
 {
@@ -140,5 +141,5 @@ struct ShowGameList : Show { ShowGameList(); };
 struct ShowLobby : Show { ShowLobby(); };
 struct ShowChoose : Show { ShowChoose(); };
 struct ShowGame : Show { ShowGame(); };
-
+struct ShowScore : Show { ShowScore(const Game& game); };
 }

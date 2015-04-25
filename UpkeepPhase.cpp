@@ -114,7 +114,11 @@ void UpkeepPhase::FinishGraveyard(CommitSession& session, const Player& player)
 	{
 		session.DoAndPushRecord(RecordPtr(new StartRoundRecord));
 
-		game.StartActionPhase(); // Deletes this.
+		if (game.HasFinished())
+			game.StartScorePhase(); // Deletes this.
+		else
+			game.StartActionPhase(); // Deletes this.
+
 		game.GetPhase().UpdateClient(controller, nullptr);
 	}
 }
