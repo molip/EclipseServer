@@ -75,7 +75,7 @@ std::vector<MapPos> Map::GetOwnedHexPositions(const Team& team) const
 
 std::vector<MapPos> Map::GetTeamStartPositions() const
 {
-	const int nTeams = m_game.GetTeams().size();
+	const int nTeams = (int)m_game.GetTeams().size();
 	VERIFY_MODEL(nTeams > 0 && nTeams < 7);
 
 	std::string s;

@@ -32,7 +32,7 @@ public:
 	ReputationType GetSlotType(int iSlot) const;
 
 	int GetFirstReputationTileSlot() const;
-	int GetReputationTileCount() const { return m_repTiles.size(); }
+	int GetReputationTileCount() const { return (int)m_repTiles.size(); }
 	int GetReputationTile(int i) const { return m_repTiles[i]; }
 	int GetReputationVictoryPoints() const;
 	int GetAmbassadorVictoryPoints() const;

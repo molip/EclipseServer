@@ -110,7 +110,7 @@ int Dice::GetCount() const
 {
 	int count = 0;
 	for (auto& colourRollsPair : *this)
-		count += colourRollsPair.second.size();
+		count += (int)colourRollsPair.second.size();
 	return count;
 }
 

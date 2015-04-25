@@ -10,7 +10,7 @@
 ReviewGame::ReviewGame(int id, const Player& owner, const LiveGame& live) : 
 	Game(id, live.GetName() + " [review]", owner, live), m_idLive(live.GetID())
 {
-	m_iRecord = live.GetRecords().size();
+	m_iRecord = (int)live.GetRecords().size();
 }
 
 ReviewGame::~ReviewGame()
@@ -74,5 +74,5 @@ void ReviewGame::OnPreRecordPop(const Controller& controller)
 		GetRecords()[pop]->Undo(*this, controller);
 
 	if (m_iRecord >= pop) // Skip trailing messages. 
-		m_iRecord = GetRecords().size() - 1;
+		m_iRecord = (int)GetRecords().size() - 1;
 }

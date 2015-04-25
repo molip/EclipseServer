@@ -32,15 +32,15 @@ std::string PlayerList::GetResponse(std::string url) const
 	IServer::Cookies cookies;
 	if (!m_valid)
 	{
-		cookies.Set("player_count", ::FormatInt(m_players.size()), true);
+		cookies.Set("player_count", ::FormatInt((int)m_players.size()), true);
 
-		for (size_t i = 0; i < m_players.size(); ++i)
+		for (int i = 0; i < (int)m_players.size(); ++i)
 		{
 			cookies.Set(std::string("player_") + ::FormatInt(i), ::FormatInt(m_players[i]->GetID()), true);
 			cookies.Set(std::string("session_") + ::FormatInt(i), m_players[i]->GetPasswordHash(), true);
 		}
 
-		for (int i = m_players.size(); i < m_playerCount; ++i)
+		for (int i = (int)m_players.size(); i < m_playerCount; ++i)
 		{
 			cookies.Delete(std::string("player_") + ::FormatInt(i));
 			cookies.Delete(std::string("session_") + ::FormatInt(i));

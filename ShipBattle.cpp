@@ -99,7 +99,7 @@ std::vector<int> ShipBattle::GetShipIndicesWeakestFirst(const Group& group) cons
 	auto pred = [&](int lhs, int rhs) { return group.lifeCounts[lhs] < group.lifeCounts[rhs]; };
 
 	std::vector<int> indices;
-	for (size_t i = 0; i < group.lifeCounts.size(); ++i)
+	for (int i = 0; i < (int)group.lifeCounts.size(); ++i)
 		if (group.lifeCounts[i] > 0) // Ignore dead ones.
 			indices.push_back(i);
 
@@ -112,7 +112,7 @@ std::vector<int> ShipBattle::GetTargetGroupIndicesBiggestFirst() const
 	auto pred = [&](int lhs, int rhs) { return GetShipTypeSize(m_groups[lhs].shipType) > GetShipTypeSize(m_groups[rhs].shipType); };
 
 	std::vector<int> indices;
-	for (size_t i = 0; i < m_groups.size(); ++i)
+	for (int i = 0; i < (int)m_groups.size(); ++i)
 		if (m_groups[i].invader != GetCurrentGroup().invader)
 			indices.push_back(i);
 	std::sort(indices.begin(), indices.end(), pred);

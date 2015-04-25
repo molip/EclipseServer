@@ -63,7 +63,7 @@ PopulationBattle::Hits PopulationBattle::AutoAssignPopulationHits(const Dice& di
 	int damage = dice.GetDamage(toHit);
 
 	auto& squares = game.GetMap().FindHex(m_hexId)->GetSquares();
-	for (size_t i = 0; i < squares.size() && damage > 0; ++i)
+	for (int i = 0; i < (int)squares.size() && damage > 0; ++i)
 		if (squares[i].IsOccupied())
 		{
 			hits.push_back(i);

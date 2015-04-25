@@ -2,7 +2,7 @@
 
 #include "App.h"
 
-typedef unsigned long ClientID;
+typedef unsigned long long ClientID;
 
 class IServer
 {

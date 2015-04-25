@@ -46,7 +46,7 @@ bool TechTrack::Has(TechType tech) const
 
 int TechTrack::GetCount(Technology::Class c) const
 {
-	return m_classes[c].size();
+	return (int)m_classes[c].size();
 }
 
 int TechTrack::GetNextDiscount(Technology::Class c) const

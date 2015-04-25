@@ -35,7 +35,7 @@ bool Battle::Group::IsDead() const
 
 int Battle::Group::GetDeadShipCount() const
 {
-	return std::count_if(lifeCounts.begin(), lifeCounts.end(), [](int c) { return c == 0; });
+	return (int)std::count_if(lifeCounts.begin(), lifeCounts.end(), [](int c) { return c == 0; });
 }
 
 void Battle::Group::Save(Serial::SaveNode& node) const
@@ -146,7 +146,7 @@ void Battle::AddOldGroups(const GroupVec& oldGroups, const Hex& hex, const Game&
 
 int Battle::FindFirstMissileGroup() const
 {
-	for (size_t i = 0; i < m_groups.size(); ++i)
+	for (int i = 0; i < (int)m_groups.size(); ++i)
 		if (m_groups[i].hasMissiles && !m_groups[i].IsDead())
 			return i;
 	return -1;

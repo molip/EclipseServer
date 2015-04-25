@@ -41,7 +41,7 @@ public:
 
 	ShipType GetType() const { return m_type; }
 	void SetType(ShipType t);
-	virtual int GetSlotCount() const override { return m_slots.size(); }
+	virtual int GetSlotCount() const override { return (int)m_slots.size(); }
 	virtual ShipPart GetSlot(int i) const override { return m_slots[i]; }
 	void SetSlot(int i, ShipPart part);
 

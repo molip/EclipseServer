@@ -30,7 +30,7 @@ class HexDef
 {
 	friend class HexDefs;
 public:
-	int GetSquareCount() const { return m_squares.size(); }
+	int GetSquareCount() const { return (int)m_squares.size(); }
 	const SquareDef& GetSquare(int i) const { return m_squares[i]; }
 	
 	EdgeSet GetWormholes() const { return m_wormholes; } 

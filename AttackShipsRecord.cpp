@@ -32,7 +32,7 @@ void AttackShipsRecord::Apply(bool bDo, const Game& game, GameState& gameState)
 
 	m_killIndices.clear();
 
-	for (size_t i = 0; i < m_hits.size(); ++i)
+	for (int i = 0; i < (int)m_hits.size(); ++i)
 	{
 		const auto& hit = m_hits[i];
 		
@@ -80,7 +80,7 @@ std::string AttackShipsRecord::GetMessage(const Game& game) const
 	if (m_hits.empty())
 		msg += "nothing";
 	else
-		for (size_t i = 0; i < m_hits.size(); ++i)
+		for (int i = 0; i < (int)m_hits.size(); ++i)
 		{
 			const auto& hit = m_hits[i];
 			std::string dead = m_killIndices.count(i) ? ", dead" : "";

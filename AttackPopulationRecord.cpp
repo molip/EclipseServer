@@ -34,7 +34,7 @@ void AttackPopulationRecord::Apply(bool bDo, const Game& game, GameState& gameSt
 		VERIFY_MODEL(m_firingColour != Colour::None && m_targetColour != Colour::None);
 		VERIFY_MODEL(!m_hits.autoHit || m_hits.empty());
 
-		for (size_t i = 0; i < squares.size(); ++i)
+		for (int i = 0; i < (int)squares.size(); ++i)
 			if (squares[i].IsOccupied())
 			{
 				++m_cubeCount;

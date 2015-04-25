@@ -50,7 +50,7 @@ void LiveGame::StartChooseTeamGamePhase()
 	m_pPhase = PhasePtr(new ChooseTeamPhase(this));
 
 	// Decide team order.
-	for (size_t i = 0; i < m_teams.size(); ++i)
+	for (int i = 0; i < (int)m_teams.size(); ++i)
 		m_turnOrder.push_back(i);
 	std::shuffle(m_turnOrder.begin(), m_turnOrder.end(), GetRandom());
 
@@ -65,7 +65,7 @@ void LiveGame::StartChooseTeamGamePhase()
 
 	// Initialise hex bags.
 	for (auto r : EnumRange<HexRing>())
-		m_hexBag[(int)r] = HexBag(r, m_teams.size());
+		m_hexBag[(int)r] = HexBag(r, (int)m_teams.size());
 
 	//m_hexBag[1].ReturnTile(206); // Discovery, no ancients, 1 materials square.
 

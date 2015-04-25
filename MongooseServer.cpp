@@ -239,7 +239,7 @@ IServer::StringMap IServer::SplitString(const std::string& string, char sep)
 {
 	auto trim = [](const std::string& s)
 	{
-		int start = 0, end = s.length();
+		int start = 0, end = (int)s.length();
 		for (auto i = s.begin(); i != s.end() && *i == ' '; ++i)
 			++start;
 		if (start < end)
