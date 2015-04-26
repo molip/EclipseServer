@@ -42,7 +42,7 @@ namespace
 
 		if (b == Buildable::Starbase && !team.HasTech(TechType::StarBase) ||
 			b == Buildable::Orbital && !team.HasTech(TechType::Orbital) ||
-			b == Buildable::Monolith && !team.HasTech(TechType::StarBase))
+			b == Buildable::Monolith && !team.HasTech(TechType::Monolith))
 			return false;
 
 		return Race(team.GetRace()).GetBuildCost(b) <= team.GetStorage()[Resource::Materials];
