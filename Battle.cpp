@@ -226,13 +226,19 @@ void Battle::AddReputationResults(ReputationResults& results) const
 		
 	for (auto& group : m_groups)
 	{
-		int& count = results[GetColour(!group.invader)]; // Assign rep tiles to the other team. 
-		count += ::GetShipTypeReputationTileCount(group.shipType) * group.GetDeadShipCount();
+		Colour colour = GetColour(!group.invader);
+		if (colour != Colour::None)
+		{
+			int& count = results[colour]; // Assign rep tiles to the other team. 
+			count += ::GetShipTypeReputationTileCount(group.shipType) * group.GetDeadShipCount();
+		}
 	}
 
 	// TODO: Only do this if not retreated. 
-	++results[m_defender];
-	++results[m_invader];
+	if (m_defender != Colour::None)
+		++results[m_defender];
+	if (m_invader != Colour::None)
+		++results[m_invader];
 }
 
 void Battle::Save(Serial::SaveNode& node) const
