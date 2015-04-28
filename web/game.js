@@ -10,6 +10,8 @@ data.current_action_elem = null
 data.action = null
 data.ping_timer_id = 0
 
+var _capturer = new Capturer()
+
 Colour = { 'Red': '#cd171a', 'Blue': '#283583', 'Green': '#3fa535', 'Yellow': '#ffd500', 'White': '#fff', 'Black': '#111' }
 
 data.disc_imgs = {}

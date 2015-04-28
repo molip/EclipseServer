@@ -5,10 +5,17 @@ Map.img = new Image()
 Map.hot = null
 Map.selecting = false
 
+Map.dragging = false
+Map.mouse_down = false
+Map.mouse_down_x = 0
+Map.mouse_down_y = 0
+Map.old_pan_x = 0
+Map.old_pan_y = 0
+
 Map.hex_width = 445
 Map.hex_height = 387
 Map.disc_rad = 40
-Map.zoom = 4
+Map.zoom = 3
 Map.scale = 1
 Map.pan_x = 0
 Map.pan_y = 0
@@ -97,9 +104,10 @@ Map.Init = function()
 		Map.layer_select = Canvas.AddLayer(Map.canvas)
 		Map.layer_hot = Canvas.AddLayer(Map.canvas)
 
-		Map.layer_hot.onmousemove = Map.OnMouseMove
+		_capturer.Register(Map.layer_hot.id, Map)
+		
 		Map.layer_hot.onmouseout = Map.OnMouseOut
-		Map.layer_hot.onmousedown = Map.OnMouseDown
+		Map.layer_hot.onmousewheel = Map.OnMouseWheel
 
 		Map.OnMouseOut()
 		Map.UpdateScale()
@@ -168,15 +176,37 @@ Map.GetHex = function(coords)
 	return null;
 }
 
+Map.DevToLog = function(dev)
+{
+	var x = (dev.x - Map.canvas.width / 2) / Map.scale + Map.pan_x
+	var y = (dev.y - Map.canvas.height / 2) / Map.scale + Map.pan_y
+	return new Point(x, y)
+}
+
+Map.LogToDev = function(log)
+{
+	var x = Map.canvas.width / 2 + Map.scale * (log.x - Map.pan_x)
+	var y = Map.canvas.height / 2 + Map.scale * (log.y - Map.pan_y)
+	return new Point(x, y)
+}
+
 Map.OnMouseMove = function(evt)
 { 
-	//if (!Map.selecting)
-	//	return
-		
 	var pt = Canvas.RelMouseCoords(evt, Map.canvas)
-	
-	pt.x = (pt.x - Map.canvas.width / 2) / Map.scale + Map.pan_x
-	pt.y = (pt.y - Map.canvas.height / 2) / Map.scale + Map.pan_y
+
+	if (Map.mouse_down && !Map.dragging)
+		if (Math.abs(Map.mouse_down_x - pt.x) > 5 || Math.abs(Map.mouse_down_y - pt.y) > 5)
+			Map.dragging = true
+		
+	if (Map.dragging)
+	{
+		Map.pan_x = Map.old_pan_x - (pt.x - Map.mouse_down_x) / Map.scale
+		Map.pan_y = Map.old_pan_y - (pt.y - Map.mouse_down_y) / Map.scale
+		Map.Draw()
+		return
+	}
+		
+	pt = Map.DevToLog(pt)
 
 	coords = Map.HitTestHex(pt)
 	
@@ -199,14 +229,39 @@ Map.OnMouseOut = function()
 		Map.ClearCanvas(Map.layer_hot)	
 }
 
-Map.OnMouseDown = function()
+Map.OnMouseDown = function(evt)
 {
-	if (!Map.selecting)
+	var pt = Canvas.RelMouseCoords(evt, Map.canvas)
+
+	Map.mouse_down = true
+	Map.dragging = false
+	Map.mouse_down_x = pt.x
+	Map.mouse_down_y = pt.y
+	Map.old_pan_x = Map.pan_x
+	Map.old_pan_y = Map.pan_y
+	
+	return false
+}
+
+Map.OnMouseUp = function()
+{
+	if (!Map.mouse_down)
 		return
 
-	if (data.action && data.action.OnHexMouseDown)
+	//document.releaseCapture()
+
+	if (!Map.dragging && Map.selecting && data.action && data.action.OnHexMouseDown)
 		if (data.action.OnHexMouseDown(Map.hot))
 			Map.DrawSelectLayer()
+		
+	Map.mouse_down = Map.dragging = false
+}
+
+Map.OnMouseWheel = function(evt)
+{
+	var pt = Canvas.RelMouseCoords(evt, Map.canvas)
+	Map.Zoom(evt.wheelDelta / -120, pt)
+	return false
 }
 
 Map.DrawCentred = function(ctx, img, pos, rotation, offset, scale)
@@ -363,13 +418,24 @@ Map.DrawHotLayer = function()
 		Map.DrawCentred(ctx, Map.img_select, Map.hot);
 }
 
-Map.Zoom = function(n)
+Map.Zoom = function(n, pt)
 {
 	Map.zoom += n
 	if (Map.zoom < 0)
 		Map.zoom = 0
+		
+	var log;
+	if (pt)
+		log = Map.DevToLog(pt)
 	
 	Map.UpdateScale()
+	
+	if (log)
+	{
+		var dev = Map.LogToDev(log)
+		Map.pan_x += (dev.x - pt.x) / Map.scale
+		Map.pan_y += (dev.y - pt.y) / Map.scale
+	}
 	
 	Map.Draw()
 }
@@ -395,7 +461,7 @@ Map.PanCentre = function()
 
 Map.UpdateScale = function()
 {
-	Map.scale = 1
+	Map.scale = 16 / 9
 	for (var i = 0; i < Map.zoom; ++i)
 		Map.scale *= 3 / 4
 }
