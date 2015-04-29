@@ -57,8 +57,9 @@ private:
 		void Load(const Serial::LoadNode& node);
 	};
 
+	std::vector<HexChoice> GetHexChoices(const LiveGame& game) const;
+
 	std::vector<int> m_hexIDs;
-	std::vector<HexChoice> m_hexChoices;
 	int m_iRot;
 	int m_iHex;
 	bool m_bInfluence;

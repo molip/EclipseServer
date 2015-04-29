@@ -206,23 +206,27 @@ ExploreHexCmd::ExploreHexCmd(Colour colour, const LiveGame& game, const MapPos& 
 	PhaseCmd(colour, iPhase), m_pos(pos), m_hexIDs(hexIDs), m_iRot(-1), m_iHex(-1), m_bInfluence(false), 
 	m_bTaken(false), m_discovery(DiscoveryType::None)
 {
+}
+
+std::vector<ExploreHexCmd::HexChoice> ExploreHexCmd::GetHexChoices(const LiveGame& game) const
+{
 	auto& team = GetTeam(game);
 
 	bool bWormholeGen = team.HasTech(TechType::WormholeGen);
 
 	std::vector<const Hex*> hexes = game.GetMap().GetValidExploreOriginNeighbours(m_pos, team);
 
+	std::vector<HexChoice> hexChoices;
+
 	Race race(team.GetRace());
 
-	m_hexChoices.clear();
-	
-	for (int id : hexIDs)
+	for (int id : m_hexIDs)
 	{
-		Hex hex(id, pos, 0);
+		Hex hex(id, m_pos, 0);
 
 		bool bCanInfluenceHex = hex.GetFleets().empty(); // Any ships must be ancients.
 		HexChoice hc(id, bCanInfluenceHex && team.GetInfluenceTrack().GetDiscCount() > 0);
-		
+
 		EdgeSet inner = hex.GetWormholes();
 
 		for (int i = 0; i < 6; ++i) // Try each rotation.
@@ -231,7 +235,7 @@ ExploreHexCmd::ExploreHexCmd(Colour colour, const LiveGame& game, const MapPos& 
 			for (auto e : EnumRange<Edge>())
 			{
 				const Hex* pHex = hexes[(int)e];
-				
+
 				bool bInner = inner[RotateEdge(e, -i)];
 				bool bOuter = pHex && pHex->HasWormhole(ReverseEdge(e));
 
@@ -247,17 +251,20 @@ ExploreHexCmd::ExploreHexCmd(Colour colour, const LiveGame& game, const MapPos& 
 				hc.m_rotations.push_back(i);
 		}
 		VERIFY_MODEL(!hc.m_rotations.empty());
-		m_hexChoices.push_back(hc);
+		hexChoices.push_back(hc);
 	}
+	return hexChoices;
 }
 
 void ExploreHexCmd::UpdateClient(const Controller& controller, const LiveGame& game) const
 {
-	bool bCanTake = Race(GetTeam(game).GetRace()).GetExploreChoices() > (int)m_hexChoices.size() 
+	const auto hexChoices = GetHexChoices(game);
+
+	bool bCanTake = Race(GetTeam(game).GetRace()).GetExploreChoices() > (int)hexChoices.size() 
 		&& !game.IsHexBagEmpty(m_pos.GetRing());
 
 	Output::ChooseExploreHex msg(m_pos.GetX(), m_pos.GetY(), bCanTake, game.GetActionPhase().CanRemoveCmd());
-	for (auto& hc : m_hexChoices)
+	for (auto& hc : hexChoices)
 		msg.AddHexChoice(hc.m_idHex, hc.m_rotations, hc.m_bCanInfluence);
 
 	controller.SendMessage(msg, GetPlayer(game));
@@ -284,29 +291,35 @@ Cmd::ProcessResult ExploreHexCmd::Process(const Input::CmdMessage& msg, CommitSe
 		m_bTaken = true;
 		return ProcessResult(new ExploreHexCmd(m_colour, game, m_pos, hexIDs, m_iPhase));
 	}
-
+	std::vector<int> discarded;
 	int idHex = 0;
 	bool bReject = !!dynamic_cast<const Input::CmdAbort*>(&msg);
 	if (bReject)
 	{
-		// TODO: Add discarded hexes to discard pile. 
+		discarded = m_hexIDs;
 	}
 	else
 	{
 		auto& m = VerifyCastInput<const Input::CmdExploreHex>(msg);
 
-		VERIFY_INPUT(InRange(m_hexChoices, m.m_iHex));
+		const auto hexChoices = GetHexChoices(game);
+
+		VERIFY_INPUT(InRange(hexChoices, m.m_iHex));
 		m_iHex = m.m_iHex;
 
-		auto& hc = m_hexChoices[m_iHex];
+		auto& hc = hexChoices[m_iHex];
 	
 		VERIFY_INPUT(InRange(hc.m_rotations, m.m_iRot));
 		m_iRot = m.m_iRot;
-		idHex = m_hexChoices[m_iHex].m_idHex;
+		idHex = hexChoices[m_iHex].m_idHex;
 		ExploreHexRecord* pRec = new ExploreHexRecord(m_colour, m_pos, idHex, hc.m_rotations[m_iRot], m.m_bInfluence);
 		DoRecord(RecordPtr(pRec), session);
 
 		m_discovery = pRec->GetDiscovery();
+
+		for (int id : m_hexIDs)
+			if (id != hc.m_idHex)
+				discarded.push_back(id);
 	}
 	
 	const bool bFinish = m_iPhase + 1 == Race(GetTeam(game).GetRace()).GetExploreRate();
@@ -322,7 +335,6 @@ void ExploreHexCmd::Save(Serial::SaveNode& node) const
 {
 	__super::Save(node);
 	node.SaveCntr("hex_ids", m_hexIDs, Serial::TypeSaver());
-	node.SaveCntr("hex_choices", m_hexChoices, Serial::ClassSaver());
 	node.SaveType("rot_index", m_iRot);
 	node.SaveType("hex_index", m_iHex);
 	node.SaveType("influence", m_bInfluence);
@@ -335,7 +347,6 @@ void ExploreHexCmd::Load(const Serial::LoadNode& node)
 {
 	__super::Load(node);
 	node.LoadCntr("hex_ids", m_hexIDs, Serial::TypeLoader());
-	node.LoadCntr("hex_choices", m_hexChoices, Serial::ClassLoader());
 	node.LoadType("rot_index", m_iRot);
 	node.LoadType("hex_index", m_iHex);
 	node.LoadType("influence", m_bInfluence);
