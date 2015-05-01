@@ -144,7 +144,7 @@ void Map::GetEmptyNeighbours(const MapPos& pos, bool bWormholeGen, std::set<MapP
 		{
 			MapPos pos2 = pos.GetNeighbour(e);
 			if (FindHex(pos2) == nullptr)
-				if (!m_game.IsHexBagEmpty(pos2.GetRing()))
+				if (!m_game.IsHexPileEmpty(pos2.GetRing()))
 					neighbours.insert(pos2);
 		}
 }

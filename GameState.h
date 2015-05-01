@@ -42,7 +42,8 @@ public:
 	ReputationBag& GetReputationBag() { return m_repBag; }
 	BagState<TechnologyBag>& GetTechnologyBag() { return m_techBagState; }
 	BagState<DiscoveryBag>& GetDiscoveryBag() { return m_discBagState; }
-	BagState<HexBag>& GetHexBag(HexRing ring) { return m_hexBagStates[ring]; }
+	HexPile& GetHexPile(HexRing ring) { return m_hexPiles[ring]; }
+	HexPile& GetHexDiscardPile(HexRing ring) { return m_hexDiscardPiles[ring]; }
 
 	Hex& AddHex(const MapPos& pos, int id, int rotation);
 	void DeleteHex(const MapPos& pos);
@@ -63,5 +64,5 @@ private:
 	ReputationBag m_repBag;
 	BagState<TechnologyBag> m_techBagState;
 	BagState<DiscoveryBag> m_discBagState;
-	EnumArray<HexRing, BagState<HexBag>> m_hexBagStates;
+	EnumArray<HexRing, HexPile> m_hexPiles, m_hexDiscardPiles;
 };

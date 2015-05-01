@@ -12,6 +12,8 @@
 #include "EdgeSet.h"
 #include "ActionPhase.h"
 #include "CommitSession.h"
+#include "HexDefs.h"
+#include "RefreshExplorePileRecord.h"
 
 class ExploreRecord : public TeamRecord
 {
@@ -25,9 +27,9 @@ private:
 	virtual void Apply(bool bDo, const Game& game, const Team& team, GameState& gameState, TeamState& teamState) override
 	{
 		if (bDo)
-			m_idHex = gameState.GetHexBag(m_hexRing).TakeTile();
+			m_idHex = gameState.GetHexPile(m_hexRing).TakeTile();
 		else
-			VERIFY(gameState.GetHexBag(m_hexRing).ReturnTile() == m_idHex);
+			gameState.GetHexPile(m_hexRing).ReturnTile(m_idHex);
 	}
 
 	virtual void Save(Serial::SaveNode& node) const override
@@ -202,6 +204,55 @@ REGISTER_DYNAMIC(ExploreHexRecord)
 
 //-----------------------------------------------------------------------------
 
+class DiscardHexesRecord : public Record
+{
+public:
+	DiscardHexesRecord() {}
+
+	DiscardHexesRecord(const std::vector<int>& hexes) : m_hexes(hexes) {}
+
+	virtual void Apply(bool bDo, const Game& game, GameState& gameState) override
+	{
+		VERIFY(!m_hexes.empty());
+		HexRing ring = HexDefs::GetRingFromId(m_hexes.front());
+		VERIFY(std::count_if(m_hexes.begin(), m_hexes.end(), [&](int id) { return HexDefs::GetRingFromId(id) == ring; }) == m_hexes.size());
+
+		auto& discardPile = gameState.GetHexDiscardPile(ring).GetTiles();
+		if (bDo)
+			discardPile.insert(discardPile.end(), m_hexes.begin(), m_hexes.end());
+		else
+			discardPile.resize(discardPile.size() - m_hexes.size());
+	}
+
+	virtual void Update(const Game& game, const RecordContext& context) const override
+	{
+	}
+
+	virtual void Save(Serial::SaveNode& node) const override
+	{
+		__super::Save(node);
+		node.SaveCntr("hexes", m_hexes, Serial::TypeSaver());
+	}
+
+	virtual void Load(const Serial::LoadNode& node) override
+	{
+		__super::Load(node);
+		node.LoadCntr("hexes", m_hexes, Serial::TypeLoader());
+	}
+
+	virtual std::string GetMessage(const Game& game) const
+	{
+		return ::FormatString("Discarded %0 "s + (m_hexes.size() == 1 ? "hex" : "hexes"), m_hexes.size());
+	}
+
+private:
+	std::vector<int> m_hexes;
+};
+
+REGISTER_DYNAMIC(DiscardHexesRecord)
+
+//-----------------------------------------------------------------------------
+
 ExploreHexCmd::ExploreHexCmd(Colour colour, const LiveGame& game, const MapPos& pos, std::vector<int> hexIDs, int iPhase) : 
 	PhaseCmd(colour, iPhase), m_pos(pos), m_hexIDs(hexIDs), m_iRot(-1), m_iHex(-1), m_bInfluence(false), 
 	m_bTaken(false), m_discovery(DiscoveryType::None)
@@ -261,7 +312,7 @@ void ExploreHexCmd::UpdateClient(const Controller& controller, const LiveGame& g
 	const auto hexChoices = GetHexChoices(game);
 
 	bool bCanTake = Race(GetTeam(game).GetRace()).GetExploreChoices() > (int)hexChoices.size() 
-		&& !game.IsHexBagEmpty(m_pos.GetRing());
+		&& !game.IsHexPileEmpty(m_pos.GetRing());
 
 	Output::ChooseExploreHex msg(m_pos.GetX(), m_pos.GetY(), bCanTake, game.GetActionPhase().CanRemoveCmd());
 	for (auto& hc : hexChoices)
@@ -269,7 +320,6 @@ void ExploreHexCmd::UpdateClient(const Controller& controller, const LiveGame& g
 
 	controller.SendMessage(msg, GetPlayer(game));
 }
-
 
 Cmd::ProcessResult ExploreHexCmd::Process(const Input::CmdMessage& msg, CommitSession& session)
 {
@@ -279,7 +329,7 @@ Cmd::ProcessResult ExploreHexCmd::Process(const Input::CmdMessage& msg, CommitSe
 
 	if (dynamic_cast<const Input::CmdExploreHexTake*>(&msg))
 	{
-		VERIFY_INPUT_MSG("no tiles left in bag", !game.IsHexBagEmpty(m_pos.GetRing()));
+		VERIFY_INPUT_MSG("no tiles left in bag", !game.IsHexPileEmpty(m_pos.GetRing()));
 		VERIFY_INPUT_MSG("too many tiles taken", Race(GetTeam(game).GetRace()).GetExploreChoices() > (int)m_hexIDs.size());
 
 		ExploreRecord* pRec = new ExploreRecord(m_colour, m_pos.GetRing());
@@ -321,6 +371,13 @@ Cmd::ProcessResult ExploreHexCmd::Process(const Input::CmdMessage& msg, CommitSe
 			if (id != hc.m_idHex)
 				discarded.push_back(id);
 	}
+
+	if (!discarded.empty())
+		DoRecord(RecordPtr(new DiscardHexesRecord(discarded)), session);
+	
+	HexRing ring = m_pos.GetRing();
+	if (game.IsHexPileEmpty(ring) && !game.IsHexDiscardPileEmpty(ring))
+		DoRecord(RecordPtr(new RefreshExplorePileRecord(ring)), session);
 	
 	const bool bFinish = m_iPhase + 1 == Race(GetTeam(game).GetRace()).GetExploreRate();
 	Cmd* nextExploreCmd = bFinish ? nullptr : new ExploreCmd(m_colour, game, m_iPhase + 1);

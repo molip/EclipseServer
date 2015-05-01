@@ -358,6 +358,9 @@
     <ClInclude Include="StartGameRecord.h">
       <Filter>Model\Records</Filter>
     </ClInclude>
+    <ClInclude Include="RefreshExplorePileRecord.h">
+      <Filter>Model\Records</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -657,6 +660,9 @@
       <Filter>Model\Phases</Filter>
     </ClCompile>
     <ClCompile Include="StartGameRecord.cpp">
+      <Filter>Model\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="RefreshExplorePileRecord.cpp">
       <Filter>Model\Records</Filter>
     </ClCompile>
   </ItemGroup>

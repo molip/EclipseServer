@@ -165,6 +165,7 @@
     <ClInclude Include="SaveThread.h" />
     <ClInclude Include="ScorePhase.h" />
     <ClInclude Include="Serial.h" />
+    <ClInclude Include="RefreshExplorePileRecord.h" />
     <ClInclude Include="Ship.h" />
     <ClInclude Include="ShipBattle.h" />
     <ClInclude Include="ShipLayout.h" />
@@ -277,6 +278,7 @@
     <ClCompile Include="SaveThread.cpp" />
     <ClCompile Include="ScorePhase.cpp" />
     <ClCompile Include="Serial.cpp" />
+    <ClCompile Include="RefreshExplorePileRecord.cpp" />
     <ClCompile Include="Ship.cpp" />
     <ClCompile Include="ShipBattle.cpp" />
     <ClCompile Include="ShipLayout.cpp" />

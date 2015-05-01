@@ -12,6 +12,7 @@ class Bag
 public:
 	typedef T TileType;
 	const std::vector<T>& GetTiles() const { return m_vec; }
+	std::vector<T>& GetTiles() { return m_vec; }
 
 protected:
 	std::vector<T> m_vec;
@@ -59,11 +60,17 @@ public:
 };
 
 enum class HexRing; 
-class HexBag : public IntBag
+class HexPile : public IntBag
 {
 public:
-	HexBag() {}
-	HexBag(HexRing r, int nPlayers);
+	HexPile() {}
+	
+	static HexPile Create(HexRing r, int nPlayers);
+
+	int TakeTile();
+	void ReturnTile(int tile);
+
+	bool IsEmpty() const { return m_vec.empty(); }
 };
 
 template <typename BagType>

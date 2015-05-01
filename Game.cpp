@@ -33,9 +33,6 @@ Game::Game(int id, const std::string& name, const Player& owner, const Game& rhs
 		m_teams.push_back(TeamPtr(new Team(*t)));
 		m_teams.back()->SetState(teamState);
 	}
-
-	for (int i = 0; i < (int)HexRing::_Count; ++i)
-		m_hexBag[i] = rhs.m_hexBag[i];
 }
 
 Game::~Game()
@@ -100,7 +97,6 @@ void Game::Save(Serial::SaveNode& node) const
 	node.SaveCntr("teams", m_teams, Serial::ClassPtrSaver());
 	node.SaveClass("tech_bag", m_techBag);
 	node.SaveClass("disc_bag", m_discBag);
-	node.SaveArray("hex_bags", m_hexBag, Serial::ClassSaver());
 }
 
 void Game::Load(const Serial::LoadNode& node)
@@ -111,7 +107,6 @@ void Game::Load(const Serial::LoadNode& node)
 	node.LoadCntr("teams", m_teams, Serial::ClassPtrLoader());
 	node.LoadClass("tech_bag", m_techBag);
 	node.LoadClass("disc_bag", m_discBag);
-	node.LoadArray("hex_bags", m_hexBag, Serial::ClassLoader());
 }
 
 DEFINE_ENUM_NAMES2(HexRing, -1) { "None", "Inner", "Middle", "Outer", "" };

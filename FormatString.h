@@ -62,3 +62,9 @@ std::string FormatString(const char* format, Targs... args)
 
 	return oss.str();
 }
+
+template<typename... Targs>
+std::string FormatString(const std::string& format, Targs... args)
+{
+	return FormatString(format.c_str(), args...);
+}

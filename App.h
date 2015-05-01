@@ -14,6 +14,8 @@
 #include <algorithm>
 #include <random>
 
+using namespace std::literals;
+
 //#define LOCK(m) ; //std::lock_guard<std::mutex> lock(m);
 #define LOCK(m) std::lock_guard<std::mutex> lock(m);
 

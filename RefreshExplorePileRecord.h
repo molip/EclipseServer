@@ -2,16 +2,17 @@
 
 #include "Record.h"
 #include "Resources.h"
-#include "Bag.h"
 
 #include <map> 
 
 enum class TechType;
+enum class HexRing;
 
-class StartGameRecord : public Record
+class RefreshExplorePileRecord : public Record
 {
 public:
-	StartGameRecord();
+	RefreshExplorePileRecord();
+	RefreshExplorePileRecord(HexRing ring);
 
 	virtual void Save(Serial::SaveNode& node) const override;
 	virtual void Load(const Serial::LoadNode& node) override;
@@ -21,5 +22,14 @@ private:
 	virtual void Update(const Game& game, const RecordContext& context) const override;
 	virtual std::string GetMessage(const Game& game) const override;
 
-	EnumArray<HexRing, HexPile> m_hexPiles;
+	struct TeamData
+	{
+		int actions, colonyShips;
+
+		void Save(Serial::SaveNode& node) const;
+		void Load(const Serial::LoadNode& node);
+	};
+
+	HexRing m_ring;
+	std::vector<int> m_discardPile, m_newPile;
 };

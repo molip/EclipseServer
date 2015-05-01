@@ -39,6 +39,20 @@ const HexDefs& HexDefs::Instance()
 	return defs;
 }
 
+HexRing HexDefs::GetRingFromId(int id)
+{
+	VERIFY(id != 1 && Instance().m_map.count(id) == 1);
+
+	switch (id / 100)
+	{
+	case 1: return HexRing::Inner;
+	case 2: return HexRing::Middle;
+	case 3: return HexRing::Outer;
+	}
+	VERIFY(false);
+	return *reinterpret_cast<HexRing*>(nullptr);
+}
+
 const HexDef& HexDefs::Get(int id)
 {
 	auto it = Instance().m_map.find(id);

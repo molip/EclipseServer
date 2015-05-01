@@ -59,6 +59,7 @@ class HexDefs
 {
 public:
 	static const HexDef& Get(int id);
+	static HexRing GetRingFromId(int id);
 	
 private:
 	HexDefs();
@@ -67,6 +68,6 @@ private:
 	HexDef* AddStartHex(int id);
 
 	static const HexDefs& Instance();
-	
+
 	std::map<int, HexDef> m_map;
 };

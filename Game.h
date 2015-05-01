@@ -50,9 +50,9 @@ public:
 	const ReputationBag& GetReputationBag() const { return const_cast<GameState&>(m_state).GetReputationBag(); }
 	const TechnologyBag& GetTechnologyBag() const { return m_techBag; }
 	const DiscoveryBag& GetDiscoveryBag() const { return m_discBag; }
-	const HexBag& GetHexBag(HexRing ring) const { return m_hexBag[(int)ring]; }
 
-	bool IsHexBagEmpty(HexRing ring) const { return const_cast<GameState&>(m_state).GetHexBag(ring).IsEmpty(); }
+	bool IsHexPileEmpty(HexRing ring) const { return const_cast<GameState&>(m_state).GetHexPile(ring).IsEmpty(); }
+	bool IsHexDiscardPileEmpty(HexRing ring) const { return const_cast<GameState&>(m_state).GetHexDiscardPile(ring).IsEmpty(); }
 
 	const Map& GetMap() const { return m_state.m_map; }
 
@@ -88,7 +88,6 @@ protected:
 	int m_idOwner;
 	TechnologyBag m_techBag;
 	DiscoveryBag m_discBag;
-	HexBag m_hexBag[(int)HexRing::_Count];
 
 	GameState m_state;
 };

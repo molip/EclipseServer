@@ -52,8 +52,10 @@ void TechnologyBag::Init()
 	std::shuffle(m_vec.begin(), m_vec.end(), GetRandom());
 }
 
-HexBag::HexBag(HexRing r, int nPlayers)
+HexPile HexPile::Create(HexRing r, int nPlayers)
 {
+	HexPile pile;
+
 	VERIFY_MODEL(nPlayers > 0 && nPlayers < 7);
 
 	int start = 0, count = 0;
@@ -65,15 +67,29 @@ HexBag::HexBag(HexRing r, int nPlayers)
 	}
 
 	for (int i = start; i < start + count; ++i)
-		m_vec.push_back(i);
+		pile.m_vec.push_back(i);
 
-	std::shuffle(m_vec.begin(), m_vec.end(), GetRandom());
+	std::shuffle(pile.m_vec.begin(), pile.m_vec.end(), GetRandom());
 
 	if (r == HexRing::Outer)
 	{
 		const int outers[] = { 5, 5, 10, 14, 16, 18 };
-		m_vec.resize(outers[nPlayers - 1]);
+		pile.m_vec.resize(outers[nPlayers - 1]);
 	}
+	return pile;
+}
+
+int HexPile::TakeTile()
+{
+	VERIFY_MODEL(!m_vec.empty());
+	int tile = m_vec.back();
+	m_vec.pop_back();
+	return tile;
+}
+
+void HexPile::ReturnTile(int tile)
+{
+	m_vec.push_back(tile);
 }
 
 ReputationBag::ReputationBag() : m_counts { 12, 9, 7, 4 }

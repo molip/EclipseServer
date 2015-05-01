@@ -54,25 +54,9 @@ void LiveGame::StartChooseTeamGamePhase()
 		m_turnOrder.push_back(i);
 	std::shuffle(m_turnOrder.begin(), m_turnOrder.end(), GetRandom());
 
-	//for (int i = 0; i < FakePlayers; ++i)
-	//{
-	//	std::ostringstream ss;
-	//	ss << "Fake " << i;
-	//	m_teams.insert(std::make_pair(ss.str(), nullptr));
-	//	m_teamOrder.insert(m_teamOrder.begin() + i, ss.str());
-	//	AssignTeam(ss.str(), RaceType::Human, Colour(i + 1));
-	//}
-
-	// Initialise hex bags.
-	for (auto r : EnumRange<HexRing>())
-		m_hexBag[(int)r] = HexBag(r, (int)m_teams.size());
-
-	//m_hexBag[1].ReturnTile(206); // Discovery, no ancients, 1 materials square.
-
 	m_techBag.Init();
 	m_discBag.Init();
 }
-
 
 void LiveGame::StartMainGamePhase()
 {
