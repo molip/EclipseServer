@@ -23,7 +23,9 @@ public:
 
 	Hex& AddHex(HexPtr hex);
 	void DeleteHex(const MapPos& pos);
-	std::vector<MapPos> GetTeamStartPositions() const;
+	
+	typedef std::vector<std::pair<MapPos, int>> StartPositions;
+	StartPositions GetTeamStartPositions() const;
 	
 	Game& GetGame() { return m_game; }
 

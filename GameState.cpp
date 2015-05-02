@@ -63,7 +63,8 @@ void GameState::Init(const Game& game)
 		auto pair = m_teamStates.insert(std::make_pair(team->GetColour(), TeamStatePtr(new TeamState)));
 		VERIFY(pair.second);
 		team->SetState(*pair.first->second); // Set state first so Init can use team.
-		pair.first->second->Init(*team, startPositions[i++], 0, m_map, repTiles); // TODO: Initial hex rotation. 
+		auto& posRotPair = startPositions[i++];
+		pair.first->second->Init(*team, posRotPair.first, posRotPair.second, m_map, repTiles);
 	}
 }
 

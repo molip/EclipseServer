@@ -73,30 +73,31 @@ std::vector<MapPos> Map::GetOwnedHexPositions(const Team& team) const
 	return result;
 }
 
-std::vector<MapPos> Map::GetTeamStartPositions() const
+Map::StartPositions Map::GetTeamStartPositions() const
 {
 	const int nTeams = (int)m_game.GetTeams().size();
 	VERIFY_MODEL(nTeams > 0 && nTeams < 7);
 
+	std::vector<int> rotations;
 	std::string s;
 	switch (nTeams)
 	{
-	case 6: s = "111111"; break;
-	case 5: s = "111011"; break;
-	case 4: s = "011011"; break;
-	case 3: s = "101010"; break;
-	case 2: s = "100100"; break;
-	case 1: s = "100000"; break;
+	case 6: s = "111111"; rotations = { 0, 1, 5, 0, 1, 5 }; break;
+	case 5: s = "111011"; rotations = { 0, 0, 1, 1, 5 }; break;
+	case 4: s = "011011"; rotations = { 1, 1, 1, 1 }; break;
+	case 3: s = "101010"; rotations = { 0, 5, 1 }; break;
+	case 2: s = "100100"; rotations = { 0, 0 }; break;
+	case 1: s = "100000"; rotations = { 0 }; break;
 	}
 
 	std::vector<Edge> edges = EdgeSet(s).GetEdges();
 	assert(edges.size() == nTeams);
 
-	std::vector<MapPos> positions;
+	StartPositions positions;
 	for (int i = 0; i < nTeams; ++i)
 	{
 		Edge e = edges[i];
-		positions.push_back(MapPos(0, 0).GetNeighbour(e).GetNeighbour(e));
+		positions.push_back(std::make_pair(MapPos(0, 0).GetNeighbour(e).GetNeighbour(e), rotations[i]));
 	}
 	return positions;
 }
