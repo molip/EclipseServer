@@ -30,6 +30,7 @@ public:
 
 	std::map<TechType, int>& GetTechnologies() { return m_techs; }
 	Map& GetMap() { return m_map; }
+	void ProduceTechnologies(int count, bool bDo);
 
 	bool IncrementRound(bool bDo); // Returns true if game finished.
 	Battle& GetBattle();

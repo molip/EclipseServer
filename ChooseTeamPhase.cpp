@@ -3,7 +3,7 @@
 #include "LiveGame.h"
 #include "Output.h"
 #include "Controller.h"
-#include "StartRoundRecord.h"
+#include "StartGameRecord.h"
 #include "CommitSession.h"
 #include "Players.h"
 
@@ -27,7 +27,7 @@ void ChooseTeamPhase::AssignTeam(CommitSession& session, Player& player, RaceTyp
 	
 	if (allAssigned)
 	{
-		session.DoAndPushRecord(RecordPtr(new StartRoundRecord));
+		session.DoAndPushRecord(RecordPtr(new StartGameRecord));
 		game.StartMainGamePhase(); // Deletes this.
 	}
 

@@ -29,5 +29,5 @@ private:
 	};
 
 	std::map<Colour, TeamData> m_teamData;
-	int m_round;
+	int m_round, m_techCount;
 };

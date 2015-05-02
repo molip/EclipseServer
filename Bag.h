@@ -76,8 +76,9 @@ public:
 	void SetBag(const BagType& bag) { m_bag = &bag; }
 
 	bool IsEmpty() const { return m_taken == m_bag->GetTiles().size(); }
-	bool IsFull() const { return m_taken == 0; }
-	
+	int GetRemaining() const { return int(m_bag->GetTiles().size() - m_taken); }
+	int GetTaken() const { return (int)m_taken; }
+
 	typename BagType::TileType TakeTile()
 	{
 		VERIFY_MODEL(!IsEmpty());

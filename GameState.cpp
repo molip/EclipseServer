@@ -141,6 +141,22 @@ void GameState::DeleteHex(const MapPos& pos)
 	m_map.DeleteHex(pos);
 }
 
+void GameState::ProduceTechnologies(int count, bool bDo)
+{
+	if (bDo)
+	{
+		VERIFY(count <= m_techBagState.GetRemaining());
+		for (int i = 0; i < count; ++i)
+			++m_techs[m_techBagState.TakeTile()];
+	}
+	else
+	{
+		VERIFY_MODEL(count <= m_techBagState.GetTaken());
+		for (int i = 0; i < count; ++i)
+			--m_techs[m_techBagState.ReturnTile()];
+	}
+}
+
 void GameState::Save(Serial::SaveNode& node) const
 {
 	node.SaveClass("map", m_map);

@@ -355,6 +355,9 @@
     <ClInclude Include="ScorePhase.h">
       <Filter>Model\Phases</Filter>
     </ClInclude>
+    <ClInclude Include="StartGameRecord.h">
+      <Filter>Model\Records</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -652,6 +655,9 @@
     <ClCompile Include="ReputationRecord.cpp" />
     <ClCompile Include="ScorePhase.cpp">
       <Filter>Model\Phases</Filter>
+    </ClCompile>
+    <ClCompile Include="StartGameRecord.cpp">
+      <Filter>Model\Records</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
