@@ -4,14 +4,17 @@
 #include "OS.h"
 #include "Xml.h"
 #include "Serial.h"
+#include "Util.h"
 
 int Players::s_nNextID = 1;
 int Players::s_nNextTestID = -1;
 std::map<int, PlayerPtr> Players::s_map;
 
-Player& Players::Add(const std::string& name, const std::string& password)
+Player& Players::Add(const std::string& email, const std::string& name, const std::string& password)
 {
-	Player* p = new Player(s_nNextID, name, password);
+	VERIFY(Find(email) == nullptr);
+
+	Player* p = new Player(s_nNextID, Util::ToLower(email), name, password);
 	ASSERT(s_map.insert(std::make_pair(s_nNextID, PlayerPtr(p))).second);
 	++s_nNextID;
 	return *p;
@@ -19,7 +22,7 @@ Player& Players::Add(const std::string& name, const std::string& password)
 
 Player& Players::AddTest()
 {
-	Player* p = new Player(s_nNextTestID, ::FormatString("Test %0", -s_nNextTestID), "");
+	Player* p = new Player(s_nNextTestID, "", ::FormatString("Test %0", -s_nNextTestID), "");
 	ASSERT(s_map.insert(std::make_pair(s_nNextTestID, PlayerPtr(p))).second);
 	--s_nNextTestID;
 	return *p;
@@ -38,10 +41,12 @@ Player* Players::Find(int idPlayer)
 	return i == s_map.end() ? nullptr : i->second.get();
 }
 
-Player* Players::Find(const std::string& name) 
+Player* Players::Find(const std::string& email) 
 {
+	std::string lower = Util::ToLower(email);
+
 	for (auto& i : s_map)
-		if (name == i.second->GetName())
+		if (lower == i.second->GetEmail())
 			return i.second.get();
 	return nullptr;
 }

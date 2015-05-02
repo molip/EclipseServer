@@ -10,8 +10,8 @@ Player::Player() : m_id(0), m_idCurrentGame(0)
 {
 }
 
-Player::Player(int id, const std::string& name, const std::string& password) : 
-	m_id(id), m_name(name), m_idCurrentGame(0)
+Player::Player(int id, const std::string& email, const std::string& name, const std::string& password) :
+	m_id(id), m_email(email), m_name(name), m_idCurrentGame(0)
 {
 	m_passwordSalt = ::FormatInt(::GetRandom()());
 	m_passwordHash = HashPassword(password);
@@ -86,6 +86,7 @@ void Player::Save(Serial::SaveNode& node) const
 
 	node.SaveType("id", m_id);
 	node.SaveType("current_game", idGame);
+	node.SaveType("email", m_email);
 	node.SaveType("name", m_name);
 	node.SaveType("hash", m_passwordHash);
 	node.SaveType("salt", m_passwordSalt);
@@ -95,6 +96,7 @@ void Player::Load(const Serial::LoadNode& node)
 {
 	node.LoadType("id", m_id);
 	node.LoadType("current_game", m_idCurrentGame);
+	node.LoadType("email", m_email);
 	node.LoadType("name", m_name);
 	node.LoadType("hash", m_passwordHash);
 	node.LoadType("salt", m_passwordSalt);

@@ -34,9 +34,9 @@ HTMLServer::HTMLServer() : MongooseServer(8999)
 {
 }
 
-const Player* HTMLServer::Authenticate(const std::string& name, const std::string& password)
+const Player* HTMLServer::Authenticate(const std::string& email, const std::string& password)
 {
-	Player* pPlayer = Players::Find(name);
+	Player* pPlayer = Players::Find(email);
 	return pPlayer && pPlayer->CheckPassword(password) ? pPlayer : nullptr;
 }
 
@@ -58,10 +58,10 @@ std::string HTMLServer::OnHTTPRequest(const std::string& url, const std::string&
 	{
 		auto postData = request.GetPostData();
 
-		auto name = postData.Get("player");
+		auto email = postData.Get("email");
 		auto password = postData.Get("password");
 
-		if (const Player* player = Authenticate(name, password))
+		if (const Player* player = Authenticate(email, password))
 		{
 			players.Add(*player);
 			return players.GetResponse();
@@ -74,7 +74,8 @@ std::string HTMLServer::OnHTTPRequest(const std::string& url, const std::string&
 	{
 		auto postData = request.GetPostData();
 
-		auto name = postData.Get("player");
+		auto email = postData.Get("email");
+		auto name = postData.Get("name");
 		auto password = postData.Get("password1");
 		auto code = postData.Get("code");
 
@@ -84,16 +85,16 @@ std::string HTMLServer::OnHTTPRequest(const std::string& url, const std::string&
 			return CreateRedirectResponse(::FormatString("/register.html?code=%0%1", code, errorParam));
 		};
 
-		if (name.empty() || password.empty()) // Shouldn't happen, checked client-side.
+		if (email.empty() || name.empty() || password.empty()) // Shouldn't happen, checked client-side.
 			return redirect("");
 		
-		if (Players::Find(name))
-			return redirect("name_taken");
+		if (Players::Find(email))
+			return redirect("email_taken");
 
 		if (!Invitations::Find(code))
 			return redirect("invalid_code");
 
-		Player& player = Players::Add(name, password);
+		Player& player = Players::Add(email, name, password);
 		Invitations::Remove(code);
 
 		players.Add(player);

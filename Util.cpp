@@ -1,5 +1,8 @@
 #include "Util.h"
 
+#include <algorithm>
+#include <cctype>
+
 namespace Util
 {
 
@@ -41,6 +44,18 @@ std::string ReplaceAll(const std::string& str, const std::string& oldSubStr, con
 		pos = found + oldSubStr.length();
 	}
 	return result;
+}
+
+void MakeLower(std::string& str)
+{
+	std::transform(str.begin(), str.end(), str.begin(), std::tolower);
+}
+
+std::string ToLower(const std::string& str)
+{
+	std::string lower = str;
+	MakeLower(lower);
+	return lower;
 }
 
 }

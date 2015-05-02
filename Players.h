@@ -11,12 +11,12 @@ public:
 	static void Load();
 	static std::string GetPath();
 
-	static Player& Add(const std::string& name, const std::string& password);
+	static Player& Add(const std::string& email, const std::string& name, const std::string& password);
 	static Player& AddTest();
 
 	static Player& Get(int idPlayer);
 	static Player* Find(int idPlayer);
-	static Player* Find(const std::string& name);
+	static Player* Find(const std::string& email);
 
 	static void RejoinCurrentGame();
 

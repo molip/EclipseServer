@@ -11,9 +11,9 @@
 
 	function CheckForm() 
 	{
-		document.getElementById('name_taken_msg').style.display = 'none'
+		document.getElementById('email_taken_msg').style.display = 'none'
 
-		var empty = IsEmpty('player') || IsEmpty('password1') || IsEmpty('password2')
+		var empty = IsEmpty('email') ||IsEmpty('name') || IsEmpty('password1') || IsEmpty('password2')
 		var mismatch = document.getElementsByName('password1')[0].value != document.getElementsByName('password2')[0].value
 		
 		document.getElementById('empty_field_msg').style.display = empty ? '' : 'none'
@@ -26,8 +26,8 @@
 		document.getElementsByName('code')[0].value = GetURLParameter('code')
 
 		var error = GetURLParameter('error')
-		if (error == 'name_taken')
-			document.getElementById('name_taken_msg').style.display = ''
+		if (error == 'email_taken')
+			document.getElementById('email_taken_msg').style.display = ''
 		else if (error == 'invalid_code')
 			document.getElementById('invalid_code_msg').style.display = ''
 	}
@@ -37,10 +37,11 @@
 	<h1>Eclipsoid: Register</h1>
 	<span id="empty_field_msg" style="display:none">Please fill in all the fields<br></span>
 	<span id="password_mismatch_msg" style="display:none">Passwords don't match<br></span>
-	<span id="name_taken_msg" style="display:none">User name already registered<br></span>
+	<span id="email_taken_msg" style="display:none">Email already registered<br></span>
 	<span id="invalid_code_msg" style="display:none">Invalid invitation code<br></span>
 	<form action="register" method="POST">
-	  <input type="text" placeholder="User name" name="player" autofocus><br>
+	  <input type="text" placeholder="Display name" name="name" autofocus><br>
+	  <input type="text" placeholder="Email" name="email" autofocus><br>
 	  <input type="password" placeholder="Password" name="password1"><br>
 	  <input type="password" placeholder="Password again" name="password2"><br>
 	  <input type="hidden" name="code"><br>
