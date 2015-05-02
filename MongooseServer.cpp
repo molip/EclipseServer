@@ -144,11 +144,12 @@ public:
 	virtual IServer::StringMap GetPostData() const override
 	{
 		IServer::StringMap postData;
-		char postDataString[1024];
+		char postDataString[1024], decoded[1024];
 		if (int bytes = mg_read(m_conn, postDataString, sizeof(postDataString)))
 		{
-			postDataString[bytes] = 0;
-			postData = IServer::SplitString(postDataString, '&');
+			bytes = mg_url_decode(postDataString, bytes, decoded, sizeof decoded, true);
+			decoded[bytes] = 0;
+			postData = IServer::SplitString(decoded, '&');
 		}
 		return postData;
 	}
