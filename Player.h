@@ -21,6 +21,7 @@ public:
 	const std::string& GetName() const { return m_name; }
 	const std::string& GetEmail() const { return m_email; }
 	const std::string& GetPasswordHash() const { return m_passwordHash; }
+	bool CheckPasswordHash(const std::string& hash) const;
 
 	const LiveGame* GetCurrentLiveGame() const;
 	const ReviewGame* GetCurrentReviewGame() const;
@@ -40,7 +41,7 @@ private:
 		
 	int m_id;
 	int m_idCurrentGame;
-	std::string m_email, m_name, m_passwordHash, m_passwordSalt;
+	std::string m_email, m_name, m_passwordHash;
 };
 
 typedef std::unique_ptr<Player> PlayerPtr;

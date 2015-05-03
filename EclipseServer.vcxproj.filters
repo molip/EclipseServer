@@ -33,6 +33,9 @@
     <Filter Include="External\TinyXML2">
       <UniqueIdentifier>{209b8763-18a1-456a-9100-0b59c7b274ec}</UniqueIdentifier>
     </Filter>
+    <Filter Include="External\bcrypt">
+      <UniqueIdentifier>{df2ae12f-6e18-4bb3-bca4-72e0e102f4e3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -361,6 +364,21 @@
     <ClInclude Include="RefreshExplorePileRecord.h">
       <Filter>Model\Records</Filter>
     </ClInclude>
+    <ClInclude Include="bcrypt\crypt_blowfish\crypt_gensalt.h">
+      <Filter>External\bcrypt</Filter>
+    </ClInclude>
+    <ClInclude Include="bcrypt\crypt_blowfish\ow-crypt.h">
+      <Filter>External\bcrypt</Filter>
+    </ClInclude>
+    <ClInclude Include="bcrypt\crypt_blowfish\crypt.h">
+      <Filter>External\bcrypt</Filter>
+    </ClInclude>
+    <ClInclude Include="bcrypt\crypt_blowfish\crypt_blowfish.h">
+      <Filter>External\bcrypt</Filter>
+    </ClInclude>
+    <ClInclude Include="bcrypt\bcrypt.h">
+      <Filter>External\bcrypt</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -665,10 +683,25 @@
     <ClCompile Include="RefreshExplorePileRecord.cpp">
       <Filter>Model\Records</Filter>
     </ClCompile>
+    <ClCompile Include="bcrypt\bcrypt.c">
+      <Filter>External\bcrypt</Filter>
+    </ClCompile>
+    <ClCompile Include="bcrypt\crypt_blowfish\crypt_blowfish.c">
+      <Filter>External\bcrypt</Filter>
+    </ClCompile>
+    <ClCompile Include="bcrypt\crypt_blowfish\crypt_gensalt.c">
+      <Filter>External\bcrypt</Filter>
+    </ClCompile>
+    <ClCompile Include="bcrypt\crypt_blowfish\wrapper.c">
+      <Filter>External\bcrypt</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="civetweb\src\md5.inl">
       <Filter>External\Civetweb</Filter>
+    </None>
+    <None Include="bcrypt\crypt_blowfish\x86.S">
+      <Filter>External\bcrypt</Filter>
     </None>
   </ItemGroup>
 </Project>

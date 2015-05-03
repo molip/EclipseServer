@@ -7,3 +7,6 @@
 [submodule "cJSON"]
 	path = cJSON
 	url = https://github.com/kbranigan/cJSON
+[submodule "bcrypt"]
+	path = bcrypt
+	url = https://github.com/molip/bcrypt

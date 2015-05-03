@@ -6,6 +6,8 @@
 #include "MongooseServer.h"
 #include "Players.h"
 
+#include "bcrypt/bcrypt.h"
+
 Player::Player() : m_id(0), m_idCurrentGame(0)
 {
 }
@@ -13,7 +15,6 @@ Player::Player() : m_id(0), m_idCurrentGame(0)
 Player::Player(int id, const std::string& email, const std::string& name, const std::string& password) :
 	m_id(id), m_email(email), m_name(name), m_idCurrentGame(0)
 {
-	m_passwordSalt = ::FormatInt(::GetRandom()());
 	m_passwordHash = HashPassword(password);
 
 	Save();
@@ -24,13 +25,21 @@ bool Player::CheckPassword(const std::string& password) const
 	if (password.empty())
 		return false;
 
-	std::string hash = HashPassword(password);
-	return hash == m_passwordHash;
+	char hash[BCRYPT_HASHSIZE];
+	VERIFY(::bcrypt_hashpw(password.c_str(), m_passwordHash.c_str(), hash) == 0);
+	
+	return m_passwordHash == hash;
 }
 
 std::string Player::HashPassword(const std::string& password) const
 {
-	return MongooseServer::CreateMD5(password.c_str(), m_passwordSalt.c_str());
+	char salt[BCRYPT_HASHSIZE];
+	VERIFY(::bcrypt_gensalt(12, salt) == 0);
+
+	char hash[BCRYPT_HASHSIZE];
+	VERIFY(::bcrypt_hashpw(password.c_str(), salt, hash) == 0);
+
+	return hash;
 }
 
 void Player::SetCurrentGame(const Game* pGame)
@@ -89,7 +98,6 @@ void Player::Save(Serial::SaveNode& node) const
 	node.SaveType("email", m_email);
 	node.SaveType("name", m_name);
 	node.SaveType("hash", m_passwordHash);
-	node.SaveType("salt", m_passwordSalt);
 }
 
 void Player::Load(const Serial::LoadNode& node)
@@ -99,7 +107,6 @@ void Player::Load(const Serial::LoadNode& node)
 	node.LoadType("email", m_email);
 	node.LoadType("name", m_name);
 	node.LoadType("hash", m_passwordHash);
-	node.LoadType("salt", m_passwordSalt);
 }
 
 void Player::RejoinCurrentGame()

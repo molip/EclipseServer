@@ -92,6 +92,11 @@
     <ClInclude Include="Bag.h" />
     <ClInclude Include="BankruptCmd.h" />
     <ClInclude Include="Battle.h" />
+    <ClInclude Include="bcrypt\bcrypt.h" />
+    <ClInclude Include="bcrypt\crypt_blowfish\crypt.h" />
+    <ClInclude Include="bcrypt\crypt_blowfish\crypt_blowfish.h" />
+    <ClInclude Include="bcrypt\crypt_blowfish\crypt_gensalt.h" />
+    <ClInclude Include="bcrypt\crypt_blowfish\ow-crypt.h" />
     <ClInclude Include="Blueprint.h" />
     <ClInclude Include="BlueprintDefs.h" />
     <ClInclude Include="BuildCmd.h" />
@@ -203,6 +208,24 @@
     <ClCompile Include="Bag.cpp" />
     <ClCompile Include="BankruptCmd.cpp" />
     <ClCompile Include="Battle.cpp" />
+    <ClCompile Include="bcrypt\bcrypt.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsCpp</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsCpp</CompileAs>
+    </ClCompile>
+    <ClCompile Include="bcrypt\crypt_blowfish\crypt_blowfish.c">
+      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4244</DisableSpecificWarnings>
+      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4244</DisableSpecificWarnings>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsCpp</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsCpp</CompileAs>
+    </ClCompile>
+    <ClCompile Include="bcrypt\crypt_blowfish\crypt_gensalt.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsCpp</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsCpp</CompileAs>
+    </ClCompile>
+    <ClCompile Include="bcrypt\crypt_blowfish\wrapper.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsCpp</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsCpp</CompileAs>
+    </ClCompile>
     <ClCompile Include="Blueprint.cpp" />
     <ClCompile Include="BlueprintDefs.cpp" />
     <ClCompile Include="BuildCmd.cpp" />
@@ -308,6 +331,7 @@
     <ClCompile Include="Xml.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="bcrypt\crypt_blowfish\x86.S" />
     <None Include="civetweb\src\md5.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
