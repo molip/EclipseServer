@@ -15,13 +15,17 @@ public:
 	const Player* GetCurrent() const { return m_current; }
 	bool IsExplicitPlayer() const { return m_explicitPlayer; }
 	bool Contains(const Player& player) const;
-	const std::vector<const Player*> GetPlayers() const { return m_players; }
+	std::vector<const Player*> GetPlayers() const;
 
-	void Add(const Player& player);
+	void Add(Player& player);
 	void RemoveCurrent();
 
 private:
-	std::vector<const Player*> m_players;
+	typedef std::vector<std::pair<Player*, std::string>> PlayerVec;
+
+	PlayerVec::const_iterator Find(const Player& player) const;
+
+	PlayerVec m_players; // Player, session id.
 	int m_playerCount;
 	const Player* m_current;
 	bool m_valid, m_explicitPlayer;

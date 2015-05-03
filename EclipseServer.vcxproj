@@ -154,6 +154,7 @@
     <ClInclude Include="HTMLServer.h" />
     <ClInclude Include="PassCmd.h" />
     <ClInclude Include="PhaseCmd.h" />
+    <ClInclude Include="PicoSHA2\picosha2.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PlayerList.h" />
     <ClInclude Include="Players.h" />

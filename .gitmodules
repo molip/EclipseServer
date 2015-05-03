@@ -10,3 +10,6 @@
 [submodule "bcrypt"]
 	path = bcrypt
 	url = https://github.com/molip/bcrypt
+[submodule "PicoSHA2"]
+	path = PicoSHA2
+	url = https://github.com/okdshin/PicoSHA2

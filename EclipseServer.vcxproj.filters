@@ -36,6 +36,9 @@
     <Filter Include="External\bcrypt">
       <UniqueIdentifier>{df2ae12f-6e18-4bb3-bca4-72e0e102f4e3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="External\PicoSHA2">
+      <UniqueIdentifier>{e32a611b-994a-43c8-b3fe-61127c295efc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -378,6 +381,9 @@
     </ClInclude>
     <ClInclude Include="bcrypt\bcrypt.h">
       <Filter>External\bcrypt</Filter>
+    </ClInclude>
+    <ClInclude Include="PicoSHA2\picosha2.h">
+      <Filter>External\PicoSHA2</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

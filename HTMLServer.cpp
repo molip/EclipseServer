@@ -34,7 +34,7 @@ HTMLServer::HTMLServer() : MongooseServer(8999)
 {
 }
 
-const Player* HTMLServer::Authenticate(const std::string& email, const std::string& password)
+Player* HTMLServer::Authenticate(const std::string& email, const std::string& password)
 {
 	Player* pPlayer = Players::Find(email);
 	return pPlayer && pPlayer->CheckPassword(password) ? pPlayer : nullptr;
@@ -61,7 +61,7 @@ std::string HTMLServer::OnHTTPRequest(const std::string& url, const std::string&
 		auto email = postData.Get("email");
 		auto password = postData.Get("password");
 
-		if (const Player* player = Authenticate(email, password))
+		if (Player* player = Authenticate(email, password))
 		{
 			players.Add(*player);
 			return players.GetResponse();

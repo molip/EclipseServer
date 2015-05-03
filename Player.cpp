@@ -42,6 +42,12 @@ std::string Player::HashPassword(const std::string& password) const
 	return hash;
 }
 
+void Player::SetSessionHash(const std::string& hash)  
+{
+	m_sessionHash = hash; 
+	Save(); 
+}
+
 void Player::SetCurrentGame(const Game* pGame)
 {
 	const Game* oldGame = GetCurrentGame();
@@ -98,6 +104,7 @@ void Player::Save(Serial::SaveNode& node) const
 	node.SaveType("email", m_email);
 	node.SaveType("name", m_name);
 	node.SaveType("hash", m_passwordHash);
+	node.SaveType("session_hash", m_sessionHash);
 }
 
 void Player::Load(const Serial::LoadNode& node)
@@ -107,6 +114,7 @@ void Player::Load(const Serial::LoadNode& node)
 	node.LoadType("email", m_email);
 	node.LoadType("name", m_name);
 	node.LoadType("hash", m_passwordHash);
+	node.LoadType("session_hash", m_sessionHash);
 }
 
 void Player::RejoinCurrentGame()

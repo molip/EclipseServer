@@ -1,6 +1,21 @@
 #include "PlayerList.h"
 #include "Players.h"
 
+#pragma warning(push)
+#pragma warning(disable : 4244)
+#include "PicoSHA2/picosha2.h"
+#pragma warning(pop)
+
+namespace
+{
+	std::string GetHash(const std::string& str)
+	{
+		std::string hash;
+		picosha2::hash256_hex_string(str, hash);
+		return hash;
+	}
+}
+
 PlayerList::PlayerList(const IServer::Request& request) : PlayerList(request.GetQueries().GetInt("player"), request.GetCookies())
 {
 }
@@ -14,10 +29,10 @@ PlayerList::PlayerList(int playerId, const IServer::StringMap& cookies) : m_curr
 		int id = cookies.GetInt(std::string("player_") + ::FormatInt(i));
 		std::string session = cookies.Get(std::string("session_") + ::FormatInt(i));
 
-		if (const Player* player = Players::Find(id))
-			if (session == player->GetPasswordHash())
+		if (Player* player = Players::Find(id))
+			if (GetHash(session) == player->GetSessionHash())
 			{
-				m_players.push_back(player);
+				m_players.push_back(std::make_pair(player, session));
 				if (playerId == player->GetID())
 				{
 					m_current = player;
@@ -36,8 +51,8 @@ std::string PlayerList::GetResponse(std::string url) const
 
 		for (int i = 0; i < (int)m_players.size(); ++i)
 		{
-			cookies.Set(std::string("player_") + ::FormatInt(i), ::FormatInt(m_players[i]->GetID()), true);
-			cookies.Set(std::string("session_") + ::FormatInt(i), m_players[i]->GetPasswordHash(), true);
+			cookies.Set(std::string("player_") + ::FormatInt(i), ::FormatInt(m_players[i].first->GetID()), true);
+			cookies.Set(std::string("session_") + ::FormatInt(i), m_players[i].second, true);
 		}
 
 		for (int i = (int)m_players.size(); i < m_playerCount; ++i)
@@ -51,20 +66,42 @@ std::string PlayerList::GetResponse(std::string url) const
 	{
 		url = "/";
 		if (!m_players.empty())
-			url += "?player=" + ::FormatInt((m_current ? m_current : m_players.front())->GetID());
+			url += "?player=" + ::FormatInt((m_current ? m_current : m_players.front().first)->GetID());
 	}
 	return MongooseServer::CreateRedirectResponse(url, cookies);
 }
 
-bool PlayerList::Contains(const Player& player) const 
+PlayerList::PlayerVec::const_iterator PlayerList::Find(const Player& player) const
 {
-	return std::find(m_players.begin(), m_players.end(), &player) != m_players.end(); 
+	return std::find_if(m_players.begin(), m_players.end(), [&](auto& pair) { return pair.first == &player; });
 }
 
-void PlayerList::Add(const Player& player)
+bool PlayerList::Contains(const Player& player) const 
+{
+	return Find(player) != m_players.end();
+}
+
+std::vector<const Player*> PlayerList::GetPlayers() const
+{
+	std::vector<const Player*> players;
+	players.reserve(m_players.size());
+	for (auto& pair : m_players)
+		players.push_back(pair.first);
+	return players;
+}
+
+void PlayerList::Add(Player& player)
 {
 	if (!Contains(player))
-		m_players.insert(m_players.begin(), &player);
+	{
+		std::ostringstream ss;
+		for (int i = 0; i < 4; ++i)
+			ss << ::GetRandom()();
+
+		std::string sessionId = ss.str();
+		player.SetSessionHash(GetHash(sessionId));
+		m_players.insert(m_players.begin(), std::make_pair(&player, sessionId));
+	}
 	m_current = &player;
 	m_valid = false;
 }
@@ -74,7 +111,7 @@ void PlayerList::RemoveCurrent()
 	if (!m_current)
 		return;
 
-	m_players.erase(std::find(m_players.begin(), m_players.end(), m_current));
+	m_players.erase(Find(*m_current));
 	m_current = nullptr;
 	m_valid = false;
 }
