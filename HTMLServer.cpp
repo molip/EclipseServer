@@ -130,7 +130,7 @@ std::string HTMLServer::OnHTTPRequest(const std::string& url, const std::string&
 			return CreateRedirectResponse("/login.html");
 
 		ASSERT(host.substr(host.size() - 5) == ":8999");
-		std::string wsURL = std::string("ws://") + host.substr(0, host.size() - 4) + "8998";
+		std::string wsURL = GetWebSocketScheme() + "://" + host.substr(0, host.size() - 4) + "8998";
 			
 		std::string sPage = LoadFile("web\\game.html");
 		sPage = Util::ReplaceAll(sPage, "%PLAYER_ID%", FormatInt(player->GetID()));

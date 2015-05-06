@@ -17,8 +17,19 @@ int main(void)
 
 	SaveThread savethread;
 	Controller controller;
-	WSServer serverWS(controller);
-	HTMLServer serverHTML;
+
+	std::unique_ptr<WSServer> serverWS;
+	std::unique_ptr<HTMLServer> serverHTML;
+
+	try
+	{
+		serverWS = std::make_unique<WSServer>(controller);
+		serverHTML = std::make_unique<HTMLServer>();
+	}
+	catch (const std::runtime_error&)
+	{
+	}
+	
 	getchar();
 	return 0;
 }

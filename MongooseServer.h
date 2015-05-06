@@ -65,7 +65,7 @@ public:
 	static std::string CreateMD5(const std::string& string1, const std::string& string2);
 
 protected:
-	bool AbortClient(ClientID client);
+	std::string GetWebSocketScheme() const;
 
 private:
 	mg_connection* FindConnection(ClientID client) const;

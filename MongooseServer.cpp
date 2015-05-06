@@ -8,24 +8,42 @@
 #include "civetweb.h"
 #include "Util.h"
 
+namespace
+{
+#ifdef USE_SSL
+	const bool UseSSL = true;
+#else	
+	const bool UseSSL = false;
+#endif
+}
+
 static int begin_request_handler(struct mg_connection *conn);
 static void connection_close_handler(mg_connection *conn);
 static int websocket_connect_handler(const struct mg_connection *conn);
 static void websocket_ready_handler(mg_connection *conn);
 static int websocket_data_handler(mg_connection *conn, int flags, char *data, size_t data_len);
+static int log_message(const struct mg_connection*, const char *message);
 
 MongooseServer::MongooseServer(int port)
 {
-	char sPort[8];
-	_itoa_s(port, sPort, 10);
+	std::string portStr = ::FormatInt(port);
+	if (::UseSSL)
+		portStr += "s";
 
-	const char *options[] = 
+	std::vector<const char*> options = 
 	{
-		"listening_ports", sPort,
+		"listening_ports", portStr.c_str(),
 		"document_root", "web",
 		"request_timeout_ms", "60000",
-		nullptr
+		"error_log_file", "error.log",
 	};
+
+	if (::UseSSL)
+	{
+		options.push_back("ssl_certificate");
+		options.push_back("certificates/fishwithhats.uk.pem");
+	}
+	options.push_back(nullptr);
 
 	mg_callbacks callbacks;
 	memset(&callbacks, 0, sizeof callbacks);
@@ -34,8 +52,14 @@ MongooseServer::MongooseServer(int port)
 	callbacks.websocket_connect = websocket_connect_handler;
 	callbacks.websocket_ready = websocket_ready_handler;
 	callbacks.websocket_data = websocket_data_handler;
+	callbacks.log_message = log_message;
 
-	m_pContext = mg_start(&callbacks, this, options);
+	m_pContext = mg_start(&callbacks, this, &options.front());
+
+	std::cout << "Starting server on port " << portStr << ": " << (m_pContext ? "OK" : "failed") << std::endl;
+
+	if (!m_pContext)
+		throw std::runtime_error(__func__);
 }
 	
 MongooseServer::~MongooseServer()
@@ -81,6 +105,11 @@ mg_connection* MongooseServer::FindConnection(ClientID client) const
 	if (it != m_mapPortToConn.end())
 		return it->second;
 	return nullptr;
+}
+
+std::string MongooseServer::GetWebSocketScheme() const
+{
+	return ::UseSSL ? "wss" : "ws";
 }
 
 bool MongooseServer::SendMessage(ClientID client, const std::string& msg) const
@@ -232,6 +261,12 @@ int websocket_data_handler(mg_connection *conn, int flags, char *data, size_t da
 		}
 	}
 	return 1;
+}
+
+int log_message(const mg_connection*, const char *message)
+{
+	std::cout << message << std::endl;
+	return 0; // Default logging.
 }
 
 //-----------------------------------------------------------------------------

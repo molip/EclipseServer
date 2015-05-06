@@ -67,7 +67,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;_TIMESPEC_DEFINED;NDEBUG;_CONSOLE;%(PreprocessorDefinitions);TIXML_USE_STL;USE_WEBSOCKET</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_TIMESPEC_DEFINED;NDEBUG;_CONSOLE;USE_SSL;%(PreprocessorDefinitions);TIXML_USE_STL;USE_WEBSOCKET</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <TreatWarningAsError>true</TreatWarningAsError>
       <AdditionalIncludeDirectories>civetweb/include;cJSON</AdditionalIncludeDirectories>
