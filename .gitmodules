@@ -3,7 +3,7 @@
 	url = https://github.com/leethomason/tinyxml2
 [submodule "civetweb"]
 	path = civetweb
-	url = https://github.com/sunsetbrew/civetweb
+url=https://github.com/bel2125/civetweb
 [submodule "cJSON"]
 	path = cJSON
 	url = https://github.com/kbranigan/cJSON

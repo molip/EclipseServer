@@ -18,7 +18,7 @@ namespace
 }
 
 static int begin_request_handler(struct mg_connection *conn);
-static void connection_close_handler(mg_connection *conn);
+static void connection_close_handler(const mg_connection *conn);
 static int websocket_connect_handler(const struct mg_connection *conn);
 static void websocket_ready_handler(mg_connection *conn);
 static int websocket_data_handler(mg_connection *conn, int flags, char *data, size_t data_len);
@@ -205,7 +205,7 @@ int begin_request_handler(struct mg_connection *conn)
 }
 
 // Called on timeout.
-void connection_close_handler(mg_connection *conn)
+void connection_close_handler(const mg_connection *conn)
 {
 	const mg_request_info *request_info = mg_get_request_info(conn);
 	MongooseServer* pServer = reinterpret_cast<MongooseServer*>(request_info->user_data);
