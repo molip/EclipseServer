@@ -76,23 +76,25 @@ void ActionPhase::FinishTurn(CommitSession& session)
 
 	Colour c = GetCurrentTeam().GetColour();
 	if (GetCurrentTeam().HasPassed() && std::find(m_passOrder.begin(), m_passOrder.end(), c) == m_passOrder.end())
-	{
-		LiveGame& game = GetGame();
-
 		m_passOrder.push_back(c);
-		if (m_passOrder.size() == game.GetTeams().size())
-		{
-			game.FinishActionPhase(m_passOrder); // Deletes this.
-			game.GetPhase().Init(session);
-			game.GetPhase().UpdateClient(controller, nullptr); // Show next phase UI (combat or upkeep).
-			return;
-		}
-	}
-	m_pCmdStack->Clear();
-	m_bDoneAction = false;
-	AdvanceTurn();
 
-	UpdateClient(controller, &GetCurrentPlayer());
+	LiveGame& game = GetGame();
+
+	if (m_passOrder.size() == game.GetTeams().size())
+	{
+		game.FinishActionPhase(m_passOrder); // Deletes this.
+		game.GetPhase().Init(session);
+		game.GetPhase().UpdateClient(controller, nullptr); // Show next phase UI (combat or upkeep).
+	}
+	else
+	{
+		m_pCmdStack->Clear();
+		m_bDoneAction = false;
+		AdvanceTurn();
+		UpdateClient(controller, &GetCurrentPlayer());
+	}
+
+	session.GetController().SendMessage(Output::UpdateCurrentPlayers(session.GetGame()), session.GetGame());
 }
 
 void ActionPhase::UpdateClient(const Controller& controller, const Player* pPlayer) const

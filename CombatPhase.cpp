@@ -81,6 +81,8 @@ void CombatPhase::FinishTurn(CommitSession& session)
 		FinishBattle(session);
 	else
 		StartTurn(session);
+
+	session.GetController().SendMessage(Output::UpdateCurrentPlayers(session.GetGame()), session.GetGame());
 }
 
 void CombatPhase::FinishBattle(CommitSession& session)

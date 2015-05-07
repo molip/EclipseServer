@@ -251,3 +251,13 @@ function ShowScore(show)
 	ShowElementById('game_panel_play', !show)
 }
 
+function UpdateTeamTabs()
+{
+	for (var id in data.teams)
+	{
+		var button = document.getElementById('team_tab_{0}'.format(id)) 
+		button.innerText = data.teams[id].name + (data.teams[id].is_waiting ? '*' : '')
+	}
+}
+
+

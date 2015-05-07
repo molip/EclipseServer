@@ -108,6 +108,8 @@ function OnCommandUpdate(elem)
 		OnCommandUpdateCombat(elem)
 	else if (param == "score")
 		OnCommandUpdateScore(elem)
+	else if (param == "current_players")
+		OnCommandUpdateCurrentPlayers(elem)
 	else if (param == "add_log")
 		OnCommandAddLog(elem)
 	else if (param == "remove_log")
@@ -244,16 +246,18 @@ function OnCommandUpdateTeams(elem)
 {		
 	data.teams = {}
 	
-	var fmt_tab = '<button type="button" onclick="ShowTeamPage(\'{0}\', true)" style="{2}">{1}</button>'
+	var fmt_tab = '<button type="button" id="team_tab_{0}" onclick="ShowTeamPage(\'{0}\', true)" style="{1}"></button>'
 	var html_tabs = ''
 
 	for (var i = 0, team; team = elem.teams[i]; ++i)
 	{
-		html_tabs += fmt_tab.format(team.id, EscapeHtml(team.name), team.id == data.playerID ? 'font-weight: bold' : '')
+		html_tabs += fmt_tab.format(team.id, team.id == data.playerID ? 'font-weight: bold' : '')
 
 		data.teams[team.id] = {}
 		data.teams[team.id].population = {}
 		data.teams[team.id].blueprint_type = team.blueprints
+		data.teams[team.id].name = EscapeHtml(team.name)
+		data.teams[team.id].is_waiting = false
 	}
 
 	Blueprints.Init()
@@ -277,6 +281,8 @@ function OnCommandUpdateTeams(elem)
 	
 	ShowCombat(false)
 	ShowScore(false)
+	
+	UpdateTeamTabs()
 }
 
 function OnCommandUpdateTeam(elem)
@@ -488,6 +494,17 @@ function OnCommandUpdateScore(elem)
 		
 		document.getElementById('score_table').appendChild(tr)
 	}
+}
+
+function OnCommandUpdateCurrentPlayers(elem)
+{
+	for (var id in data.teams)
+		data.teams[id].is_waiting = false
+
+	for (var i = 0, id; id = elem.players[i]; ++i)
+		data.teams[id].is_waiting = true
+
+	UpdateTeamTabs()
 }
 
 function OnCommandAddLog(elem)

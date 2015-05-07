@@ -138,6 +138,7 @@ void Controller::SendUpdateGame(const Game& game, const Player* pPlayer) const
 		SendMessage(Output::UpdateTechnologies(game), game, pPlayer);
 		SendMessage(Output::UpdateRound(game), game, pPlayer);
 		SendMessage(Output::AddLog(game.GetLogs()), game, pPlayer);
+		SendMessage(Output::UpdateCurrentPlayers(*pLive), *pLive, pPlayer);
 	}
 
 	bool isBattle = game.HasBattle();

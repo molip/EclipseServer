@@ -12,6 +12,7 @@ public:
 	virtual void StartCmd(CmdPtr pCmd, CommitSession& session) override;
 
 	virtual void UpdateClient(const Controller& controller, const Player* pPlayer) const override;
+	virtual std::vector<const Team*> GetCurrentTeams() const override;
 
 	virtual void Save(Serial::SaveNode& node) const override;
 	virtual void Load(const Serial::LoadNode& node) override;

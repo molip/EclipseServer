@@ -29,9 +29,10 @@ void ChooseTeamPhase::AssignTeam(CommitSession& session, Player& player, RaceTyp
 	{
 		session.DoAndPushRecord(RecordPtr(new StartGameRecord));
 		game.StartMainGamePhase(); // Deletes this.
+		session.GetController().SendUpdateGame(game);
 	}
-
-	session.GetController().SendUpdateGame(game);
+	else
+		UpdateClient(session.GetController(), nullptr);
 }
 
 const Team& ChooseTeamPhase::GetCurrentTeam() const

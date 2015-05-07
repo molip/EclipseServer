@@ -78,6 +78,17 @@ void UpkeepPhase::UpdateClient(const Controller& controller, const Player* pPlay
 	}
 }
 
+std::vector<const Team*> UpkeepPhase::GetCurrentTeams() const
+{
+	std::vector<const Team*> teams;
+
+	for (auto& team : GetGame().GetTeams())
+		if (m_finished.find(team->GetColour()) == m_finished.end())
+			teams.push_back(team.get());
+
+	return teams;
+}
+
 void UpkeepPhase::FinishUpkeep(CommitSession& session, const Player& player)
 {
 	const Team& team = GetGame().GetTeam(player);
@@ -121,6 +132,8 @@ void UpkeepPhase::FinishGraveyard(CommitSession& session, const Player& player)
 
 		game.GetPhase().UpdateClient(controller, nullptr);
 	}
+
+	session.GetController().SendMessage(Output::UpdateCurrentPlayers(session.GetGame()), session.GetGame());
 }
 
 void UpkeepPhase::Save(Serial::SaveNode& node) const 

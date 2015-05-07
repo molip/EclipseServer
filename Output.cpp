@@ -379,6 +379,13 @@ UpdateScore::UpdateScore(const Game& game, bool show) : Update("score")
 	}		
 }
 
+UpdateCurrentPlayers::UpdateCurrentPlayers(const LiveGame& game) : Update("current_players")
+{
+	auto array = m_root.AddArray("players");
+	for (auto& team : game.GetPhase().GetCurrentTeams())
+		array.Append(team->GetPlayerID());
+}
+
 AddLog::AddLog(int id, const std::string& msg) : AddLog(Vec { Vec::value_type(id, msg) } )
 {
 }
