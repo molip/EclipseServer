@@ -10,6 +10,8 @@ public:
 	ChooseTeamPhase(LiveGame* pGame = nullptr);
 
 	virtual void UpdateClient(const Controller& controller, const Player* pPlayer) const override;
+	virtual void Init(CommitSession& session) override;
+	virtual std::vector<const Team*> GetCurrentTeams() const { return{ &GetCurrentTeam() }; }
 
 	void AssignTeam(CommitSession& session, Player& player, RaceType race, Colour colour);
 	const Team& GetCurrentTeam() const;
@@ -19,5 +21,6 @@ public:
 
 protected:
 	virtual CmdStack& GetCmdStack(Colour c) override { VERIFY(false); return *((CmdStack*)nullptr); }
+	const Player& ChooseTeamPhase::GetCurrentPlayer() const;
 };
 

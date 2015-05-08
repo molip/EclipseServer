@@ -15,6 +15,13 @@ ActionPhase::~ActionPhase()
 {
 }
 
+void ActionPhase::Init(CommitSession& session)
+{
+	session.GetController().SendMessage(Output::UpdateCurrentPlayers(session.GetGame()), session.GetGame());
+	session.GetController().SendMessage(Output::UpdateTurnStatus(GetCurrentPlayer()), GetCurrentPlayer());
+	UpdateClient(session.GetController(), nullptr);
+}
+
 const Team& ActionPhase::GetCurrentTeam() const 
 {
 	return TurnPhase::GetCurrentTeam(GetGame());
@@ -80,11 +87,12 @@ void ActionPhase::FinishTurn(CommitSession& session)
 
 	LiveGame& game = GetGame();
 
+	auto& oldPlayer = GetCurrentPlayer();
+
 	if (m_passOrder.size() == game.GetTeams().size())
 	{
 		game.FinishActionPhase(m_passOrder); // Deletes this.
 		game.GetPhase().Init(session);
-		game.GetPhase().UpdateClient(controller, nullptr); // Show next phase UI (combat or upkeep).
 	}
 	else
 	{
@@ -92,9 +100,12 @@ void ActionPhase::FinishTurn(CommitSession& session)
 		m_bDoneAction = false;
 		AdvanceTurn();
 		UpdateClient(controller, &GetCurrentPlayer());
+
+		session.GetController().SendMessage(Output::UpdateCurrentPlayers(session.GetGame()), session.GetGame());
+		session.GetController().SendMessage(Output::UpdateTurnStatus(GetCurrentPlayer()), GetCurrentPlayer());
 	}
 
-	session.GetController().SendMessage(Output::UpdateCurrentPlayers(session.GetGame()), session.GetGame());
+	session.GetController().SendMessage(Output::UpdateTurnStatus(oldPlayer), oldPlayer);
 }
 
 void ActionPhase::UpdateClient(const Controller& controller, const Player* pPlayer) const

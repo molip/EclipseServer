@@ -110,6 +110,8 @@ function OnCommandUpdate(elem)
 		OnCommandUpdateScore(elem)
 	else if (param == "current_players")
 		OnCommandUpdateCurrentPlayers(elem)
+	else if (param == "turn_status")
+		OnCommandUpdateTurnStatus(elem)
 	else if (param == "add_log")
 		OnCommandAddLog(elem)
 	else if (param == "remove_log")
@@ -527,6 +529,19 @@ function OnCommandUpdateCurrentPlayers(elem)
 		data.teams[id].is_waiting = true
 
 	UpdateTeamTabs()
+}
+
+function OnCommandUpdateTurnStatus(elem)
+{
+	ShowElementById('waiting_ui', elem.games.length > 0)
+	if (elem.games.length > 0)
+	{
+		document.getElementById('waiting_link').innerText = EscapeHtml(elem.first_game_name)
+		document.getElementById('waiting_link').onclick = function () { SendEnterGame(elem.games[0]);return false; }
+
+		ShowElementById('waiting_more', elem.games.length > 1)
+		document.getElementById('waiting_more_count').innerText = elem.games.length - 1
+	}
 }
 
 function OnCommandAddLog(elem)

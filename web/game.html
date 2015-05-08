@@ -86,6 +86,9 @@
 		<button id="retreat_review" type="button" onclick="SendRetreatReview()">&lt;&lt;</button>
 		<button id="advance_review" type="button" onclick="SendAdvanceReview()">&gt;&gt;</button>
 	</span>
+	<span id="waiting_ui" style="display:none">
+		It's your turn in <a href="" id="waiting_link"></a> <span id="waiting_more" style="display:none"> (and <span id="waiting_more_count"></span> more)</span>
+	</span>
 	<a href="logout?player=%PLAYER_ID%" style="float:right; margin-left:10px">Log out</a>
 	<a href="login.html" style="float:right; margin-left:10px">Switch</a>
 	<span style="float:right;" id="player_name_span"></span>

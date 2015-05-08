@@ -57,6 +57,16 @@ void UpkeepPhase::Init(CommitSession& session)
 
 	for (auto& c : influenceableHexes)
 		StartCmd(CmdPtr(new AutoInfluenceCmd(c, game)), session); // TODO: Stop user undoing.
+
+	session.GetController().SendMessage(Output::UpdateCurrentPlayers(session.GetGame()), session.GetGame());
+	
+	for (auto& team : GetGame().GetTeams())
+	{
+		auto& player = team->GetPlayer();
+		session.GetController().SendMessage(Output::UpdateTurnStatus(player), player);
+	}
+
+	UpdateClient(session.GetController(), nullptr);
 }
 
 void UpkeepPhase::UpdateClient(const Controller& controller, const Player* pPlayer) const
@@ -130,10 +140,13 @@ void UpkeepPhase::FinishGraveyard(CommitSession& session, const Player& player)
 		else
 			game.StartActionPhase(); // Deletes this.
 
-		game.GetPhase().UpdateClient(controller, nullptr);
+		game.GetPhase().Init(session);
 	}
-
-	session.GetController().SendMessage(Output::UpdateCurrentPlayers(session.GetGame()), session.GetGame());
+	else
+	{
+		session.GetController().SendMessage(Output::UpdateTurnStatus(player), player);
+		session.GetController().SendMessage(Output::UpdateCurrentPlayers(session.GetGame()), session.GetGame());
+	}
 }
 
 void UpkeepPhase::Save(Serial::SaveNode& node) const 

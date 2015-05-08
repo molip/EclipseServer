@@ -158,7 +158,9 @@ namespace
 {
 	void DoEnterGame(Controller& controller, Player& player, const LiveGame& game)
 	{
-		VERIFY_INPUT_MSG(player.GetName(), !player.GetCurrentGame());
+		if (&game == player.GetCurrentGame())
+			return;
+
 		player.SetCurrentGame(&game);
 		controller.SendUpdateGame(game, &player);
 	}
@@ -267,7 +269,9 @@ bool StartGame::Process(Controller& controller, Player& player) const
 	VERIFY_INPUT_MSG(pGame->GetName(), !pGame->HasStarted());
 	
 	CommitSession session(*pGame, controller);
-	session.Open().StartChooseTeamGamePhase();
+	LiveGame& game = session.Open();
+	game.StartChooseTeamGamePhase();
+	game.GetPhase().Init(session);
 	session.Commit();
 
 	controller.SendUpdateGameList();

@@ -386,6 +386,29 @@ UpdateCurrentPlayers::UpdateCurrentPlayers(const LiveGame& game) : Update("curre
 		array.Append(team->GetPlayerID());
 }
 
+UpdateTurnStatus::UpdateTurnStatus(const Player& player) : Update("turn_status")
+{
+	std::vector<const LiveGame*> waiting;
+
+	const LiveGame* current = player.GetCurrentLiveGame();
+	if (current && current->IsWaitingForPlayer(player))
+		waiting.push_back(current);
+
+	for (auto& game : Games::GetLiveGames())
+		if (game.get() != current && game->IsWaitingForPlayer(player))
+			{
+				waiting.push_back(game.get());
+				break;
+			}
+
+	auto array = m_root.AddArray("games");
+	for (auto& game : waiting)
+		array.Append(game->GetID());
+
+	if (!waiting.empty())
+		m_root.SetAttribute("first_game_name", waiting.front()->GetName());
+}
+
 AddLog::AddLog(int id, const std::string& msg) : AddLog(Vec { Vec::value_type(id, msg) } )
 {
 }

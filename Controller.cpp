@@ -79,6 +79,8 @@ void Controller::OnPlayerConnected(Player& player)
 		SendUpdateGameList(&player);
 	}
 
+	SendMessage(Output::UpdateTurnStatus(player), player);
+
 	SendQueuedMessages();
 }
 

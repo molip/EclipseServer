@@ -46,13 +46,13 @@ void LiveGame::StartChooseTeamGamePhase()
 	VERIFY_MODEL_MSG(m_name, !HasStarted());
 	VERIFY_MODEL_MSG(m_name, !m_teams.empty());
 	
-	m_gamePhase = GamePhase::ChooseTeam;
-	m_pPhase = PhasePtr(new ChooseTeamPhase(this));
-
 	// Decide team order.
 	for (int i = 0; i < (int)m_teams.size(); ++i)
 		m_turnOrder.push_back(i);
 	std::shuffle(m_turnOrder.begin(), m_turnOrder.end(), GetRandom());
+
+	m_gamePhase = GamePhase::ChooseTeam;
+	m_pPhase = PhasePtr(new ChooseTeamPhase(this));
 
 	m_techBag.Init();
 	m_discBag.Init();
@@ -196,6 +196,15 @@ const Team& LiveGame::GetTeamForTurn(int i) const
 {
 	VERIFY(m_turnOrder.size() == m_teams.size() && i < (int)m_turnOrder.size());
 	return *m_teams[m_turnOrder[i]];
+}
+
+bool LiveGame::IsWaitingForPlayer(const Player& player) const
+{
+	if (HasStarted())
+		for (auto& team : GetPhase().GetCurrentTeams())
+			if (team->GetPlayerID() == player.GetID())
+				return true;
+	return false;
 }
 
 void LiveGame::Save() const

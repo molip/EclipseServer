@@ -13,6 +13,7 @@ public:
 
 	virtual void StartCmd(CmdPtr pCmd, CommitSession& session) override;
 	virtual const Team& GetCurrentTeam() const override;
+	virtual void Init(CommitSession& session) override;
 
 	bool HasDoneAction() const { return m_bDoneAction; }
 	bool CanDoAction() const;

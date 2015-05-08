@@ -11,7 +11,7 @@ int main(void)
 	Players::Load();
 	Games::Load(); 
 
-	Test::Run();
+	//Test::Run();
 
 	Players::RejoinCurrentGame();
 

@@ -11,33 +11,51 @@ ChooseTeamPhase::ChooseTeamPhase(LiveGame* pGame) : Phase(pGame)
 {
 }
 
+void ChooseTeamPhase::Init(CommitSession& session)
+{
+	const Player& currentPlayer = GetCurrentPlayer();
+	session.GetController().SendMessage(Output::UpdateTurnStatus(currentPlayer), currentPlayer);
+}
+
 void ChooseTeamPhase::AssignTeam(CommitSession& session, Player& player, RaceType race, Colour colour)
 {
 	LiveGame& game = GetGame();
-	
+
 	game.GetTeam(player).Assign(race, colour, game);
 
 	AdvanceTurn();
+
+	session.GetController().SendMessage(Output::UpdateTurnStatus(player), player);
 
 	session.GetController().SendMessage(Output::ChooseTeam(game, false), player);
 
 	bool allAssigned = true;
 	for (auto& team : game.GetTeams())
 		allAssigned &= team->GetColour() != Colour::None;
-	
+
 	if (allAssigned)
 	{
 		session.DoAndPushRecord(RecordPtr(new StartGameRecord));
 		game.StartMainGamePhase(); // Deletes this.
+		game.GetPhase().Init(session);
 		session.GetController().SendUpdateGame(game);
 	}
 	else
+	{
 		UpdateClient(session.GetController(), nullptr);
+		const Player& currentPlayer = GetCurrentPlayer();
+		session.GetController().SendMessage(Output::UpdateTurnStatus(currentPlayer), currentPlayer);
+	}
 }
 
 const Team& ChooseTeamPhase::GetCurrentTeam() const
 {
 	return TurnPhase::GetCurrentTeam(GetGame());
+}
+
+const Player& ChooseTeamPhase::GetCurrentPlayer() const
+{
+	return Players::Get(GetCurrentTeam().GetPlayerID());
 }
 
 void ChooseTeamPhase::UpdateClient(const Controller& controller, const Player* pPlayer) const

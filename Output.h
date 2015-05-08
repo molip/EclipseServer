@@ -87,6 +87,7 @@ struct UpdateShowCombat : Update { UpdateShowCombat(const Game& game, bool show)
 struct UpdateCombat : Update { UpdateCombat(const Game& game, const Battle& battle); };
 struct UpdateScore : Update { UpdateScore(const Game& game, bool show); };
 struct UpdateCurrentPlayers : Update { UpdateCurrentPlayers(const LiveGame& game); };
+struct UpdateTurnStatus : Update { UpdateTurnStatus(const Player& player); };
 
 struct AddLog : Update 
 {

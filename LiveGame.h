@@ -71,6 +71,8 @@ public:
 	void Save() const;
 	std::mutex& GetMutex() const { return m_mutex; }
 
+	bool IsWaitingForPlayer(const Player& player) const;
+
 private:
 	std::vector<RecordPtr> m_records;
 	GamePhase m_gamePhase;

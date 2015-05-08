@@ -28,6 +28,7 @@ CombatPhase::~CombatPhase()
 void CombatPhase::Init(CommitSession& session)
 {
 	StartBattle(session);
+	UpdateClient(session.GetController(), nullptr);
 }
 
 const Hex* CombatPhase::GetNextBattleHex() const
@@ -64,7 +65,11 @@ void CombatPhase::StartTurn(CommitSession& session)
 		FinishTurn(session);
 	}
 	else
+	{
+		session.GetController().SendMessage(Output::UpdateCurrentPlayers(session.GetGame()), session.GetGame());
+		session.GetController().SendMessage(Output::UpdateTurnStatus(GetCurrentPlayer()), GetCurrentPlayer());
 		StartCmd(CmdPtr(new CombatCmd(GetGame().GetBattle().GetFiringColour(), GetGame())), session);
+	}
 }
 
 void CombatPhase::OnCmdFinished(const Cmd& cmd, CommitSession& session)
@@ -74,15 +79,15 @@ void CombatPhase::OnCmdFinished(const Cmd& cmd, CommitSession& session)
 
 void CombatPhase::FinishTurn(CommitSession& session)
 {
+	auto& oldPlayer = GetCurrentPlayer();
 	session.DoAndPushRecord(RecordPtr(new AdvanceCombatTurnRecord()));
-	
+	session.GetController().SendMessage(Output::UpdateTurnStatus(oldPlayer), oldPlayer);
+
 	auto& battle = GetGame().GetBattle();
 	if (battle.IsFinished())
 		FinishBattle(session);
 	else
 		StartTurn(session);
-
-	session.GetController().SendMessage(Output::UpdateCurrentPlayers(session.GetGame()), session.GetGame());
 }
 
 void CombatPhase::FinishBattle(CommitSession& session)
@@ -122,7 +127,6 @@ void CombatPhase::FinishBattle(CommitSession& session)
 		LiveGame& game = GetGame();
 		game.FinishCombatPhase(); // Deletes this.
 		game.GetPhase().Init(session);
-		game.GetPhase().UpdateClient(session.GetController(), nullptr); // Show next phase UI (upkeep).
 	}
 }
 
