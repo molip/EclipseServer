@@ -181,26 +181,48 @@ function OnCommandChoose(elem)
 
 function OnCommandUpdateGameList(elem)
 {
-	Assert(elem.mine && elem.open&& elem.other)
+	Assert(elem.mine && elem.open && elem.other)
 	
-	var game_str = '<a href="Show Game" onclick="SendEnterGame({0});return false;">{1}</a>({2})<br/>'
+	var game_str = '<a href="Show Game" onclick="SendEnterGame({0});return false;">{1}</a>'
 	
-	var AddGames = function(games, id)
+	var AddItem = function(tr)
 	{
-		var html = ''
-		for (var i in games)
+		var td = document.createElement('td')
+		tr.appendChild(td)
+		return td
+	}
+	var table = document.getElementById('game_list_table')
+	table.innerHTML = ''
+	
+	var AddGames = function(games, type)
+	{
+		for (var i = 0, game; game = games[i]; ++i)
 		{
-			var game = games[i]
+			var tr = document.createElement('tr');
+			table.appendChild(tr)
+			
 			Assert(game.id && game.name && game.owner)
-			html += game_str.format(game.id, EscapeHtml(game.name), EscapeHtml(game.owner))
+			AddItem(tr).innerText = i == 0 ? type : ''
+			AddItem(tr).innerHTML = game_str.format(game.id, EscapeHtml(game.name))
+			AddItem(tr).innerText = EscapeHtml(game.owner)
+		}		
+		if (games.length > 0)
+		{
+			var tr = document.createElement('tr');
+			table.appendChild(tr)
+			AddItem(tr).innerHTML = '<br>'
 		}
-		
-		document.getElementById(id).innerHTML = html
 	}
 
-	AddGames(elem.mine, 'game_list_mine')
-	AddGames(elem.open, 'game_list_open')
-	AddGames(elem.other, 'game_list_other')
+	var tr = document.createElement('tr');
+	table.appendChild(tr)
+	AddItem(tr, '')
+	AddItem(tr, 'Name')
+	AddItem(tr, 'Owner')
+
+	AddGames(elem.mine, 'My games:')
+	AddGames(elem.open, 'Open games:')
+	AddGames(elem.other, 'Other games:')
 }
 
 function OnCommandUpdateLobby(elem)
