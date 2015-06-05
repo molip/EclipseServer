@@ -4,8 +4,6 @@
 
 enum class ReputationType { Ambassador, Either, Reputation, _Count };
 
-namespace Serial { class SaveNode; class LoadNode; }
-
 class ReputationSlots
 {
 public:

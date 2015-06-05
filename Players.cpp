@@ -1,10 +1,10 @@
 #include "stdafx.h"
 #include "Players.h"
 #include "App.h"
-#include "OS.h"
-#include "Xml.h"
-#include "Serial.h"
 #include "Util.h"
+
+#include "libKernel/Filesystem.h"
+#include "libKernel/Xml.h"
 
 int Players::s_nNextID = 1;
 int Players::s_nNextTestID = -1;
@@ -66,7 +66,7 @@ void Players::Load()
 {
 	VERIFY_SERIAL(s_map.empty());
 
-	auto files = OS::FindFilesInDir(GetPath(), "*.xml");
+	auto files = Kernel::FindFilesInDir(GetPath(), "*.xml");
 
 	for (auto& f : files)
 	{

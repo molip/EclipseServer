@@ -47,13 +47,13 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_TIMESPEC_DEFINED;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);TIXML_USE_STL;USE_WEBSOCKET</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>civetweb/include;cJSON</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>civetweb/include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -63,14 +63,14 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_TIMESPEC_DEFINED;NDEBUG;_CONSOLE;USE_SSL;%(PreprocessorDefinitions);TIXML_USE_STL;USE_WEBSOCKET</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>civetweb/include;cJSON</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>civetweb/include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -101,7 +101,6 @@
     <ClInclude Include="BlueprintDefs.h" />
     <ClInclude Include="BuildCmd.h" />
     <ClInclude Include="civetweb\include\civetweb.h" />
-    <ClInclude Include="cJSON\cJSON.h" />
     <ClInclude Include="IncomeRecord.h" />
     <ClInclude Include="InfluenceRecord.h" />
     <ClInclude Include="MovePopulationCommand.h" />
@@ -111,7 +110,6 @@
     <ClInclude Include="CombatPhase.h" />
     <ClInclude Include="Debug.h" />
     <ClInclude Include="Dice.h" />
-    <ClInclude Include="EnumArray.h" />
     <ClInclude Include="FinishBattleRecord.h" />
     <ClInclude Include="GameState.h" />
     <ClInclude Include="GameStateAccess.h" />
@@ -128,19 +126,14 @@
     <ClInclude Include="DiscoverCmd.h" />
     <ClInclude Include="Discovery.h" />
     <ClInclude Include="DiscTrack.h" />
-    <ClInclude Include="Dynamic.h" />
     <ClInclude Include="EdgeSet.h" />
-    <ClInclude Include="EnumRange.h" />
-    <ClInclude Include="EnumTraits.h" />
     <ClInclude Include="ExploreCmd.h" />
-    <ClInclude Include="FormatString.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Hex.h" />
     <ClInclude Include="HexDefs.h" />
     <ClInclude Include="IndexRange.h" />
     <ClInclude Include="InfluenceCmd.h" />
     <ClInclude Include="InfluenceTrack.h" />
-    <ClInclude Include="Json.h" />
     <ClInclude Include="Map.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="MapPos.h" />
@@ -149,7 +142,6 @@
     <ClInclude Include="LiveGame.h" />
     <ClInclude Include="MoveCmd.h" />
     <ClInclude Include="OrderedPhase.h" />
-    <ClInclude Include="OS.h" />
     <ClInclude Include="Output.h" />
     <ClInclude Include="HTMLServer.h" />
     <ClInclude Include="PassCmd.h" />
@@ -170,12 +162,10 @@
     <ClInclude Include="Phase.h" />
     <ClInclude Include="SaveThread.h" />
     <ClInclude Include="ScorePhase.h" />
-    <ClInclude Include="Serial.h" />
     <ClInclude Include="RefreshExplorePileRecord.h" />
     <ClInclude Include="Ship.h" />
     <ClInclude Include="ShipBattle.h" />
     <ClInclude Include="ShipLayout.h" />
-    <ClInclude Include="Singleton.h" />
     <ClInclude Include="StartBattleRecord.h" />
     <ClInclude Include="StartGameRecord.h" />
     <ClInclude Include="StartRoundRecord.h" />
@@ -186,7 +176,6 @@
     <ClInclude Include="Technology.h" />
     <ClInclude Include="TechTrack.h" />
     <ClInclude Include="Test.h" />
-    <ClInclude Include="tinyxml2\tinyxml2.h" />
     <ClInclude Include="TradeCmd.h" />
     <ClInclude Include="Turn.h" />
     <ClInclude Include="Types.h" />
@@ -195,7 +184,6 @@
     <ClInclude Include="UpkeepPhase.h" />
     <ClInclude Include="Util.h" />
     <ClInclude Include="WSServer.h" />
-    <ClInclude Include="Xml.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ActionPhase.cpp" />
@@ -212,20 +200,28 @@
     <ClCompile Include="bcrypt\bcrypt.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsCpp</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsCpp</CompileAs>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="bcrypt\crypt_blowfish\crypt_blowfish.c">
       <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4244</DisableSpecificWarnings>
       <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4244</DisableSpecificWarnings>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsCpp</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsCpp</CompileAs>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="bcrypt\crypt_blowfish\crypt_gensalt.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsCpp</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsCpp</CompileAs>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="bcrypt\crypt_blowfish\wrapper.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsCpp</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsCpp</CompileAs>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Blueprint.cpp" />
     <ClCompile Include="BlueprintDefs.cpp" />
@@ -233,10 +229,8 @@
     <ClCompile Include="civetweb\src\civetweb.c">
       <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4996;4456;4311</DisableSpecificWarnings>
       <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4996;4456;4311</DisableSpecificWarnings>
-    </ClCompile>
-    <ClCompile Include="cJSON\cJSON.c">
-      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4996;4267</DisableSpecificWarnings>
-      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4996;4267</DisableSpecificWarnings>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="IncomeRecord.cpp" />
     <ClCompile Include="InfluenceRecord.cpp" />
@@ -263,7 +257,6 @@
     <ClCompile Include="DiscoverCmd.cpp" />
     <ClCompile Include="Discovery.cpp" />
     <ClCompile Include="DiscTrack.cpp" />
-    <ClCompile Include="Dynamic.cpp" />
     <ClCompile Include="EdgeSet.cpp" />
     <ClCompile Include="ExploreCmd.cpp" />
     <ClCompile Include="Game.cpp" />
@@ -271,7 +264,6 @@
     <ClCompile Include="HexDefs.cpp" />
     <ClCompile Include="InfluenceCmd.cpp" />
     <ClCompile Include="InfluenceTrack.cpp" />
-    <ClCompile Include="Json.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="Input.cpp" />
@@ -281,7 +273,6 @@
     <ClCompile Include="LiveGame.cpp" />
     <ClCompile Include="MoveCmd.cpp" />
     <ClCompile Include="OrderedPhase.cpp" />
-    <ClCompile Include="OS.cpp" />
     <ClCompile Include="Output.cpp" />
     <ClCompile Include="HTMLServer.cpp" />
     <ClCompile Include="PassCmd.cpp" />
@@ -301,7 +292,6 @@
     <ClCompile Include="Phase.cpp" />
     <ClCompile Include="SaveThread.cpp" />
     <ClCompile Include="ScorePhase.cpp" />
-    <ClCompile Include="Serial.cpp" />
     <ClCompile Include="RefreshExplorePileRecord.cpp" />
     <ClCompile Include="Ship.cpp" />
     <ClCompile Include="ShipBattle.cpp" />
@@ -318,10 +308,6 @@
     <ClCompile Include="Technology.cpp" />
     <ClCompile Include="TechTrack.cpp" />
     <ClCompile Include="Test.cpp" />
-    <ClCompile Include="tinyxml2\tinyxml2.cpp">
-      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4267</DisableSpecificWarnings>
-      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4267</DisableSpecificWarnings>
-    </ClCompile>
     <ClCompile Include="TradeCmd.cpp" />
     <ClCompile Include="Turn.cpp" />
     <ClCompile Include="UncoloniseCmd.cpp" />
@@ -329,11 +315,15 @@
     <ClCompile Include="UpkeepPhase.cpp" />
     <ClCompile Include="Util.cpp" />
     <ClCompile Include="WSServer.cpp" />
-    <ClCompile Include="Xml.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="bcrypt\crypt_blowfish\x86.S" />
     <None Include="civetweb\src\md5.inl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="libKernel\libKernel.vcxproj">
+      <Project>{a75566a2-3ed4-428b-b903-cb57defbc4bc}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

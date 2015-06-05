@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "TechTrack.h"
 #include "App.h"
-#include "Serial.h"
 
 TechTrack::TechTrack()
 {

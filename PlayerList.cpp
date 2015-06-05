@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "PlayerList.h"
 #include "Players.h"
 

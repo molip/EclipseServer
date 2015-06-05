@@ -1,10 +1,6 @@
 #pragma once
 
 #include <vector>
-#include "EnumRange.h"
-#include "EnumArray.h"
-
-namespace Serial { class SaveNode; class LoadNode; }
 
 enum class Resource { None = -1, Money, Science, Materials, _Count };
 

@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "Technology.h"
 #include "App.h"
-#include "EnumTraits.h"
 
 int Technology::GetTier(TechType t) 
 {

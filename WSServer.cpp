@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "WSServer.h"
 #include "App.h"
 #include "Util.h"
@@ -56,7 +57,7 @@ void WSServer::OnWebSocketMessage(ClientID client, const std::string& message)
 	}
 	catch (Exception& e)
 	{
-		std::string error = GetErrorMessage(e.GetTypeString(), e.what(), client);
+		std::string error = GetErrorMessage(e.what(), client);
 		std::cerr << error << std::endl;
 
 		if (player)
@@ -140,10 +141,10 @@ void WSServer::BroadcastMessage(const std::string& msg) const
 		__super::SendMessage(i.first, msg);
 }
 
-std::string WSServer::GetErrorMessage(const std::string& type, const std::string& msg, ClientID client)
+std::string WSServer::GetErrorMessage(const std::string& what, ClientID client)
 {
 	std::ostringstream ss;
-	ss << type << " exception: " << msg;
+	ss << what;
 	std::string name;
 	if (client)
 	{

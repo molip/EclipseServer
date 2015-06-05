@@ -1,11 +1,12 @@
 #pragma once
 
 #include "App.h"
-#include "Dynamic.h"
 #include "GameStateAccess.h"
 
 #include <memory>
 #include <functional>
+
+#include "libKernel/Dynamic.h"
 
 class Game;
 class Controller;
@@ -34,7 +35,7 @@ private:
 	const Controller* m_controller;
 };
 
-class Record : public Dynamic 
+class Record : public Dynamic
 {
 public:
 	Record();

@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "Input.h"
 #include "App.h"
 #include "Controller.h"
@@ -14,19 +15,19 @@
 #include "UpgradeCmd.h"
 #include "TradeCmd.h"
 #include "PassCmd.h"
-#include "Xml.h"
-#include "EnumTraits.h"
 #include "Games.h"
 #include "LiveGame.h"
 #include "ReviewGame.h"
 #include "ActionPhase.h"
 #include "ChooseTeamPhase.h"
 #include "UpkeepPhase.h"
-#include "Json.h"
 #include "Record.h"
 #include "CommitSession.h"
 #include "MessageRecord.h"
 #include "BankruptCmd.h"
+
+#include "libKernel/Json.h"
+#include "libKernel/Xml.h"
 
 #include <sstream>
 

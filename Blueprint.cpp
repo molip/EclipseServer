@@ -1,9 +1,10 @@
 #include "stdafx.h"
 #include "Blueprint.h"
+
+#include "App.h"
 #include "BlueprintDefs.h"
 #include "ShipLayout.h"
 #include "Ship.h"
-#include "Serial.h"
 #include "Dice.h"
 
 Blueprint::Blueprint() : m_pDef(nullptr)

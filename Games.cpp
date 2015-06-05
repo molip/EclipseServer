@@ -1,9 +1,10 @@
+#include "stdafx.h"
 #include "Games.h"
 #include "LiveGame.h"
 #include "ReviewGame.h"
-#include "OS.h"
-#include "Xml.h"
-#include "Serial.h"
+
+#include "libKernel/Filesystem.h"
+#include "libKernel/Xml.h"
 
 int Games::s_nNextGameID = 1;
 int Games::s_nNextTestGameID = -1;
@@ -15,7 +16,7 @@ void Games::Load()
 	VERIFY_SERIAL(s_liveGames.empty() && s_reviewGames.empty());
 	
 	std::string dir = "data/games/live/";
-	auto files = OS::FindFilesInDir(dir, "*.xml");
+	auto files = Kernel::FindFilesInDir(dir, "*.xml");
 	
 	for (auto& f : files)
 	{

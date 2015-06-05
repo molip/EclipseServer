@@ -2,7 +2,8 @@
 
 #include "Dice.h"
 #include "App.h"
-#include "Dynamic.h"
+
+#include "libKernel/Dynamic.h"
 
 #include <vector>
 #include <map>
@@ -14,8 +15,6 @@ class Hex;
 class Ship;
 class Blueprint;
 class Game;
-
-namespace Serial { class SaveNode; class LoadNode; }
 
 class Battle;
 class Record;

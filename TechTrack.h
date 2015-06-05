@@ -1,13 +1,10 @@
 #pragma once
 
 #include "Technology.h"
-#include "EnumArray.h"
 
 #include <vector>
 #include <set>
 #include <array>
-
-namespace Serial { class SaveNode; class LoadNode; }
 
 class TechTrack
 {

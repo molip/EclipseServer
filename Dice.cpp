@@ -1,6 +1,6 @@
+#include "stdafx.h"
 #include "Dice.h"
 #include "App.h"
-#include "Serial.h"
 
 Dice::Dice()
 {

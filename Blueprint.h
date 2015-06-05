@@ -9,8 +9,6 @@ class SlotRange;
 class Dice;
 enum class RaceType;
 
-namespace Serial { class SaveNode; class LoadNode; }
-
 class Blueprint : public ISlots
 {
 public:

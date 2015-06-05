@@ -1,5 +1,5 @@
+#include "stdafx.h"
 #include "Discovery.h"
-#include "EnumTraits.h"
 #include "ShipLayout.h"
 
 DiscoveryClass Discovery::GetClass(DiscoveryType d)

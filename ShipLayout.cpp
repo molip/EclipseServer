@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "ShipLayout.h"
+
+#include "App.h"
 #include "Ship.h"
-#include "EnumTraits.h"
-#include "Serial.h"
 
 SlotRange ISlots::GetSlotRange() const
 {

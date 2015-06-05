@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "ShipBattle.h"
 #include "App.h"
 #include "Hex.h"

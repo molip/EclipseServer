@@ -27,12 +27,6 @@
     <Filter Include="External\Civetweb">
       <UniqueIdentifier>{e54d794f-4bdd-40f5-876f-f335d7bbbded}</UniqueIdentifier>
     </Filter>
-    <Filter Include="External\cJSON">
-      <UniqueIdentifier>{947ff958-1538-4bd9-b10c-e8f80f56a533}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="External\TinyXML2">
-      <UniqueIdentifier>{209b8763-18a1-456a-9100-0b59c7b274ec}</UniqueIdentifier>
-    </Filter>
     <Filter Include="External\bcrypt">
       <UniqueIdentifier>{df2ae12f-6e18-4bb3-bca4-72e0e102f4e3}</UniqueIdentifier>
     </Filter>
@@ -72,9 +66,6 @@
       <Filter>General</Filter>
     </ClInclude>
     <ClInclude Include="Util.h">
-      <Filter>General</Filter>
-    </ClInclude>
-    <ClInclude Include="Singleton.h">
       <Filter>General</Filter>
     </ClInclude>
     <ClInclude Include="Race.h">
@@ -134,12 +125,6 @@
     <ClInclude Include="CmdStack.h">
       <Filter>Model</Filter>
     </ClInclude>
-    <ClInclude Include="EnumTraits.h">
-      <Filter>General</Filter>
-    </ClInclude>
-    <ClInclude Include="Xml.h">
-      <Filter>General</Filter>
-    </ClInclude>
     <ClInclude Include="Games.h">
       <Filter>Model</Filter>
     </ClInclude>
@@ -160,15 +145,6 @@
     </ClInclude>
     <ClInclude Include="BlueprintDefs.h">
       <Filter>Model</Filter>
-    </ClInclude>
-    <ClInclude Include="Dynamic.h">
-      <Filter>General</Filter>
-    </ClInclude>
-    <ClInclude Include="Serial.h">
-      <Filter>General</Filter>
-    </ClInclude>
-    <ClInclude Include="OS.h">
-      <Filter>General</Filter>
     </ClInclude>
     <ClInclude Include="ResearchCmd.h">
       <Filter>Commands</Filter>
@@ -212,9 +188,6 @@
     <ClInclude Include="IndexRange.h">
       <Filter>General</Filter>
     </ClInclude>
-    <ClInclude Include="EnumRange.h">
-      <Filter>General</Filter>
-    </ClInclude>
     <ClInclude Include="PassCmd.h">
       <Filter>Commands</Filter>
     </ClInclude>
@@ -233,16 +206,10 @@
     <ClInclude Include="DiscTrack.h">
       <Filter>Model</Filter>
     </ClInclude>
-    <ClInclude Include="Json.h">
-      <Filter>General</Filter>
-    </ClInclude>
     <ClInclude Include="CommitSession.h">
       <Filter>General</Filter>
     </ClInclude>
     <ClInclude Include="SaveThread.h">
-      <Filter>General</Filter>
-    </ClInclude>
-    <ClInclude Include="FormatString.h">
       <Filter>General</Filter>
     </ClInclude>
     <ClInclude Include="MessageRecord.h">
@@ -299,9 +266,6 @@
     <ClInclude Include="ActionTrack.h">
       <Filter>Model</Filter>
     </ClInclude>
-    <ClInclude Include="EnumArray.h">
-      <Filter>General</Filter>
-    </ClInclude>
     <ClInclude Include="GameState.h">
       <Filter>Model</Filter>
     </ClInclude>
@@ -350,12 +314,6 @@
     <ClInclude Include="PlayerList.h" />
     <ClInclude Include="civetweb\include\civetweb.h">
       <Filter>External\Civetweb</Filter>
-    </ClInclude>
-    <ClInclude Include="tinyxml2\tinyxml2.h">
-      <Filter>External\TinyXML2</Filter>
-    </ClInclude>
-    <ClInclude Include="cJSON\cJSON.h">
-      <Filter>External\cJSON</Filter>
     </ClInclude>
     <ClInclude Include="ReputationRecord.h" />
     <ClInclude Include="ScorePhase.h">
@@ -477,9 +435,6 @@
     <ClCompile Include="Resources.cpp">
       <Filter>Model</Filter>
     </ClCompile>
-    <ClCompile Include="Xml.cpp">
-      <Filter>General</Filter>
-    </ClCompile>
     <ClCompile Include="Games.cpp">
       <Filter>Model</Filter>
     </ClCompile>
@@ -500,15 +455,6 @@
     </ClCompile>
     <ClCompile Include="BlueprintDefs.cpp">
       <Filter>Model</Filter>
-    </ClCompile>
-    <ClCompile Include="Dynamic.cpp">
-      <Filter>General</Filter>
-    </ClCompile>
-    <ClCompile Include="Serial.cpp">
-      <Filter>General</Filter>
-    </ClCompile>
-    <ClCompile Include="OS.cpp">
-      <Filter>General</Filter>
     </ClCompile>
     <ClCompile Include="ResearchCmd.cpp">
       <Filter>Commands</Filter>
@@ -566,9 +512,6 @@
     </ClCompile>
     <ClCompile Include="DiscTrack.cpp">
       <Filter>Model</Filter>
-    </ClCompile>
-    <ClCompile Include="Json.cpp">
-      <Filter>General</Filter>
     </ClCompile>
     <ClCompile Include="CommitSession.cpp">
       <Filter>General</Filter>
@@ -672,12 +615,6 @@
     <ClCompile Include="PlayerList.cpp" />
     <ClCompile Include="civetweb\src\civetweb.c">
       <Filter>External\Civetweb</Filter>
-    </ClCompile>
-    <ClCompile Include="tinyxml2\tinyxml2.cpp">
-      <Filter>External\TinyXML2</Filter>
-    </ClCompile>
-    <ClCompile Include="cJSON\cJSON.c">
-      <Filter>External\cJSON</Filter>
     </ClCompile>
     <ClCompile Include="ReputationRecord.cpp" />
     <ClCompile Include="ScorePhase.cpp">

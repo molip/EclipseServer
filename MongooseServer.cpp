@@ -1,12 +1,11 @@
-// Copyright (c) 2004-2012 Sergey Lyubka
-// This file is a part of mongoose project, http://github.com/valenok/mongoose
+#include "stdafx.h"
+#include "MongooseServer.h"
+
+#include "civetweb.h"
+#include "Util.h"
 
 #include <cstdio>
 #include <cstring>
-
-#include "MongooseServer.h"
-#include "civetweb.h"
-#include "Util.h"
 
 namespace
 {

@@ -3,8 +3,6 @@
 //#include "Blueprint.h"
 //#include "ShipLayout.h"
 
-#include "EnumRange.h"
-
 enum class ShipType { None = -3, Ancient = -2, GCDS = -1, Interceptor, Cruiser, Dreadnought, Starbase, _Count };
 
 struct AllShipTypesRange : EnumRange<ShipType>

@@ -1,10 +1,10 @@
+#include "stdafx.h"
 #include "GameState.h"
 
 #include "ShipBattle.h"
 #include "PopulationBattle.h"
 #include "Team.h"
 #include "TeamState.h"
-#include "Serial.h"
 #include "Game.h"
 
 GameState::GameState(Game& game) : m_map(game), m_iRound(-1)

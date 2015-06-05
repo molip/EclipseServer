@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "AttackRecord.h"
 #include "Team.h"
-#include "Serial.h"
 
 AttackRecord::AttackRecord() : m_firingColour(Colour::None), m_targetColour(Colour::None), m_firingShipType(ShipType::None)
 {

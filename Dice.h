@@ -4,8 +4,6 @@
 #include <map>
 #include <set>
 
-namespace Serial { class SaveNode; class LoadNode; }
-
 enum class DiceColour { Yellow, Orange, Red };
 
 class Dice : public std::map<DiceColour, std::multiset<int>>

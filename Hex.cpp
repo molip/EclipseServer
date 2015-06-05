@@ -7,8 +7,6 @@
 #include "Game.h"
 #include "Technology.h"
 #include "HexDefs.h"
-#include "EnumTraits.h"
-#include "Serial.h"
 
 Square::Square(Hex& hex, int index) : m_hex(hex), m_index(index)
 {

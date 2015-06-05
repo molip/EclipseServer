@@ -2,7 +2,7 @@
 
 #include "Battle.h"
 
-namespace Serial { class SaveNode; class LoadNode; }
+
 
 class PopulationBattle : public Battle
 {

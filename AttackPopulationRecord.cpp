@@ -4,7 +4,6 @@
 #include "Game.h"
 #include "Controller.h"
 #include "Output.h"
-#include "EnumTraits.h"
 
 AttackPopulationRecord::AttackPopulationRecord() : m_cubeCount(0)
 {

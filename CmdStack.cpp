@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "CmdStack.h"
 #include "App.h"
-#include "Serial.h"
 
 bool CmdStack::Chain::IsOpen() const
 {

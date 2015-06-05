@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "DiscTrack.h"
-#include "Serial.h"
+
+#include "App.h"
 
 bool DiscTrack::operator==(const DiscTrack& rhs) const
 {

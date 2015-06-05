@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "PhaseCmd.h"
-#include "Serial.h"
 
 PhaseCmd::PhaseCmd(Colour colour, int iPhase) : Cmd(colour), m_iPhase(iPhase)
 {

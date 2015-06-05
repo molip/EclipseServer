@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "WSServer.h"
 #include "HTMLServer.h"
 #include "Controller.h"

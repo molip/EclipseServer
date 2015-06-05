@@ -5,7 +5,7 @@
 #include <deque>
 #include <vector>
 
-namespace Serial { class SaveNode; class LoadNode; }
+
 
 class CmdStack
 {

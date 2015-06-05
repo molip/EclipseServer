@@ -1,8 +1,8 @@
+#include "stdafx.h"
 #include "Race.h"
 #include "App.h"
 #include "Ship.h"
 #include "Team.h"
-#include "EnumTraits.h"
 #include "BlueprintDefs.h"
 
 Storage Race::GetStartStorage() const

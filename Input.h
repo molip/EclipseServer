@@ -14,7 +14,7 @@ enum class ShipType;
 enum class Buildable;
 enum class ShipPart;
 
-namespace Json { class Element; class Array; }
+namespace Kernel { namespace Json { class Element; class Array; } }
 
 namespace Input 
 {

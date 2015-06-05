@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "PopulationTrack.h"
 #include "App.h"
-#include "Serial.h"
 
 #include <algorithm>
 

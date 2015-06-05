@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "ScorePhase.h"
 #include "LiveGame.h"
 #include "CmdStack.h"

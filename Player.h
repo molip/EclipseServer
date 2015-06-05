@@ -8,8 +8,6 @@ class LiveGame;
 class ReviewGame;
 class Team;
 
-namespace Serial { class SaveNode; class LoadNode; }
-
 class Player
 {
 public:

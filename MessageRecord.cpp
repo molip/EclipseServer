@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "MessageRecord.h"
-#include "Serial.h"
 #include "Team.h"
 
 MessageRecord::MessageRecord(std::string msg) : TeamRecord(Colour::None), m_msg(msg)

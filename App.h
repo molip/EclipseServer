@@ -1,8 +1,5 @@
 #pragma once
 
-#include "EnumRange.h"
-#include "EnumArray.h"
-
 #include <map>
 #include <vector>
 #include <set>
@@ -14,13 +11,8 @@
 #include <algorithm>
 #include <random>
 
-using namespace std::literals;
-
 //#define LOCK(m) ; //std::lock_guard<std::mutex> lock(m);
 #define LOCK(m) std::lock_guard<std::mutex> lock(m);
-
-#include "Debug.h"
-#include "FormatString.h"
 
 extern std::string FormatInt(int n);
 
@@ -31,21 +23,6 @@ bool InRange(const T& cntr, int n)
 {
 	return n >= 0 && n < (int)cntr.size();
 }
-
-template <typename T>
-class ReverseAdapter
-{
-public:
-	ReverseAdapter(const T& t) : m_t(t) {}
-
-	typename T::const_reverse_iterator begin() const { return m_t.rbegin(); }
-	typename T::const_reverse_iterator end() const { return m_t.rend(); }
-private:
-	const T& m_t;
-};
-
-template <typename T>
-ReverseAdapter<T> Reverse(const T& t) { return ReverseAdapter<T>(t); }
 
 template <typename T>
 bool ArePtrMapsEqual(const T& lhs, const T& rhs)

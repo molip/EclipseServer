@@ -10,6 +10,15 @@
 #include <stdio.h>
 #include <tchar.h>
 
+#include "libKernel/EnumArray.h"
+#include "libKernel/EnumRange.h"
+#include "libKernel/EnumTraits.h"
+#include "libKernel/Serial.h"
+#include "libKernel/Util.h"
+#include "libKernel/FormatString.h"
 
+using namespace Kernel;
 
-// TODO: reference additional headers your program requires here
+#include "Debug.h"
+
+using namespace std::literals;

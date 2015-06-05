@@ -27,7 +27,7 @@ class EdgeSet;
 class SquareDef;
 class Hex;
 
-namespace Serial { class SaveNode; class LoadNode; }
+
 
 // Proxy class - defers to Hex and SquareDef
 class Square

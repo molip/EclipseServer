@@ -1,7 +1,7 @@
+#include "stdafx.h"
 #include "TeamState.h"
 
 #include "Team.h"
-#include "Serial.h"
 #include "Map.h"
 
 TeamState::TeamState() : m_nColonyShipsUsed(0), m_bPassed(false), m_victoryPointTiles(0)

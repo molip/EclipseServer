@@ -4,7 +4,6 @@
 #include "Game.h"
 #include "Controller.h"
 #include "Output.h"
-#include "EnumTraits.h"
 
 AttackShipsRecord::AttackShipsRecord() : m_missilePhase(false)
 {

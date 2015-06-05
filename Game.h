@@ -15,7 +15,7 @@
 class CmdStack;
 class Record;
 
-namespace Serial { class SaveNode; class LoadNode; }
+
 
 class Game
 {

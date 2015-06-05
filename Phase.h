@@ -1,7 +1,8 @@
 #pragma once
 
 #include "App.h"
-#include "Dynamic.h"
+
+#include "libKernel/Dynamic.h"
 
 class LiveGame;
 class CmdStack;

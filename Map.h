@@ -11,7 +11,7 @@
 class Game;
 class MapPos;
 
-namespace Serial { class SaveNode; class LoadNode; }
+
 
 class Map
 {

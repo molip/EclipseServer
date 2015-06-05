@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "Ship.h"
-#include "EnumTraits.h"
 
 DEFINE_ENUM_NAMES2(ShipType, -3) { "None", "Ancient", "GCDS", "Interceptor", "Cruiser", "Dreadnought", "Starbase", "" };
 

@@ -1,7 +1,8 @@
 #pragma once
 
-#include "Singleton.h"
 #include "Input.h"
+
+#include "libKernel/Singleton.h"
 
 #include <string>
 #include <vector>

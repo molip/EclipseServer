@@ -1,7 +1,5 @@
 #pragma once
 
-namespace Serial { class SaveNode; class LoadNode; }
-
 class DiscTrack
 {
 public:

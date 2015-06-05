@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "MovePopulationRecord.h"
 #include "Output.h"
-#include "Serial.h"
 
 MovePopulationRecord::MovePopulationRecord()
 {

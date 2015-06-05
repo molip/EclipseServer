@@ -1,9 +1,9 @@
+#include "stdafx.h"
 #include "ReputationRecord.h"
 
 #include "Game.h"
 #include "GameState.h"
 #include "Output.h"
-#include "Serial.h"
 #include "TeamState.h"
 
 ReputationRecord::ReputationRecord()

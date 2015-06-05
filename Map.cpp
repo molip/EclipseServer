@@ -4,7 +4,6 @@
 #include "Game.h"
 #include "App.h"
 #include "EdgeSet.h"
-#include "Serial.h"
 
 Map::Map(Game& game) : m_game(game)
 {

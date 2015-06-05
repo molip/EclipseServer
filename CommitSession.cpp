@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "CommitSession.h"
 #include "Record.h"
 #include "LiveGame.h"

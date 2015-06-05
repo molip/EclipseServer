@@ -4,8 +4,6 @@
 
 #include <vector>
 
-namespace Serial { class SaveNode; class LoadNode; }
-
 enum class ShipType;
 
 enum class ShipPart {	Empty = -2, Blocked, 

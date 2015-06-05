@@ -3,7 +3,6 @@
 #include "Technology.h"
 #include "Discovery.h"
 #include "App.h"
-#include "Serial.h"
 #include "Types.h"
 
 template <typename T> 

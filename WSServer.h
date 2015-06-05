@@ -28,7 +28,7 @@ public:
 private:
 	void RegisterPlayer(ClientID client, Player& player);
 	void UnregisterPlayer(ClientID client);
-	std::string GetErrorMessage(const std::string& type, const std::string& msg, ClientID client = 0);
+	std::string GetErrorMessage(const std::string& what, ClientID client = 0);
 
 	std::map<ClientID, Player*> m_mapClientToPlayer;
 	std::map<Player*, ClientID> m_mapPlayerToClient;

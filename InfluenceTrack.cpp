@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "InfluenceTrack.h"
-#include "Serial.h"
+
+#include "App.h"
 
 int InfluenceTrack::GetUpkeep(int nDiscs)
 {

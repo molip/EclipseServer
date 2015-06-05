@@ -43,7 +43,7 @@ private:
 	int m_storage;
 };
 
-namespace Serial { class SaveNode; class LoadNode; }
+
 
 class Game;
 class Hex;
