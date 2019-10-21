@@ -9,7 +9,7 @@ class Players
 {
 public:
 	static void Load();
-	static std::string GetPath();
+	static std::wstring GetPath();
 
 	static Player& Add(const std::string& email, const std::string& name, const std::string& password);
 	static Player& AddTest();

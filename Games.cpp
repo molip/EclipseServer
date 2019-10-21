@@ -15,8 +15,8 @@ void Games::Load()
 {
 	VERIFY_SERIAL(s_liveGames.empty() && s_reviewGames.empty());
 	
-	std::string dir = "data/games/live/";
-	auto files = Kernel::FindFilesInDir(dir, "*.xml");
+	std::wstring dir = L"data/games/live/";
+	auto files = Kernel::FileSystem::FindFilesInDir(dir, L"*.xml");
 	
 	for (auto& f : files)
 	{

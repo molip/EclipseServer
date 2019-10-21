@@ -57,16 +57,16 @@ void Players::RejoinCurrentGame()
 		i.second->RejoinCurrentGame();
 }
 
-std::string Players::GetPath()
+std::wstring Players::GetPath()
 {
-	return "data/players/";
+	return L"data/players/";
 }
 
 void Players::Load()
 {
 	VERIFY_SERIAL(s_map.empty());
 
-	auto files = Kernel::FindFilesInDir(GetPath(), "*.xml");
+	auto files = Kernel::FileSystem::FindFilesInDir(GetPath(), L"*.xml");
 
 	for (auto& f : files)
 	{

@@ -23,8 +23,11 @@ private:
 	Type m_type;
 };
 
+extern void AppVerify(const void* condition, const Kernel::Exception& e);
+extern void AppVerify(bool condition, const Kernel::Exception& e);
+
 #define _VERIFY(condition, type, msg) \
-	Verify(condition, AppException(__FILE__, __LINE__, type, msg))
+	AppVerify(condition, AppException(__FILE__, __LINE__, type, msg))
 
 #define VERIFY(condition) _VERIFY(condition, AppException::Type::Generic, "")
 #define VERIFY_INPUT(condition) _VERIFY(condition, AppException::Type::Input, "")

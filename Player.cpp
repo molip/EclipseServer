@@ -91,8 +91,8 @@ void Player::Save() const
 	if (m_id < 0)
 		return;
 
-	std::string path = ::FormatString("%0%1.xml", Players::GetPath(), m_id);
-	VERIFY_SERIAL_MSG(path, Serial::SaveClass(path, *this));
+	std::wstring path = ::FormatString(L"%0%1.xml", Players::GetPath(), m_id);
+	VERIFY_SERIAL_MSG(Kernel::WStringToString(path), Serial::SaveClass(path, *this));
 }
 
 void Player::Save(Serial::SaveNode& node) const

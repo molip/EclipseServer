@@ -12,3 +12,14 @@ std::string AppException::GetWhat() const
 	return GetTypeString() + ' ' + __super::GetWhat();
 }
 
+void AppVerify(const void* condition, const Kernel::Exception& e)
+{
+	AppVerify(condition != nullptr, e);
+}
+
+void AppVerify(bool condition, const Kernel::Exception& e)
+{
+	KERNEL_ASSERT(condition);
+	if (!condition)
+		e.Raise();
+}

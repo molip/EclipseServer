@@ -4,19 +4,20 @@
 #include "App.h"
 
 #include "libKernel/Filesystem.h"
+#include "libKernel/Util.h"
 
 bool Invitations::Find(const std::string& name) 
 {
-	auto files = Kernel::FindFilesInDir(GetPath(), name);
+	auto files = Kernel::FileSystem::FindFilesInDir(GetPath(), Kernel::StringToWString(name));
 	return !files.empty();
 }
 
 bool Invitations::Remove(const std::string& name)
 {
-	return Kernel::DeleteFile(GetPath() + name);
+	return Kernel::FileSystem::DeleteFile(GetPath() + Kernel::StringToWString(name));
 }
 
-std::string Invitations::GetPath()
+std::wstring Invitations::GetPath()
 {
-	return "data/invitations/";
+	return L"data/invitations/";
 }
